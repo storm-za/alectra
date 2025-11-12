@@ -68,8 +68,20 @@ export const orderItems = pgTable("order_items", {
   lineSubtotal: decimal("line_subtotal", { precision: 10, scale: 2 }).notNull(),
 });
 
+export const userAddresses = pgTable("user_addresses", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  addressLine: text("address_line").notNull(),
+  city: text("city").notNull(),
+  province: text("province").notNull(),
+  postalCode: text("postal_code").notNull(),
+  isDefault: boolean("is_default").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   orders: many(orders),
+  addresses: many(userAddresses),
 }));
 
 export const productsRelations = relations(products, ({ one }) => ({
@@ -102,6 +114,13 @@ export const orderItemsRelations = relations(orderItems, ({ one }) => ({
   }),
 }));
 
+export const userAddressesRelations = relations(userAddresses, ({ one }) => ({
+  user: one(users, {
+    fields: [userAddresses.userId],
+    references: [users.id],
+  }),
+}));
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
@@ -130,6 +149,12 @@ export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
   id: true,
 });
 
+export const insertUserAddressSchema = createInsertSchema(userAddresses).omit({
+  id: true,
+  createdAt: true,
+  userId: true,
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
@@ -144,6 +169,9 @@ export type InsertOrder = z.infer<typeof insertOrderSchema>;
 
 export type OrderItem = typeof orderItems.$inferSelect;
 export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
+
+export type UserAddress = typeof userAddresses.$inferSelect;
+export type InsertUserAddress = z.infer<typeof insertUserAddressSchema>;
 
 export type CartItem = {
   product: Product;

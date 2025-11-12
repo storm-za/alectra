@@ -120,6 +120,12 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
                     {user?.name}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/account" className="flex items-center cursor-pointer" data-testid="link-account">
+                      <User className="mr-2 h-4 w-4" />
+                      My Account
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => logoutMutation.mutate()}
                     data-testid="button-logout"

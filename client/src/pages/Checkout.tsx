@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,9 +24,11 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import type { CartItem } from "@shared/schema";
+import type { CartItem, UserAddress } from "@shared/schema";
+import { MapPin } from "lucide-react";
 
 const checkoutSchema = z.object({
   customerName: z.string().min(2, "Name must be at least 2 characters"),
@@ -48,19 +50,50 @@ interface CheckoutProps {
 export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const [selectedAddressId, setSelectedAddressId] = useState<string>("");
+
+  const { data: user } = useQuery<{ user: any | null }>({
+    queryKey: ["/api/auth/me"],
+    retry: false,
+  });
+
+  const { data: addresses } = useQuery<UserAddress[]>({
+    queryKey: ["/api/user/addresses"],
+    enabled: !!user?.user,
+  });
 
   const form = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
-      customerName: "",
-      customerEmail: "",
-      customerPhone: "",
+      customerName: user?.user?.name || "",
+      customerEmail: user?.user?.email || "",
+      customerPhone: user?.user?.phone || "",
       deliveryAddress: "",
       deliveryCity: "",
       deliveryProvince: "",
       deliveryPostalCode: "",
     },
+    values: user?.user ? {
+      customerName: user.user.name,
+      customerEmail: user.user.email,
+      customerPhone: user.user.phone || "",
+      deliveryAddress: "",
+      deliveryCity: "",
+      deliveryProvince: "",
+      deliveryPostalCode: "",
+    } : undefined,
   });
+
+  const handleAddressSelect = (addressId: string) => {
+    setSelectedAddressId(addressId);
+    const address = addresses?.find((a) => a.id === addressId);
+    if (address) {
+      form.setValue("deliveryAddress", address.addressLine);
+      form.setValue("deliveryCity", address.city);
+      form.setValue("deliveryProvince", address.province);
+      form.setValue("deliveryPostalCode", address.postalCode);
+    }
+  };
 
   const createOrderMutation = useMutation({
     mutationFn: async (data: CheckoutFormData) => {
@@ -97,7 +130,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2">Your cart is empty</h1>
           <p className="text-muted-foreground mb-4">Add some products to checkout</p>
-          <Button onClick={() => navigate("/products")}>Browse Products</Button>
+          <Button onClick={() => navigate("/products")} data-testid="button-browse-products">Browse Products</Button>
         </div>
       </div>
     );
@@ -122,6 +155,27 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                 <CardTitle>Delivery Information</CardTitle>
               </CardHeader>
               <CardContent>
+                {addresses && addresses.length > 0 && (
+                  <div className="mb-6">
+                    <label className="text-sm font-medium mb-2 block">
+                      <MapPin className="h-4 w-4 inline mr-1" />
+                      Use Saved Address
+                    </label>
+                    <Select value={selectedAddressId} onValueChange={handleAddressSelect}>
+                      <SelectTrigger data-testid="select-saved-address">
+                        <SelectValue placeholder="Select a saved address" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {addresses.map((address) => (
+                          <SelectItem key={address.id} value={address.id} data-testid={`select-item-address-${address.id}`}>
+                            {address.addressLine}, {address.city} ({address.isDefault ? "Default" : "Saved"})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit((data) => createOrderMutation.mutate(data))} className="space-y-6">
                     <FormField
@@ -210,15 +264,15 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="Gauteng">Gauteng</SelectItem>
-                                <SelectItem value="Western Cape">Western Cape</SelectItem>
-                                <SelectItem value="KwaZulu-Natal">KwaZulu-Natal</SelectItem>
-                                <SelectItem value="Eastern Cape">Eastern Cape</SelectItem>
-                                <SelectItem value="Free State">Free State</SelectItem>
-                                <SelectItem value="Limpopo">Limpopo</SelectItem>
-                                <SelectItem value="Mpumalanga">Mpumalanga</SelectItem>
-                                <SelectItem value="Northern Cape">Northern Cape</SelectItem>
-                                <SelectItem value="North West">North West</SelectItem>
+                                <SelectItem value="Gauteng" data-testid="select-item-province-gauteng">Gauteng</SelectItem>
+                                <SelectItem value="Western Cape" data-testid="select-item-province-western-cape">Western Cape</SelectItem>
+                                <SelectItem value="KwaZulu-Natal" data-testid="select-item-province-kwazulu-natal">KwaZulu-Natal</SelectItem>
+                                <SelectItem value="Eastern Cape" data-testid="select-item-province-eastern-cape">Eastern Cape</SelectItem>
+                                <SelectItem value="Free State" data-testid="select-item-province-free-state">Free State</SelectItem>
+                                <SelectItem value="Limpopo" data-testid="select-item-province-limpopo">Limpopo</SelectItem>
+                                <SelectItem value="Mpumalanga" data-testid="select-item-province-mpumalanga">Mpumalanga</SelectItem>
+                                <SelectItem value="Northern Cape" data-testid="select-item-province-northern-cape">Northern Cape</SelectItem>
+                                <SelectItem value="North West" data-testid="select-item-province-north-west">North West</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />

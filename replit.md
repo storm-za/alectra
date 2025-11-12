@@ -8,6 +8,20 @@ Alectra Solutions is a B2B/B2C eCommerce platform specializing in security and a
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+**November 12, 2025 - Customer Account Features (Task 3)**
+- Added user_addresses table for saving delivery addresses
+- Implemented full address CRUD: GET/POST/PATCH/DELETE /api/user/addresses
+- Added GET /api/user/orders endpoint to retrieve user order history with items
+- Created Account page (/account) with three tabs:
+  - Profile: Display user information (name, email, phone)
+  - Order History: Show all orders with status badges, items, and delivery details
+  - Saved Addresses: Full CRUD operations with default address support
+- Updated Checkout page to pre-fill user data and show saved address selector
+- Added "My Account" link to Header user dropdown
+- All address operations validate user ownership for security
+
 ## System Architecture
 
 ### Frontend Architecture

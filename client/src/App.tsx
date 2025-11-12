@@ -14,6 +14,7 @@ import CategoryPage from "@/pages/CategoryPage";
 import Checkout from "@/pages/Checkout";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import Account from "@/pages/Account";
 import NotFound from "@/pages/not-found";
 import { useToast } from "@/hooks/use-toast";
 import type { Product, CartItem } from "@shared/schema";
@@ -90,6 +91,9 @@ function Router() {
           </Route>
           <Route path="/register">
             <Register />
+          </Route>
+          <Route path="/account">
+            <Account />
           </Route>
           <Route component={NotFound} />
         </Switch>

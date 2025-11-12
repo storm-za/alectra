@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { createOrderRequestSchema, registerSchema, loginSchema } from "@shared/schema";
+import { createOrderRequestSchema, registerSchema, loginSchema, insertUserAddressSchema } from "@shared/schema";
 import { hashPassword, verifyPassword, requireAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -110,6 +110,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
           role: user.role,
         }
       });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // User Addresses (Protected)
+  app.get("/api/user/addresses", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const addresses = await storage.getUserAddresses(userId);
+      res.json(addresses);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/user/addresses", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const validatedData = insertUserAddressSchema.parse(req.body);
+      const address = await storage.createUserAddress(userId, validatedData);
+      res.status(201).json(address);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.patch("/api/user/addresses/:id", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const { id } = req.params;
+      const validatedData = insertUserAddressSchema.partial().parse(req.body);
+      const address = await storage.updateUserAddress(id, userId, validatedData);
+      
+      if (!address) {
+        return res.status(404).json({ message: "Address not found" });
+      }
+      
+      res.json(address);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/user/addresses/:id", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const { id } = req.params;
+      const deleted = await storage.deleteUserAddress(id, userId);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Address not found" });
+      }
+      
+      res.json({ message: "Address deleted successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // User Orders (Protected)
+  app.get("/api/user/orders", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const orders = await storage.getUserOrders(userId);
+      res.json(orders);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
