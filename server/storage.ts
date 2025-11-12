@@ -70,6 +70,78 @@ export class DatabaseStorage implements IStorage {
     return product;
   }
 
+  async searchProducts(params: {
+    search?: string;
+    brand?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    categorySlug?: string;
+    sort?: 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc' | 'newest';
+  }): Promise<Product[]> {
+    const conditions = [];
+
+    if (params.search) {
+      conditions.push(
+        or(
+          like(products.name, `%${params.search}%`),
+          like(products.description, `%${params.search}%`)
+        )
+      );
+    }
+
+    if (params.brand) {
+      conditions.push(eq(products.brand, params.brand));
+    }
+
+    if (params.minPrice !== undefined) {
+      conditions.push(sql`CAST(${products.price} AS DECIMAL) >= ${params.minPrice}`);
+    }
+
+    if (params.maxPrice !== undefined) {
+      conditions.push(sql`CAST(${products.price} AS DECIMAL) <= ${params.maxPrice}`);
+    }
+
+    if (params.categorySlug) {
+      const category = await this.getCategoryBySlug(params.categorySlug);
+      if (category) {
+        conditions.push(eq(products.categoryId, category.id));
+      }
+    }
+
+    let query = db.select().from(products);
+
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions)) as any;
+    }
+
+    switch (params.sort) {
+      case 'price-asc':
+        query = query.orderBy(sql`CAST(${products.price} AS DECIMAL) ASC`) as any;
+        break;
+      case 'price-desc':
+        query = query.orderBy(sql`CAST(${products.price} AS DECIMAL) DESC`) as any;
+        break;
+      case 'name-asc':
+        query = query.orderBy(asc(products.name)) as any;
+        break;
+      case 'name-desc':
+        query = query.orderBy(desc(products.name)) as any;
+        break;
+      case 'newest':
+        query = query.orderBy(desc(products.createdAt)) as any;
+        break;
+      default:
+        query = query.orderBy(asc(products.name)) as any;
+    }
+
+    return await query;
+  }
+
+  async getAllBrands(): Promise<string[]> {
+    const result = await db.selectDistinct({ brand: products.brand }).from(products).orderBy(asc(products.brand));
+    return result.map(r => r.brand);
+  }
+
   // Orders
   async createOrderWithItems(request: CreateOrderRequest): Promise<{ order: Order; items: OrderItem[] }> {
     return await db.transaction(async (tx) => {
