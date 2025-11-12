@@ -76,8 +76,8 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2">Category not found</h1>
-          <Link href="/">
-            <a className="text-primary hover:underline">Back to home</a>
+          <Link href="/" className="text-primary hover:underline">
+            Back to home
           </Link>
         </div>
       </div>
@@ -87,11 +87,9 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
-        <Link href="/">
-          <a className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
-            <ChevronLeft className="h-4 w-4" />
-            Back to Home
-          </a>
+        <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
+          <ChevronLeft className="h-4 w-4" />
+          Back to Home
         </Link>
 
         <div className="mb-8">
