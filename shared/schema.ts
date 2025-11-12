@@ -1,8 +1,20 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, integer, decimal, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, decimal, boolean, timestamp, pgEnum } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+
+export const userRoleEnum = pgEnum("user_role", ["customer", "installer", "admin"]);
+
+export const users = pgTable("users", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  name: text("name").notNull(),
+  phone: text("phone"),
+  role: userRoleEnum("role").notNull().default("customer"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
 
 export const categories = pgTable("categories", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -32,6 +44,7 @@ export const products = pgTable("products", {
 
 export const orders = pgTable("orders", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id),
   customerName: text("customer_name").notNull(),
   customerEmail: text("customer_email").notNull(),
   customerPhone: text("customer_phone").notNull(),
@@ -55,6 +68,10 @@ export const orderItems = pgTable("order_items", {
   lineSubtotal: decimal("line_subtotal", { precision: 10, scale: 2 }).notNull(),
 });
 
+export const usersRelations = relations(users, ({ many }) => ({
+  orders: many(orders),
+}));
+
 export const productsRelations = relations(products, ({ one }) => ({
   category: one(categories, {
     fields: [products.categoryId],
@@ -66,7 +83,11 @@ export const categoriesRelations = relations(categories, ({ many }) => ({
   products: many(products),
 }));
 
-export const ordersRelations = relations(orders, ({ many }) => ({
+export const ordersRelations = relations(orders, ({ one, many }) => ({
+  user: one(users, {
+    fields: [orders.userId],
+    references: [users.id],
+  }),
   items: many(orderItems),
 }));
 
@@ -80,6 +101,11 @@ export const orderItemsRelations = relations(orderItems, ({ one }) => ({
     references: [products.id],
   }),
 }));
+
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+});
 
 export const insertCategorySchema = createInsertSchema(categories).omit({
   id: true,
@@ -97,11 +123,15 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
   vat: true,
   total: true,
   status: true,
+  userId: true,
 });
 
 export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
   id: true,
 });
+
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
 
 export type Category = typeof categories.$inferSelect;
 export type InsertCategory = z.infer<typeof insertCategorySchema>;
@@ -128,3 +158,19 @@ export const createOrderRequestSchema = insertOrderSchema.extend({
 });
 
 export type CreateOrderRequest = z.infer<typeof createOrderRequestSchema>;
+
+export const registerSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  phone: z.string().optional(),
+});
+
+export type RegisterData = z.infer<typeof registerSchema>;
+
+export const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export type LoginData = z.infer<typeof loginSchema>;

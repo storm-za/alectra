@@ -1,9 +1,20 @@
-import { ShoppingCart, Phone, Menu, X } from "lucide-react";
+import { ShoppingCart, Phone, Menu, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Link } from "wouter";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Link, useLocation } from "wouter";
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 interface HeaderProps {
   cartItemCount: number;
@@ -12,6 +23,38 @@ interface HeaderProps {
 
 export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [, navigate] = useLocation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: authData } = useQuery<{ user: any | null }>({
+    queryKey: ["/api/auth/me"],
+    retry: false,
+  });
+
+  const user = authData?.user;
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("POST", "/api/auth/logout", {});
+    },
+    onSuccess: () => {
+      queryClient.setQueryData(["/api/auth/me"], { user: null });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      toast({
+        title: "Success",
+        description: "Logged out successfully",
+      });
+      navigate("/");
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Logout failed",
+        variant: "destructive",
+      });
+    },
+  });
 
   const navigation = [
     { name: "Shop All", href: "/products" },
@@ -62,8 +105,39 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
             ))}
           </nav>
 
-          {/* Cart and mobile menu */}
+          {/* Actions */}
           <div className="flex items-center gap-2">
+            {/* User menu */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" data-testid="button-user-menu">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>
+                    {user?.name}
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => logoutMutation.mutate()}
+                    data-testid="button-logout"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link href="/login">
+                <Button variant="ghost" size="sm" data-testid="button-login-header">
+                  Login
+                </Button>
+              </Link>
+            )}
+
+            {/* Cart button */}
             <Button
               variant="ghost"
               size="icon"
@@ -101,6 +175,37 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
                       {item.name}
                     </Link>
                   ))}
+                  {user ? (
+                    <>
+                      <div className="border-t pt-4 mt-2 text-sm text-muted-foreground px-3">
+                        {user?.name}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        className="justify-start"
+                        onClick={() => {
+                          logoutMutation.mutate();
+                          setMobileMenuOpen(false);
+                        }}
+                        data-testid="button-logout-mobile"
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Logout
+                      </Button>
+                    </>
+                  ) : (
+                    <Link href="/login">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start"
+                        onClick={() => setMobileMenuOpen(false)}
+                        data-testid="button-login-mobile"
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        Login
+                      </Button>
+                    </Link>
+                  )}
                 </nav>
               </SheetContent>
             </Sheet>

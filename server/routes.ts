@@ -1,9 +1,120 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { createOrderRequestSchema } from "@shared/schema";
+import { createOrderRequestSchema, registerSchema, loginSchema } from "@shared/schema";
+import { hashPassword, verifyPassword, requireAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Auth routes
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const validatedData = registerSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(validatedData.email);
+      if (existingUser) {
+        return res.status(400).json({ message: "Email already registered" });
+      }
+
+      // Hash password
+      const passwordHash = await hashPassword(validatedData.password);
+
+      // Create user
+      const user = await storage.createUser({
+        email: validatedData.email,
+        passwordHash,
+        name: validatedData.name,
+        phone: validatedData.phone || null,
+        role: "customer",
+      });
+
+      // Set session
+      (req.session as any).userId = user.id;
+      (req.session as any).userEmail = user.email;
+      (req.session as any).userName = user.name;
+      (req.session as any).userRole = user.role;
+
+      res.status(201).json({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const validatedData = loginSchema.parse(req.body);
+
+      // Find user
+      const user = await storage.getUserByEmail(validatedData.email);
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      // Verify password
+      const isValid = await verifyPassword(validatedData.password, user.passwordHash);
+      if (!isValid) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      // Set session
+      (req.session as any).userId = user.id;
+      (req.session as any).userEmail = user.email;
+      (req.session as any).userName = user.name;
+      (req.session as any).userRole = user.role;
+
+      res.json({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Logout failed" });
+      }
+      res.json({ message: "Logged out successfully" });
+    });
+  });
+
+  app.get("/api/auth/me", async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      
+      if (!userId) {
+        return res.json({ user: null });
+      }
+
+      const user = await storage.getUserById(userId);
+      
+      if (!user) {
+        return res.json({ user: null });
+      }
+
+      res.json({
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          phone: user.phone,
+          role: user.role,
+        }
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Categories
   app.get("/api/categories", async (req, res) => {
     try {
@@ -93,7 +204,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/orders", async (req, res) => {
     try {
       const validatedData = createOrderRequestSchema.parse(req.body);
-      const result = await storage.createOrderWithItems(validatedData);
+      const userId = (req.session as any).userId || undefined;
+      const result = await storage.createOrderWithItems(validatedData, userId);
       res.status(201).json(result);
     } catch (error: any) {
       const statusCode = error.message.includes("stock") || error.message.includes("not found") ? 400 : 500;

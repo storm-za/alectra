@@ -1,8 +1,13 @@
-import { products, categories, orders, orderItems, type Product, type Category, type Order, type OrderItem, type InsertProduct, type InsertCategory, type CreateOrderRequest } from "@shared/schema";
+import { products, categories, orders, orderItems, users, type Product, type Category, type Order, type OrderItem, type User, type InsertProduct, type InsertCategory, type InsertUser, type CreateOrderRequest } from "@shared/schema";
 import { db } from "./db";
 import { eq, sql, and, or, like, gte, lte, asc, desc } from "drizzle-orm";
 
 export interface IStorage {
+  // Users
+  createUser(user: InsertUser): Promise<User>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  getUserById(id: string): Promise<User | undefined>;
+
   // Categories
   getAllCategories(): Promise<Category[]>;
   getCategoryBySlug(slug: string): Promise<Category | undefined>;
@@ -25,10 +30,26 @@ export interface IStorage {
   createProduct(product: InsertProduct): Promise<Product>;
 
   // Orders
-  createOrderWithItems(request: CreateOrderRequest): Promise<{ order: Order; items: OrderItem[] }>;
+  createOrderWithItems(request: CreateOrderRequest, userId?: string): Promise<{ order: Order; items: OrderItem[] }>;
 }
 
 export class DatabaseStorage implements IStorage {
+  // Users
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async getUserById(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
   // Categories
   async getAllCategories(): Promise<Category[]> {
     return await db.select().from(categories);
@@ -143,7 +164,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Orders
-  async createOrderWithItems(request: CreateOrderRequest): Promise<{ order: Order; items: OrderItem[] }> {
+  async createOrderWithItems(request: CreateOrderRequest, userId?: string): Promise<{ order: Order; items: OrderItem[] }> {
     return await db.transaction(async (tx) => {
       // 1. Fetch all products and validate stock
       const productIds = request.items.map(item => item.productId);
@@ -191,6 +212,7 @@ export class DatabaseStorage implements IStorage {
       // 4. Create the order with server-controlled status
       const [createdOrder] = await tx.insert(orders).values({
         ...request,
+        userId: userId || null,
         subtotal: subtotal.toFixed(2),
         vat: vat.toFixed(2),
         total: total.toFixed(2),
