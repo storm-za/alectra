@@ -14,23 +14,23 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Company</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/about">
-                  <a className="hover:text-white transition-colors">About Us</a>
+                <Link href="/about" className="hover:text-white transition-colors">
+                  About Us
                 </Link>
               </li>
               <li>
-                <Link href="/contact">
-                  <a className="hover:text-white transition-colors">Contact</a>
+                <Link href="/contact" className="hover:text-white transition-colors">
+                  Contact
                 </Link>
               </li>
               <li>
-                <Link href="/stores">
-                  <a className="hover:text-white transition-colors">Store Locations</a>
+                <Link href="/stores" className="hover:text-white transition-colors">
+                  Store Locations
                 </Link>
               </li>
               <li>
-                <Link href="/trade">
-                  <a className="hover:text-white transition-colors">Trade Program</a>
+                <Link href="/trade" className="hover:text-white transition-colors">
+                  Trade Program
                 </Link>
               </li>
             </ul>
@@ -41,23 +41,23 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Shop</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/products">
-                  <a className="hover:text-white transition-colors">All Products</a>
+                <Link href="/products" className="hover:text-white transition-colors">
+                  All Products
                 </Link>
               </li>
               <li>
-                <Link href="/category/gate-motors">
-                  <a className="hover:text-white transition-colors">Gate Motors</a>
+                <Link href="/category/gate-motors" className="hover:text-white transition-colors">
+                  Gate Motors
                 </Link>
               </li>
               <li>
-                <Link href="/category/batteries">
-                  <a className="hover:text-white transition-colors">Batteries</a>
+                <Link href="/category/batteries" className="hover:text-white transition-colors">
+                  Batteries
                 </Link>
               </li>
               <li>
-                <Link href="/category/cctv">
-                  <a className="hover:text-white transition-colors">CCTV Systems</a>
+                <Link href="/category/cctv" className="hover:text-white transition-colors">
+                  CCTV Systems
                 </Link>
               </li>
             </ul>
@@ -68,23 +68,23 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Support</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/faq">
-                  <a className="hover:text-white transition-colors">FAQ</a>
+                <Link href="/faq" className="hover:text-white transition-colors">
+                  FAQ
                 </Link>
               </li>
               <li>
-                <Link href="/shipping">
-                  <a className="hover:text-white transition-colors">Shipping Info</a>
+                <Link href="/shipping" className="hover:text-white transition-colors">
+                  Shipping Info
                 </Link>
               </li>
               <li>
-                <Link href="/returns">
-                  <a className="hover:text-white transition-colors">Returns</a>
+                <Link href="/returns" className="hover:text-white transition-colors">
+                  Returns
                 </Link>
               </li>
               <li>
-                <Link href="/privacy">
-                  <a className="hover:text-white transition-colors">Privacy Policy</a>
+                <Link href="/privacy" className="hover:text-white transition-colors">
+                  Privacy Policy
                 </Link>
               </li>
             </ul>

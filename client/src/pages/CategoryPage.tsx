@@ -25,7 +25,7 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
   const [, params] = useRoute("/category/:slug");
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
-  const [brand, setBrand] = useState<string>("");
+  const [brand, setBrand] = useState<string>("all");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [sortBy, setSortBy] = useState<string>("name-asc");
 
@@ -42,7 +42,7 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
     const queryParams = new URLSearchParams();
     if (params?.slug) queryParams.append("categorySlug", params.slug);
     if (search) queryParams.append("search", search);
-    if (brand && brand.trim() !== "") queryParams.append("brand", brand);
+    if (brand && brand !== "all") queryParams.append("brand", brand);
     if (priceRange[0] > 0) queryParams.append("minPrice", priceRange[0].toString());
     if (priceRange[1] < 10000) queryParams.append("maxPrice", priceRange[1].toString());
     if (sortBy) queryParams.append("sort", sortBy);
@@ -64,11 +64,11 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
   const clearFilters = () => {
     setSearch("");
     setSearchInput("");
-    setBrand("");
+    setBrand("all");
     setPriceRange([0, 10000]);
   };
 
-  const hasActiveFilters = search || brand || priceRange[0] > 0 || priceRange[1] < 10000;
+  const hasActiveFilters = search || (brand && brand !== "all") || priceRange[0] > 0 || priceRange[1] < 10000;
   const isLoading = categoryLoading || productsLoading;
 
   if (!isLoading && !category) {
@@ -156,7 +156,7 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
                   <SelectValue placeholder="All Brands" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Brands</SelectItem>
+                  <SelectItem value="all">All Brands</SelectItem>
                   {brands?.map((b) => (
                     <SelectItem key={b} value={b}>
                       {b}

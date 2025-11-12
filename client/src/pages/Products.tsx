@@ -23,7 +23,7 @@ interface ProductsProps {
 export default function Products({ onAddToCart }: ProductsProps) {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
-  const [brand, setBrand] = useState<string>("");
+  const [brand, setBrand] = useState<string>("all");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [sortBy, setSortBy] = useState<string>("name-asc");
 
@@ -34,7 +34,7 @@ export default function Products({ onAddToCart }: ProductsProps) {
   const buildQueryKey = () => {
     const params = new URLSearchParams();
     if (search) params.append("search", search);
-    if (brand && brand.trim() !== "") params.append("brand", brand);
+    if (brand && brand !== "all") params.append("brand", brand);
     if (priceRange[0] > 0) params.append("minPrice", priceRange[0].toString());
     if (priceRange[1] < 10000) params.append("maxPrice", priceRange[1].toString());
     if (sortBy) params.append("sort", sortBy);
@@ -55,12 +55,12 @@ export default function Products({ onAddToCart }: ProductsProps) {
   const clearFilters = () => {
     setSearch("");
     setSearchInput("");
-    setBrand("");
+    setBrand("all");
     setPriceRange([0, 10000]);
     setSortBy("name-asc");
   };
 
-  const hasActiveFilters = search || brand || priceRange[0] > 0 || priceRange[1] < 10000;
+  const hasActiveFilters = search || (brand && brand !== "all") || priceRange[0] > 0 || priceRange[1] < 10000;
 
   return (
     <div className="min-h-screen bg-background">
@@ -118,7 +118,7 @@ export default function Products({ onAddToCart }: ProductsProps) {
                   <SelectValue placeholder="All Brands" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Brands</SelectItem>
+                  <SelectItem value="all">All Brands</SelectItem>
                   {brands?.map((b) => (
                     <SelectItem key={b} value={b}>
                       {b}

@@ -18,40 +18,36 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   return (
     <Card className="group overflow-hidden hover-elevate active-elevate-2 flex flex-col h-full" data-testid={`card-product-${product.id}`}>
       <Link href={`/product/${product.slug}`}>
-        <a>
-          <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-            {product.featured && (
-              <Badge className="absolute top-3 left-3" data-testid="badge-featured">
-                Featured
-              </Badge>
-            )}
-            {isLowStock && !isOutOfStock && (
-              <Badge variant="destructive" className="absolute top-3 right-3" data-testid="badge-low-stock">
-                Low Stock
-              </Badge>
-            )}
-            {isOutOfStock && (
-              <Badge variant="secondary" className="absolute top-3 right-3" data-testid="badge-out-of-stock">
-                Out of Stock
-              </Badge>
-            )}
-          </div>
-        </a>
+        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+          <img
+            src={product.imageUrl}
+            alt={product.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          {product.featured && (
+            <Badge className="absolute top-3 left-3" data-testid="badge-featured">
+              Featured
+            </Badge>
+          )}
+          {isLowStock && !isOutOfStock && (
+            <Badge variant="destructive" className="absolute top-3 right-3" data-testid="badge-low-stock">
+              Low Stock
+            </Badge>
+          )}
+          {isOutOfStock && (
+            <Badge variant="secondary" className="absolute top-3 right-3" data-testid="badge-out-of-stock">
+              Out of Stock
+            </Badge>
+          )}
+        </div>
       </Link>
 
       <CardContent className="flex-1 p-4 space-y-2">
         <div className="text-xs text-muted-foreground font-medium">{product.brand}</div>
         <Link href={`/product/${product.slug}`}>
-          <a>
-            <h3 className="font-semibold text-base line-clamp-2 hover:text-primary transition-colors" data-testid={`text-product-name-${product.id}`}>
-              {product.name}
-            </h3>
-          </a>
+          <h3 className="font-semibold text-base line-clamp-2 hover:text-primary transition-colors" data-testid={`text-product-name-${product.id}`}>
+            {product.name}
+          </h3>
         </Link>
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold text-foreground" data-testid={`text-price-${product.id}`}>
@@ -62,16 +58,14 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
       </CardContent>
 
       <CardFooter className="p-4 pt-0 flex gap-2">
-        <Link href={`/product/${product.slug}`}>
-          <a className="flex-1">
-            <Button 
-              variant="outline" 
-              className="w-full"
-              data-testid={`button-view-details-${product.id}`}
-            >
-              View Details
-            </Button>
-          </a>
+        <Link href={`/product/${product.slug}`} className="flex-1">
+          <Button 
+            variant="outline" 
+            className="w-full"
+            data-testid={`button-view-details-${product.id}`}
+          >
+            View Details
+          </Button>
         </Link>
         <Button
           onClick={(e) => {
