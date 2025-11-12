@@ -1,0 +1,92 @@
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import ProductCard from "@/components/ProductCard";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { Product } from "@shared/schema";
+
+interface ProductsProps {
+  onAddToCart: (product: Product) => void;
+}
+
+export default function Products({ onAddToCart }: ProductsProps) {
+  const [sortBy, setSortBy] = useState("name");
+
+  const { data: products, isLoading } = useQuery<Product[]>({
+    queryKey: ["/api/products"],
+  });
+
+  const sortedProducts = products
+    ? [...products].sort((a, b) => {
+        if (sortBy === "price-asc") {
+          return parseFloat(a.price) - parseFloat(b.price);
+        } else if (sortBy === "price-desc") {
+          return parseFloat(b.price) - parseFloat(a.price);
+        } else {
+          return a.name.localeCompare(b.name);
+        }
+      })
+    : [];
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
+              All Products
+            </h1>
+            <p className="text-muted-foreground">
+              {products?.length || 0} products available
+            </p>
+          </div>
+
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-48" data-testid="select-sort">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name">Name (A-Z)</SelectItem>
+              <SelectItem value="price-asc">Price (Low to High)</SelectItem>
+              <SelectItem value="price-desc">Price (High to Low)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Products Grid */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="space-y-3">
+                <Skeleton className="h-48 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+            ))}
+          </div>
+        ) : sortedProducts.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">No products found</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {sortedProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onAddToCart={onAddToCart}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

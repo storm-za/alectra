@@ -1,38 +1,139 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { products, categories, orders, orderItems, type Product, type Category, type Order, type OrderItem, type InsertProduct, type InsertCategory, type CreateOrderRequest } from "@shared/schema";
+import { db } from "./db";
+import { eq, sql } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  // Categories
+  getAllCategories(): Promise<Category[]>;
+  getCategoryBySlug(slug: string): Promise<Category | undefined>;
+  createCategory(category: InsertCategory): Promise<Category>;
+
+  // Products
+  getAllProducts(): Promise<Product[]>;
+  getFeaturedProducts(): Promise<Product[]>;
+  getProductBySlug(slug: string): Promise<Product | undefined>;
+  getProductsByCategorySlug(categorySlug: string): Promise<Product[]>;
+  createProduct(product: InsertProduct): Promise<Product>;
+
+  // Orders
+  createOrderWithItems(request: CreateOrderRequest): Promise<{ order: Order; items: OrderItem[] }>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DatabaseStorage implements IStorage {
+  // Categories
+  async getAllCategories(): Promise<Category[]> {
+    return await db.select().from(categories);
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getCategoryBySlug(slug: string): Promise<Category | undefined> {
+    const [category] = await db.select().from(categories).where(eq(categories.slug, slug));
+    return category || undefined;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async createCategory(insertCategory: InsertCategory): Promise<Category> {
+    const [category] = await db.insert(categories).values(insertCategory).returning();
+    return category;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  // Products
+  async getAllProducts(): Promise<Product[]> {
+    return await db.select().from(products);
+  }
+
+  async getFeaturedProducts(): Promise<Product[]> {
+    return await db.select().from(products).where(eq(products.featured, true));
+  }
+
+  async getProductBySlug(slug: string): Promise<Product | undefined> {
+    const [product] = await db.select().from(products).where(eq(products.slug, slug));
+    return product || undefined;
+  }
+
+  async getProductsByCategorySlug(categorySlug: string): Promise<Product[]> {
+    const category = await this.getCategoryBySlug(categorySlug);
+    if (!category) return [];
+    
+    return await db.select().from(products).where(eq(products.categoryId, category.id));
+  }
+
+  async createProduct(insertProduct: InsertProduct): Promise<Product> {
+    const [product] = await db.insert(products).values(insertProduct).returning();
+    return product;
+  }
+
+  // Orders
+  async createOrderWithItems(request: CreateOrderRequest): Promise<{ order: Order; items: OrderItem[] }> {
+    return await db.transaction(async (tx) => {
+      // 1. Fetch all products and validate stock
+      const productIds = request.items.map(item => item.productId);
+      const fetchedProducts = await tx.select().from(products).where(
+        sql`${products.id} = ANY(${productIds})`
+      );
+
+      if (fetchedProducts.length !== request.items.length) {
+        throw new Error("One or more products not found");
+      }
+
+      // Create a map for easy lookup
+      const productMap = new Map(fetchedProducts.map(p => [p.id, p]));
+
+      // 2. Validate stock and calculate totals
+      let subtotal = 0;
+      const itemsToCreate: Array<{ productId: string; quantity: number; priceAtPurchase: string; lineSubtotal: string }> = [];
+
+      for (const item of request.items) {
+        const product = productMap.get(item.productId);
+        if (!product) {
+          throw new Error(`Product ${item.productId} not found`);
+        }
+
+        if (product.stock < item.quantity) {
+          throw new Error(`Insufficient stock for product: ${product.name}. Available: ${product.stock}, requested: ${item.quantity}`);
+        }
+
+        const price = parseFloat(product.price);
+        const lineSubtotal = price * item.quantity;
+        subtotal += lineSubtotal;
+
+        itemsToCreate.push({
+          productId: product.id,
+          quantity: item.quantity,
+          priceAtPurchase: product.price,
+          lineSubtotal: lineSubtotal.toFixed(2),
+        });
+      }
+
+      // 3. Calculate VAT and total (15% VAT)
+      const vat = subtotal * 0.15;
+      const total = subtotal + vat;
+
+      // 4. Create the order with server-controlled status
+      const [createdOrder] = await tx.insert(orders).values({
+        ...request,
+        subtotal: subtotal.toFixed(2),
+        vat: vat.toFixed(2),
+        total: total.toFixed(2),
+        status: "pending",
+      }).returning();
+
+      // 5. Create order items
+      const createdItems = await tx.insert(orderItems).values(
+        itemsToCreate.map(item => ({
+          ...item,
+          orderId: createdOrder.id,
+        }))
+      ).returning();
+
+      // 6. Decrement stock for each product
+      for (const item of request.items) {
+        await tx.update(products)
+          .set({ stock: sql`${products.stock} - ${item.quantity}` })
+          .where(eq(products.id, item.productId));
+      }
+
+      return { order: createdOrder, items: createdItems };
+    });
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

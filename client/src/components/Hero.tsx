@@ -1,0 +1,101 @@
+import { Button } from "@/components/ui/button";
+import { ShieldCheck, Truck, Wrench, Headset } from "lucide-react";
+
+export default function Hero() {
+  const scrollToCategories = () => {
+    document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return (
+    <div className="relative">
+      {/* Hero section with gradient overlay */}
+      <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE0YzMuMzEgMCA2LTIuNjkgNi02cy0yLjY5LTYtNi02LTYgMi42OS02IDYgMi42OSA2IDYgNnpNNiAzNGMzLjMxIDAgNi0yLjY5IDYtNnMtMi42OS02LTYtNi02IDIuNjktNiA2IDIuNjkgNiA2IDZ6TTM2IDU0YzMuMzEgMCA2LTIuNjkgNi02cy0yLjY5LTYtNi02LTYgMi42OS02IDYgMi42OSA2IDYgNnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-40"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-20 md:py-32 relative">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6">
+              South Africa's Trusted Security Store
+            </h1>
+            <p className="text-lg md:text-xl text-slate-200 mb-8 max-w-2xl mx-auto">
+              Gate Motors, Remotes, Batteries, CCTV Systems & More. Delivered Nationwide with Expert Support.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+              <Button 
+                size="lg" 
+                className="text-base font-semibold min-w-[180px]"
+                onClick={scrollToCategories}
+                data-testid="button-shop-now"
+              >
+                Shop Now
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="text-base font-semibold min-w-[180px] bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+                data-testid="button-request-quote"
+              >
+                Request Quote
+              </Button>
+            </div>
+
+            {/* Trust badge */}
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm">
+              <span className="text-yellow-400">★★★★★</span>
+              <span className="font-medium">4.5 Google Rating</span>
+              <span className="text-white/70">· 49 Reviews</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Trust badges */}
+      <div className="border-b bg-background">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-12">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <ShieldCheck className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-sm md:text-base">Secure Shopping</h3>
+                <p className="text-xs md:text-sm text-muted-foreground mt-1">SSL encrypted checkout</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Truck className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-sm md:text-base">Nationwide Delivery</h3>
+                <p className="text-xs md:text-sm text-muted-foreground mt-1">Via The Courier Guy</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Wrench className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-sm md:text-base">Installer-Grade</h3>
+                <p className="text-xs md:text-sm text-muted-foreground mt-1">Professional equipment</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Headset className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-sm md:text-base">Expert Support</h3>
+                <p className="text-xs md:text-sm text-muted-foreground mt-1">Technical advice available</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
