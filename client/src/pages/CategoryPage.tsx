@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, Search, X } from "lucide-react";
+import { ChevronLeft, Search, X, Filter, ChevronDown, ChevronUp } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -28,6 +28,7 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
   const [brand, setBrand] = useState<string>("all");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [sortBy, setSortBy] = useState<string>("name-asc");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const { data: category, isLoading: categoryLoading } = useQuery<Category>({
     queryKey: ["/api/categories", params?.slug],
@@ -110,24 +111,51 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
           )}
         </div>
 
+        {/* Filter Toggle Button */}
+        <div className="mb-6">
+          <Button
+            variant="outline"
+            onClick={() => setFiltersOpen(!filtersOpen)}
+            className="w-full sm:w-auto"
+            data-testid="button-toggle-filters"
+          >
+            <Filter className="h-4 w-4 mr-2" />
+            {filtersOpen ? 'Hide Filters' : 'Show Filters'}
+            {filtersOpen ? <ChevronUp className="h-4 w-4 ml-2" /> : <ChevronDown className="h-4 w-4 ml-2" />}
+          </Button>
+          {hasActiveFilters && !filtersOpen && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearFilters}
+              className="ml-2"
+              data-testid="button-clear-filters-compact"
+            >
+              <X className="h-4 w-4 mr-1" />
+              Clear Filters
+            </Button>
+          )}
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Filters Sidebar */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Filters</h2>
-              {hasActiveFilters && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="h-8 px-2"
-                  data-testid="button-clear-filters"
-                >
-                  <X className="h-4 w-4 mr-1" />
-                  Clear
-                </Button>
-              )}
-            </div>
+          {filtersOpen && (
+            <div className="lg:col-span-1 space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Filters</h2>
+                {hasActiveFilters && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearFilters}
+                    className="h-8 px-2"
+                    data-testid="button-clear-filters"
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Clear
+                  </Button>
+                )}
+              </div>
 
             {/* Search */}
             <div className="space-y-2">
@@ -200,9 +228,10 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
               </Select>
             </div>
           </div>
+          )}
 
           {/* Products Grid */}
-          <div className="lg:col-span-3">
+          <div className={filtersOpen ? "lg:col-span-3" : "lg:col-span-4"}>
             {isLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[...Array(9)].map((_, i) => (
