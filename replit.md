@@ -10,9 +10,11 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**November 12, 2025 - Product Migration Complete (117 Products)**
-- Successfully migrated 117 products from old alectra.co.za website
+**November 12, 2025 - Complete Product Migration (117 Products)**
+- Successfully migrated all 117 products from old alectra.co.za website
 - Downloaded and stored all 117 product images locally in attached_assets/products/
+- All product descriptions updated to match old website content exactly
+- Implemented expandable "read more..." feature for descriptions over 200 characters
 - Products distributed across 8 categories:
   - Gate Motor Kits: 43 products (brackets, PCBs, chargers, accessories)
   - Gate Motors: 23 products (Centurion, E.T Nice, Gemini, Dace)
@@ -22,9 +24,10 @@ Preferred communication style: Simple, everyday language.
   - Batteries: 8 products (12V, 24V, lithium, gel batteries)
   - LP Gas: 3 products (9kg, 19kg, 48kg cylinders)
   - Electric Fencing: 3 products (beams, springs, warning lights)
-- Automated migration script: scripts/migrate-all-products.ts
+- Migration scripts: scripts/migrate-all-products.ts, scripts/update-descriptions.ts
 - Generated unique SKUs for all products (ALEC-XXXX-slug format)
-- Products include proper brands, pricing (R135 - R11,899), and descriptions
+- All products include proper brands, pricing (R135 - R11,899), images, and descriptions
+- Product images served via Express static middleware at /attached_assets route
 
 **November 12, 2025 - Customer Account Features**
 - Added user_addresses table for saving delivery addresses
