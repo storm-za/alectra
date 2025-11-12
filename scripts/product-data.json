@@ -1,0 +1,97 @@
+[
+  {
+    "slug": "4k-solar-powered-security-camera",
+    "name": "4K Solar CCTV Camera",
+    "price": "1099",
+    "compareAtPrice": "1799",
+    "brand": "Andowl",
+    "category": "cctv-systems",
+    "imageUrl": "https://alectra.co.za/cdn/shop/files/andowl-4k-solar-cctv-camera.png?v=1761151419&width=1946",
+    "description": "Experience next-level home and business security with the 4K Solar Powered Security Camera with WiFi and Night Vision. Designed for effortless protection, this camera combines crystal-clear 4K ultra high-definition video with the convenience of solar power, ensuring continuous operation without the need for constant charging or complicated wiring.\n\nEquipped with advanced night vision technology, this camera captures sharp, detailed footage even in complete darkness, giving you peace of mind 24 hours a day. Its built-in WiFi allows for real-time monitoring from your smartphone, tablet, or computer, no matter where you are."
+  },
+  {
+    "slug": "12v-1-4ah-battery",
+    "name": "12V 1.4Ah Battery",
+    "price": "135",
+    "compareAtPrice": "189",
+    "brand": "EPS",
+    "category": "batteries",
+    "imageUrl": "https://alectra.co.za/cdn/shop/files/EPS1214_1.png?v=1732102140&width=1946",
+    "description": "Reliable 12V 1.4Ah sealed lead-acid battery perfect for backup power supplies, alarm systems, gate motors, UPS devices, and more. Maintenance-free battery ensures consistent performance."
+  },
+  {
+    "slug": "12v-2-4ah",
+    "name": "12V 2.4Ah Battery",
+    "price": "160",
+    "compareAtPrice": "199",
+    "brand": "Battery",
+    "category": "batteries",
+    "imageUrl": "https://alectra.co.za/cdn/shop/files/Battery-12V-2.4AH-EACH-L-P05765-FRONT-scaled-1.png?v=1732102145&width=1946",
+    "description": "High-capacity 12V 2.4Ah sealed lead-acid battery for extended run times. Perfect for gate motors, UPS systems, and security applications. Durable construction withstands demanding environments."
+  },
+  {
+    "slug": "12v-7ah",
+    "name": "12V 7AH Battery",
+    "price": "250",
+    "compareAtPrice": "319",
+    "brand": "Battery",
+    "category": "batteries",
+    "imageUrl": "https://alectra.co.za/cdn/shop/files/12v-7ah-battery-backup-power.jpg?v=1741694628&width=1946",
+    "description": "The 12V 7Ah battery is the go-to power source for reliable and consistent performance in critical systems. Built with sealed lead-acid (SLA) technology, this maintenance-free battery is perfect for backup power supplies, alarm systems, gate motors, UPS devices, and more."
+  },
+  {
+    "slug": "12v-7ah-lithium-battery",
+    "name": "12V 8AH LITHIUM BATTERY",
+    "price": "550",
+    "brand": "Lithium",
+    "category": "batteries",
+    "imageUrl": "https://alectra.co.za/cdn/shop/files/lithium-battery-12v-8ah-alectra-solutions.png?v=1733234790&width=1946",
+    "description": "Advanced 12V 8Ah lithium battery offering superior performance and longer lifespan compared to traditional lead-acid batteries. Lightweight, maintenance-free, and ideal for gate motors and security systems."
+  },
+  {
+    "slug": "24v-3-5ah",
+    "name": "24V 3.5AH Battery",
+    "price": "485",
+    "compareAtPrice": "579",
+    "brand": "Battery",
+    "category": "batteries",
+    "imageUrl": "https://alectra.co.za/cdn/shop/files/24v-battery-for-gate-or-garage-motor.png?v=1738318469&width=1946",
+    "description": "High-performance 24V 3.5Ah battery designed for gate and garage motors. Reliable power source with excellent discharge characteristics for demanding automation applications."
+  },
+  {
+    "slug": "9kg-exchange",
+    "name": "9KG LP Gas",
+    "price": "280",
+    "brand": "Gas",
+    "category": "accessories",
+    "imageUrl": "https://alectra.co.za/cdn/shop/files/9kg-lp-gas-exchange-refill.png?v=1739186237&width=1946",
+    "description": "9kg LP Gas Exchange/Refill service. Convenient gas bottle exchange for home and commercial use. Safe and reliable propane gas supply."
+  },
+  {
+    "slug": "19kg-exchange",
+    "name": "19KG LP Gas",
+    "price": "580",
+    "brand": "Gas",
+    "category": "accessories",
+    "imageUrl": "https://alectra.co.za/cdn/shop/files/19kg-lp-gas-exchange-refill.png?v=1739186211&width=1946",
+    "description": "19kg LP Gas Exchange/Refill service. Perfect for medium to large households and businesses. Convenient and safe gas cylinder exchange service."
+  },
+  {
+    "slug": "48kg-exchange",
+    "name": "48KG LP Gas",
+    "price": "1399",
+    "brand": "Gas",
+    "category": "accessories",
+    "imageUrl": "https://alectra.co.za/cdn/shop/files/48kg-lp-gas-exchange-refill.png?v=1739186275&width=1946",
+    "description": "48kg LP Gas Exchange/Refill service. Industrial-grade gas cylinder for commercial and heavy-use applications. Reliable and economical gas supply solution."
+  },
+  {
+    "slug": "centurion-d2-sliding-gate-motor",
+    "name": "Centurion D2 Sliding Gate Motor (discontinued)",
+    "price": "3999",
+    "brand": "Centurion",
+    "category": "gate-motors",
+    "imageUrl": "https://alectra.co.za/cdn/shop/files/centurion-d2-sliding-gate-motor.png?v=1738318875&width=1946",
+    "description": "Centurion D2 sliding gate motor. Discontinued model. Reliable automation for residential sliding gates. Proven technology and performance."
+  }
+]
