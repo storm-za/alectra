@@ -1,6 +1,6 @@
 import { products, categories, orders, orderItems, type Product, type Category, type Order, type OrderItem, type InsertProduct, type InsertCategory, type CreateOrderRequest } from "@shared/schema";
 import { db } from "./db";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, and, or, like, gte, lte, asc, desc } from "drizzle-orm";
 
 export interface IStorage {
   // Categories
@@ -13,6 +13,15 @@ export interface IStorage {
   getFeaturedProducts(): Promise<Product[]>;
   getProductBySlug(slug: string): Promise<Product | undefined>;
   getProductsByCategorySlug(categorySlug: string): Promise<Product[]>;
+  searchProducts(params: {
+    search?: string;
+    brand?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    categorySlug?: string;
+    sort?: 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc' | 'newest';
+  }): Promise<Product[]>;
+  getAllBrands(): Promise<string[]>;
   createProduct(product: InsertProduct): Promise<Product>;
 
   // Orders
