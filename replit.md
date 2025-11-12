@@ -39,9 +39,10 @@ Preferred communication style: Simple, everyday language.
 **Server Framework**: Express.js with TypeScript, running in ESM mode.
 
 **API Design**: RESTful API structure with route handlers organized by resource type:
+- `/api/auth` - User authentication (register, login, logout, me)
 - `/api/categories` - Category listing and detail endpoints
 - `/api/products` - Product catalog with filtering by category and featured status
-- `/api/orders` - Order creation with items
+- `/api/orders` - Order creation with items (supports both authenticated and guest checkout)
 
 **Database Access Layer**: Storage abstraction pattern using an `IStorage` interface implemented by `DatabaseStorage` class. This provides:
 - Clear separation between business logic and data access
@@ -55,7 +56,7 @@ Preferred communication style: Simple, everyday language.
 4. Error handling with appropriate HTTP status codes
 5. Vite development middleware for serving frontend in development
 
-**Session Management**: Uses `connect-pg-simple` for PostgreSQL-backed session storage, though session implementation details are not fully visible in provided code.
+**Session Management**: Uses `connect-pg-simple` for PostgreSQL-backed session storage with express-session middleware configured in server/index.ts. Sessions persist for 30 days with httpOnly, secure (in production), and sameSite=lax cookie settings.
 
 ### Data Storage Solutions
 
@@ -68,9 +69,10 @@ Preferred communication style: Simple, everyday language.
 - Migration support via drizzle-kit
 
 **Schema Design**:
+- `users` - User accounts with email (unique), bcrypt-hashed passwords, name, phone, role (customer/installer/admin)
 - `categories` - Product categorization with slug-based routing and product counts
 - `products` - Full product catalog with pricing, inventory, images, and featured flags
-- `orders` - Customer orders with delivery information and status tracking
+- `orders` - Customer orders with delivery information, status tracking, and optional userId for authenticated purchases
 - `order_items` - Line items linking orders to products with quantities and prices
 
 **Key Design Decisions**:
@@ -82,7 +84,28 @@ Preferred communication style: Simple, everyday language.
 
 ### Authentication and Authorization
 
-No authentication system is currently implemented. The application appears to support anonymous shopping with checkout requiring customer information but not account creation.
+**Implementation**: Full user authentication system implemented with session-based auth using bcrypt password hashing (12 salt rounds) and PostgreSQL-backed sessions.
+
+**Auth Endpoints**:
+- `POST /api/auth/register` - Creates new user account, hashes password, establishes session
+- `POST /api/auth/login` - Verifies credentials, establishes session
+- `POST /api/auth/logout` - Destroys user session
+- `GET /api/auth/me` - Returns current user data or null
+
+**Frontend Pages**:
+- `/login` - Login page with email/password form
+- `/register` - Registration page with full user details
+- Header component displays user menu when authenticated, login button when not
+
+**Security Features**:
+- Bcrypt password hashing with 12 salt rounds
+- Server-side session storage in PostgreSQL
+- HttpOnly cookies with SameSite protection
+- 30-day session lifetime
+- Duplicate email prevention
+- Guest checkout preserved (orders.userId is nullable)
+
+**User Roles**: customer (default), installer, admin (role-based access control ready)
 
 ## External Dependencies
 

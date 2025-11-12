@@ -1,4 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
@@ -15,6 +17,25 @@ app.use(express.json({
   }
 }));
 app.use(express.urlencoded({ extended: false }));
+
+const PgStore = connectPgSimple(session);
+app.use(
+  session({
+    store: new PgStore({
+      conString: process.env.DATABASE_URL,
+      createTableIfMissing: true,
+    }),
+    secret: process.env.SESSION_SECRET || "alectra-solutions-secret-key-change-in-production",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    },
+  })
+);
 
 app.use((req, res, next) => {
   const start = Date.now();
