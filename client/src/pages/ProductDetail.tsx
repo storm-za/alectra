@@ -56,7 +56,10 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const priceWithVAT = (parseFloat(product.price) * 1.15).toFixed(2);
   const isLowStock = product.stock > 0 && product.stock <= 5;
   const isOutOfStock = product.stock === 0;
-  const images = [product.imageUrl, ...(product.images || [])];
+  
+  // Ensure all image URLs start with /
+  const fixImageUrl = (url: string) => url.startsWith('/') ? url : `/${url}`;
+  const images = [product.imageUrl, ...(product.images || [])].map(fixImageUrl);
 
   return (
     <div className="min-h-screen bg-background">

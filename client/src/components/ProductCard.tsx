@@ -15,12 +15,14 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   const isLowStock = product.stock > 0 && product.stock <= 5;
   const isOutOfStock = product.stock === 0;
 
+  const imageUrl = product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`;
+
   return (
     <Card className="group overflow-hidden hover-elevate active-elevate-2 flex flex-col h-full" data-testid={`card-product-${product.id}`}>
       <Link href={`/product/${product.slug}`}>
         <div className="relative aspect-[4/3] overflow-hidden bg-muted">
           <img
-            src={product.imageUrl}
+            src={imageUrl}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
