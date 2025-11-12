@@ -37,6 +37,9 @@ app.use(
   })
 );
 
+// Serve static assets (product images, etc.)
+app.use('/attached_assets', express.static('attached_assets'));
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
