@@ -123,7 +123,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
               )}
             </div>
 
-            <div className="mb-6">
+            <div className="mb-8">
               <div className="flex items-baseline gap-2 mb-1">
                 <span className="text-4xl font-bold" data-testid="text-product-price">
                   R {priceWithVAT}
@@ -131,24 +131,6 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 <span className="text-sm text-muted-foreground">VAT inc.</span>
               </div>
               <p className="text-sm text-muted-foreground">SKU: {product.sku}</p>
-            </div>
-
-            {/* Description with Read More */}
-            <div className="mb-8">
-              <p className="text-muted-foreground">
-                {isDescriptionExpanded || product.description.length <= 200
-                  ? product.description
-                  : `${product.description.slice(0, 200)}...`}
-                {product.description.length > 200 && (
-                  <button
-                    onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-                    className="ml-2 text-primary hover:underline font-medium"
-                    data-testid="button-read-more"
-                  >
-                    {isDescriptionExpanded ? "Read less" : "read more..."}
-                  </button>
-                )}
-              </p>
             </div>
 
             {/* Quantity and Add to Cart */}
@@ -195,7 +177,20 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 <TabsTrigger value="specifications" className="flex-1">Specifications</TabsTrigger>
               </TabsList>
               <TabsContent value="description" className="mt-4">
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{product.description}</p>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                  {isDescriptionExpanded || product.description.length <= 200
+                    ? product.description
+                    : `${product.description.slice(0, 200)}...`}
+                  {product.description.length > 200 && (
+                    <button
+                      onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                      className="ml-2 text-primary hover:underline font-medium"
+                      data-testid="button-read-more"
+                    >
+                      {isDescriptionExpanded ? "Read less" : "read more..."}
+                    </button>
+                  )}
+                </p>
               </TabsContent>
               <TabsContent value="specifications" className="mt-4">
                 {product.specifications ? (
