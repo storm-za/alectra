@@ -10,7 +10,23 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**November 12, 2025 - Customer Account Features (Task 3)**
+**November 12, 2025 - Product Migration Complete (117 Products)**
+- Successfully migrated 117 products from old alectra.co.za website
+- Downloaded and stored all 117 product images locally in attached_assets/products/
+- Products distributed across 8 categories:
+  - Gate Motor Kits: 43 products (brackets, PCBs, chargers, accessories)
+  - Gate Motors: 23 products (Centurion, E.T Nice, Gemini, Dace)
+  - CCTV Systems: 17 products (Hilook cameras, DVRs, power supplies)
+  - Remotes: 11 products (Centurion Nova, Gemini, Sentry, Absolute)
+  - Intercoms: 9 products (Centurion G-Speak, E.T Nice, Kocom)
+  - Batteries: 8 products (12V, 24V, lithium, gel batteries)
+  - LP Gas: 3 products (9kg, 19kg, 48kg cylinders)
+  - Electric Fencing: 3 products (beams, springs, warning lights)
+- Automated migration script: scripts/migrate-all-products.ts
+- Generated unique SKUs for all products (ALEC-XXXX-slug format)
+- Products include proper brands, pricing (R135 - R11,899), and descriptions
+
+**November 12, 2025 - Customer Account Features**
 - Added user_addresses table for saving delivery addresses
 - Implemented full address CRUD: GET/POST/PATCH/DELETE /api/user/addresses
 - Added GET /api/user/orders endpoint to retrieve user order history with items
