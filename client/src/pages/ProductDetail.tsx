@@ -303,11 +303,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                   <div className="flex items-center justify-between flex-wrap gap-3">
                     <div className="flex items-center gap-3">
                       <SiVisa className="h-8 w-auto text-[#1434CB]" />
-                      <SiMastercard className="h-8 w-auto text-[#EB001B]" />
-                      <div className="flex items-center gap-1 px-2 py-1 bg-muted rounded">
-                        <CreditCard className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-xs text-muted-foreground font-medium">EFT</span>
-                      </div>
+                      <SiMastercard className="h-8 w-auto text-[#FF5F00]" />
                     </div>
                     <span className="text-xs text-muted-foreground">Powered by Paystack</span>
                   </div>
