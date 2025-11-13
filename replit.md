@@ -10,6 +10,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**November 13, 2025 - Brand Identity Update**
+- Updated entire site color scheme to match Alectra Solutions brand
+- Primary color: Orange (#FF9800, HSL 36 100% 50%)
+- Accent color: Yellow (#FFEB3B, HSL 54 100% 62%)
+- Applied warm neutral grays (hue 36°) throughout for cohesive branding
+- Updated both light and dark mode color palettes
+- Chart colors updated to brand palette
+- Replaced placeholder logo with actual Alectra Solutions logo (3x size)
+- All UI components automatically inherit brand colors
+
 **November 12, 2025 - Complete Product Migration (117 Products)**
 - Successfully migrated all 117 products from old alectra.co.za website
 - Downloaded and stored all 117 product images locally in attached_assets/products/
