@@ -17,6 +17,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import logoImage from "@assets/Alectra (8)_1763021168076.png";
 
+import Alectra__8__removebg_preview from "@assets/Alectra__8_-removebg-preview.png";
+
 interface HeaderProps {
   cartItemCount: number;
   onCartClick: () => void;
@@ -82,14 +84,13 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
           </div>
         </div>
       </div>
-
       {/* Main header */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center hover-elevate active-elevate-2 rounded-md px-2 py-1 -ml-2" data-testid="link-home-logo">
             <img 
-              src={logoImage} 
+              src={Alectra__8__removebg_preview} 
               alt="Alectra Solutions - The Security Shop" 
               className="h-30 w-auto"
             />
