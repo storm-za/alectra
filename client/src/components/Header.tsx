@@ -91,7 +91,7 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
             <img 
               src={logoImage} 
               alt="Alectra Solutions - The Security Shop" 
-              className="h-10 w-auto"
+              className="h-30 w-auto"
             />
           </Link>
 
