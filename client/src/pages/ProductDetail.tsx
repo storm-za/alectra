@@ -84,7 +84,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
 
   const createReviewMutation = useMutation({
     mutationFn: async (data: z.infer<typeof reviewFormSchema>) => {
-      return await apiRequest(`/api/products/${params?.slug}/reviews`, "POST", data);
+      return await apiRequest("POST", `/api/products/${params?.slug}/reviews`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products", params?.slug, "reviews"] });
@@ -153,11 +153,9 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
         {/* Breadcrumb */}
-        <Link href="/products">
-          <a className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
-            <ChevronLeft className="h-4 w-4" />
-            Back to Products
-          </a>
+        <Link href="/products" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
+          <ChevronLeft className="h-4 w-4" />
+          Back to Products
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
