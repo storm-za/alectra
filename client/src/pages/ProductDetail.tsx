@@ -32,6 +32,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, MessageSquare, Star, Truck, ShieldCheck, CreditCard, Lock } from "lucide-react";
+import { SiVisa, SiMastercard } from "react-icons/si";
 import { StarRating } from "@/components/StarRating";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -300,9 +301,13 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                     <span className="text-sm font-medium">Secure Payment</span>
                   </div>
                   <div className="flex items-center justify-between flex-wrap gap-3">
-                    <div className="flex items-center gap-2">
-                      <CreditCard className="h-5 w-5 text-muted-foreground" />
-                      <span className="text-xs text-muted-foreground">Visa, Mastercard, EFT</span>
+                    <div className="flex items-center gap-3">
+                      <SiVisa className="h-8 w-auto text-[#1434CB]" />
+                      <SiMastercard className="h-8 w-auto text-[#EB001B]" />
+                      <div className="flex items-center gap-1 px-2 py-1 bg-muted rounded">
+                        <CreditCard className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground font-medium">EFT</span>
+                      </div>
                     </div>
                     <span className="text-xs text-muted-foreground">Powered by Paystack</span>
                   </div>
