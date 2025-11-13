@@ -146,9 +146,10 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const isLowStock = product.stock > 0 && product.stock <= 5;
   const isOutOfStock = product.stock === 0;
   
-  // Ensure all image URLs start with /
+  // Ensure all image URLs start with / and remove duplicates
   const fixImageUrl = (url: string) => url.startsWith('/') ? url : `/${url}`;
-  const images = [product.imageUrl, ...(product.images || [])].map(fixImageUrl);
+  const allImages = [product.imageUrl, ...(product.images || [])].map(fixImageUrl);
+  const images = Array.from(new Set(allImages)); // Remove duplicates
 
   return (
     <div className="min-h-screen bg-background">
