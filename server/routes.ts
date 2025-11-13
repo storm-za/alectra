@@ -287,7 +287,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Product not found" });
       }
       
-      const validatedData = insertProductReviewSchema.parse(req.body);
+      // Validate request body (without productId) then add it
+      const reviewFormSchema = insertProductReviewSchema.omit({ productId: true });
+      const validatedData = reviewFormSchema.parse(req.body);
       const review = await storage.createProductReview({
         ...validatedData,
         productId: product.id,

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useRoute, Link } from "wouter";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -7,19 +7,46 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, MessageSquare } from "lucide-react";
+import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, MessageSquare, Star } from "lucide-react";
 import { StarRating } from "@/components/StarRating";
-import type { Product, ProductReview } from "@shared/schema";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { insertProductReviewSchema } from "@shared/schema";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import type { Product, ProductReview, InsertProductReview } from "@shared/schema";
+import { z } from "zod";
 
 interface ProductDetailProps {
   onAddToCart: (product: Product, quantity: number) => void;
 }
+
+// Form schema for review submission
+const reviewFormSchema = insertProductReviewSchema.omit({ productId: true });
 
 export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const [, params] = useRoute("/product/:slug");
@@ -27,6 +54,9 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
+  const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const { toast } = useToast();
 
   const { data: product, isLoading } = useQuery<Product>({
     queryKey: ["/api/products", params?.slug],
@@ -42,6 +72,43 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     queryKey: ["/api/products", params?.slug, "rating"],
     enabled: !!params?.slug,
   });
+
+  const form = useForm<z.infer<typeof reviewFormSchema>>({
+    resolver: zodResolver(reviewFormSchema),
+    defaultValues: {
+      rating: 0,
+      comment: "",
+      authorName: "",
+    },
+  });
+
+  const createReviewMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof reviewFormSchema>) => {
+      return await apiRequest(`/api/products/${params?.slug}/reviews`, "POST", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products", params?.slug, "reviews"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/products", params?.slug, "rating"] });
+      toast({
+        title: "Review submitted!",
+        description: "Thank you for your feedback.",
+      });
+      setIsReviewDialogOpen(false);
+      form.reset();
+      setSelectedRating(0);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to submit review. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmitReview = (data: z.infer<typeof reviewFormSchema>) => {
+    createReviewMutation.mutate(data);
+  };
 
   if (isLoading) {
     return (
@@ -230,15 +297,215 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                   <div className="text-center py-12" data-testid="empty-reviews">
                     <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                     <p className="text-muted-foreground mb-4">No reviews yet</p>
-                    <Button data-testid="button-leave-first-review">Leave the first review</Button>
+                    <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button data-testid="button-leave-first-review">Leave the first review</Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Write a Review</DialogTitle>
+                          <DialogDescription>
+                            Share your experience with this product
+                          </DialogDescription>
+                        </DialogHeader>
+                        <Form {...form}>
+                          <form onSubmit={form.handleSubmit(onSubmitReview)} className="space-y-4">
+                            <FormField
+                              control={form.control}
+                              name="rating"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Rating *</FormLabel>
+                                  <FormControl>
+                                    <div className="flex gap-2">
+                                      {[1, 2, 3, 4, 5].map((star) => (
+                                        <button
+                                          key={star}
+                                          type="button"
+                                          onClick={() => {
+                                            setSelectedRating(star);
+                                            field.onChange(star);
+                                          }}
+                                          className="hover-elevate active-elevate-2 rounded-md p-1"
+                                          data-testid={`button-star-${star}`}
+                                        >
+                                          <Star
+                                            className={`h-8 w-8 ${
+                                              star <= (selectedRating || field.value)
+                                                ? "fill-primary text-primary"
+                                                : "fill-none text-muted-foreground"
+                                            }`}
+                                          />
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="authorName"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Your Name *</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="John Smith" {...field} data-testid="input-author-name" />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="comment"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Comment (Optional)</FormLabel>
+                                  <FormControl>
+                                    <Textarea
+                                      placeholder="Share your thoughts about this product..."
+                                      className="resize-none"
+                                      rows={4}
+                                      {...field}
+                                      value={field.value || ""}
+                                      data-testid="textarea-comment"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <div className="flex gap-2 justify-end">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setIsReviewDialogOpen(false)}
+                                data-testid="button-cancel-review"
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                type="submit"
+                                disabled={createReviewMutation.isPending}
+                                data-testid="button-submit-review"
+                              >
+                                {createReviewMutation.isPending ? "Submitting..." : "Submit Review"}
+                              </Button>
+                            </div>
+                          </form>
+                        </Form>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="text-lg font-semibold">Customer Reviews</h3>
-                      <Button variant="outline" data-testid="button-leave-review">
-                        Leave a Review
-                      </Button>
+                      <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" data-testid="button-leave-review">
+                            Leave a Review
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Write a Review</DialogTitle>
+                            <DialogDescription>
+                              Share your experience with this product
+                            </DialogDescription>
+                          </DialogHeader>
+                          <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmitReview)} className="space-y-4">
+                              <FormField
+                                control={form.control}
+                                name="rating"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Rating *</FormLabel>
+                                    <FormControl>
+                                      <div className="flex gap-2">
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                          <button
+                                            key={star}
+                                            type="button"
+                                            onClick={() => {
+                                              setSelectedRating(star);
+                                              field.onChange(star);
+                                            }}
+                                            className="hover-elevate active-elevate-2 rounded-md p-1"
+                                            data-testid={`button-star-${star}`}
+                                          >
+                                            <Star
+                                              className={`h-8 w-8 ${
+                                                star <= (selectedRating || field.value)
+                                                  ? "fill-primary text-primary"
+                                                  : "fill-none text-muted-foreground"
+                                              }`}
+                                            />
+                                          </button>
+                                        ))}
+                                      </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name="authorName"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Your Name *</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="John Smith" {...field} data-testid="input-author-name" />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name="comment"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Comment (Optional)</FormLabel>
+                                    <FormControl>
+                                      <Textarea
+                                        placeholder="Share your thoughts about this product..."
+                                        className="resize-none"
+                                        rows={4}
+                                        {...field}
+                                        value={field.value || ""}
+                                        data-testid="textarea-comment"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <div className="flex gap-2 justify-end">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  onClick={() => setIsReviewDialogOpen(false)}
+                                  data-testid="button-cancel-review"
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  type="submit"
+                                  disabled={createReviewMutation.isPending}
+                                  data-testid="button-submit-review"
+                                >
+                                  {createReviewMutation.isPending ? "Submitting..." : "Submit Review"}
+                                </Button>
+                              </div>
+                            </form>
+                          </Form>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                     <Carousel
                       opts={{
