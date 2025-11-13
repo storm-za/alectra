@@ -29,7 +29,7 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
             >
               <Card className="group relative overflow-hidden hover-elevate active-elevate-2 h-48 cursor-pointer border">
                 {/* Category image background with gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-blue-900/80 to-slate-900/90">
+                <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-orange-950/80 to-gray-900/90">
                   {category.imageUrl && (
                     <img 
                       src={category.imageUrl} 
