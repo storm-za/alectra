@@ -371,7 +371,9 @@ export class DatabaseStorage implements IStorage {
       .from(productReviews)
       .where(eq(productReviews.productId, productId));
     
-    return result[0]?.avg || 0;
+    // PostgreSQL returns numeric as string, convert to number
+    const avgValue = result[0]?.avg;
+    return typeof avgValue === 'string' ? parseFloat(avgValue) : (avgValue || 0);
   }
 }
 

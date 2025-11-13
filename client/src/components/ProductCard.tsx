@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import { StarRating } from "@/components/StarRating";
 import type { Product } from "@shared/schema";
 
 interface ProductCardProps {
@@ -16,6 +18,11 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   const isOutOfStock = product.stock === 0;
 
   const imageUrl = product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`;
+
+  // Fetch rating data for this product
+  const { data: ratingData } = useQuery<{ averageRating: number; totalReviews: number }>({
+    queryKey: ["/api/products", product.slug, "rating"],
+  });
 
   return (
     <Card className="group overflow-hidden hover-elevate active-elevate-2 flex flex-col h-full" data-testid={`card-product-${product.id}`}>
@@ -51,6 +58,16 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             {product.name}
           </h3>
         </Link>
+        {ratingData && ratingData.totalReviews > 0 && (
+          <div data-testid={`rating-${product.id}`}>
+            <StarRating
+              rating={ratingData.averageRating}
+              size="sm"
+              showNumber
+              totalReviews={ratingData.totalReviews}
+            />
+          </div>
+        )}
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold text-foreground" data-testid={`text-price-${product.id}`}>
             R {priceWithVAT}

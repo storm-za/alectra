@@ -20,9 +20,12 @@ export function StarRating({ rating, size = "md", showNumber = false, totalRevie
     lg: "text-base",
   };
 
+  // Ensure rating is a number
+  const numericRating = typeof rating === 'string' ? parseFloat(rating) : rating;
+
   const stars = Array.from({ length: 5 }, (_, index) => {
     const starValue = index + 1;
-    const isFilled = starValue <= Math.round(rating);
+    const isFilled = starValue <= Math.round(numericRating);
 
     return (
       <Star
@@ -42,7 +45,7 @@ export function StarRating({ rating, size = "md", showNumber = false, totalRevie
       </div>
       {showNumber && (
         <span className={`${textSizes[size]} text-muted-foreground ml-1`} data-testid="text-rating-value">
-          {rating.toFixed(1)}
+          {numericRating.toFixed(1)}
           {totalReviews !== undefined && (
             <span data-testid="text-review-count"> ({totalReviews})</span>
           )}
