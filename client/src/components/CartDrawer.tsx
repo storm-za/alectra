@@ -47,11 +47,12 @@ export default function CartDrawer({
               {items.map((item) => {
                 const priceWithVAT = (parseFloat(item.product.price) * 1.15).toFixed(2);
                 const lineTotal = (parseFloat(priceWithVAT) * item.quantity).toFixed(2);
+                const imageUrl = item.product.imageUrl.startsWith('/') ? item.product.imageUrl : `/${item.product.imageUrl}`;
 
                 return (
                   <div key={item.product.id} className="flex gap-4" data-testid={`cart-item-${item.product.id}`}>
                     <img
-                      src={item.product.imageUrl}
+                      src={imageUrl}
                       alt={item.product.name}
                       className="w-20 h-20 object-cover rounded-md bg-muted"
                     />
