@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { createOrderRequestSchema, registerSchema, loginSchema, insertUserAddressSchema } from "@shared/schema";
+import { createOrderRequestSchema, registerSchema, loginSchema, insertUserAddressSchema, insertProductReviewSchema } from "@shared/schema";
 import { hashPassword, verifyPassword, requireAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -263,6 +263,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(product);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching product: " + error.message });
+    }
+  });
+
+  // Product Reviews
+  app.get("/api/products/:slug/reviews", async (req, res) => {
+    try {
+      const product = await storage.getProductBySlug(req.params.slug);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      const reviews = await storage.getProductReviews(product.id);
+      res.json(reviews);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching reviews: " + error.message });
+    }
+  });
+
+  app.post("/api/products/:slug/reviews", async (req, res) => {
+    try {
+      const product = await storage.getProductBySlug(req.params.slug);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      const validatedData = insertProductReviewSchema.parse(req.body);
+      const review = await storage.createProductReview({
+        ...validatedData,
+        productId: product.id,
+      });
+      
+      res.status(201).json(review);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/products/:slug/rating", async (req, res) => {
+    try {
+      const product = await storage.getProductBySlug(req.params.slug);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      const averageRating = await storage.getAverageRating(product.id);
+      const reviews = await storage.getProductReviews(product.id);
+      
+      res.json({
+        averageRating,
+        totalReviews: reviews.length,
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching rating: " + error.message });
     }
   });
 

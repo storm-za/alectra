@@ -79,16 +79,26 @@ export const userAddresses = pgTable("user_addresses", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const productReviews = pgTable("product_reviews", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  productId: varchar("product_id").notNull().references(() => products.id),
+  rating: integer("rating").notNull(),
+  comment: text("comment"),
+  authorName: text("author_name").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   orders: many(orders),
   addresses: many(userAddresses),
 }));
 
-export const productsRelations = relations(products, ({ one }) => ({
+export const productsRelations = relations(products, ({ one, many }) => ({
   category: one(categories, {
     fields: [products.categoryId],
     references: [categories.id],
   }),
+  reviews: many(productReviews),
 }));
 
 export const categoriesRelations = relations(categories, ({ many }) => ({
@@ -118,6 +128,13 @@ export const userAddressesRelations = relations(userAddresses, ({ one }) => ({
   user: one(users, {
     fields: [userAddresses.userId],
     references: [users.id],
+  }),
+}));
+
+export const productReviewsRelations = relations(productReviews, ({ one }) => ({
+  product: one(products, {
+    fields: [productReviews.productId],
+    references: [products.id],
   }),
 }));
 
@@ -155,6 +172,15 @@ export const insertUserAddressSchema = createInsertSchema(userAddresses).omit({
   userId: true,
 });
 
+export const insertProductReviewSchema = createInsertSchema(productReviews).omit({
+  id: true,
+  createdAt: true,
+}).extend({
+  rating: z.number().int().min(1).max(5),
+  comment: z.string().optional(),
+  authorName: z.string().min(2, "Name must be at least 2 characters"),
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
@@ -172,6 +198,9 @@ export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
 
 export type UserAddress = typeof userAddresses.$inferSelect;
 export type InsertUserAddress = z.infer<typeof insertUserAddressSchema>;
+
+export type ProductReview = typeof productReviews.$inferSelect;
+export type InsertProductReview = z.infer<typeof insertProductReviewSchema>;
 
 export type CartItem = {
   product: Product;

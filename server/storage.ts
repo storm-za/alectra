@@ -1,4 +1,4 @@
-import { products, categories, orders, orderItems, users, userAddresses, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type CreateOrderRequest } from "@shared/schema";
+import { products, categories, orders, orderItems, users, userAddresses, productReviews, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type CreateOrderRequest } from "@shared/schema";
 import { db } from "./db";
 import { eq, sql, and, or, like, gte, lte, asc, desc } from "drizzle-orm";
 
@@ -39,6 +39,11 @@ export interface IStorage {
   updateUserAddress(id: string, userId: string, address: Partial<InsertUserAddress>): Promise<UserAddress | undefined>;
   deleteUserAddress(id: string, userId: string): Promise<boolean>;
   setDefaultAddress(id: string, userId: string): Promise<void>;
+
+  // Product Reviews
+  getProductReviews(productId: string): Promise<ProductReview[]>;
+  createProductReview(review: InsertProductReview): Promise<ProductReview>;
+  getAverageRating(productId: string): Promise<number>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -342,6 +347,31 @@ export class DatabaseStorage implements IStorage {
         eq(userAddresses.id, id),
         eq(userAddresses.userId, userId)
       ));
+  }
+
+  // Product Reviews
+  async getProductReviews(productId: string): Promise<ProductReview[]> {
+    return await db
+      .select()
+      .from(productReviews)
+      .where(eq(productReviews.productId, productId))
+      .orderBy(desc(productReviews.createdAt));
+  }
+
+  async createProductReview(review: InsertProductReview): Promise<ProductReview> {
+    const [createdReview] = await db.insert(productReviews).values(review).returning();
+    return createdReview;
+  }
+
+  async getAverageRating(productId: string): Promise<number> {
+    const result = await db
+      .select({
+        avg: sql<number>`COALESCE(AVG(${productReviews.rating})::numeric(3,2), 0)`,
+      })
+      .from(productReviews)
+      .where(eq(productReviews.productId, productId));
+    
+    return result[0]?.avg || 0;
   }
 }
 
