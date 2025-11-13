@@ -88,16 +88,16 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center hover-elevate active-elevate-2 rounded-md px-2 py-1 -ml-2 -z-10 relative" data-testid="link-home-logo">
+          <Link href="/" className="flex items-center hover-elevate active-elevate-2 rounded-md px-2 py-1 -ml-2 pointer-events-none" data-testid="link-home-logo">
             <img 
               src={Alectra__8__removebg_preview} 
               alt="Alectra Solutions - The Security Shop" 
-              className="h-30 lg:h-24 w-auto"
+              className="h-30 lg:h-24 w-auto pointer-events-auto"
             />
           </Link>
 
           {/* Desktop navigation */}
-          <nav className="hidden lg:flex items-center gap-1 relative z-10">
+          <nav className="hidden lg:flex items-center gap-1 relative z-50">
             {navigation.map((item) => (
               <Link key={item.name} href={item.href} className="px-3 py-2 rounded-md text-sm font-medium hover-elevate active-elevate-2">
                 {item.name}
@@ -106,7 +106,7 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-2 relative z-10">
+          <div className="flex items-center gap-2 relative z-50">
             {/* User menu */}
             {user ? (
               <DropdownMenu>
