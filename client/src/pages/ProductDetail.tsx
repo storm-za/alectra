@@ -76,7 +76,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const form = useForm<z.infer<typeof reviewFormSchema>>({
     resolver: zodResolver(reviewFormSchema),
     defaultValues: {
-      rating: 0,
+      rating: undefined as any,
       comment: "",
       authorName: "",
     },
