@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, Truck, Wrench, Headset } from "lucide-react";
+import { Link } from "wouter";
 
 export default function Hero() {
   const scrollToCategories = () => {
@@ -35,14 +36,16 @@ export default function Hero() {
               >
                 Shop Now
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="text-base font-semibold min-w-[180px] bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
-                data-testid="button-request-quote"
-              >
-                Request Quote
-              </Button>
+              <Link href="/quote">
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  className="text-base font-semibold min-w-[180px] bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+                  data-testid="button-request-quote"
+                >
+                  Request Quote
+                </Button>
+              </Link>
             </div>
 
             {/* Trust badge */}
