@@ -10,6 +10,22 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**November 13, 2025 - Category Consolidation & Product Count Fix**
+- Fixed product count display on category cards (was showing 0 for all categories)
+- Updated `getAllCategories()` query to use LEFT JOIN with COUNT aggregation for accurate counts
+- Made query SQL standards compliant by grouping by all selected columns
+- Merged Gate Motor Kits category into Gate Motors category
+- Moved all 43 products from Gate Motor Kits to Gate Motors (now 66 total products)
+- Deleted Gate Motor Kits category - reduced from 8 to 7 categories
+- Final category structure (7 categories, 117 total products):
+  - Gate Motors: 66 products (sliding, swing, automation kits, PCBs, chargers, accessories)
+  - CCTV Systems: 17 products (Hilook cameras, DVRs, power supplies)
+  - Remotes: 11 products (Centurion Nova, Gemini, Sentry, Absolute)
+  - Intercoms: 9 products (Centurion G-Speak, E.T Nice, Kocom)
+  - Batteries: 8 products (12V, 24V, lithium, gel batteries)
+  - LP Gas: 3 products (9kg, 19kg, 48kg cylinders)
+  - Electric Fencing: 3 products (beams, springs, warning lights)
+
 **November 13, 2025 - Brand Identity Update**
 - Updated entire site color scheme to match Alectra Solutions brand
 - Primary color: Orange (#FF9800, HSL 36 100% 50%)
@@ -25,15 +41,6 @@ Preferred communication style: Simple, everyday language.
 - Downloaded and stored all 117 product images locally in attached_assets/products/
 - All product descriptions updated to match old website content exactly
 - Implemented expandable "read more..." feature for descriptions over 200 characters
-- Products distributed across 8 categories:
-  - Gate Motor Kits: 43 products (brackets, PCBs, chargers, accessories)
-  - Gate Motors: 23 products (Centurion, E.T Nice, Gemini, Dace)
-  - CCTV Systems: 17 products (Hilook cameras, DVRs, power supplies)
-  - Remotes: 11 products (Centurion Nova, Gemini, Sentry, Absolute)
-  - Intercoms: 9 products (Centurion G-Speak, E.T Nice, Kocom)
-  - Batteries: 8 products (12V, 24V, lithium, gel batteries)
-  - LP Gas: 3 products (9kg, 19kg, 48kg cylinders)
-  - Electric Fencing: 3 products (beams, springs, warning lights)
 - Migration scripts: scripts/migrate-all-products.ts, scripts/update-descriptions.ts
 - Generated unique SKUs for all products (ALEC-XXXX-slug format)
 - All products include proper brands, pricing (R135 - R11,899), images, and descriptions

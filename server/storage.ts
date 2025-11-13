@@ -71,7 +71,7 @@ export class DatabaseStorage implements IStorage {
       })
       .from(categories)
       .leftJoin(products, eq(products.categoryId, categories.id))
-      .groupBy(categories.id);
+      .groupBy(categories.id, categories.name, categories.slug, categories.description, categories.imageUrl);
     
     return result;
   }
