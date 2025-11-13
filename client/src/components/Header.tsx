@@ -73,14 +73,14 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
       <div className="bg-primary text-primary-foreground">
         <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
           <div className="flex items-center justify-between h-10 text-sm">
+            <Link href="/quote" className="hover-elevate active-elevate-2 px-3 py-1 rounded-md font-medium">
+              Request Quote
+            </Link>
             <div className="flex items-center gap-2">
               <Phone className="h-4 w-4" />
               <span className="font-medium">012 566 3123</span>
               <span className="hidden sm:inline text-primary-foreground/80">Mon-Sun: 08:00 - 16:45</span>
             </div>
-            <Link href="/quote" className="hover-elevate active-elevate-2 px-3 py-1 rounded-md font-medium">
-              Request Quote
-            </Link>
           </div>
         </div>
       </div>
