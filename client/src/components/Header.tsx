@@ -15,6 +15,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import logoImage from "@assets/Alectra (8)_1763021168076.png";
 
 interface HeaderProps {
   cartItemCount: number;
@@ -86,14 +87,12 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 hover-elevate active-elevate-2 rounded-md px-2 py-1 -ml-2">
-            <div className="w-10 h-10 bg-primary rounded-md flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xl">A</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-lg leading-none tracking-tight">Alectra Solutions</span>
-              <span className="text-xs text-muted-foreground">The Security Shop</span>
-            </div>
+          <Link href="/" className="flex items-center hover-elevate active-elevate-2 rounded-md px-2 py-1 -ml-2" data-testid="link-home-logo">
+            <img 
+              src={logoImage} 
+              alt="Alectra Solutions - The Security Shop" 
+              className="h-10 w-auto"
+            />
           </Link>
 
           {/* Desktop navigation */}
