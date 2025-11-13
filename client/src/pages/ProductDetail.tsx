@@ -31,7 +31,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, MessageSquare, Star, Truck, ShieldCheck } from "lucide-react";
+import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, MessageSquare, Star, Truck, ShieldCheck, CreditCard, Lock } from "lucide-react";
 import { StarRating } from "@/components/StarRating";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -220,13 +220,12 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             </div>
 
             <div className="mb-8">
-              <div className="flex items-baseline gap-2 mb-1">
+              <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-bold" data-testid="text-product-price">
                   R {priceWithVAT}
                 </span>
                 <span className="text-sm text-muted-foreground">VAT inc.</span>
               </div>
-              <p className="text-sm text-muted-foreground">SKU: {product.sku}</p>
             </div>
 
             {/* Quantity and Add to Cart */}
@@ -267,7 +266,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             </div>
 
             {/* Delivery Information */}
-            <Card className="mb-8">
+            <Card className="mb-4">
               <CardContent className="p-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3">
@@ -287,6 +286,25 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                       <h4 className="font-medium text-sm mb-1">Free Shipping on R2500+</h4>
                       <p className="text-xs text-muted-foreground">Enjoy free delivery on orders over R2500</p>
                     </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Payment Trust Section */}
+            <Card className="mb-8">
+              <CardContent className="p-4">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-2">
+                    <Lock className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Secure Payment</span>
+                  </div>
+                  <div className="flex items-center justify-between flex-wrap gap-3">
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="h-5 w-5 text-muted-foreground" />
+                      <span className="text-xs text-muted-foreground">Visa, Mastercard, EFT</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">Powered by Paystack</span>
                   </div>
                 </div>
               </CardContent>
