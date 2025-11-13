@@ -31,7 +31,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, MessageSquare, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, MessageSquare, Star, Truck, ShieldCheck } from "lucide-react";
 import { StarRating } from "@/components/StarRating";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -267,6 +267,32 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 {isOutOfStock ? "Out of Stock" : "Add to Cart"}
               </Button>
             </div>
+
+            {/* Delivery Information */}
+            <Card className="mb-8">
+              <CardContent className="p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-start gap-3">
+                    <div className="bg-primary/10 p-2 rounded-md">
+                      <Truck className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-sm mb-1">Nationwide Delivery</h4>
+                      <p className="text-xs text-muted-foreground">We deliver to all areas across South Africa</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="bg-primary/10 p-2 rounded-md">
+                      <ShieldCheck className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-sm mb-1">Free Shipping on R2500+</h4>
+                      <p className="text-xs text-muted-foreground">Enjoy free delivery on orders over R2500</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Tabs */}
             <Tabs defaultValue="description" className="mt-8">
