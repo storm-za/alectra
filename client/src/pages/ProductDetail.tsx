@@ -5,8 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronLeft, Minus, Plus, ShoppingCart, Check } from "lucide-react";
-import type { Product } from "@shared/schema";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, MessageSquare } from "lucide-react";
+import { StarRating } from "@/components/StarRating";
+import type { Product, ProductReview } from "@shared/schema";
 
 interface ProductDetailProps {
   onAddToCart: (product: Product, quantity: number) => void;
@@ -17,9 +26,20 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
 
   const { data: product, isLoading } = useQuery<Product>({
     queryKey: ["/api/products", params?.slug],
+    enabled: !!params?.slug,
+  });
+
+  const { data: reviews = [] } = useQuery<ProductReview[]>({
+    queryKey: ["/api/products", params?.slug, "reviews"],
+    enabled: !!params?.slug,
+  });
+
+  const { data: ratingData } = useQuery<{ averageRating: number; totalReviews: number }>({
+    queryKey: ["/api/products", params?.slug, "rating"],
     enabled: !!params?.slug,
   });
 
@@ -105,9 +125,20 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
           {/* Details */}
           <div>
             <div className="text-sm text-muted-foreground mb-2">{product.brand}</div>
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4" data-testid="text-product-name">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2" data-testid="text-product-name">
               {product.name}
             </h1>
+
+            {ratingData && ratingData.totalReviews > 0 && (
+              <div className="mb-4">
+                <StarRating
+                  rating={ratingData.averageRating}
+                  size="md"
+                  showNumber
+                  totalReviews={ratingData.totalReviews}
+                />
+              </div>
+            )}
 
             <div className="flex items-center gap-3 mb-6">
               {product.featured && <Badge>Featured</Badge>}
@@ -174,7 +205,9 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             <Tabs defaultValue="description" className="mt-8">
               <TabsList className="w-full">
                 <TabsTrigger value="description" className="flex-1">Description</TabsTrigger>
-                <TabsTrigger value="specifications" className="flex-1">Specifications</TabsTrigger>
+                <TabsTrigger value="reviews" className="flex-1">
+                  Reviews {ratingData && `(${ratingData.totalReviews})`}
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="description" className="mt-4">
                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">
@@ -192,15 +225,64 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                   )}
                 </p>
               </TabsContent>
-              <TabsContent value="specifications" className="mt-4">
-                {product.specifications ? (
-                  <pre className="text-sm text-muted-foreground whitespace-pre-wrap">
-                    {product.specifications}
-                  </pre>
+              <TabsContent value="reviews" className="mt-4">
+                {reviews.length === 0 ? (
+                  <div className="text-center py-12" data-testid="empty-reviews">
+                    <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground mb-4">No reviews yet</p>
+                    <Button data-testid="button-leave-first-review">Leave the first review</Button>
+                  </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">
-                    No specifications available for this product.
-                  </p>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-semibold">Customer Reviews</h3>
+                      <Button variant="outline" data-testid="button-leave-review">
+                        Leave a Review
+                      </Button>
+                    </div>
+                    <Carousel
+                      opts={{
+                        align: "start",
+                        loop: false,
+                      }}
+                      className="w-full"
+                    >
+                      <CarouselContent className="-ml-2 md:-ml-4">
+                        {reviews.map((review, index) => (
+                          <CarouselItem
+                            key={review.id}
+                            className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3"
+                            data-testid={`review-${index}`}
+                          >
+                            <Card className="h-full">
+                              <CardContent className="p-4">
+                                <div className="flex items-center justify-between mb-3">
+                                  <StarRating rating={review.rating} size="sm" />
+                                  <span className="text-xs text-muted-foreground">
+                                    {new Date(review.createdAt).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                <p className="font-medium text-sm mb-2" data-testid="text-review-author">
+                                  {review.authorName}
+                                </p>
+                                {review.comment && (
+                                  <p className="text-sm text-muted-foreground" data-testid="text-review-comment">
+                                    {review.comment}
+                                  </p>
+                                )}
+                              </CardContent>
+                            </Card>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      {reviews.length > 3 && (
+                        <>
+                          <CarouselPrevious className="-left-4" />
+                          <CarouselNext className="-right-4" />
+                        </>
+                      )}
+                    </Carousel>
+                  </div>
                 )}
               </TabsContent>
             </Tabs>
