@@ -89,7 +89,7 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center hover-elevate active-elevate-2 rounded-md px-2 py-1 -ml-2" data-testid="link-home-logo">
-            <div className="h-30 lg:h-24 w-30 lg:w-24 overflow-hidden flex items-center justify-center">
+            <div className="h-16 w-auto overflow-hidden flex items-center justify-center">
               <img 
                 src={Alectra__8__removebg_preview} 
                 alt="Alectra Solutions - The Security Shop" 
