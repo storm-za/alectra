@@ -16,6 +16,7 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Account from "@/pages/Account";
 import Quote from "@/pages/Quote";
+import TradeSignup from "@/pages/TradeSignup";
 import NotFound from "@/pages/not-found";
 import { useToast } from "@/hooks/use-toast";
 import type { Product, CartItem } from "@shared/schema";
@@ -109,6 +110,9 @@ function Router() {
           </Route>
           <Route path="/quote">
             <Quote />
+          </Route>
+          <Route path="/trade-signup">
+            <TradeSignup />
           </Route>
           <Route component={NotFound} />
         </Switch>

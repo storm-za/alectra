@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Briefcase } from "lucide-react";
+import { Link } from "wouter";
 
 export default function TradeBanner() {
   return (
@@ -16,14 +17,16 @@ export default function TradeBanner() {
             Join our exclusive trade program for special pricing on bulk orders. 
             Trusted by installers, electricians, and security professionals nationwide.
           </p>
-          <Button 
-            size="lg" 
-            variant="outline"
-            className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
-            data-testid="button-apply-trade-pricing"
-          >
-            Apply for Trade Pricing
-          </Button>
+          <Link href="/trade-signup">
+            <Button 
+              size="lg" 
+              variant="outline"
+              className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+              data-testid="button-apply-trade-pricing"
+            >
+              Apply for Trade Pricing
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

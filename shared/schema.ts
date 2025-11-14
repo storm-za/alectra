@@ -88,9 +88,26 @@ export const productReviews = pgTable("product_reviews", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const tradeApplications = pgTable("trade_applications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  companyName: text("company_name").notNull(),
+  registrationNumber: text("registration_number"),
+  taxNumber: text("tax_number"),
+  businessType: text("business_type").notNull(),
+  physicalAddress: text("physical_address").notNull(),
+  yearsInBusiness: integer("years_in_business").notNull(),
+  contactPerson: text("contact_person").notNull(),
+  contactPhone: text("contact_phone").notNull(),
+  approved: boolean("approved").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  approvedAt: timestamp("approved_at"),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   orders: many(orders),
   addresses: many(userAddresses),
+  tradeApplications: many(tradeApplications),
 }));
 
 export const productsRelations = relations(products, ({ one, many }) => ({
@@ -138,6 +155,13 @@ export const productReviewsRelations = relations(productReviews, ({ one }) => ({
   }),
 }));
 
+export const tradeApplicationsRelations = relations(tradeApplications, ({ one }) => ({
+  user: one(users, {
+    fields: [tradeApplications.userId],
+    references: [users.id],
+  }),
+}));
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
@@ -181,6 +205,23 @@ export const insertProductReviewSchema = createInsertSchema(productReviews).omit
   authorName: z.string().min(2, "Name must be at least 2 characters"),
 });
 
+export const insertTradeApplicationSchema = createInsertSchema(tradeApplications).omit({
+  id: true,
+  createdAt: true,
+  approvedAt: true,
+  userId: true,
+  approved: true,
+}).extend({
+  companyName: z.string().min(2, "Company name is required"),
+  registrationNumber: z.string().optional(),
+  taxNumber: z.string().optional(),
+  businessType: z.string().min(2, "Business type is required"),
+  physicalAddress: z.string().min(10, "Physical address is required"),
+  yearsInBusiness: z.number().int().min(0, "Years in business must be 0 or more"),
+  contactPerson: z.string().min(2, "Contact person name is required"),
+  contactPhone: z.string().min(10, "Valid contact phone is required"),
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
@@ -201,6 +242,9 @@ export type InsertUserAddress = z.infer<typeof insertUserAddressSchema>;
 
 export type ProductReview = typeof productReviews.$inferSelect;
 export type InsertProductReview = z.infer<typeof insertProductReviewSchema>;
+
+export type TradeApplication = typeof tradeApplications.$inferSelect;
+export type InsertTradeApplication = z.infer<typeof insertTradeApplicationSchema>;
 
 export type CartItem = {
   product: Product;

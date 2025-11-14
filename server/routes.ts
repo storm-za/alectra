@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { createOrderRequestSchema, registerSchema, loginSchema, insertUserAddressSchema, insertProductReviewSchema } from "@shared/schema";
+import { createOrderRequestSchema, registerSchema, loginSchema, insertUserAddressSchema, insertProductReviewSchema, insertTradeApplicationSchema } from "@shared/schema";
 import { hashPassword, verifyPassword, requireAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -317,6 +317,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching rating: " + error.message });
+    }
+  });
+
+  // Trade Applications (Protected)
+  app.post("/api/trade/apply", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      
+      // Check if user already has a trade application
+      const existingApp = await storage.getTradeApplicationByUserId(userId);
+      if (existingApp) {
+        return res.status(400).json({ 
+          message: "You have already submitted a trade application",
+          status: existingApp.approved ? "approved" : "pending"
+        });
+      }
+      
+      const validatedData = insertTradeApplicationSchema.parse(req.body);
+      const application = await storage.createTradeApplication(userId, validatedData);
+      
+      res.status(201).json({
+        id: application.id,
+        approved: application.approved,
+        createdAt: application.createdAt,
+      });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/trade/status", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const application = await storage.getTradeApplicationByUserId(userId);
+      
+      if (!application) {
+        return res.json({ 
+          hasApplication: false,
+          approved: false,
+        });
+      }
+      
+      res.json({
+        hasApplication: true,
+        approved: application.approved,
+        createdAt: application.createdAt,
+        approvedAt: application.approvedAt,
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   });
 

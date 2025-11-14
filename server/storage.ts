@@ -1,4 +1,4 @@
-import { products, categories, orders, orderItems, users, userAddresses, productReviews, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type CreateOrderRequest } from "@shared/schema";
+import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type CreateOrderRequest } from "@shared/schema";
 import { db } from "./db";
 import { eq, sql, and, or, like, gte, lte, asc, desc } from "drizzle-orm";
 
@@ -44,6 +44,12 @@ export interface IStorage {
   getProductReviews(productId: string): Promise<ProductReview[]>;
   createProductReview(review: InsertProductReview): Promise<ProductReview>;
   getAverageRating(productId: string): Promise<number>;
+
+  // Trade Applications
+  createTradeApplication(userId: string, application: InsertTradeApplication): Promise<TradeApplication>;
+  getTradeApplicationByUserId(userId: string): Promise<TradeApplication | undefined>;
+  getTradeApplicationById(id: string): Promise<TradeApplication | undefined>;
+  updateTradeApprovalStatus(id: string, approved: boolean): Promise<TradeApplication | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -374,6 +380,45 @@ export class DatabaseStorage implements IStorage {
     // PostgreSQL returns numeric as string, convert to number
     const avgValue = result[0]?.avg;
     return typeof avgValue === 'string' ? parseFloat(avgValue) : (avgValue || 0);
+  }
+
+  // Trade Applications
+  async createTradeApplication(userId: string, application: InsertTradeApplication): Promise<TradeApplication> {
+    const [tradeApp] = await db.insert(tradeApplications).values({
+      ...application,
+      userId,
+    }).returning();
+    return tradeApp;
+  }
+
+  async getTradeApplicationByUserId(userId: string): Promise<TradeApplication | undefined> {
+    const [tradeApp] = await db
+      .select()
+      .from(tradeApplications)
+      .where(eq(tradeApplications.userId, userId))
+      .orderBy(desc(tradeApplications.createdAt))
+      .limit(1);
+    return tradeApp || undefined;
+  }
+
+  async getTradeApplicationById(id: string): Promise<TradeApplication | undefined> {
+    const [tradeApp] = await db
+      .select()
+      .from(tradeApplications)
+      .where(eq(tradeApplications.id, id));
+    return tradeApp || undefined;
+  }
+
+  async updateTradeApprovalStatus(id: string, approved: boolean): Promise<TradeApplication | undefined> {
+    const [updatedApp] = await db
+      .update(tradeApplications)
+      .set({ 
+        approved,
+        approvedAt: approved ? sql`NOW()` : null,
+      })
+      .where(eq(tradeApplications.id, id))
+      .returning();
+    return updatedApp || undefined;
   }
 }
 

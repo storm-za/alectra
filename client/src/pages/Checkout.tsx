@@ -28,7 +28,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { CartItem, UserAddress } from "@shared/schema";
-import { MapPin } from "lucide-react";
+import { MapPin, BadgePercent } from "lucide-react";
 
 const checkoutSchema = z.object({
   customerName: z.string().min(2, "Name must be at least 2 characters"),
@@ -59,6 +59,14 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
 
   const { data: addresses } = useQuery<UserAddress[]>({
     queryKey: ["/api/user/addresses"],
+    enabled: !!user?.user,
+  });
+
+  const { data: tradeStatus } = useQuery<{
+    hasApplication: boolean;
+    approved: boolean;
+  }>({
+    queryKey: ["/api/trade/status"],
     enabled: !!user?.user,
   });
 
@@ -139,8 +147,13 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const subtotal = cartItems.reduce((sum, item) => {
     return sum + parseFloat(item.product.price) * item.quantity;
   }, 0);
-  const vat = subtotal * 0.15;
-  const total = subtotal + vat;
+  
+  // Apply 15% trade discount if approved
+  const tradeDiscount = tradeStatus?.approved ? subtotal * 0.15 : 0;
+  const subtotalAfterDiscount = subtotal - tradeDiscount;
+  
+  const vat = subtotalAfterDiscount * 0.15;
+  const total = subtotalAfterDiscount + vat;
 
   return (
     <div className="min-h-screen bg-background py-12">
@@ -334,11 +347,32 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
 
                 <Separator />
 
+                {tradeStatus?.approved && (
+                  <Alert className="bg-primary/10 border-primary">
+                    <BadgePercent className="h-4 w-4" />
+                    <AlertDescription className="text-sm font-medium text-primary">
+                      Trade Pricing Applied: 15% discount
+                    </AlertDescription>
+                  </Alert>
+                )}
+
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Subtotal</span>
                     <span data-testid="text-summary-subtotal">R {subtotal.toFixed(2)}</span>
                   </div>
+                  {tradeStatus?.approved && tradeDiscount > 0 && (
+                    <>
+                      <div className="flex justify-between text-sm text-primary font-medium">
+                        <span>Trade Discount (15%)</span>
+                        <span data-testid="text-summary-trade-discount">- R {tradeDiscount.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm font-medium">
+                        <span>Subtotal After Discount</span>
+                        <span data-testid="text-summary-subtotal-after-discount">R {subtotalAfterDiscount.toFixed(2)}</span>
+                      </div>
+                    </>
+                  )}
                   <div className="flex justify-between text-sm">
                     <span>VAT (15%)</span>
                     <span data-testid="text-summary-vat">R {vat.toFixed(2)}</span>
@@ -348,6 +382,11 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                     <span>Total</span>
                     <span data-testid="text-summary-total">R {total.toFixed(2)}</span>
                   </div>
+                  {tradeStatus?.approved && (
+                    <div className="text-xs text-primary font-medium">
+                      You saved R {tradeDiscount.toFixed(2)} with trade pricing
+                    </div>
+                  )}
                 </div>
 
                 <div className="text-xs text-muted-foreground pt-4">
