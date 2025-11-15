@@ -10,6 +10,19 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**November 15, 2025 - Price Update from Old Website**
+- Updated product prices to match alectra.co.za website
+- Successfully updated 45 products with current pricing from old site
+- All prices now reflect sale prices where available
+- Price ranges: R8.00 (junction boxes) to R10,799.00 (gate motors)
+- Script created: scripts/update-prices-from-website.ts for future price sync
+- Key updates include:
+  - Gate Motors: D10 Smart Turbo (R9,699), D5 Evo Smart (R5,099), Vantage 500 (R10,799)
+  - Remotes: Nova series (R159-R259), Gemini (R149-R165), Sentry (R145-R175)
+  - Intercoms: G-Speak Ultra (R951-R3,999), E.T Nice kits (R999-R3,060)
+  - Batteries: 12V range (R135-R550), 24V (R485)
+  - LP Gas: 9kg (R275), 19kg (R580), 48kg (R1,399)
+
 **November 13, 2025 - Category Consolidation & Product Count Fix**
 - Fixed product count display on category cards (was showing 0 for all categories)
 - Updated `getAllCategories()` query to use LEFT JOIN with COUNT aggregation for accurate counts
