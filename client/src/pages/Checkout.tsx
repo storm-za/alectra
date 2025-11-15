@@ -144,16 +144,18 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
     );
   }
 
-  const subtotal = cartItems.reduce((sum, item) => {
+  const totalVatInclusive = cartItems.reduce((sum, item) => {
     return sum + parseFloat(item.product.price) * item.quantity;
   }, 0);
   
-  // Apply 15% trade discount if approved
-  const tradeDiscount = tradeStatus?.approved ? subtotal * 0.15 : 0;
-  const subtotalAfterDiscount = subtotal - tradeDiscount;
+  // Apply 15% trade discount to VAT-inclusive total if approved
+  const tradeDiscount = tradeStatus?.approved ? totalVatInclusive * 0.15 : 0;
+  const totalAfterDiscount = totalVatInclusive - tradeDiscount;
   
-  const vat = subtotalAfterDiscount * 0.15;
-  const total = subtotalAfterDiscount + vat;
+  // Extract VAT from the final total (after discount)
+  const subtotal = totalAfterDiscount / 1.15;
+  const vat = subtotal * 0.15;
+  const total = totalAfterDiscount;
 
   return (
     <div className="min-h-screen bg-background py-12">
@@ -325,8 +327,8 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
               </CardHeader>
               <CardContent className="space-y-4">
                 {cartItems.map((item) => {
-                  const priceWithVAT = (parseFloat(item.product.price) * 1.15).toFixed(2);
-                  const lineTotal = (parseFloat(priceWithVAT) * item.quantity).toFixed(2);
+                  const displayPrice = parseFloat(item.product.price).toFixed(2);
+                  const lineTotal = (parseFloat(item.product.price) * item.quantity).toFixed(2);
                   const imageUrl = item.product.imageUrl.startsWith('/') ? item.product.imageUrl : `/${item.product.imageUrl}`;
 
                   return (
@@ -358,25 +360,19 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span>Subtotal</span>
+                    <span>Subtotal (excl. VAT)</span>
                     <span data-testid="text-summary-subtotal">R {subtotal.toFixed(2)}</span>
                   </div>
-                  {tradeStatus?.approved && tradeDiscount > 0 && (
-                    <>
-                      <div className="flex justify-between text-sm text-primary font-medium">
-                        <span>Trade Discount (15%)</span>
-                        <span data-testid="text-summary-trade-discount">- R {tradeDiscount.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between text-sm font-medium">
-                        <span>Subtotal After Discount</span>
-                        <span data-testid="text-summary-subtotal-after-discount">R {subtotalAfterDiscount.toFixed(2)}</span>
-                      </div>
-                    </>
-                  )}
                   <div className="flex justify-between text-sm">
                     <span>VAT (15%)</span>
                     <span data-testid="text-summary-vat">R {vat.toFixed(2)}</span>
                   </div>
+                  {tradeStatus?.approved && tradeDiscount > 0 && (
+                    <div className="flex justify-between text-sm text-primary font-medium">
+                      <span>Trade Discount (15%)</span>
+                      <span data-testid="text-summary-trade-discount">- R {tradeDiscount.toFixed(2)}</span>
+                    </div>
+                  )}
                   <Separator />
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>

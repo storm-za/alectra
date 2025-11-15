@@ -142,7 +142,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     );
   }
 
-  const priceWithVAT = (parseFloat(product.price) * 1.15).toFixed(2);
+  const displayPrice = parseFloat(product.price).toFixed(2);
   const isLowStock = product.stock > 0 && product.stock <= 5;
   const isOutOfStock = product.stock === 0;
   
@@ -224,7 +224,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             <div className="mb-8">
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-bold" data-testid="text-product-price">
-                  R {priceWithVAT}
+                  R {displayPrice}
                 </span>
                 <span className="text-sm text-muted-foreground">VAT inc.</span>
               </div>

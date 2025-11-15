@@ -13,7 +13,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
-  const priceWithVAT = (parseFloat(product.price) * 1.15).toFixed(2);
+  const displayPrice = parseFloat(product.price).toFixed(2);
   const isLowStock = product.stock > 0 && product.stock <= 5;
   const isOutOfStock = product.stock === 0;
 
@@ -70,7 +70,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
         )}
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold text-foreground" data-testid={`text-price-${product.id}`}>
-            R {priceWithVAT}
+            R {displayPrice}
           </span>
           <span className="text-xs text-muted-foreground">VAT inc.</span>
         </div>

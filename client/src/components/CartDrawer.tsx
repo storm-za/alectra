@@ -20,12 +20,12 @@ export default function CartDrawer({
   onUpdateQuantity,
   onRemoveItem,
 }: CartDrawerProps) {
-  const subtotal = items.reduce((sum, item) => {
+  const total = items.reduce((sum, item) => {
     return sum + parseFloat(item.product.price) * item.quantity;
   }, 0);
 
-  const vat = subtotal * 0.15;
-  const total = subtotal + vat;
+  const vat = total * (15 / 115);
+  const subtotal = total - vat;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -45,8 +45,8 @@ export default function CartDrawer({
           <>
             <div className="flex-1 overflow-y-auto py-6 space-y-4">
               {items.map((item) => {
-                const priceWithVAT = (parseFloat(item.product.price) * 1.15).toFixed(2);
-                const lineTotal = (parseFloat(priceWithVAT) * item.quantity).toFixed(2);
+                const displayPrice = parseFloat(item.product.price).toFixed(2);
+                const lineTotal = (parseFloat(item.product.price) * item.quantity).toFixed(2);
                 const imageUrl = item.product.imageUrl.startsWith('/') ? item.product.imageUrl : `/${item.product.imageUrl}`;
 
                 return (
