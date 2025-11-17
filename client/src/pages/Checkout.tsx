@@ -236,23 +236,23 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
         </div>
 
         {/* Progress Steps */}
-        <div className="mb-10">
+        <div className="mb-10" data-testid="checkout-progress">
           <div className="flex items-center justify-center gap-2 sm:gap-4 max-w-2xl mx-auto">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2" data-testid="progress-step-1">
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold text-sm">
                 1
               </div>
               <span className="text-xs sm:text-sm font-medium hidden sm:inline">Delivery</span>
             </div>
             <Separator className="w-8 sm:w-16" />
-            <div className="flex items-center gap-2 opacity-50">
+            <div className="flex items-center gap-2 opacity-50" data-testid="progress-step-2">
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-muted-foreground flex items-center justify-center font-semibold text-sm">
                 2
               </div>
               <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">Payment</span>
             </div>
             <Separator className="w-8 sm:w-16 opacity-50" />
-            <div className="flex items-center gap-2 opacity-50">
+            <div className="flex items-center gap-2 opacity-50" data-testid="progress-step-3">
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-muted-foreground flex items-center justify-center font-semibold text-sm">
                 3
               </div>
@@ -425,22 +425,22 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                     </div>
 
                     {/* Trust Signals */}
-                    <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-                      <div className="flex items-center gap-3">
+                    <div className="bg-muted/50 rounded-lg p-4 space-y-3" data-testid="trust-signals">
+                      <div className="flex items-center gap-3" data-testid="trust-secure-payment">
                         <Lock className="h-5 w-5 text-primary flex-shrink-0" />
                         <div>
                           <p className="text-sm font-medium">Secure Payment</p>
                           <p className="text-xs text-muted-foreground">256-bit SSL encryption protects your data</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3" data-testid="trust-paystack">
                         <CreditCard className="h-5 w-5 text-primary flex-shrink-0" />
                         <div>
                           <p className="text-sm font-medium">Powered by Paystack</p>
                           <p className="text-xs text-muted-foreground">Safe and trusted payment processing</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3" data-testid="trust-delivery">
                         <Truck className="h-5 w-5 text-primary flex-shrink-0" />
                         <div>
                           <p className="text-sm font-medium">Fast Delivery</p>
