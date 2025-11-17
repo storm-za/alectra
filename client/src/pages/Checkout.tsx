@@ -28,7 +28,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { CartItem, UserAddress, PaystackInitializeResponse, PaystackVerifyResponse } from "@shared/schema";
-import { MapPin, BadgePercent } from "lucide-react";
+import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard } from "lucide-react";
 
 const checkoutSchema = z.object({
   customerName: z.string().min(2, "Name must be at least 2 characters"),
@@ -224,18 +224,54 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const total = totalAfterDiscount;
 
   return (
-    <div className="min-h-screen bg-background py-12">
+    <div className="min-h-screen bg-muted/30 py-12">
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-8">Checkout</h1>
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">Secure Checkout</h1>
+          <p className="text-muted-foreground flex items-center gap-2">
+            <Shield className="h-4 w-4 text-primary" />
+            Your information is safe and secure
+          </p>
+        </div>
+
+        {/* Progress Steps */}
+        <div className="mb-10">
+          <div className="flex items-center justify-center gap-2 sm:gap-4 max-w-2xl mx-auto">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold text-sm">
+                1
+              </div>
+              <span className="text-xs sm:text-sm font-medium hidden sm:inline">Delivery</span>
+            </div>
+            <Separator className="w-8 sm:w-16" />
+            <div className="flex items-center gap-2 opacity-50">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-muted-foreground flex items-center justify-center font-semibold text-sm">
+                2
+              </div>
+              <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">Payment</span>
+            </div>
+            <Separator className="w-8 sm:w-16 opacity-50" />
+            <div className="flex items-center gap-2 opacity-50">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-muted-foreground flex items-center justify-center font-semibold text-sm">
+                3
+              </div>
+              <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">Complete</span>
+            </div>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Checkout Form */}
           <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Delivery Information</CardTitle>
+            <Card className="shadow-lg">
+              <CardHeader className="border-b bg-card">
+                <CardTitle className="flex items-center gap-2">
+                  <Truck className="h-5 w-5 text-primary" />
+                  Delivery Information
+                </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 {addresses && addresses.length > 0 && (
                   <div className="mb-6">
                     <label className="text-sm font-medium mb-2 block">
@@ -264,9 +300,12 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       name="customerName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Full Name</FormLabel>
+                          <FormLabel className="flex items-center gap-2">
+                            <User className="h-4 w-4 text-muted-foreground" />
+                            Full Name
+                          </FormLabel>
                           <FormControl>
-                            <Input placeholder="John Doe" {...field} data-testid="input-name" />
+                            <Input placeholder="John Doe" {...field} data-testid="input-name" className="h-11" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -279,9 +318,12 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                         name="customerEmail"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Email</FormLabel>
+                            <FormLabel className="flex items-center gap-2">
+                              <Mail className="h-4 w-4 text-muted-foreground" />
+                              Email
+                            </FormLabel>
                             <FormControl>
-                              <Input type="email" placeholder="john@example.com" {...field} data-testid="input-email" />
+                              <Input type="email" placeholder="john@example.com" {...field} data-testid="input-email" className="h-11" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -293,9 +335,12 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                         name="customerPhone"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Phone</FormLabel>
+                            <FormLabel className="flex items-center gap-2">
+                              <Phone className="h-4 w-4 text-muted-foreground" />
+                              Phone
+                            </FormLabel>
                             <FormControl>
-                              <Input placeholder="0123456789" {...field} data-testid="input-phone" />
+                              <Input placeholder="0123456789" {...field} data-testid="input-phone" className="h-11" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -308,9 +353,12 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       name="deliveryAddress"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Delivery Address</FormLabel>
+                          <FormLabel className="flex items-center gap-2">
+                            <Home className="h-4 w-4 text-muted-foreground" />
+                            Delivery Address
+                          </FormLabel>
                           <FormControl>
-                            <Textarea placeholder="123 Main Street" {...field} data-testid="input-address" />
+                            <Textarea placeholder="123 Main Street, Apartment 4B" {...field} data-testid="input-address" className="min-h-[80px]" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -376,8 +424,49 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       />
                     </div>
 
-                    <Button type="submit" size="lg" className="w-full" disabled={createOrderMutation.isPending} data-testid="button-place-order">
-                      {createOrderMutation.isPending ? "Processing..." : "Place Order"}
+                    {/* Trust Signals */}
+                    <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                      <div className="flex items-center gap-3">
+                        <Lock className="h-5 w-5 text-primary flex-shrink-0" />
+                        <div>
+                          <p className="text-sm font-medium">Secure Payment</p>
+                          <p className="text-xs text-muted-foreground">256-bit SSL encryption protects your data</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <CreditCard className="h-5 w-5 text-primary flex-shrink-0" />
+                        <div>
+                          <p className="text-sm font-medium">Powered by Paystack</p>
+                          <p className="text-xs text-muted-foreground">Safe and trusted payment processing</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Truck className="h-5 w-5 text-primary flex-shrink-0" />
+                        <div>
+                          <p className="text-sm font-medium">Fast Delivery</p>
+                          <p className="text-xs text-muted-foreground">Nationwide via The Courier Guy</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button 
+                      type="submit" 
+                      size="lg" 
+                      className="w-full h-12 text-base font-semibold" 
+                      disabled={createOrderMutation.isPending} 
+                      data-testid="button-place-order"
+                    >
+                      {createOrderMutation.isPending ? (
+                        <span className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent" />
+                          Processing Order...
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2">
+                          <Lock className="h-4 w-4" />
+                          Proceed to Secure Payment
+                        </span>
+                      )}
                     </Button>
                   </form>
                 </Form>
@@ -387,11 +476,11 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
 
           {/* Order Summary */}
           <div>
-            <Card className="sticky top-24">
-              <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
+            <Card className="sticky top-24 shadow-lg">
+              <CardHeader className="border-b bg-card">
+                <CardTitle className="text-lg">Order Summary</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-6">
                 {cartItems.map((item) => {
                   const displayPrice = parseFloat(item.product.price).toFixed(2);
                   const lineTotal = (parseFloat(item.product.price) * item.quantity).toFixed(2);
