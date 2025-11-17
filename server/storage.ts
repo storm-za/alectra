@@ -1,6 +1,6 @@
 import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type CreateOrderRequest } from "@shared/schema";
 import { db } from "./db";
-import { eq, sql, and, or, like, gte, lte, asc, desc } from "drizzle-orm";
+import { eq, sql, and, or, like, gte, lte, asc, desc, inArray } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -201,7 +201,7 @@ export class DatabaseStorage implements IStorage {
       // 1. Fetch all products and validate stock
       const productIds = request.items.map(item => item.productId);
       const fetchedProducts = await tx.select().from(products).where(
-        sql`${products.id} = ANY(${productIds})`
+        inArray(products.id, productIds)
       );
 
       if (fetchedProducts.length !== request.items.length) {
