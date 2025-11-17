@@ -404,7 +404,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Initialize Paystack transaction
       const paystackData = {
         email: order.customerEmail,
-        amount: Math.round(parseFloat(order.total as any) * 100), // Paystack expects amount in kobo (cents)
+        amount: Math.round(parseFloat(order.total as any) * 100), // Paystack expects amount in cents
+        currency: "ZAR", // South African Rand
         reference: `ALEC-${Date.now()}-${orderId.substring(0, 8)}`,
         metadata: {
           orderId: order.id,
