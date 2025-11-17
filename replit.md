@@ -10,6 +10,22 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**November 17, 2025 - Critical Bug Fix & Modern Checkout Design**
+- Fixed critical "malformed array literal" database error preventing order creation
+- Issue: Request body was spreading items array into orders table insert, causing PostgreSQL error
+- Solution: Destructured items from request before database insert using `const { items, ...orderData } = request`
+- Modernized checkout page with professional e-commerce design:
+  - Added 3-step progress indicator (Delivery → Payment → Confirmation)
+  - Added security header with shield icon and "Secure Checkout" messaging
+  - Added icons to all form fields (User, Mail, Phone, Home)
+  - Increased input heights to h-11 for better mobile usability
+  - Added trust signals section with Lock, CreditCard, and Truck icons
+  - Updated submit button to "Proceed to Secure Payment" with loading spinner
+  - Added shadow-lg to cards for depth and modern appearance
+  - Changed background to bg-muted/30 for subtle visual hierarchy
+  - All new elements include proper data-testid attributes for testing
+- Paystack integration ready (awaiting VITE_PAYSTACK_PUBLIC_KEY for testing)
+
 **November 15, 2025 - Price Update from Old Website**
 - Updated product prices to match alectra.co.za website
 - Successfully updated 45 products with current pricing from old site
