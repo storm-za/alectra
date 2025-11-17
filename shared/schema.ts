@@ -56,6 +56,8 @@ export const orders = pgTable("orders", {
   vat: decimal("vat", { precision: 10, scale: 2 }).notNull(),
   total: decimal("total", { precision: 10, scale: 2 }).notNull(),
   status: text("status").notNull().default("pending"),
+  paymentReference: text("payment_reference"),
+  paymentStatus: text("payment_status").notNull().default("pending"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -275,3 +277,24 @@ export const loginSchema = z.object({
 });
 
 export type LoginData = z.infer<typeof loginSchema>;
+
+export const paystackInitializeResponseSchema = z.object({
+  authorizationUrl: z.string(),
+  accessCode: z.string(),
+  reference: z.string(),
+});
+
+export type PaystackInitializeResponse = z.infer<typeof paystackInitializeResponseSchema>;
+
+export const paystackVerifyResponseSchema = z.object({
+  status: z.string(),
+  message: z.string().optional(),
+  data: z.object({
+    orderId: z.string(),
+    amount: z.number(),
+    paidAt: z.string().optional(),
+    reference: z.string(),
+  }).optional(),
+});
+
+export type PaystackVerifyResponse = z.infer<typeof paystackVerifyResponseSchema>;

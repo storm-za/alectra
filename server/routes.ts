@@ -383,6 +383,130 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Payment routes
+  app.post("/api/payment/initialize", async (req, res) => {
+    try {
+      if (!process.env.PAYSTACK_SECRET_KEY) {
+        return res.status(500).json({ message: "Payment system configuration error. Please contact support." });
+      }
+
+      const { orderId } = req.body;
+      
+      if (!orderId) {
+        return res.status(400).json({ message: "Order ID is required" });
+      }
+
+      const order = await storage.getOrderById(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Initialize Paystack transaction
+      const paystackData = {
+        email: order.customerEmail,
+        amount: Math.round(parseFloat(order.total as any) * 100), // Paystack expects amount in kobo (cents)
+        reference: `ALEC-${Date.now()}-${orderId.substring(0, 8)}`,
+        metadata: {
+          orderId: order.id,
+          customerName: order.customerName,
+          customerPhone: order.customerPhone,
+        },
+      };
+
+      const paystackResponse = await fetch("https://api.paystack.co/transaction/initialize", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(paystackData),
+      });
+
+      const responseData = await paystackResponse.json();
+
+      if (!paystackResponse.ok) {
+        return res.status(500).json({ 
+          message: "Failed to initialize payment",
+          error: responseData.message 
+        });
+      }
+
+      // Update order with payment reference
+      await storage.updateOrderPaymentReference(orderId, paystackData.reference);
+
+      res.json({
+        authorizationUrl: responseData.data.authorization_url,
+        accessCode: responseData.data.access_code,
+        reference: paystackData.reference,
+      });
+    } catch (error: any) {
+      console.error("Payment initialization error:", error);
+      res.status(500).json({ message: error.message || "Failed to initialize payment" });
+    }
+  });
+
+  app.get("/api/payment/verify/:reference", async (req, res) => {
+    try {
+      if (!process.env.PAYSTACK_SECRET_KEY) {
+        return res.status(500).json({ message: "Payment system configuration error. Please contact support." });
+      }
+
+      const { reference } = req.params;
+
+      if (!reference) {
+        return res.status(400).json({ message: "Payment reference is required" });
+      }
+
+      // Verify payment with Paystack
+      const paystackResponse = await fetch(
+        `https://api.paystack.co/transaction/verify/${reference}`,
+        {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+          },
+        }
+      );
+
+      const responseData = await paystackResponse.json();
+
+      if (!paystackResponse.ok) {
+        return res.status(500).json({ 
+          message: "Failed to verify payment",
+          error: responseData.message 
+        });
+      }
+
+      const paymentData = responseData.data;
+
+      // Check if payment was successful
+      if (paymentData.status === "success") {
+        // Update order payment status
+        const orderId = paymentData.metadata.orderId;
+        await storage.updateOrderPaymentStatus(orderId, "paid", reference);
+
+        res.json({
+          status: "success",
+          message: "Payment verified successfully",
+          data: {
+            orderId: orderId,
+            amount: paymentData.amount / 100, // Convert from kobo back to naira
+            paidAt: paymentData.paid_at,
+            reference: reference,
+          },
+        });
+      } else {
+        res.json({
+          status: paymentData.status,
+          message: "Payment not successful",
+        });
+      }
+    } catch (error: any) {
+      console.error("Payment verification error:", error);
+      res.status(500).json({ message: error.message || "Failed to verify payment" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

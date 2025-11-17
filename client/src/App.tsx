@@ -12,6 +12,7 @@ import Products from "@/pages/Products";
 import ProductDetail from "@/pages/ProductDetail";
 import CategoryPage from "@/pages/CategoryPage";
 import Checkout from "@/pages/Checkout";
+import OrderSuccess from "@/pages/OrderSuccess";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Account from "@/pages/Account";
@@ -98,6 +99,9 @@ function Router() {
           </Route>
           <Route path="/checkout">
             <Checkout cartItems={cartItems} onClearCart={clearCart} />
+          </Route>
+          <Route path="/order-success">
+            <OrderSuccess />
           </Route>
           <Route path="/login">
             <Login />

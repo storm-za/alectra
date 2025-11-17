@@ -27,7 +27,7 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import type { CartItem, UserAddress } from "@shared/schema";
+import type { CartItem, UserAddress, PaystackInitializeResponse, PaystackVerifyResponse } from "@shared/schema";
 import { MapPin, BadgePercent } from "lucide-react";
 
 const checkoutSchema = z.object({
@@ -113,15 +113,81 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
         })),
       };
 
-      return await apiRequest("POST", "/api/orders", orderData);
+      const res = await apiRequest("POST", "/api/orders", orderData);
+      return await res.json();
     },
-    onSuccess: () => {
-      toast({
-        title: "Order Placed Successfully!",
-        description: "Thank you for your order. We'll contact you shortly with payment details.",
-      });
-      onClearCart();
-      navigate("/");
+    onSuccess: async (orderResult: { order: any; items: any[] }) => {
+      try {
+        const order = orderResult.order;
+        const paymentRes = await apiRequest("POST", "/api/payment/initialize", {
+          orderId: order.id,
+        });
+        const paymentData: PaystackInitializeResponse = await paymentRes.json();
+
+        // Initialize Paystack inline payment
+        const PaystackPop = (window as any).PaystackPop;
+        if (!PaystackPop) {
+          toast({
+            title: "Payment Error",
+            description: "Payment system not loaded. Please refresh and try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        const handler = PaystackPop.setup({
+          key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
+          email: order.customerEmail,
+          amount: Math.round(parseFloat(order.total) * 100),
+          ref: paymentData.reference,
+          metadata: {
+            orderId: order.id,
+            customerName: order.customerName,
+          },
+          onClose: function() {
+            toast({
+              title: "Payment Cancelled",
+              description: "You closed the payment window. Your order is saved and pending payment.",
+              variant: "destructive",
+            });
+          },
+          callback: async function(paystackResponse: any) {
+            try {
+              const verifyRes = await apiRequest("GET", `/api/payment/verify/${paystackResponse.reference}`);
+              const verifyData: PaystackVerifyResponse = await verifyRes.json();
+              
+              if (verifyData.status === "success" && verifyData.data) {
+                toast({
+                  title: "Payment Successful!",
+                  description: "Your order has been confirmed and paid.",
+                });
+                onClearCart();
+                navigate(`/order-success?reference=${paystackResponse.reference}&orderId=${verifyData.data.orderId}`);
+              } else {
+                toast({
+                  title: "Payment Failed",
+                  description: verifyData.message || "Payment verification failed. Please contact support.",
+                  variant: "destructive",
+                });
+              }
+            } catch (error: any) {
+              toast({
+                title: "Verification Error",
+                description: error.message || "Failed to verify payment",
+                variant: "destructive",
+              });
+            }
+          },
+        });
+
+        handler.openIframe();
+      } catch (error: any) {
+        toast({
+          title: "Payment Error",
+          description: error.message || "Failed to initialize payment",
+          variant: "destructive",
+        });
+      }
     },
     onError: (error: any) => {
       toast({

@@ -283,6 +283,31 @@ export class DatabaseStorage implements IStorage {
     return ordersWithItems;
   }
 
+  async getOrderById(orderId: string): Promise<Order | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.id, orderId));
+    return order || undefined;
+  }
+
+  async updateOrderPaymentReference(orderId: string, paymentReference: string): Promise<void> {
+    await db.update(orders)
+      .set({ paymentReference })
+      .where(eq(orders.id, orderId));
+  }
+
+  async updateOrderPaymentStatus(orderId: string, paymentStatus: string, paymentReference?: string): Promise<void> {
+    const updateData: any = { paymentStatus };
+    if (paymentStatus === "paid") {
+      updateData.status = "paid";
+    }
+    if (paymentReference) {
+      updateData.paymentReference = paymentReference;
+    }
+    
+    await db.update(orders)
+      .set(updateData)
+      .where(eq(orders.id, orderId));
+  }
+
   // User Addresses
   async getUserAddresses(userId: string): Promise<UserAddress[]> {
     return await db.select().from(userAddresses).where(eq(userAddresses.userId, userId)).orderBy(desc(userAddresses.isDefault), desc(userAddresses.createdAt));
