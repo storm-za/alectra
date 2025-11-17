@@ -242,9 +242,16 @@ export class DatabaseStorage implements IStorage {
       const total = subtotal + vat;
 
       // 4. Create the order with server-controlled status
-      const { items, ...orderData } = request;
       const [createdOrder] = await tx.insert(orders).values({
-        ...orderData,
+        customerName: request.customerName,
+        customerEmail: request.customerEmail,
+        customerPhone: request.customerPhone,
+        deliveryAddress: request.deliveryAddress,
+        deliveryCity: request.deliveryCity,
+        deliveryProvince: request.deliveryProvince,
+        deliveryPostalCode: request.deliveryPostalCode,
+        paymentReference: request.paymentReference,
+        paymentStatus: request.paymentStatus,
         userId: userId || null,
         subtotal: subtotal.toFixed(2),
         vat: vat.toFixed(2),
