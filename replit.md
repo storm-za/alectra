@@ -10,10 +10,12 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**November 17, 2025 - Critical Bug Fix & Modern Checkout Design**
+**November 17, 2025 - Critical Bug Fixes & Modern Checkout Design**
 - Fixed critical "malformed array literal" database error preventing order creation
-- Issue: Request body was spreading items array into orders table insert, causing PostgreSQL error
-- Solution: Destructured items from request before database insert using `const { items, ...orderData } = request`
+- Root cause: Using raw SQL with JavaScript array in product lookup query
+- Solution: Replaced `sql\`${products.id} = ANY(${productIds})\`` with `inArray(products.id, productIds)`
+- Fixed Paystack payment initialization error "Attribute callback must be a valid function"
+- Solution: Changed `callback` to `onSuccess` to match Paystack inline API specification
 - Modernized checkout page with professional e-commerce design:
   - Added 3-step progress indicator (Delivery → Payment → Confirmation)
   - Added security header with shield icon and "Secure Checkout" messaging
