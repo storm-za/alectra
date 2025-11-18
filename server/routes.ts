@@ -414,6 +414,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
       };
 
+      console.log("Initializing Paystack payment:", { 
+        amount: paystackData.amount, 
+        currency: paystackData.currency,
+        email: paystackData.email 
+      });
+
       const paystackResponse = await fetch("https://api.paystack.co/transaction/initialize", {
         method: "POST",
         headers: {
@@ -424,6 +430,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       const responseData = await paystackResponse.json();
+      console.log("Paystack response:", { 
+        status: paystackResponse.status, 
+        success: responseData.status,
+        message: responseData.message 
+      });
 
       if (!paystackResponse.ok) {
         return res.status(500).json({ 
