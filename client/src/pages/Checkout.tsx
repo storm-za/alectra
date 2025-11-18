@@ -135,7 +135,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           return;
         }
 
-        // Use Paystack Popup with access code from backend
+        // Use Paystack Popup with newTransaction (this properly fires onSuccess callback)
         const PaystackPop = (window as any).PaystackPop;
         if (!PaystackPop) {
           toast({
@@ -146,8 +146,20 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           return;
         }
 
+        const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
+        if (!publicKey) {
+          toast({
+            title: "Configuration Error",
+            description: "Payment system not configured. Please contact support.",
+            variant: "destructive",
+          });
+          return;
+        }
+
         const popup = new PaystackPop();
-        popup.resumeTransaction(initData.accessCode, {
+        popup.newTransaction({
+          key: publicKey,
+          reference: initData.reference,
           onSuccess: (paystackResponse: any) => {
             // Verify payment on backend
             apiRequest("GET", `/api/payment/verify/${paystackResponse.reference}`)
