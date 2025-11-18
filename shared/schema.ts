@@ -54,6 +54,7 @@ export const orders = pgTable("orders", {
   deliveryPostalCode: text("delivery_postal_code").notNull(),
   subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
   vat: decimal("vat", { precision: 10, scale: 2 }).notNull(),
+  tradeDiscount: decimal("trade_discount", { precision: 10, scale: 2 }),
   total: decimal("total", { precision: 10, scale: 2 }).notNull(),
   status: text("status").notNull().default("pending"),
   paymentReference: text("payment_reference"),

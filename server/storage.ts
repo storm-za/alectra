@@ -211,8 +211,8 @@ export class DatabaseStorage implements IStorage {
       // Create a map for easy lookup
       const productMap = new Map(fetchedProducts.map(p => [p.id, p]));
 
-      // 2. Validate stock and calculate totals
-      let subtotal = 0;
+      // 2. Validate stock and calculate totals (prices are VAT-inclusive)
+      let totalVatInclusive = 0;
       const itemsToCreate: Array<{ productId: string; quantity: number; priceAtPurchase: string; lineSubtotal: string }> = [];
 
       for (const item of request.items) {
@@ -226,22 +226,36 @@ export class DatabaseStorage implements IStorage {
         }
 
         const price = parseFloat(product.price);
-        const lineSubtotal = price * item.quantity;
-        subtotal += lineSubtotal;
+        const lineTotal = price * item.quantity;
+        totalVatInclusive += lineTotal;
 
         itemsToCreate.push({
           productId: product.id,
           quantity: item.quantity,
           priceAtPurchase: product.price,
-          lineSubtotal: lineSubtotal.toFixed(2),
+          lineSubtotal: lineTotal.toFixed(2),
         });
       }
 
-      // 3. Calculate VAT and total (15% VAT)
-      const vat = subtotal * 0.15;
-      const total = subtotal + vat;
+      // 3. Check if user has approved trade account for 15% discount
+      let tradeDiscount = 0;
+      if (userId) {
+        const [application] = await tx.select()
+          .from(tradeApplications)
+          .where(sql`${tradeApplications.userId} = ${userId} AND ${tradeApplications.approved} = true`)
+          .limit(1);
+        
+        if (application) {
+          tradeDiscount = totalVatInclusive * 0.15;
+        }
+      }
 
-      // 4. Create the order with server-controlled status
+      // 4. Calculate final amounts (prices already include VAT)
+      const totalAfterDiscount = totalVatInclusive - tradeDiscount;
+      const subtotalExclVat = totalAfterDiscount / 1.15;
+      const vat = totalAfterDiscount - subtotalExclVat;
+
+      // 5. Create the order with server-controlled status
       const [createdOrder] = await tx.insert(orders).values({
         customerName: request.customerName,
         customerEmail: request.customerEmail,
@@ -253,13 +267,14 @@ export class DatabaseStorage implements IStorage {
         paymentReference: request.paymentReference,
         paymentStatus: request.paymentStatus,
         userId: userId || null,
-        subtotal: subtotal.toFixed(2),
+        subtotal: subtotalExclVat.toFixed(2),
         vat: vat.toFixed(2),
-        total: total.toFixed(2),
+        tradeDiscount: tradeDiscount > 0 ? tradeDiscount.toFixed(2) : null,
+        total: totalAfterDiscount.toFixed(2),
         status: "pending",
       }).returning();
 
-      // 5. Create order items
+      // 6. Create order items
       const createdItems = await tx.insert(orderItems).values(
         itemsToCreate.map(item => ({
           ...item,
@@ -267,7 +282,7 @@ export class DatabaseStorage implements IStorage {
         }))
       ).returning();
 
-      // 6. Decrement stock for each product
+      // 7. Decrement stock for each product
       for (const item of request.items) {
         await tx.update(products)
           .set({ stock: sql`${products.stock} - ${item.quantity}` })
