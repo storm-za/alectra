@@ -120,7 +120,22 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       try {
         const order = orderResult.order;
 
-        // Initialize Paystack inline payment directly (no backend initialization needed)
+        // Initialize payment via backend (required for 3D Secure)
+        const initResponse = await apiRequest("POST", "/api/payment/initialize", {
+          orderId: order.id,
+        });
+        const initData = await initResponse.json();
+
+        if (!initData.accessCode) {
+          toast({
+            title: "Payment Error",
+            description: "Failed to initialize payment. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // Use Paystack Popup with access code
         const PaystackPop = (window as any).PaystackPop;
         if (!PaystackPop) {
           toast({
@@ -131,28 +146,9 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           return;
         }
 
-        // Generate simple unique payment reference
-        const paymentReference = `${Date.now()}`;
-        
-        // Update order with payment reference before opening popup
-        await apiRequest("PATCH", `/api/orders/${order.id}/payment-reference`, {
-          reference: paymentReference,
-        });
-
-        const handler = PaystackPop.setup({
-          key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
-          email: order.customerEmail,
-          amount: Math.round(parseFloat(order.total) * 100),
-          currency: "ZAR",
-          ref: paymentReference,
-          onClose: function() {
-            toast({
-              title: "Payment Cancelled",
-              description: "You closed the payment window. Your order is saved and pending payment.",
-              variant: "destructive",
-            });
-          },
-          callback: function(paystackResponse: any) {
+        const popup = new PaystackPop();
+        popup.resumeTransaction(initData.accessCode, {
+          onSuccess: function(paystackResponse: any) {
             // Verify payment on backend
             apiRequest("GET", `/api/payment/verify/${paystackResponse.reference}`)
               .then(verifyRes => verifyRes.json())
@@ -180,9 +176,14 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                 });
               });
           },
+          onCancel: function() {
+            toast({
+              title: "Payment Cancelled",
+              description: "You closed the payment window. Your order is saved and pending payment.",
+              variant: "destructive",
+            });
+          },
         });
-
-        handler.openIframe();
       } catch (error: any) {
         toast({
           title: "Payment Error",
