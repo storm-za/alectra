@@ -135,7 +135,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           return;
         }
 
-        // Use Paystack Popup with access code
+        // Use Paystack Popup with access code from backend
         const PaystackPop = (window as any).PaystackPop;
         if (!PaystackPop) {
           toast({
@@ -146,7 +146,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           return;
         }
 
-        const popup = PaystackPop.newTransaction();
+        const popup = new PaystackPop();
         popup.resumeTransaction(initData.accessCode, {
           onSuccess: (paystackResponse: any) => {
             // Verify payment on backend
