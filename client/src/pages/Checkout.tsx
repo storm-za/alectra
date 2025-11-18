@@ -156,7 +156,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
               variant: "destructive",
             });
           },
-          onSuccess: async function(paystackResponse: any) {
+          callback: async function(paystackResponse: any) {
             try {
               const verifyRes = await apiRequest("GET", `/api/payment/verify/${paystackResponse.reference}`);
               const verifyData: PaystackVerifyResponse = await verifyRes.json();
