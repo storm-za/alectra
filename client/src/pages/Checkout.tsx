@@ -139,6 +139,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
           email: order.customerEmail,
           amount: Math.round(parseFloat(order.total) * 100),
+          currency: "ZAR",
           ref: paymentData.reference,
           metadata: {
             orderId: order.id,
