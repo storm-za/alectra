@@ -131,8 +131,8 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           return;
         }
 
-        // Generate unique payment reference
-        const paymentReference = `ALEC-${Date.now()}-${order.id.substring(0, 8)}`;
+        // Generate simple unique payment reference
+        const paymentReference = `${Date.now()}`;
         
         // Update order with payment reference before opening popup
         await apiRequest("PATCH", `/api/orders/${order.id}/payment-reference`, {
@@ -145,11 +145,6 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           amount: Math.round(parseFloat(order.total) * 100),
           currency: "ZAR",
           ref: paymentReference,
-          metadata: {
-            orderId: order.id,
-            customerName: order.customerName,
-            customerPhone: order.customerPhone,
-          },
           onClose: function() {
             toast({
               title: "Payment Cancelled",
