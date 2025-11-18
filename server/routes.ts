@@ -547,7 +547,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
               })),
               subtotal: order.subtotal,
               vat: order.vat,
+              shippingCost: order.shippingCost,
               total: order.total,
+              tradeDiscount: order.tradeDiscount || undefined,
             });
             console.log(`Order confirmation emails sent for order ${orderId}`);
           }

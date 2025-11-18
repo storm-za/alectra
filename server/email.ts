@@ -231,9 +231,18 @@ export class EmailService {
   }
 
   private generateInternalNotificationHtml(data: OrderEmailData): string {
-    const itemsSummary = data.items
-      .map((item) => `${item.quantity}x ${item.productName}`)
-      .join(", ");
+    const itemsHtml = data.items
+      .map(
+        (item) => `
+        <tr>
+          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${item.productName}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">R${item.price}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">R${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
+        </tr>
+      `
+      )
+      .join("");
 
     return `
       <!DOCTYPE html>
@@ -273,16 +282,6 @@ export class EmailService {
                       </tr>
                       <tr>
                         <td style="padding: 8px 0;">
-                          <strong style="color: #374151;">Total Amount:</strong> <span style="color: #FF9800; font-weight: bold; font-size: 18px;">R${data.total}</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 8px 0;">
-                          <strong style="color: #374151;">Number of Items:</strong> ${data.items.reduce((sum, item) => sum + item.quantity, 0)}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 8px 0;">
                           <strong style="color: #374151;">Customer Name:</strong> ${data.customerName}
                         </td>
                       </tr>
@@ -298,12 +297,47 @@ export class EmailService {
                       </tr>
                     </table>
 
-                    <div style="background-color: #eff6ff; padding: 15px; border-radius: 6px; border-left: 4px solid #3b82f6; margin-bottom: 20px;">
-                      <p style="margin: 0; color: #1e40af; font-size: 14px;">
-                        <strong>Items Ordered:</strong><br>
-                        ${itemsSummary}
-                      </p>
-                    </div>
+                    <!-- Order items table -->
+                    <h3 style="margin: 0 0 15px 0; color: #111827; font-size: 18px;">Order Items</h3>
+                    <table role="presentation" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                      <thead>
+                        <tr style="background-color: #f3f4f6;">
+                          <th style="padding: 12px; text-align: left; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb;">Product</th>
+                          <th style="padding: 12px; text-align: center; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb;">Qty</th>
+                          <th style="padding: 12px; text-align: right; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb;">Price</th>
+                          <th style="padding: 12px; text-align: right; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb;">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${itemsHtml}
+                      </tbody>
+                    </table>
+
+                    <!-- Order totals -->
+                    <table role="presentation" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                      <tr>
+                        <td style="padding: 8px 0; text-align: right; color: #6b7280;">Subtotal:</td>
+                        <td style="padding: 8px 0; text-align: right; width: 120px; font-weight: 600;">R${data.subtotal}</td>
+                      </tr>
+                      ${data.tradeDiscount ? `
+                      <tr>
+                        <td style="padding: 8px 0; text-align: right; color: #10b981;">Trade Discount (15%):</td>
+                        <td style="padding: 8px 0; text-align: right; width: 120px; font-weight: 600; color: #10b981;">-R${data.tradeDiscount}</td>
+                      </tr>
+                      ` : ''}
+                      <tr>
+                        <td style="padding: 8px 0; text-align: right; color: #6b7280;">VAT (15%):</td>
+                        <td style="padding: 8px 0; text-align: right; width: 120px; font-weight: 600;">R${data.vat}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 8px 0; text-align: right; color: #6b7280;">Shipping:</td>
+                        <td style="padding: 8px 0; text-align: right; width: 120px; font-weight: 600; ${parseFloat(data.shippingCost) === 0 ? 'color: #10b981;' : ''}">${parseFloat(data.shippingCost) === 0 ? 'FREE' : `R${data.shippingCost}`}</td>
+                      </tr>
+                      <tr style="border-top: 2px solid #e5e7eb;">
+                        <td style="padding: 12px 0; text-align: right; font-size: 18px; font-weight: bold; color: #111827;">Total Amount:</td>
+                        <td style="padding: 12px 0; text-align: right; width: 120px; font-size: 18px; font-weight: bold; color: #FF9800;">R${data.total}</td>
+                      </tr>
+                    </table>
 
                     <div style="background-color: #fef3c7; padding: 15px; border-radius: 6px; border-left: 4px solid #f59e0b;">
                       <p style="margin: 0; color: #92400e; font-size: 14px;">
