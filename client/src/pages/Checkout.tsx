@@ -156,32 +156,33 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
               variant: "destructive",
             });
           },
-          callback: async function(paystackResponse: any) {
-            try {
-              const verifyRes = await apiRequest("GET", `/api/payment/verify/${paystackResponse.reference}`);
-              const verifyData: PaystackVerifyResponse = await verifyRes.json();
-              
-              if (verifyData.status === "success" && verifyData.data) {
+          callback: function(paystackResponse: any) {
+            // Verify payment on backend
+            apiRequest("GET", `/api/payment/verify/${paystackResponse.reference}`)
+              .then(verifyRes => verifyRes.json())
+              .then((verifyData: PaystackVerifyResponse) => {
+                if (verifyData.status === "success" && verifyData.data) {
+                  toast({
+                    title: "Payment Successful!",
+                    description: "Your order has been confirmed and paid.",
+                  });
+                  onClearCart();
+                  navigate(`/order-success?reference=${paystackResponse.reference}&orderId=${verifyData.data.orderId}`);
+                } else {
+                  toast({
+                    title: "Payment Failed",
+                    description: verifyData.message || "Payment verification failed. Please contact support.",
+                    variant: "destructive",
+                  });
+                }
+              })
+              .catch((error: any) => {
                 toast({
-                  title: "Payment Successful!",
-                  description: "Your order has been confirmed and paid.",
-                });
-                onClearCart();
-                navigate(`/order-success?reference=${paystackResponse.reference}&orderId=${verifyData.data.orderId}`);
-              } else {
-                toast({
-                  title: "Payment Failed",
-                  description: verifyData.message || "Payment verification failed. Please contact support.",
+                  title: "Verification Error",
+                  description: error.message || "Failed to verify payment",
                   variant: "destructive",
                 });
-              }
-            } catch (error: any) {
-              toast({
-                title: "Verification Error",
-                description: error.message || "Failed to verify payment",
-                variant: "destructive",
               });
-            }
           },
         });
 
