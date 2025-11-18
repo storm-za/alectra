@@ -159,6 +159,9 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
         const popup = new PaystackPop();
         popup.newTransaction({
           key: publicKey,
+          email: order.customerEmail,
+          amount: Math.round(parseFloat(order.total as any) * 100), // Paystack expects kobo (cents)
+          currency: "ZAR",
           reference: initData.reference,
           onSuccess: (paystackResponse: any) => {
             // Verify payment on backend
