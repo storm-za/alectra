@@ -220,7 +220,7 @@ export default function Quote() {
                       <FormLabel>Project Details *</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Please describe your requirements, quantities needed, installation address, and any specific questions..."
+                          placeholder="Please describe your requirements, quantities needed, and any specific questions..."
                           className="min-h-[150px]"
                           {...field}
                           data-testid="textarea-message"
