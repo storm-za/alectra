@@ -254,6 +254,12 @@ export class DatabaseStorage implements IStorage {
       const totalAfterDiscount = totalVatInclusive - tradeDiscount;
       const subtotalExclVat = totalAfterDiscount / 1.15;
       const vat = totalAfterDiscount - subtotalExclVat;
+      
+      // Calculate shipping cost: R110 delivery fee, FREE if order is R2500+
+      const shippingCost = totalAfterDiscount >= 2500 ? 0 : 110;
+      
+      // Final total includes shipping
+      const finalTotal = totalAfterDiscount + shippingCost;
 
       // 5. Create the order with server-controlled status
       const [createdOrder] = await tx.insert(orders).values({
@@ -270,7 +276,8 @@ export class DatabaseStorage implements IStorage {
         subtotal: subtotalExclVat.toFixed(2),
         vat: vat.toFixed(2),
         tradeDiscount: tradeDiscount > 0 ? tradeDiscount.toFixed(2) : null,
-        total: totalAfterDiscount.toFixed(2),
+        shippingCost: shippingCost.toFixed(2),
+        total: finalTotal.toFixed(2),
         status: "pending",
       }).returning();
 
