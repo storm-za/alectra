@@ -239,7 +239,12 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   // Extract VAT from the final total (after discount)
   const subtotal = totalAfterDiscount / 1.15;
   const vat = subtotal * 0.15;
-  const total = totalAfterDiscount;
+  
+  // Calculate shipping cost: R110 delivery fee, FREE if order is R2500+
+  const shippingCost = totalAfterDiscount >= 2500 ? 0 : 110;
+  
+  // Final total includes shipping
+  const total = totalAfterDiscount + shippingCost;
 
   return (
     <div className="min-h-screen bg-muted/30 py-12">
@@ -462,7 +467,9 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                         <Truck className="h-5 w-5 text-primary flex-shrink-0" />
                         <div>
                           <p className="text-sm font-medium">Fast Delivery</p>
-                          <p className="text-xs text-muted-foreground">Nationwide via The Courier Guy</p>
+                          <p className="text-xs text-muted-foreground">
+                            Nationwide via The Courier Guy • Free shipping on orders R2500+
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -546,6 +553,12 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       <span data-testid="text-summary-trade-discount">- R {tradeDiscount.toFixed(2)}</span>
                     </div>
                   )}
+                  <div className="flex justify-between text-sm">
+                    <span>Shipping</span>
+                    <span data-testid="text-summary-shipping" className={shippingCost === 0 ? "text-primary font-medium" : ""}>
+                      {shippingCost === 0 ? "FREE" : `R ${shippingCost.toFixed(2)}`}
+                    </span>
+                  </div>
                   <Separator />
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
