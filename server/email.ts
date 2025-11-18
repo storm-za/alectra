@@ -17,6 +17,7 @@ export interface OrderEmailData {
   }>;
   subtotal: string;
   vat: string;
+  shippingCost: string;
   total: string;
   tradeDiscount?: string;
 }
@@ -178,6 +179,10 @@ export class EmailService {
                       <tr>
                         <td style="padding: 8px 0; text-align: right; color: #6b7280;">VAT (15%):</td>
                         <td style="padding: 8px 0; text-align: right; width: 120px; font-weight: 600;">R${data.vat}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 8px 0; text-align: right; color: #6b7280;">Shipping:</td>
+                        <td style="padding: 8px 0; text-align: right; width: 120px; font-weight: 600; ${parseFloat(data.shippingCost) === 0 ? 'color: #10b981;' : ''}">${parseFloat(data.shippingCost) === 0 ? 'FREE' : `R${data.shippingCost}`}</td>
                       </tr>
                       <tr style="border-top: 2px solid #e5e7eb;">
                         <td style="padding: 12px 0; text-align: right; font-size: 18px; font-weight: bold; color: #111827;">Total Paid:</td>
