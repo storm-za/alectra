@@ -2,242 +2,70 @@
 
 ## Overview
 
-Alectra Solutions is a B2B/B2C eCommerce platform specializing in security and automation products for the South African market. The platform serves both retail customers and professional installers, offering gate motors, batteries, remotes, CCTV systems, intercoms, and related security equipment. The application features a full-stack TypeScript implementation with a modern React frontend and Express backend, designed for conversion-optimized shopping experiences with professional security industry aesthetics.
+Alectra Solutions is a B2B/B2C eCommerce platform for security and automation products in South Africa, targeting both retail and professional installers. The platform aims to provide a conversion-optimized shopping experience with a professional security industry aesthetic, featuring a full-stack TypeScript implementation with React and Express.
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes
-
-**November 18, 2025 - Order Confirmation Email System**
-- Implemented automated order confirmation email system using nodemailer with Gmail SMTP
-- Created EmailService class in server/email.ts with security-first design:
-  - Validates GMAIL_USER and GMAIL_APP_PASSWORD environment variables on startup
-  - Sends two separate emails after successful payment verification
-  - Independent error handling: customer email failures throw errors, business email failures only log
-- **Customer Confirmation Email**: Professional HTML template with Alectra branding (orange/yellow gradient)
-  - Full order details: reference number, items with quantities and prices
-  - Complete delivery information including full address and phone
-  - Subtotal, VAT (15%), trade discount (if applicable), and total
-  - "What happens next?" section with processing timeline
-  - Contact information and Alectra branding footer
-- **Internal Business Notification**: Privacy-protected summary sent to solutionsalectra@gmail.com
-  - Order reference, total amount, item count, and item list
-  - Customer name and email for contact purposes
-  - Delivery city and province only (NOT full address or phone)
-  - Explicit security warning noting PII exclusion for data protection
-  - Directs staff to order management system for complete customer details
-- Security improvements prevent customer PII exposure if business Gmail account is compromised
-- Email sending triggered automatically after successful Paystack payment verification
-- Order flow: Payment → Verification → Order status update to "paid" → Send confirmation emails
-- Gmail credentials: GMAIL_USER (solutionsalectra@gmail.com) and GMAIL_APP_PASSWORD configured as secrets
-
-**November 17, 2025 - Critical Bug Fixes & Modern Checkout Design**
-- Fixed critical "malformed array literal" database error preventing order creation
-- Root cause: Using raw SQL with JavaScript array in product lookup query
-- Solution: Replaced `sql\`${products.id} = ANY(${productIds})\`` with `inArray(products.id, productIds)`
-- Fixed Paystack payment initialization error "Attribute callback must be a valid function"
-- Solution: Changed `callback` to `onSuccess` to match Paystack inline API specification
-- Modernized checkout page with professional e-commerce design:
-  - Added 3-step progress indicator (Delivery → Payment → Confirmation)
-  - Added security header with shield icon and "Secure Checkout" messaging
-  - Added icons to all form fields (User, Mail, Phone, Home)
-  - Increased input heights to h-11 for better mobile usability
-  - Added trust signals section with Lock, CreditCard, and Truck icons
-  - Updated submit button to "Proceed to Secure Payment" with loading spinner
-  - Added shadow-lg to cards for depth and modern appearance
-  - Changed background to bg-muted/30 for subtle visual hierarchy
-  - All new elements include proper data-testid attributes for testing
-- Paystack integration fully functional with ZAR currency support
-
-**November 15, 2025 - Price Update from Old Website**
-- Updated product prices to match alectra.co.za website
-- Successfully updated 45 products with current pricing from old site
-- All prices now reflect sale prices where available
-- Price ranges: R8.00 (junction boxes) to R10,799.00 (gate motors)
-- Script created: scripts/update-prices-from-website.ts for future price sync
-- Key updates include:
-  - Gate Motors: D10 Smart Turbo (R9,699), D5 Evo Smart (R5,099), Vantage 500 (R10,799)
-  - Remotes: Nova series (R159-R259), Gemini (R149-R165), Sentry (R145-R175)
-  - Intercoms: G-Speak Ultra (R951-R3,999), E.T Nice kits (R999-R3,060)
-  - Batteries: 12V range (R135-R550), 24V (R485)
-  - LP Gas: 9kg (R275), 19kg (R580), 48kg (R1,399)
-
-**November 13, 2025 - Category Consolidation & Product Count Fix**
-- Fixed product count display on category cards (was showing 0 for all categories)
-- Updated `getAllCategories()` query to use LEFT JOIN with COUNT aggregation for accurate counts
-- Made query SQL standards compliant by grouping by all selected columns
-- Merged Gate Motor Kits category into Gate Motors category
-- Moved all 43 products from Gate Motor Kits to Gate Motors (now 66 total products)
-- Deleted Gate Motor Kits category - reduced from 8 to 7 categories
-- Final category structure (7 categories, 117 total products):
-  - Gate Motors: 66 products (sliding, swing, automation kits, PCBs, chargers, accessories)
-  - CCTV Systems: 17 products (Hilook cameras, DVRs, power supplies)
-  - Remotes: 11 products (Centurion Nova, Gemini, Sentry, Absolute)
-  - Intercoms: 9 products (Centurion G-Speak, E.T Nice, Kocom)
-  - Batteries: 8 products (12V, 24V, lithium, gel batteries)
-  - LP Gas: 3 products (9kg, 19kg, 48kg cylinders)
-  - Electric Fencing: 3 products (beams, springs, warning lights)
-
-**November 13, 2025 - Brand Identity Update**
-- Updated entire site color scheme to match Alectra Solutions brand
-- Primary color: Orange (#FF9800, HSL 36 100% 50%)
-- Accent color: Yellow (#FFEB3B, HSL 54 100% 62%)
-- Applied warm neutral grays (hue 36°) throughout for cohesive branding
-- Updated both light and dark mode color palettes
-- Chart colors updated to brand palette
-- Replaced placeholder logo with actual Alectra Solutions logo (3x size)
-- All UI components automatically inherit brand colors
-
-**November 12, 2025 - Complete Product Migration (117 Products)**
-- Successfully migrated all 117 products from old alectra.co.za website
-- Downloaded and stored all 117 product images locally in attached_assets/products/
-- All product descriptions updated to match old website content exactly
-- Implemented expandable "read more..." feature for descriptions over 200 characters
-- Migration scripts: scripts/migrate-all-products.ts, scripts/update-descriptions.ts
-- Generated unique SKUs for all products (ALEC-XXXX-slug format)
-- All products include proper brands, pricing (R135 - R11,899), images, and descriptions
-- Product images served via Express static middleware at /attached_assets route
-
-**November 12, 2025 - Customer Account Features**
-- Added user_addresses table for saving delivery addresses
-- Implemented full address CRUD: GET/POST/PATCH/DELETE /api/user/addresses
-- Added GET /api/user/orders endpoint to retrieve user order history with items
-- Created Account page (/account) with three tabs:
-  - Profile: Display user information (name, email, phone)
-  - Order History: Show all orders with status badges, items, and delivery details
-  - Saved Addresses: Full CRUD operations with default address support
-- Updated Checkout page to pre-fill user data and show saved address selector
-- Added "My Account" link to Header user dropdown
-- All address operations validate user ownership for security
-
 ## System Architecture
 
 ### Frontend Architecture
 
-**Framework**: React 18 with TypeScript, using Vite as the build tool and development server.
-
-**UI Component System**: Utilizes shadcn/ui components (Radix UI primitives) following the "new-york" style variant. The design system is built on Tailwind CSS with a custom configuration emphasizing:
-- Professional security industry aesthetics (slate/blue color palette)
-- Mobile-first responsive design for the South African market
-- Conversion-optimized layouts with prominent CTAs
-- Custom spacing system using Tailwind scale (2, 4, 6, 8, 12, 16, 20, 24)
-- Inter font family for modern, professional typography
-
-**State Management**: 
-- React Query (TanStack Query) for server state management with custom query client configuration
-- Local React state (useState) for UI state like cart management, mobile menus, and form inputs
-- Shopping cart state is managed at the App component level and passed down to child components
-
-**Routing**: Wouter for client-side routing, chosen for its lightweight footprint compared to React Router.
-
-**Key Design Patterns**:
-- Component composition with prop drilling for cart functionality
-- Custom hooks for reusable logic (toast notifications, mobile detection)
-- Form handling with React Hook Form and Zod validation
-- Responsive layouts using CSS Grid and Flexbox with Tailwind utilities
+**Framework**: React 18 with TypeScript and Vite.
+**UI Component System**: shadcn/ui (Radix UI primitives) styled with Tailwind CSS, emphasizing professional security aesthetics, mobile-first responsiveness, and conversion-optimized layouts. Uses the Inter font family.
+**State Management**: React Query for server state, local React state for UI and cart management.
+**Routing**: Wouter for client-side routing.
+**Key Design Patterns**: Component composition, custom hooks, React Hook Form with Zod validation, responsive layouts using CSS Grid and Flexbox.
 
 ### Backend Architecture
 
-**Server Framework**: Express.js with TypeScript, running in ESM mode.
-
-**API Design**: RESTful API structure with route handlers organized by resource type:
-- `/api/auth` - User authentication (register, login, logout, me)
-- `/api/categories` - Category listing and detail endpoints
-- `/api/products` - Product catalog with filtering by category and featured status
-- `/api/orders` - Order creation with items (supports both authenticated and guest checkout)
-
-**Database Access Layer**: Storage abstraction pattern using an `IStorage` interface implemented by `DatabaseStorage` class. This provides:
-- Clear separation between business logic and data access
-- Type-safe database operations
-- Easy testability and potential for multiple storage implementations
-
-**Request/Response Flow**:
-1. Express middleware for JSON parsing with raw body preservation (for webhook verification)
-2. Custom logging middleware for API requests
-3. Route handlers delegate to storage layer
-4. Error handling with appropriate HTTP status codes
-5. Vite development middleware for serving frontend in development
-
-**Session Management**: Uses `connect-pg-simple` for PostgreSQL-backed session storage with express-session middleware configured in server/index.ts. Sessions persist for 30 days with httpOnly, secure (in production), and sameSite=lax cookie settings.
+**Server Framework**: Express.js with TypeScript (ESM mode).
+**API Design**: RESTful API for authentication, categories, products, and orders.
+**Database Access Layer**: `IStorage` interface implemented by `DatabaseStorage` for separation of concerns and type-safe operations.
+**Request/Response Flow**: Express middleware for JSON parsing, logging, and error handling.
+**Session Management**: PostgreSQL-backed sessions using `connect-pg-simple` and `express-session`, configured for 30-day persistence with secure cookie settings.
 
 ### Data Storage Solutions
 
-**Database**: PostgreSQL via Neon serverless driver with WebSocket support for serverless environments.
-
-**ORM**: Drizzle ORM chosen for:
-- Type-safe query building
-- Lightweight footprint
-- Excellent TypeScript integration
-- Migration support via drizzle-kit
-
-**Schema Design**:
-- `users` - User accounts with email (unique), bcrypt-hashed passwords, name, phone, role (customer/installer/admin)
-- `categories` - Product categorization with slug-based routing and product counts
-- `products` - Full product catalog with pricing, inventory, images, and featured flags
-- `orders` - Customer orders with delivery information, status tracking, and optional userId for authenticated purchases
-- `order_items` - Line items linking orders to products with quantities and prices
-
-**Key Design Decisions**:
-- UUIDs for primary keys using PostgreSQL's `gen_random_uuid()`
-- Decimal type for monetary values to maintain precision
-- Array type for product image galleries
-- Slug-based routing for SEO-friendly URLs
-- Timestamps for order tracking
+**Database**: PostgreSQL via Neon serverless driver.
+**ORM**: Drizzle ORM for type-safe query building and TypeScript integration.
+**Schema Design**: Includes `users`, `categories`, `products`, `orders`, and `order_items` tables. Key design decisions include UUIDs for primary keys, decimal types for monetary values, array types for image galleries, and slug-based routing.
 
 ### Authentication and Authorization
 
-**Implementation**: Full user authentication system implemented with session-based auth using bcrypt password hashing (12 salt rounds) and PostgreSQL-backed sessions.
-
-**Auth Endpoints**:
-- `POST /api/auth/register` - Creates new user account, hashes password, establishes session
-- `POST /api/auth/login` - Verifies credentials, establishes session
-- `POST /api/auth/logout` - Destroys user session
-- `GET /api/auth/me` - Returns current user data or null
-
-**Frontend Pages**:
-- `/login` - Login page with email/password form
-- `/register` - Registration page with full user details
-- Header component displays user menu when authenticated, login button when not
-
-**Security Features**:
-- Bcrypt password hashing with 12 salt rounds
-- Server-side session storage in PostgreSQL
-- HttpOnly cookies with SameSite protection
-- 30-day session lifetime
-- Duplicate email prevention
-- Guest checkout preserved (orders.userId is nullable)
-
-**User Roles**: customer (default), installer, admin (role-based access control ready)
+**Implementation**: Session-based authentication with bcrypt password hashing (12 salt rounds) and PostgreSQL-backed sessions.
+**Auth Endpoints**: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`.
+**Security Features**: Bcrypt hashing, server-side session storage, HttpOnly cookies with SameSite protection, 30-day session lifetime, duplicate email prevention, guest checkout support.
+**User Roles**: `customer` (default), `installer`, `admin`.
 
 ## External Dependencies
 
 ### Payment Processing
-- **Stripe**: Integration prepared with `@stripe/stripe-js` and `@stripe/react-stripe-js` for payment processing, though implementation details are not visible in provided code.
+- **Stripe**: Integrated for payment processing.
 
 ### Database Service
-- **Neon**: Serverless PostgreSQL database with WebSocket support for real-time capabilities and serverless deployment compatibility.
+- **Neon**: Serverless PostgreSQL database.
 
 ### Development Tools
-- **Vite**: Build tool and development server with HMR support
-- **Replit plugins**: Development banner, cartographer, and runtime error overlay for Replit environment
-- **TSX**: TypeScript execution for development server
+- **Vite**: Build tool and development server.
+- **Replit plugins**: For Replit environment enhancements.
+- **TSX**: TypeScript execution for development.
 
 ### UI Component Libraries
-- **Radix UI**: Comprehensive set of accessible, unstyled UI primitives (accordion, dialog, dropdown, popover, etc.)
-- **Tailwind CSS**: Utility-first CSS framework with custom configuration
-- **Lucide React**: Icon library for consistent iconography
-- **class-variance-authority**: Utility for creating variant-based component APIs
-- **cmdk**: Command palette component
+- **Radix UI**: Accessible, unstyled UI primitives.
+- **Tailwind CSS**: Utility-first CSS framework.
+- **Lucide React**: Icon library.
+- **class-variance-authority**: For variant-based component APIs.
+- **cmdk**: Command palette component.
 
 ### Form Handling
-- **React Hook Form**: Performant form state management
-- **Zod**: TypeScript-first schema validation
-- **@hookform/resolvers**: Integration layer between React Hook Form and Zod
+- **React Hook Form**: Form state management.
+- **Zod**: TypeScript-first schema validation.
+- **@hookform/resolvers**: Integration with Zod.
 
 ### Delivery Service
-- **The Courier Guy**: Referenced as the delivery provider for nationwide shipping in South Africa (integration not visible in code).
+- **The Courier Guy**: Referenced as the nationwide delivery provider in South Africa.
 
 ### Third-Party Brands
-The platform partners with major security brands including Centurion, ET Nice, Digidoor, Gemini, DTS, Hansa, Nemtek, IDS, Sentry, Hilook, and Hikvision.
+Partners with Centurion, ET Nice, Digidoor, Gemini, DTS, Hansa, Nemtek, IDS, Sentry, Hilook, and Hikvision.
