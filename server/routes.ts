@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { createOrderRequestSchema, registerSchema, loginSchema, insertUserAddressSchema, insertProductReviewSchema, insertTradeApplicationSchema } from "@shared/schema";
 import { hashPassword, verifyPassword, requireAuth } from "./auth";
+import { EmailService } from "./email";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
@@ -497,12 +498,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const orderId = paymentData.metadata.orderId;
         await storage.updateOrderPaymentStatus(orderId, "paid", reference);
 
+        // Send confirmation emails
+        try {
+          const order = await storage.getOrderById(orderId);
+          if (order) {
+            const orderItemsData = await storage.getOrderItems(orderId);
+            
+            const emailService = new EmailService();
+            await emailService.sendOrderConfirmation({
+              orderId: order.id,
+              reference: reference,
+              customerName: order.customerName,
+              customerEmail: order.customerEmail,
+              customerPhone: order.customerPhone,
+              deliveryAddress: order.deliveryAddress,
+              deliveryCity: order.deliveryCity,
+              deliveryProvince: order.deliveryProvince,
+              deliveryPostalCode: order.deliveryPostalCode,
+              items: orderItemsData.map((item: any) => ({
+                productName: item.productName,
+                quantity: item.quantity,
+                price: item.price,
+              })),
+              subtotal: order.subtotal,
+              vat: order.vat,
+              total: order.total,
+            });
+            console.log(`Order confirmation emails sent for order ${orderId}`);
+          }
+        } catch (emailError) {
+          console.error("Error sending confirmation email:", emailError);
+          // Don't fail the payment verification if email fails
+        }
+
         res.json({
           status: "success",
           message: "Payment verified successfully",
           data: {
             orderId: orderId,
-            amount: paymentData.amount / 100, // Convert from kobo back to naira
+            amount: paymentData.amount / 100, // Convert from cents back to rands
             paidAt: paymentData.paid_at,
             reference: reference,
           },

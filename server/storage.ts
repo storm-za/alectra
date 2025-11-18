@@ -296,6 +296,10 @@ export class DatabaseStorage implements IStorage {
     return order || undefined;
   }
 
+  async getOrderItems(orderId: string): Promise<OrderItem[]> {
+    return await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
+  }
+
   async updateOrderPaymentReference(orderId: string, paymentReference: string): Promise<void> {
     await db.update(orders)
       .set({ paymentReference })
