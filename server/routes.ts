@@ -387,9 +387,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Payment routes
   app.post("/api/payment/initialize", async (req, res) => {
     try {
-      // Use test key if available, otherwise use production key
-      const paystackKey = process.env.TESTING_PAYSTACK_SECRET_KEY || process.env.PAYSTACK_SECRET_KEY;
-      const keyType = process.env.TESTING_PAYSTACK_SECRET_KEY ? "TEST" : "PRODUCTION";
+      // Use production key if available, otherwise use test key
+      const paystackKey = process.env.PAYSTACK_SECRET_KEY || process.env.TESTING_PAYSTACK_SECRET_KEY;
+      const keyType = process.env.PAYSTACK_SECRET_KEY ? "PRODUCTION" : "TEST";
       
       console.log(`Using ${keyType} Paystack key (starts with: ${paystackKey?.substring(0, 7)}...)`);
       
