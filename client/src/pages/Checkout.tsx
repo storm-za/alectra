@@ -146,9 +146,9 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           return;
         }
 
-        const popup = new PaystackPop();
+        const popup = PaystackPop.newTransaction();
         popup.resumeTransaction(initData.accessCode, {
-          onSuccess: function(paystackResponse: any) {
+          onSuccess: (paystackResponse: any) => {
             // Verify payment on backend
             apiRequest("GET", `/api/payment/verify/${paystackResponse.reference}`)
               .then(verifyRes => verifyRes.json())
@@ -176,7 +176,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                 });
               });
           },
-          onCancel: function() {
+          onCancel: () => {
             toast({
               title: "Payment Cancelled",
               description: "You closed the payment window. Your order is saved and pending payment.",
