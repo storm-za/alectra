@@ -135,12 +135,8 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           return;
         }
 
-        const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || import.meta.env.TESTING_VITE_PAYSTACK_PUBLIC_KEY;
-        const keyType = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY ? "PRODUCTION" : "TEST";
-        console.log(`Frontend using ${keyType} Paystack public key (starts with: ${publicKey?.substring(0, 7)}...)`);
-        
         const handler = PaystackPop.setup({
-          key: publicKey,
+          key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
           email: order.customerEmail,
           amount: Math.round(parseFloat(order.total) * 100),
           currency: "ZAR",

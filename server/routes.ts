@@ -387,11 +387,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Payment routes
   app.post("/api/payment/initialize", async (req, res) => {
     try {
-      // Use production key if available, otherwise use test key
-      const paystackKey = process.env.PAYSTACK_SECRET_KEY || process.env.TESTING_PAYSTACK_SECRET_KEY;
-      const keyType = process.env.PAYSTACK_SECRET_KEY ? "PRODUCTION" : "TEST";
-      
-      console.log(`Using ${keyType} Paystack key (starts with: ${paystackKey?.substring(0, 7)}...)`);
+      const paystackKey = process.env.PAYSTACK_SECRET_KEY;
       
       if (!paystackKey) {
         return res.status(500).json({ message: "Payment system configuration error. Please contact support." });
@@ -458,8 +454,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/payment/verify/:reference", async (req, res) => {
     try {
-      // Use production key if available, otherwise use test key
-      const paystackKey = process.env.PAYSTACK_SECRET_KEY || process.env.TESTING_PAYSTACK_SECRET_KEY;
+      const paystackKey = process.env.PAYSTACK_SECRET_KEY;
       
       if (!paystackKey) {
         return res.status(500).json({ message: "Payment system configuration error. Please contact support." });
