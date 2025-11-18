@@ -421,11 +421,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
       };
 
-      console.log("Initializing Paystack payment:", { 
-        amount: paystackData.amount, 
-        currency: paystackData.currency,
-        email: paystackData.email 
-      });
+      console.log("Initializing Paystack payment - Full request:", JSON.stringify(paystackData, null, 2));
 
       const paystackResponse = await fetch("https://api.paystack.co/transaction/initialize", {
         method: "POST",
@@ -437,11 +433,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       const responseData = await paystackResponse.json();
-      console.log("Paystack response:", { 
-        status: paystackResponse.status, 
-        success: responseData.status,
-        message: responseData.message 
-      });
+      console.log("Paystack initialize response - Full:", JSON.stringify(responseData, null, 2));
 
       if (!paystackResponse.ok) {
         return res.status(500).json({ 
@@ -466,8 +458,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/payment/verify/:reference", async (req, res) => {
     try {
-      // Use test key if available, otherwise use production key
-      const paystackKey = process.env.TESTING_PAYSTACK_SECRET_KEY || process.env.PAYSTACK_SECRET_KEY;
+      // Use production key if available, otherwise use test key
+      const paystackKey = process.env.PAYSTACK_SECRET_KEY || process.env.TESTING_PAYSTACK_SECRET_KEY;
       
       if (!paystackKey) {
         return res.status(500).json({ message: "Payment system configuration error. Please contact support." });
@@ -478,6 +470,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!reference) {
         return res.status(400).json({ message: "Payment reference is required" });
       }
+
+      console.log(`Verifying payment reference: ${reference}`);
 
       // Verify payment with Paystack
       const paystackResponse = await fetch(
@@ -491,6 +485,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
 
       const responseData = await paystackResponse.json();
+      console.log("Paystack verify response - Full:", JSON.stringify(responseData, null, 2));
 
       if (!paystackResponse.ok) {
         return res.status(500).json({ 
@@ -500,6 +495,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const paymentData = responseData.data;
+      
+      // Log critical payment details including gateway response
+      console.log("Payment verification details:", {
+        status: paymentData.status,
+        gateway_response: paymentData.gateway_response,
+        amount: paymentData.amount,
+        currency: paymentData.currency,
+        channel: paymentData.channel,
+        fees: paymentData.fees,
+      });
 
       // Check if payment was successful
       if (paymentData.status === "success") {
