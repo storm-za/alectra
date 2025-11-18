@@ -10,6 +10,29 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**November 18, 2025 - Order Confirmation Email System**
+- Implemented automated order confirmation email system using nodemailer with Gmail SMTP
+- Created EmailService class in server/email.ts with security-first design:
+  - Validates GMAIL_USER and GMAIL_APP_PASSWORD environment variables on startup
+  - Sends two separate emails after successful payment verification
+  - Independent error handling: customer email failures throw errors, business email failures only log
+- **Customer Confirmation Email**: Professional HTML template with Alectra branding (orange/yellow gradient)
+  - Full order details: reference number, items with quantities and prices
+  - Complete delivery information including full address and phone
+  - Subtotal, VAT (15%), trade discount (if applicable), and total
+  - "What happens next?" section with processing timeline
+  - Contact information and Alectra branding footer
+- **Internal Business Notification**: Privacy-protected summary sent to solutionsalectra@gmail.com
+  - Order reference, total amount, item count, and item list
+  - Customer name and email for contact purposes
+  - Delivery city and province only (NOT full address or phone)
+  - Explicit security warning noting PII exclusion for data protection
+  - Directs staff to order management system for complete customer details
+- Security improvements prevent customer PII exposure if business Gmail account is compromised
+- Email sending triggered automatically after successful Paystack payment verification
+- Order flow: Payment → Verification → Order status update to "paid" → Send confirmation emails
+- Gmail credentials: GMAIL_USER (solutionsalectra@gmail.com) and GMAIL_APP_PASSWORD configured as secrets
+
 **November 17, 2025 - Critical Bug Fixes & Modern Checkout Design**
 - Fixed critical "malformed array literal" database error preventing order creation
 - Root cause: Using raw SQL with JavaScript array in product lookup query
@@ -26,7 +49,7 @@ Preferred communication style: Simple, everyday language.
   - Added shadow-lg to cards for depth and modern appearance
   - Changed background to bg-muted/30 for subtle visual hierarchy
   - All new elements include proper data-testid attributes for testing
-- Paystack integration ready (awaiting VITE_PAYSTACK_PUBLIC_KEY for testing)
+- Paystack integration fully functional with ZAR currency support
 
 **November 15, 2025 - Price Update from Old Website**
 - Updated product prices to match alectra.co.za website
