@@ -384,6 +384,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/orders/:orderId/payment-reference", async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { reference } = req.body;
+      
+      if (!reference) {
+        return res.status(400).json({ message: "Payment reference is required" });
+      }
+
+      await storage.updateOrderPaymentReference(orderId, reference);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Payment routes
   app.post("/api/payment/initialize", async (req, res) => {
     try {

@@ -119,12 +119,8 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
     onSuccess: async (orderResult: { order: any; items: any[] }) => {
       try {
         const order = orderResult.order;
-        const paymentRes = await apiRequest("POST", "/api/payment/initialize", {
-          orderId: order.id,
-        });
-        const paymentData: PaystackInitializeResponse = await paymentRes.json();
 
-        // Initialize Paystack inline payment
+        // Initialize Paystack inline payment directly (no backend initialization needed)
         const PaystackPop = (window as any).PaystackPop;
         if (!PaystackPop) {
           toast({
@@ -135,15 +131,24 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           return;
         }
 
+        // Generate unique payment reference
+        const paymentReference = `ALEC-${Date.now()}-${order.id.substring(0, 8)}`;
+        
+        // Update order with payment reference before opening popup
+        await apiRequest("PATCH", `/api/orders/${order.id}/payment-reference`, {
+          reference: paymentReference,
+        });
+
         const handler = PaystackPop.setup({
           key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
           email: order.customerEmail,
           amount: Math.round(parseFloat(order.total) * 100),
           currency: "ZAR",
-          ref: paymentData.reference,
+          ref: paymentReference,
           metadata: {
             orderId: order.id,
             customerName: order.customerName,
+            customerPhone: order.customerPhone,
           },
           onClose: function() {
             toast({
