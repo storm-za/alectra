@@ -66,7 +66,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           </h3>
         </Link>
         {ratingData && ratingData.totalReviews > 0 && (
-          <div data-testid={`rating-${product.id}`} className="hidden sm:block">
+          <div data-testid={`rating-${product.id}`}>
             <StarRating
               rating={ratingData.averageRating}
               size="sm"
