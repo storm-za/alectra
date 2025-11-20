@@ -58,15 +58,15 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
         </div>
       </Link>
 
-      <CardContent className="flex-1 p-4 space-y-2">
-        <div className="text-xs text-muted-foreground font-medium">{product.brand}</div>
+      <CardContent className="flex-1 p-2 sm:p-4 space-y-1 sm:space-y-2">
+        <div className="text-xs text-muted-foreground font-medium line-clamp-1">{product.brand}</div>
         <Link href={`/product/${product.slug}`}>
-          <h3 className="font-semibold text-base line-clamp-2 hover:text-primary transition-colors" data-testid={`text-product-name-${product.id}`}>
+          <h3 className="font-semibold text-sm sm:text-base line-clamp-2 hover:text-primary transition-colors" data-testid={`text-product-name-${product.id}`}>
             {product.name}
           </h3>
         </Link>
         {ratingData && ratingData.totalReviews > 0 && (
-          <div data-testid={`rating-${product.id}`}>
+          <div data-testid={`rating-${product.id}`} className="hidden sm:block">
             <StarRating
               rating={ratingData.averageRating}
               size="sm"
@@ -75,36 +75,38 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             />
           </div>
         )}
-        <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-bold text-foreground" data-testid={`text-price-${product.id}`}>
+        <div className="flex flex-col sm:flex-row sm:items-baseline gap-0 sm:gap-2">
+          <span className="text-lg sm:text-2xl font-bold text-foreground" data-testid={`text-price-${product.id}`}>
             R {displayPrice}
           </span>
           <span className="text-xs text-muted-foreground">VAT inc.</span>
         </div>
       </CardContent>
 
-      <CardFooter className="p-4 pt-0 flex gap-2">
-        <Link href={`/product/${product.slug}`} className="flex-1">
-          <Button 
-            variant="outline" 
-            className="w-full"
-            data-testid={`button-view-details-${product.id}`}
-          >
-            View Details
-          </Button>
-        </Link>
+      <CardFooter className="p-2 sm:p-4 pt-0 flex flex-col sm:flex-row gap-2">
         <Button
           onClick={(e) => {
             e.preventDefault();
             onAddToCart(product);
           }}
           disabled={isOutOfStock}
-          className="flex-1"
+          className="w-full"
           data-testid={`button-add-to-cart-${product.id}`}
         >
           <ShoppingCart className="h-4 w-4 mr-2" />
-          {isDiscontinued ? 'Discontinued' : isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+          <span className="hidden sm:inline">{isDiscontinued ? 'Discontinued' : isOutOfStock ? 'Out of Stock' : 'Add to Cart'}</span>
+          <span className="sm:hidden">{isDiscontinued ? 'Discontinued' : isOutOfStock ? 'Out of Stock' : 'Add'}</span>
         </Button>
+        <Link href={`/product/${product.slug}`} className="w-full">
+          <Button 
+            variant="outline" 
+            className="w-full"
+            data-testid={`button-view-details-${product.id}`}
+          >
+            <span className="hidden sm:inline">View Details</span>
+            <span className="sm:hidden">Details</span>
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );
