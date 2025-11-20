@@ -69,3 +69,47 @@ Preferred communication style: Simple, everyday language.
 
 ### Third-Party Brands
 Partners with Centurion, ET Nice, Digidoor, Gemini, DTS, Hansa, Nemtek, IDS, Sentry, Hilook, and Hikvision.
+
+## Product Catalog
+
+### Current Product Count
+**273 total products** across 7 categories (as of November 2025):
+- **Gate Motors**: 141 products (gate motors, PCBs, chargers, brackets, racks, accessories)
+- **Electric Fencing**: 61 products (energizers, beams, springs, warning lights, cables, accessories)
+- **CCTV Systems**: 31 products (cameras, DVRs, power supplies)
+- **Remotes**: 16 products (Centurion Nova, Gemini, Sentry, Absolute)
+- **Intercoms**: 12 products (Centurion G-Speak, E.T Nice, Kocom, Zartek)
+- **Batteries**: 9 products (12V, 24V, lithium, gel batteries)
+- **LP Gas**: 3 products (9kg, 19kg, 48kg cylinders)
+
+### Product Migration Process
+Product data is sourced from alectra.co.za using an automated Shopify scraper:
+
+1. **Scraper** (`scripts/scrape-alectra-products.ts`): 
+   - Uses Shopify's public JSON API endpoints (`/collections/{handle}/products.json`)
+   - Supports pagination (250 products per page)
+   - Automatic brand extraction from product titles
+   - Exports normalized data to `scripts/product-data.json`
+
+2. **Migration** (`scripts/migrate-all-products.ts`):
+   - Loads products from scraped JSON data
+   - Downloads and stores product images locally in `attached_assets/products/`
+   - Maps Shopify collection names to database categories
+   - Generates unique SKUs (format: `ALEC-XXXX-{SLUG}`)
+   - Duplicate detection to prevent re-insertion
+   - Batch insertion with error handling
+
+3. **Data Quality**:
+   - All product prices are VAT-inclusive (15% South African VAT)
+   - Product images downloaded and stored locally
+   - Descriptions extracted from Shopify HTML (cleaned and truncated to 500 chars)
+   - Brand detection from vendor field or product title
+   - Default stock level: 100 units per product
+
+### Product Data Schema
+Products include:
+- Name, slug, description
+- Price (VAT-inclusive), compare-at price (optional)
+- Brand, SKU, category
+- Primary image URL + image gallery array
+- Stock level, featured flag
