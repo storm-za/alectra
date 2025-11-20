@@ -38,6 +38,7 @@ export const products = pgTable("products", {
   images: text("images").array().notNull().default(sql`ARRAY[]::text[]`),
   stock: integer("stock").notNull().default(0),
   featured: boolean("featured").notNull().default(false),
+  discontinued: boolean("discontinued").notNull().default(false),
   specifications: text("specifications"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
