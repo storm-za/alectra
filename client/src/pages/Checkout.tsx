@@ -572,8 +572,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                 </div>
 
                 <div className="text-xs text-muted-foreground pt-4">
-                  <p>Payment details will be sent via email after order confirmation.</p>
-                  <p className="mt-2">Delivery via The Courier Guy nationwide.</p>
+                  <p>Delivery via The Courier Guy nationwide.</p>
                 </div>
               </CardContent>
             </Card>
