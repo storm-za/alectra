@@ -94,8 +94,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           data-testid={`button-add-to-cart-${product.id}`}
         >
           <ShoppingCart className="h-4 w-4 mr-2" />
-          <span className="hidden sm:inline">{isDiscontinued ? 'Discontinued' : isOutOfStock ? 'Out of Stock' : 'Add to Cart'}</span>
-          <span className="sm:hidden">{isDiscontinued ? 'Discontinued' : isOutOfStock ? 'Out of Stock' : 'Add'}</span>
+          {isDiscontinued ? 'Discontinued' : isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
         </Button>
         <Link href={`/product/${product.slug}`} className="w-full">
           <Button 
@@ -103,8 +102,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             className="w-full"
             data-testid={`button-view-details-${product.id}`}
           >
-            <span className="hidden sm:inline">View Details</span>
-            <span className="sm:hidden">Details</span>
+            View Details
           </Button>
         </Link>
       </CardFooter>
