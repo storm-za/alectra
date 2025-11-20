@@ -7,6 +7,7 @@ import TrustedBrands from "@/components/TrustedBrands";
 import WhyChoose from "@/components/WhyChoose";
 import Testimonials from "@/components/Testimonials";
 import TradeBanner from "@/components/TradeBanner";
+import { SEO, createOrganizationStructuredData } from "@/components/SEO";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Truck, ShieldCheck, Headphones } from "lucide-react";
 import type { Product, Category, CartItem } from "@shared/schema";
@@ -24,8 +25,15 @@ export default function Home({ onAddToCart }: HomeProps) {
     queryKey: ["/api/products/featured"],
   });
 
+  const organizationData = createOrganizationStructuredData();
+
   return (
     <div>
+      <SEO
+        title="Alectra Solutions - Security & Automation Products South Africa"
+        description="Leading South African supplier of security and automation products. Gate motors, electric fencing, CCTV systems, remotes, batteries, and more. Free delivery on orders over R2500."
+        structuredData={organizationData}
+      />
       <Hero />
       
       {/* Delivery Information Banner */}

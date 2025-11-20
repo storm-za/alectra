@@ -34,6 +34,7 @@ import {
 import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, MessageSquare, Star, Truck, ShieldCheck, CreditCard, Lock } from "lucide-react";
 import { SiVisa, SiMastercard } from "react-icons/si";
 import { StarRating } from "@/components/StarRating";
+import { SEO, createProductStructuredData } from "@/components/SEO";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductReviewSchema } from "@shared/schema";
@@ -152,8 +153,36 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const allImages = [product.imageUrl, ...(product.images || [])].map(fixImageUrl);
   const images = Array.from(new Set(allImages)); // Remove duplicates
 
+  // Create SEO-friendly description
+  const seoDescription = product.description.length > 160 
+    ? product.description.substring(0, 157) + "..." 
+    : product.description;
+
+  // Create structured data for the product
+  const structuredData = createProductStructuredData({
+    name: product.name,
+    description: product.description,
+    image: images[0],
+    price: displayPrice,
+    sku: product.sku,
+    brand: product.brand,
+    availability: isOutOfStock ? "out of stock" : "in stock",
+    rating: ratingData?.averageRating,
+    reviewCount: ratingData?.totalReviews,
+  });
+
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={`${product.name} - ${product.brand}`}
+        description={seoDescription}
+        image={images[0]}
+        type="product"
+        price={displayPrice}
+        currency="ZAR"
+        availability={isOutOfStock ? "out of stock" : "in stock"}
+        structuredData={structuredData}
+      />
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
         {/* Breadcrumb */}
         <Link href="/products" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">

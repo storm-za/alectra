@@ -580,6 +580,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Sitemap for SEO
+  app.get("/sitemap.xml", async (req, res) => {
+    try {
+      const products = await storage.getAllProducts();
+      const categories = await storage.getAllCategories();
+      
+      const baseUrl = req.protocol + '://' + req.get('host');
+      const currentDate = new Date().toISOString();
+      
+      let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
+      sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+      
+      // Home page
+      sitemap += `  <url>\n`;
+      sitemap += `    <loc>${baseUrl}/</loc>\n`;
+      sitemap += `    <changefreq>daily</changefreq>\n`;
+      sitemap += `    <priority>1.0</priority>\n`;
+      sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+      sitemap += `  </url>\n`;
+      
+      // Products page
+      sitemap += `  <url>\n`;
+      sitemap += `    <loc>${baseUrl}/products</loc>\n`;
+      sitemap += `    <changefreq>daily</changefreq>\n`;
+      sitemap += `    <priority>0.9</priority>\n`;
+      sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+      sitemap += `  </url>\n`;
+      
+      // Categories
+      for (const category of categories) {
+        sitemap += `  <url>\n`;
+        sitemap += `    <loc>${baseUrl}/category/${category.slug}</loc>\n`;
+        sitemap += `    <changefreq>weekly</changefreq>\n`;
+        sitemap += `    <priority>0.8</priority>\n`;
+        sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+        sitemap += `  </url>\n`;
+      }
+      
+      // Individual products
+      for (const product of products) {
+        sitemap += `  <url>\n`;
+        sitemap += `    <loc>${baseUrl}/product/${product.slug}</loc>\n`;
+        sitemap += `    <changefreq>weekly</changefreq>\n`;
+        sitemap += `    <priority>0.7</priority>\n`;
+        sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+        sitemap += `  </url>\n`;
+      }
+      
+      sitemap += '</urlset>';
+      
+      res.header('Content-Type', 'application/xml');
+      res.send(sitemap);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import ProductCard from "@/components/ProductCard";
+import { SEO } from "@/components/SEO";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -65,6 +66,10 @@ export default function Products({ onAddToCart }: ProductsProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Products - Security & Automation | Alectra Solutions"
+        description="Browse our complete range of security and automation products. Gate motors, electric fencing, CCTV cameras, remotes, batteries, and more. Fast nationwide delivery across South Africa."
+      />
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
