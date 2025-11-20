@@ -202,10 +202,10 @@ export default function Products({ onAddToCart }: ProductsProps) {
           {/* Products Grid */}
           <div className={filtersOpen ? "lg:col-span-3" : "lg:col-span-4"}>
             {isLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(9)].map((_, i) => (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                {[...Array(12)].map((_, i) => (
                   <div key={i} className="space-y-3">
-                    <Skeleton className="h-48 w-full" />
+                    <Skeleton className="aspect-square w-full" />
                     <Skeleton className="h-4 w-3/4" />
                     <Skeleton className="h-4 w-1/2" />
                   </div>
@@ -221,7 +221,7 @@ export default function Products({ onAddToCart }: ProductsProps) {
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                 {products?.map((product) => (
                   <ProductCard
                     key={product.id}

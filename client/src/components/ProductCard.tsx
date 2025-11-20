@@ -28,7 +28,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   return (
     <Card className="group overflow-hidden hover-elevate active-elevate-2 flex flex-col h-full" data-testid={`card-product-${product.id}`}>
       <Link href={`/product/${product.slug}`}>
-        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+        <div className="relative aspect-square overflow-hidden bg-muted">
           <img
             src={imageUrl}
             alt={product.name}
