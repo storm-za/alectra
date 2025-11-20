@@ -33,7 +33,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             src={imageUrl}
             alt={product.name}
             loading="lazy"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
           />
           {product.featured && (
             <Badge className="absolute top-3 left-3" data-testid="badge-featured">
