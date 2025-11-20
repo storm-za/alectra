@@ -11,23 +11,35 @@ const __dirname = path.dirname(__filename);
 
 // Category mapping from old website patterns to our database slugs
 const CATEGORY_MAP: Record<string, string> = {
+  // Direct mappings from scraper
+  'gate-motors': 'gate-motors',
+  'garage-motors': 'gate-motors', // Merge garage motors into gate motors
+  'electric-fencing': 'electric-fencing',
+  'cctv-cameras': 'cctv',
+  'intercoms': 'intercoms',
+  'remotes': 'remotes',
+  'batteries': 'batteries',
+  'lp-gas': 'lp-gas',
+  'all': 'gate-motors', // Default fallback for "all" collection
+  
+  // Legacy mappings for backwards compatibility
   'gate-motor': 'gate-motors',
   'battery': 'batteries',
   'remote': 'remotes',
-  'solar': 'batteries', // Solar products -> Batteries for now
+  'solar': 'batteries',
   'cctv': 'cctv',
   'camera': 'cctv',
   'intercom': 'intercoms',
   'gas': 'lp-gas',
-  'garage': 'gate-motors', // Garage motors -> Gate Motors
+  'garage': 'gate-motors',
   'beam': 'electric-fencing',
-  'pcb': 'gate-motors', // PCBs -> Gate Motors
-  'charger': 'gate-motors', // Chargers -> Gate Motors
-  'bracket': 'gate-motors', // Brackets -> Gate Motors
-  'rack': 'gate-motors', // Racks -> Gate Motors
-  'door': 'gate-motors', // Doors -> Gate Motors
-  'cable': 'gate-motors', // Cables -> Gate Motors
-  'accessories': 'gate-motors', // Accessories -> Gate Motors
+  'pcb': 'gate-motors',
+  'charger': 'gate-motors',
+  'bracket': 'gate-motors',
+  'rack': 'gate-motors',
+  'door': 'gate-motors',
+  'cable': 'gate-motors',
+  'accessories': 'gate-motors',
 };
 
 interface RawProduct {
@@ -41,8 +53,21 @@ interface RawProduct {
   description: string;
 }
 
-// All 150+ products extracted from alectra.co.za
-const RAW_PRODUCTS: RawProduct[] = [
+// Load products from scraped data file
+const productDataPath = path.join(__dirname, "product-data.json");
+let RAW_PRODUCTS: RawProduct[] = [];
+
+try {
+  const productDataRaw = fs.readFileSync(productDataPath, 'utf-8');
+  RAW_PRODUCTS = JSON.parse(productDataRaw);
+  console.log(`✓ Loaded ${RAW_PRODUCTS.length} products from product-data.json\n`);
+} catch (error) {
+  console.error('✗ Failed to load product-data.json. Run scrape-alectra-products.ts first!');
+  process.exit(1);
+}
+
+// Fallback: hardcoded products (if scraper hasn't run)
+const FALLBACK_PRODUCTS: RawProduct[] = [
   // Page 1 products
   { slug: "4k-solar-powered-security-camera", name: "4K Solar CCTV Camera", price: "1099", compareAtPrice: "1799", brand: "Andowl", categoryHint: "camera", imageUrl: "https://alectra.co.za/cdn/shop/files/andowl-4k-solar-cctv-camera.png?v=1761151419", description: "Experience next-level home and business security with the 4K Solar Powered Security Camera with WiFi and Night Vision. Designed for effortless protection, this camera combines crystal-clear 4K ultra high-definition video with the convenience of solar power, ensuring continuous operation without the need for constant charging or complicated wiring. Equipped with advanced night vision technology, this camera captures sharp, detailed footage even in complete darkness, giving you peace of mind 24 hours a day. Its built-in WiFi allows for real-time monitoring from your smartphone, tablet, or computer, no matter where you are." },
   { slug: "12v-1-4ah-battery", name: "12V 1.4Ah Battery", price: "135", compareAtPrice: "189", brand: "EPS", categoryHint: "battery", imageUrl: "https://alectra.co.za/cdn/shop/files/EPS1214_1.png?v=1732102140", description: "Reliable 12V 1.4Ah sealed lead-acid battery perfect for backup power supplies, alarm systems, gate motors." },
@@ -253,7 +278,7 @@ async function migrateProducts() {
 
   // Step 4: Prepare products for database insertion
   console.log('🔄 Preparing products for insertion...');
-  const productsToInsert = [];
+  const productsToInsert: Array<typeof products.$inferInsert> = [];
   let skipped = 0;
   
   for (let i = 0; i < RAW_PRODUCTS.length; i++) {
