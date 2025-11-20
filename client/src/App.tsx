@@ -18,6 +18,13 @@ import Register from "@/pages/Register";
 import Account from "@/pages/Account";
 import Quote from "@/pages/Quote";
 import TradeSignup from "@/pages/TradeSignup";
+import About from "@/pages/About";
+import Contact from "@/pages/Contact";
+import Stores from "@/pages/Stores";
+import FAQ from "@/pages/FAQ";
+import Shipping from "@/pages/Shipping";
+import Returns from "@/pages/Returns";
+import Privacy from "@/pages/Privacy";
 import NotFound from "@/pages/not-found";
 import { useToast } from "@/hooks/use-toast";
 import type { Product, CartItem } from "@shared/schema";
@@ -117,6 +124,27 @@ function Router() {
           </Route>
           <Route path="/trade-signup">
             <TradeSignup />
+          </Route>
+          <Route path="/about">
+            <About />
+          </Route>
+          <Route path="/contact">
+            <Contact />
+          </Route>
+          <Route path="/stores">
+            <Stores />
+          </Route>
+          <Route path="/faq">
+            <FAQ />
+          </Route>
+          <Route path="/shipping">
+            <Shipping />
+          </Route>
+          <Route path="/returns">
+            <Returns />
+          </Route>
+          <Route path="/privacy">
+            <Privacy />
           </Route>
           <Route component={NotFound} />
         </Switch>

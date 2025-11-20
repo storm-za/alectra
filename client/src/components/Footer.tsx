@@ -2,8 +2,24 @@ import { Link } from "wouter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Facebook, Instagram, Mail } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export default function Footer() {
+  const { toast } = useToast();
+  const [email, setEmail] = useState("");
+
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email) {
+      toast({
+        title: "Subscribed!",
+        description: "Thank you for subscribing to our newsletter.",
+      });
+      setEmail("");
+    }
+  };
+
   return (
     <footer className="bg-slate-900 text-slate-300 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
@@ -29,7 +45,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/trade" className="hover:text-white transition-colors">
+                <Link href="/trade-signup" className="hover:text-white transition-colors">
                   Trade Program
                 </Link>
               </li>
@@ -94,14 +110,17 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-4">Stay Updated</h3>
             <p className="text-sm mb-4">Subscribe for exclusive deals and product updates</p>
-            <form className="space-y-2" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-2" onSubmit={handleNewsletterSubmit}>
               <Input
                 type="email"
                 placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
                 className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
                 data-testid="input-newsletter-email"
               />
-              <Button className="w-full" data-testid="button-newsletter-subscribe">
+              <Button type="submit" className="w-full" data-testid="button-newsletter-subscribe">
                 Subscribe
               </Button>
             </form>
