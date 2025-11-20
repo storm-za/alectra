@@ -221,6 +221,12 @@ export class DatabaseStorage implements IStorage {
           throw new Error(`Product ${item.productId} not found`);
         }
 
+        // Check if product is discontinued
+        if ((product as any).discontinued === true) {
+          throw new Error(`Product is discontinued and cannot be ordered: ${product.name}`);
+        }
+
+        // Check stock availability
         if (product.stock < item.quantity) {
           throw new Error(`Insufficient stock for product: ${product.name}. Available: ${product.stock}, requested: ${item.quantity}`);
         }
