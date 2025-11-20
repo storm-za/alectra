@@ -19,14 +19,15 @@ const CATEGORY_MAP: Record<string, string> = {
   'camera': 'cctv',
   'intercom': 'intercoms',
   'gas': 'lp-gas',
-  'garage': 'gate-motor-kits', // Garage motors are similar to gate kits
+  'garage': 'gate-motors', // Garage motors -> Gate Motors
   'beam': 'electric-fencing',
-  'pcb': 'gate-motor-kits',
-  'charger': 'gate-motor-kits',
-  'bracket': 'gate-motor-kits',
-  'rack': 'gate-motor-kits',
-  'door': 'gate-motor-kits',
-  'cable': 'gate-motor-kits',
+  'pcb': 'gate-motors', // PCBs -> Gate Motors
+  'charger': 'gate-motors', // Chargers -> Gate Motors
+  'bracket': 'gate-motors', // Brackets -> Gate Motors
+  'rack': 'gate-motors', // Racks -> Gate Motors
+  'door': 'gate-motors', // Doors -> Gate Motors
+  'cable': 'gate-motors', // Cables -> Gate Motors
+  'accessories': 'gate-motors', // Accessories -> Gate Motors
 };
 
 interface RawProduct {
@@ -244,16 +245,29 @@ async function migrateProducts() {
   const successfulDownloads = downloadedImages.filter(img => img !== null).length;
   console.log(`  Downloaded: ${successfulDownloads}/${RAW_PRODUCTS.length} images\n`);
 
-  // Step 3: Prepare products for database insertion
+  // Step 3: Get existing product slugs to avoid duplicates
+  console.log('🔍 Checking for existing products...');
+  const existingProducts = await db.select({ slug: products.slug }).from(products);
+  const existingSlugs = new Set(existingProducts.map(p => p.slug));
+  console.log(`  Found ${existingSlugs.size} existing products\n`);
+
+  // Step 4: Prepare products for database insertion
   console.log('🔄 Preparing products for insertion...');
   const productsToInsert = [];
+  let skipped = 0;
   
   for (let i = 0; i < RAW_PRODUCTS.length; i++) {
     const raw = RAW_PRODUCTS[i];
     const localImage = downloadedImages[i];
     
+    // Skip if product already exists
+    if (existingSlugs.has(raw.slug)) {
+      skipped++;
+      continue;
+    }
+    
     const categorySlug = getCategorySlug(raw.categoryHint);
-    const categoryId = categoryMap.get(categorySlug) || categoryMap.get('gate-motor-kits')!;
+    const categoryId = categoryMap.get(categorySlug) || categoryMap.get('gate-motors')!;
 
     // Generate unique SKU using index to ensure no duplicates
     const sku = `ALEC-${String(i + 1).padStart(4, '0')}-${raw.slug.toUpperCase().replace(/-/g, '_').substring(0, 30)}`;
@@ -278,8 +292,11 @@ async function migrateProducts() {
       featured: false,
     });
   }
+  
+  console.log(`  New products to insert: ${productsToInsert.length}`);
+  console.log(`  Skipped (already exist): ${skipped}\n`);
 
-  // Step 4: Bulk insert in batches
+  // Step 5: Bulk insert in batches
   console.log('💾 Inserting products into database...');
   const BATCH_SIZE = 50;
   let inserted = 0;
@@ -297,8 +314,10 @@ async function migrateProducts() {
   }
 
   console.log('\n✅ Migration Complete!');
-  console.log(`   Products: ${inserted}/${RAW_PRODUCTS.length}`);
-  console.log(`   Images: ${successfulDownloads}/${RAW_PRODUCTS.length}`);
+  console.log(`   New products added: ${inserted}`);
+  console.log(`   Already existed: ${skipped}`);
+  console.log(`   Total products in catalog: ${RAW_PRODUCTS.length}`);
+  console.log(`   Images downloaded: ${successfulDownloads}/${RAW_PRODUCTS.length}`);
   console.log(`   Categories: ${categoryMap.size}`);
 }
 
