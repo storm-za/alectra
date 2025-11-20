@@ -14,8 +14,9 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const displayPrice = parseFloat(product.price).toFixed(2);
-  const isLowStock = product.stock > 0 && product.stock <= 5;
-  const isOutOfStock = product.stock === 0;
+  const isDiscontinued = (product as any).discontinued === true;
+  const isLowStock = product.stock > 0 && product.stock <= 5 && !isDiscontinued;
+  const isOutOfStock = product.stock === 0 || isDiscontinued;
 
   const imageUrl = product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`;
 
@@ -43,7 +44,12 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
               Low Stock
             </Badge>
           )}
-          {isOutOfStock && (
+          {isDiscontinued && (
+            <Badge variant="secondary" className="absolute top-3 right-3" data-testid="badge-discontinued">
+              Discontinued
+            </Badge>
+          )}
+          {isOutOfStock && !isDiscontinued && (
             <Badge variant="secondary" className="absolute top-3 right-3" data-testid="badge-out-of-stock">
               Out of Stock
             </Badge>
@@ -96,7 +102,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           data-testid={`button-add-to-cart-${product.id}`}
         >
           <ShoppingCart className="h-4 w-4 mr-2" />
-          {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+          {isDiscontinued ? 'Discontinued' : isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
         </Button>
       </CardFooter>
     </Card>

@@ -143,8 +143,9 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   }
 
   const displayPrice = parseFloat(product.price).toFixed(2);
-  const isLowStock = product.stock > 0 && product.stock <= 5;
-  const isOutOfStock = product.stock === 0;
+  const isDiscontinued = (product as any).discontinued === true;
+  const isLowStock = product.stock > 0 && product.stock <= 5 && !isDiscontinued;
+  const isOutOfStock = product.stock === 0 || isDiscontinued;
   
   // Ensure all image URLs start with / and remove duplicates
   const fixImageUrl = (url: string) => url.startsWith('/') ? url : `/${url}`;
@@ -212,7 +213,8 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
               {isLowStock && !isOutOfStock && (
                 <Badge variant="destructive">Only {product.stock} left</Badge>
               )}
-              {isOutOfStock && <Badge variant="secondary">Out of Stock</Badge>}
+              {isDiscontinued && <Badge variant="secondary">Discontinued</Badge>}
+              {isOutOfStock && !isDiscontinued && <Badge variant="secondary">Out of Stock</Badge>}
               {!isOutOfStock && product.stock > 5 && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Check className="h-4 w-4 text-green-600" />
@@ -263,7 +265,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 data-testid="button-add-to-cart"
               >
                 <ShoppingCart className="h-5 w-5 mr-2" />
-                {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+                {isDiscontinued ? "Discontinued" : isOutOfStock ? "Out of Stock" : "Add to Cart"}
               </Button>
             </div>
 
