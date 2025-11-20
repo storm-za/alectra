@@ -197,6 +197,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
               <img
                 src={images[selectedImage]}
                 alt={product.name}
+                loading="lazy"
                 className="w-full h-full object-cover"
                 data-testid="img-product-main"
               />
@@ -212,7 +213,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                     }`}
                     data-testid={`button-thumbnail-${idx}`}
                   >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <img src={img} alt="" loading="lazy" className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
