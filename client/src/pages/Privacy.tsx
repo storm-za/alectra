@@ -120,7 +120,7 @@ export default function Privacy() {
               If you have questions about this Privacy Policy or wish to exercise your rights, please contact us:
             </p>
             <div className="bg-muted p-6 rounded-lg text-sm">
-              <p><strong>Email:</strong> info@alectra.co.za</p>
+              <p><strong>Email:</strong> solutionsalectra@gmail.com</p>
               <p><strong>Phone:</strong> 012 566 3123</p>
               <p><strong>Address:</strong> Alectra Solutions, Pretoria, South Africa</p>
             </div>

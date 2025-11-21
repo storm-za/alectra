@@ -121,7 +121,7 @@ export default function FAQ() {
             <AccordionContent>
               <p className="text-muted-foreground">
                 Yes! Trade customers automatically receive 15% off all orders. For large bulk orders, please contact us 
-                at 012 566 3123 or email info@alectra.co.za for a custom quote.
+                at 012 566 3123 or email solutionsalectra@gmail.com for a custom quote.
               </p>
             </AccordionContent>
           </AccordionItem>

@@ -166,7 +166,7 @@ export default function OrderSuccess() {
 
             <div className="text-center text-xs text-muted-foreground pt-4">
               <p>Need help? Contact us at <a href="tel:0125663123" className="text-primary hover:underline">012 566 3123</a></p>
-              <p className="mt-1">or email <a href="mailto:alectraglobal@gmail.com" className="text-primary hover:underline">alectraglobal@gmail.com</a></p>
+              <p className="mt-1">or email <a href="mailto:solutionsalectra@gmail.com" className="text-primary hover:underline">solutionsalectra@gmail.com</a></p>
             </div>
           </CardContent>
         </Card>

@@ -213,7 +213,7 @@ export class EmailService {
                   <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-radius: 0 0 8px 8px;">
                     <p style="margin: 0 0 10px 0; color: #6b7280; font-size: 14px;">Questions about your order?</p>
                     <p style="margin: 0 0 5px 0; color: #111827; font-weight: 600;">
-                      📞 012 566 3123 &nbsp;&nbsp;|&nbsp;&nbsp; 📧 info@alectra.co.za
+                      📞 012 566 3123 &nbsp;&nbsp;|&nbsp;&nbsp; 📧 solutionsalectra@gmail.com
                     </p>
                     <p style="margin: 15px 0 0 0; color: #9ca3af; font-size: 12px;">
                       Alectra Solutions (PTY) LTD<br>

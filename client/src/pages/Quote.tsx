@@ -91,7 +91,7 @@ export default function Quote() {
                 <Mail className="h-6 w-6 text-primary" />
               </div>
               <h3 className="font-semibold mb-2">Email Us</h3>
-              <p className="text-sm text-muted-foreground">info@alectra.co.za</p>
+              <p className="text-sm text-muted-foreground">solutionsalectra@gmail.com</p>
               <p className="text-xs text-muted-foreground mt-1">Response within 24hrs</p>
             </CardContent>
           </Card>
@@ -255,7 +255,7 @@ export default function Quote() {
         <div className="mt-8 text-center text-sm text-muted-foreground">
           <p>
             Need immediate assistance? Call us at <span className="text-primary font-medium">012 566 3123</span> or email{" "}
-            <span className="text-primary font-medium">info@alectra.co.za</span>
+            <span className="text-primary font-medium">solutionsalectra@gmail.com</span>
           </p>
         </div>
       </div>

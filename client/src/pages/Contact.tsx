@@ -12,7 +12,7 @@ export default function Contact() {
     <div className="min-h-screen bg-background">
       <SEO
         title="Contact Us - Alectra Solutions"
-        description="Get in touch with Alectra Solutions. Visit our stores in Wonderboom, Hatfield, or Menlyn. Call us at 012 566 3123 or email info@alectra.co.za"
+        description="Get in touch with Alectra Solutions. Visit our stores in Wonderboom, Hatfield, or Menlyn. Call us at 012 566 3123 or email solutionsalectra@gmail.com"
       />
       
       <div className="max-w-6xl mx-auto px-4 md:px-8 lg:px-12 py-12">
@@ -39,8 +39,8 @@ export default function Contact() {
                   <Mail className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
                     <h3 className="font-semibold mb-1">Email</h3>
-                    <a href="mailto:info@alectra.co.za" className="text-primary hover:underline">
-                      info@alectra.co.za
+                    <a href="mailto:solutionsalectra@gmail.com" className="text-primary hover:underline" data-testid="link-contact-email">
+                      solutionsalectra@gmail.com
                     </a>
                   </div>
                 </div>
