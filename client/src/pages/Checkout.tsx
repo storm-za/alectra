@@ -240,8 +240,16 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const subtotal = totalAfterDiscount / 1.15;
   const vat = subtotal * 0.15;
   
-  // Calculate shipping cost: R110 delivery fee, FREE if order is R2500+
-  const shippingCost = totalAfterDiscount >= 2500 ? 0 : 110;
+  // Check if cart contains 48KG LP Gas product (special promotion: FREE delivery)
+  const has48kgLPGas = cartItems.some(
+    (item) => item.product.id === 'a01d73ab-c728-4fba-ad61-244842c98a59'
+  );
+  
+  // Calculate shipping cost:
+  // - FREE if cart contains 48KG LP Gas (special promotion)
+  // - FREE if order total is R2500+
+  // - R110 delivery fee otherwise
+  const shippingCost = has48kgLPGas || totalAfterDiscount >= 2500 ? 0 : 110;
   
   // Final total includes shipping
   const total = totalAfterDiscount + shippingCost;
