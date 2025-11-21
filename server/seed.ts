@@ -27,21 +27,21 @@ const categories: InsertCategory[] = [
     name: "Electrical Components",
     slug: "electrical-components",
     description: "Electrical switches, circuit breakers, wiring, and components",
-    imageUrl: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&q=80",
+    imageUrl: "attached_assets/products/4x4-double-socket-weatherproof-box.jpg",
     productCount: 0
   },
   {
     name: "Garage Doors",
     slug: "garage-doors",
     description: "Automatic garage door motors and door openers for residential and commercial use",
-    imageUrl: "https://images.unsplash.com/photo-1578496298417-bef17cfb4293?w=800&q=80",
+    imageUrl: "attached_assets/products/nylon-roller-heavy-duty.png",
     productCount: 0
   },
   {
     name: "Garage Motors",
     slug: "garage-motors",
     description: "Sectional garage door motors and operators from leading brands",
-    imageUrl: "https://images.unsplash.com/photo-1621905167918-48416bd8575a?w=800&q=80",
+    imageUrl: "attached_assets/products/dc-blue-advance-sectional-garage-motor-extrusion.jpg",
     productCount: 0
   },
   {
