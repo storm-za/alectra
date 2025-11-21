@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 
+const PRODUCTION_DOMAIN = "alectra.co.za";
+
 interface SEOProps {
   title: string;
   description: string;
@@ -23,7 +25,7 @@ export function SEO({
   structuredData,
 }: SEOProps) {
   const [location] = useLocation();
-  const canonicalUrl = `https://${window.location.hostname}${location}`;
+  const canonicalUrl = `https://${PRODUCTION_DOMAIN}${location}`;
   const siteName = "Alectra Solutions";
   const fullTitle = title.includes(siteName) ? title : `${title} | ${siteName}`;
 
@@ -52,14 +54,14 @@ export function SEO({
     updateMeta("og:type", type, true);
     updateMeta("og:url", canonicalUrl, true);
     updateMeta("og:site_name", siteName, true);
-    updateMeta("og:image", image.startsWith("http") ? image : `https://${window.location.hostname}${image}`, true);
+    updateMeta("og:image", image.startsWith("http") ? image : `https://${PRODUCTION_DOMAIN}${image}`, true);
     updateMeta("og:locale", "en_ZA", true);
 
     // Twitter Card tags
     updateMeta("twitter:card", "summary_large_image");
     updateMeta("twitter:title", fullTitle);
     updateMeta("twitter:description", description);
-    updateMeta("twitter:image", image.startsWith("http") ? image : `https://${window.location.hostname}${image}`);
+    updateMeta("twitter:image", image.startsWith("http") ? image : `https://${PRODUCTION_DOMAIN}${image}`);
 
     // Product-specific Open Graph tags
     if (type === "product" && price) {
@@ -112,7 +114,7 @@ export function createProductStructuredData(product: {
     "@type": "Product",
     name: product.name,
     description: product.description,
-    image: product.image.startsWith("http") ? product.image : `https://${window.location.hostname}${product.image}`,
+    image: product.image.startsWith("http") ? product.image : `https://${PRODUCTION_DOMAIN}${product.image}`,
     sku: product.sku,
     brand: {
       "@type": "Brand",
@@ -120,7 +122,7 @@ export function createProductStructuredData(product: {
     },
     offers: {
       "@type": "Offer",
-      url: window.location.href,
+      url: `https://${PRODUCTION_DOMAIN}${window.location.pathname}`,
       priceCurrency: "ZAR",
       price: product.price,
       availability: product.availability === "in stock" 
@@ -148,8 +150,8 @@ export function createOrganizationStructuredData() {
     "@type": "LocalBusiness",
     name: "Alectra Solutions",
     description: "Leading South African supplier of security and automation products including gate motors, electric fencing, CCTV systems, and more.",
-    url: `https://${window.location.hostname}`,
-    logo: `https://${window.location.hostname}/alectra-solutions-logo.png`,
+    url: `https://${PRODUCTION_DOMAIN}`,
+    logo: `https://${PRODUCTION_DOMAIN}/alectra-solutions-logo.png`,
     address: {
       "@type": "PostalAddress",
       addressCountry: "ZA",
