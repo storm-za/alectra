@@ -33,7 +33,7 @@ export const products = pgTable("products", {
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   brand: text("brand").notNull(),
   sku: text("sku").notNull().unique(),
-  categoryId: varchar("category_id").notNull().references(() => categories.id),
+  categoryId: varchar("category_id").references(() => categories.id),
   imageUrl: text("image_url").notNull(),
   images: text("images").array().notNull().default(sql`ARRAY[]::text[]`),
   stock: integer("stock").notNull().default(0),

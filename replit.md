@@ -73,14 +73,25 @@ Partners with Centurion, ET Nice, Digidoor, Gemini, DTS, Hansa, Nemtek, IDS, Sen
 ## Product Catalog
 
 ### Current Product Count
-**273 total products** across 7 categories (as of November 2025):
-- **Gate Motors**: 141 products (gate motors, PCBs, chargers, brackets, racks, accessories)
-- **Electric Fencing**: 61 products (energizers, beams, springs, warning lights, cables, accessories)
-- **CCTV Systems**: 31 products (cameras, DVRs, power supplies)
-- **Remotes**: 16 products (Centurion Nova, Gemini, Sentry, Absolute)
-- **Intercoms**: 12 products (Centurion G-Speak, E.T Nice, Kocom, Zartek)
-- **Batteries**: 9 products (12V, 24V, lithium, gel batteries)
-- **LP Gas**: 3 products (9kg, 19kg, 48kg cylinders)
+**271 total products** across 9 categories + 43 uncategorized (as of November 2025):
+
+**Categorized Products (228):**
+- **Electric Fencing**: 80 products (energizers, beams, springs, sirens, warning lights, cables, accessories)
+- **Gate Motors**: 39 products (gate motors, anti-theft brackets, base plates, racks, covers, cables)
+- **CCTV Systems**: 30 products (cameras, DVRs, power supplies, cables, junction boxes, BNC connectors, baluns)
+- **Garage Door Parts**: 20 products (Glosteel doors, hinges, bearings, cables, rollers, brackets, screws)
+- **Remotes**: 17 products (Centurion Nova, Gemini, Sentry, Absolute)
+- **Intercoms**: 13 products (Centurion G-Speak SmartGuard keypads, E.T Nice, Kocom, Zartek, maglocks)
+- **Batteries**: 12 products (12V, 24V, lithium, gel batteries)
+- **Garage Motors**: 12 products (sectional, roll-up, tilt-up garage motors)
+- **LP Gas**: 5 products (9kg, 19kg, 48kg cylinders)
+
+**Uncategorized Products (43):**
+Products that exist on alectra.co.za but are not in specific categories (available in "All Products" only):
+- Centurion PCBs and chargers (D3, D5, D6/D10 models)
+- Gemini accessories (PCB V.90, Gemlink, anti-theft bracket, HEX coupling, power supply)
+- DTS gate wheels (60mm, 80mm variants)
+- General electrical supplies (PVC conduit, junction boxes, plugs, extension boxes, cables)
 
 ### Product Migration Process
 Product data is sourced from alectra.co.za using an automated Shopify scraper:
