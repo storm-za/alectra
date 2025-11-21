@@ -633,12 +633,14 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       <span data-testid="text-summary-trade-discount">- R {tradeDiscount.toFixed(2)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between text-sm">
-                    <span>Shipping</span>
-                    <span data-testid="text-summary-shipping" className={shippingCost === 0 ? "text-primary font-medium" : ""}>
-                      {shippingCost === 0 ? "FREE" : `R ${shippingCost.toFixed(2)}`}
-                    </span>
-                  </div>
+                  {deliveryMethod === "delivery" && (
+                    <div className="flex justify-between text-sm">
+                      <span>Shipping</span>
+                      <span data-testid="text-summary-shipping" className={shippingCost === 0 ? "text-primary font-medium" : ""}>
+                        {shippingCost === 0 ? "FREE" : `R ${shippingCost.toFixed(2)}`}
+                      </span>
+                    </div>
+                  )}
                   <Separator />
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
