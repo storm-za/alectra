@@ -3,6 +3,48 @@ import type { InsertCategory, InsertProduct } from "@shared/schema";
 
 const categories: InsertCategory[] = [
   {
+    name: "Batteries",
+    slug: "batteries",
+    description: "Backup power batteries for gate motors, alarms, and security systems",
+    imageUrl: "https://images.unsplash.com/photo-1609069859366-6a16c6e7fe32?w=800&q=80",
+    productCount: 0
+  },
+  {
+    name: "CCTV Systems",
+    slug: "cctv",
+    description: "Security cameras, DVRs, NVRs, and complete surveillance systems",
+    imageUrl: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=800&q=80",
+    productCount: 0
+  },
+  {
+    name: "Electric Fencing",
+    slug: "electric-fencing",
+    description: "Electric fence energizers, wire, brackets, and accessories",
+    imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+    productCount: 0
+  },
+  {
+    name: "Electrical Components",
+    slug: "electrical-components",
+    description: "Electrical switches, circuit breakers, wiring, and components",
+    imageUrl: "https://images.unsplash.com/photo-1621905167918-48416bd8575a?w=800&q=80",
+    productCount: 0
+  },
+  {
+    name: "Garage Doors",
+    slug: "garage-doors",
+    description: "Automatic garage door motors and door openers for residential and commercial use",
+    imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+    productCount: 0
+  },
+  {
+    name: "Garage Motors",
+    slug: "garage-motors",
+    description: "Sectional garage door motors and operators from leading brands",
+    imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+    productCount: 0
+  },
+  {
     name: "Gate Motors",
     slug: "gate-motors",
     description: "Swing and sliding gate motors from top brands including Centurion, ET Nice, and Digidoor",
@@ -17,27 +59,6 @@ const categories: InsertCategory[] = [
     productCount: 0
   },
   {
-    name: "Batteries",
-    slug: "batteries",
-    description: "Backup power batteries for gate motors, alarms, and security systems",
-    imageUrl: "https://images.unsplash.com/photo-1609069859366-6a16c6e7fe32?w=800&q=80",
-    productCount: 0
-  },
-  {
-    name: "Remotes",
-    slug: "remotes",
-    description: "Gate and garage remote controls for all major brands",
-    imageUrl: "https://images.unsplash.com/photo-1580927752452-89d86da3fa0a?w=800&q=80",
-    productCount: 0
-  },
-  {
-    name: "CCTV Systems",
-    slug: "cctv",
-    description: "Security cameras, DVRs, NVRs, and complete surveillance systems",
-    imageUrl: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=800&q=80",
-    productCount: 0
-  },
-  {
     name: "Intercoms",
     slug: "intercoms",
     description: "Video and audio intercom systems for homes and businesses",
@@ -45,17 +66,17 @@ const categories: InsertCategory[] = [
     productCount: 0
   },
   {
-    name: "Electric Fencing",
-    slug: "electric-fencing",
-    description: "Electric fence energizers, wire, brackets, and accessories",
-    imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
-    productCount: 0
-  },
-  {
     name: "LP Gas",
     slug: "lp-gas",
     description: "LPG cylinders, regulators, and gas appliances",
     imageUrl: "https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=800&q=80",
+    productCount: 0
+  },
+  {
+    name: "Remotes",
+    slug: "remotes",
+    description: "Gate and garage remote controls for all major brands",
+    imageUrl: "https://images.unsplash.com/photo-1580927752452-89d86da3fa0a?w=800&q=80",
     productCount: 0
   }
 ];
