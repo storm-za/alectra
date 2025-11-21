@@ -156,7 +156,6 @@ export default function Footer() {
             </div>
             
             <div className="flex items-center gap-4">
-              <span className="text-sm">We accept:</span>
               <div className="flex gap-2">
                 <div className="px-3 py-1 bg-white rounded text-slate-900 text-xs font-medium">VISA</div>
                 <div className="px-3 py-1 bg-white rounded text-slate-900 text-xs font-medium">MC</div>
