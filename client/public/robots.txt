@@ -1,0 +1,13 @@
+# Robots.txt for Alectra Solutions
+# https://alectra.co.za
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://alectra.co.za/api/sitemap.xml
+
+# Disallow admin and checkout pages from crawling
+Disallow: /checkout
+Disallow: /account
+Disallow: /api/
