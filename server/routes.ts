@@ -192,6 +192,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/categories/id/:id", async (req, res) => {
+    try {
+      const category = await storage.getCategoryById(req.params.id);
+      if (!category) {
+        return res.status(404).json({ message: "Category not found" });
+      }
+      res.json(category);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching category: " + error.message });
+    }
+  });
+
   app.get("/api/categories/:slug", async (req, res) => {
     try {
       const category = await storage.getCategoryBySlug(req.params.slug);
@@ -533,13 +545,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
             await emailService.sendOrderConfirmation({
               orderId: order.id,
               reference: reference,
+              deliveryMethod: order.deliveryMethod || "delivery",
               customerName: order.customerName,
               customerEmail: order.customerEmail,
               customerPhone: order.customerPhone,
-              deliveryAddress: order.deliveryAddress,
-              deliveryCity: order.deliveryCity,
-              deliveryProvince: order.deliveryProvince,
-              deliveryPostalCode: order.deliveryPostalCode,
+              deliveryAddress: order.deliveryAddress || "",
+              deliveryCity: order.deliveryCity || "",
+              deliveryProvince: order.deliveryProvince || "",
+              deliveryPostalCode: order.deliveryPostalCode || "",
               items: orderItemsData.map((item: any) => ({
                 productName: item.productName,
                 quantity: item.quantity,

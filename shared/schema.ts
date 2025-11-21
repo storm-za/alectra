@@ -47,13 +47,14 @@ export const products = pgTable("products", {
 export const orders = pgTable("orders", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id),
+  deliveryMethod: text("delivery_method").notNull().default("delivery"),
   customerName: text("customer_name").notNull(),
   customerEmail: text("customer_email").notNull(),
   customerPhone: text("customer_phone").notNull(),
-  deliveryAddress: text("delivery_address").notNull(),
-  deliveryCity: text("delivery_city").notNull(),
-  deliveryProvince: text("delivery_province").notNull(),
-  deliveryPostalCode: text("delivery_postal_code").notNull(),
+  deliveryAddress: text("delivery_address"),
+  deliveryCity: text("delivery_city"),
+  deliveryProvince: text("delivery_province"),
+  deliveryPostalCode: text("delivery_postal_code"),
   subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
   vat: decimal("vat", { precision: 10, scale: 2 }).notNull(),
   tradeDiscount: decimal("trade_discount", { precision: 10, scale: 2 }),
@@ -190,6 +191,12 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
   total: true,
   status: true,
   userId: true,
+}).extend({
+  deliveryMethod: z.enum(["delivery", "pickup"]).default("delivery"),
+  deliveryAddress: z.string().optional().nullable(),
+  deliveryCity: z.string().optional().nullable(),
+  deliveryProvince: z.string().optional().nullable(),
+  deliveryPostalCode: z.string().optional().nullable(),
 });
 
 export const insertOrderItemSchema = createInsertSchema(orderItems).omit({

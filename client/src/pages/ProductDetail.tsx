@@ -76,6 +76,12 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     enabled: !!params?.slug,
   });
 
+  // Get category information for proper back navigation
+  const { data: category } = useQuery<{ id: string; name: string; slug: string }>({
+    queryKey: [`/api/categories/id/${product?.categoryId}`],
+    enabled: !!product?.categoryId,
+  });
+
   const form = useForm<z.infer<typeof reviewFormSchema>>({
     resolver: zodResolver(reviewFormSchema),
     defaultValues: {
@@ -186,10 +192,17 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
       />
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
         {/* Breadcrumb */}
-        <Link href="/products" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
-          <ChevronLeft className="h-4 w-4" />
-          Back to Products
-        </Link>
+        {category ? (
+          <Link href={`/category/${category.slug}`} className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6" data-testid="link-back-to-category">
+            <ChevronLeft className="h-4 w-4" />
+            Back to {category.name}
+          </Link>
+        ) : (
+          <Link href="/products" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6" data-testid="link-back-to-products">
+            <ChevronLeft className="h-4 w-4" />
+            Back to Products
+          </Link>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Images */}

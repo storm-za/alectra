@@ -92,6 +92,11 @@ export class DatabaseStorage implements IStorage {
     return category || undefined;
   }
 
+  async getCategoryById(id: string): Promise<Category | undefined> {
+    const [category] = await db.select().from(categories).where(eq(categories.id, id));
+    return category || undefined;
+  }
+
   async createCategory(insertCategory: InsertCategory): Promise<Category> {
     const [category] = await db.insert(categories).values(insertCategory).returning();
     return category;
@@ -261,24 +266,30 @@ export class DatabaseStorage implements IStorage {
       const subtotalExclVat = totalAfterDiscount / 1.15;
       const vat = totalAfterDiscount - subtotalExclVat;
       
-      // Check if cart contains products with custom delivery fees (e.g., heavy items like Glosteel garage doors)
-      const customDeliveryFees = fetchedProducts
-        .filter(p => p.deliveryFee !== null && p.deliveryFee !== undefined)
-        .map(p => parseFloat(p.deliveryFee as string));
-      
-      // Check if cart contains 48KG LP Gas (ID: a01d73ab-c728-4fba-ad61-244842c98a59)
-      const has48kgLPGas = fetchedProducts.some(p => p.id === 'a01d73ab-c728-4fba-ad61-244842c98a59');
-      
-      // Calculate shipping cost priority:
-      // 1. If cart has products with custom delivery fees, use the highest custom fee
-      // 2. Otherwise, FREE if cart contains 48KG LP Gas (special promotion)
-      // 3. Otherwise, FREE if order is R2500+
-      // 4. Otherwise, R110 standard delivery fee
+      // Calculate shipping cost with priority hierarchy:
+      // 1. If pickup is selected → R0
+      // 2. If cart has products with custom delivery fees → use highest custom fee
+      // 3. Otherwise, if cart contains 48KG LP Gas → R0 (special promotion)
+      // 4. Otherwise, if order total ≥ R2500 → R0
+      // 5. Otherwise → R110 standard delivery fee
       let shippingCost = 110;
-      if (customDeliveryFees.length > 0) {
-        shippingCost = Math.max(...customDeliveryFees);
-      } else if (has48kgLPGas || totalAfterDiscount >= 2500) {
+      
+      if (request.deliveryMethod === "pickup") {
         shippingCost = 0;
+      } else {
+        // Check for custom delivery fees (e.g., heavy items like Glosteel garage doors)
+        const customDeliveryFees = fetchedProducts
+          .filter(p => p.deliveryFee !== null && p.deliveryFee !== undefined)
+          .map(p => parseFloat(p.deliveryFee as string));
+        
+        // Check if cart contains 48KG LP Gas (ID: a01d73ab-c728-4fba-ad61-244842c98a59)
+        const has48kgLPGas = fetchedProducts.some(p => p.id === 'a01d73ab-c728-4fba-ad61-244842c98a59');
+        
+        if (customDeliveryFees.length > 0) {
+          shippingCost = Math.max(...customDeliveryFees);
+        } else if (has48kgLPGas || totalAfterDiscount >= 2500) {
+          shippingCost = 0;
+        }
       }
       
       // Final total includes shipping
@@ -286,13 +297,14 @@ export class DatabaseStorage implements IStorage {
 
       // 5. Create the order with server-controlled status
       const [createdOrder] = await tx.insert(orders).values({
+        deliveryMethod: request.deliveryMethod || "delivery",
         customerName: request.customerName,
         customerEmail: request.customerEmail,
         customerPhone: request.customerPhone,
-        deliveryAddress: request.deliveryAddress,
-        deliveryCity: request.deliveryCity,
-        deliveryProvince: request.deliveryProvince,
-        deliveryPostalCode: request.deliveryPostalCode,
+        deliveryAddress: request.deliveryAddress || null,
+        deliveryCity: request.deliveryCity || null,
+        deliveryProvince: request.deliveryProvince || null,
+        deliveryPostalCode: request.deliveryPostalCode || null,
         paymentReference: request.paymentReference,
         paymentStatus: request.paymentStatus,
         userId: userId || null,

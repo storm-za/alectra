@@ -31,13 +31,22 @@ import type { CartItem, UserAddress, PaystackInitializeResponse, PaystackVerifyR
 import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard } from "lucide-react";
 
 const checkoutSchema = z.object({
+  deliveryMethod: z.enum(["delivery", "pickup"]),
   customerName: z.string().min(2, "Name must be at least 2 characters"),
   customerEmail: z.string().email("Invalid email address"),
   customerPhone: z.string().min(10, "Invalid phone number"),
-  deliveryAddress: z.string().min(5, "Address is required"),
-  deliveryCity: z.string().min(2, "City is required"),
-  deliveryProvince: z.string().min(1, "Province is required"),
-  deliveryPostalCode: z.string().min(4, "Postal code is required"),
+  deliveryAddress: z.string().optional(),
+  deliveryCity: z.string().optional(),
+  deliveryProvince: z.string().optional(),
+  deliveryPostalCode: z.string().optional(),
+}).refine((data) => {
+  if (data.deliveryMethod === "delivery") {
+    return !!(data.deliveryAddress && data.deliveryCity && data.deliveryProvince && data.deliveryPostalCode);
+  }
+  return true;
+}, {
+  message: "Delivery address is required when delivery method is selected",
+  path: ["deliveryAddress"],
 });
 
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
@@ -73,6 +82,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const form = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
+      deliveryMethod: "delivery",
       customerName: user?.user?.name || "",
       customerEmail: user?.user?.email || "",
       customerPhone: user?.user?.phone || "",
@@ -82,6 +92,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       deliveryPostalCode: "",
     },
     values: user?.user ? {
+      deliveryMethod: "delivery",
       customerName: user.user.name,
       customerEmail: user.user.email,
       customerPhone: user.user.phone || "",
@@ -91,6 +102,8 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       deliveryPostalCode: "",
     } : undefined,
   });
+
+  const deliveryMethod = form.watch("deliveryMethod");
 
   const handleAddressSelect = (addressId: string) => {
     setSelectedAddressId(addressId);
@@ -251,12 +264,15 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   );
   
   // Calculate shipping cost priority:
-  // 1. If cart has products with custom delivery fees, use the highest custom fee
-  // 2. Otherwise, FREE if cart contains 48KG LP Gas (special promotion)
-  // 3. Otherwise, FREE if order total is R2500+
-  // 4. Otherwise, R110 standard delivery fee
+  // 1. If pickup is selected, shipping is FREE
+  // 2. If cart has products with custom delivery fees, use the highest custom fee
+  // 3. Otherwise, FREE if cart contains 48KG LP Gas (special promotion)
+  // 4. Otherwise, FREE if order total is R2500+
+  // 5. Otherwise, R110 standard delivery fee
   let shippingCost = 110;
-  if (customDeliveryFees.length > 0) {
+  if (deliveryMethod === "pickup") {
+    shippingCost = 0;
+  } else if (customDeliveryFees.length > 0) {
     shippingCost = Math.max(...customDeliveryFees);
   } else if (has48kgLPGas || totalAfterDiscount >= 2500) {
     shippingCost = 0;
@@ -277,30 +293,48 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           </p>
         </div>
 
-        {/* Progress Steps */}
-        <div className="mb-10" data-testid="checkout-progress">
-          <div className="flex items-center justify-center gap-2 sm:gap-4 max-w-2xl mx-auto">
-            <div className="flex items-center gap-2" data-testid="progress-step-1">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold text-sm">
-                1
-              </div>
-              <span className="text-xs sm:text-sm font-medium hidden sm:inline">Delivery</span>
-            </div>
-            <Separator className="w-8 sm:w-16" />
-            <div className="flex items-center gap-2 opacity-50" data-testid="progress-step-2">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-muted-foreground flex items-center justify-center font-semibold text-sm">
-                2
-              </div>
-              <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">Payment</span>
-            </div>
-            <Separator className="w-8 sm:w-16 opacity-50" />
-            <div className="flex items-center gap-2 opacity-50" data-testid="progress-step-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-muted-foreground flex items-center justify-center font-semibold text-sm">
-                3
-              </div>
-              <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">Complete</span>
-            </div>
+        {/* Delivery Method Selector */}
+        <div className="mb-10 max-w-2xl mx-auto" data-testid="delivery-method-selector">
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              type="button"
+              onClick={() => form.setValue("deliveryMethod", "delivery")}
+              className={`p-6 rounded-lg border-2 transition-all ${
+                deliveryMethod === "delivery"
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover-elevate"
+              }`}
+              data-testid="button-delivery-method-delivery"
+            >
+              <Truck className={`h-8 w-8 mx-auto mb-3 ${deliveryMethod === "delivery" ? "text-primary" : "text-muted-foreground"}`} />
+              <h3 className="font-semibold text-lg mb-1">Delivery</h3>
+              <p className="text-sm text-muted-foreground">We deliver nationwide</p>
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => form.setValue("deliveryMethod", "pickup")}
+              className={`p-6 rounded-lg border-2 transition-all ${
+                deliveryMethod === "pickup"
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover-elevate"
+              }`}
+              data-testid="button-delivery-method-pickup"
+            >
+              <Home className={`h-8 w-8 mx-auto mb-3 ${deliveryMethod === "pickup" ? "text-primary" : "text-muted-foreground"}`} />
+              <h3 className="font-semibold text-lg mb-1">Pickup</h3>
+              <p className="text-sm text-muted-foreground">Collect from our shop</p>
+            </button>
           </div>
+          
+          {deliveryMethod === "pickup" && (
+            <Alert className="mt-4 bg-primary/5 border-primary">
+              <MapPin className="h-4 w-4" />
+              <AlertDescription className="font-medium">
+                Pickup Location: Alectra Solutions, Wonderboom, Pretoria, 0182
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -309,12 +343,21 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
             <Card className="shadow-lg">
               <CardHeader className="border-b bg-card">
                 <CardTitle className="flex items-center gap-2">
-                  <Truck className="h-5 w-5 text-primary" />
-                  Delivery Information
+                  {deliveryMethod === "pickup" ? (
+                    <>
+                      <Home className="h-5 w-5 text-primary" />
+                      Pickup Information
+                    </>
+                  ) : (
+                    <>
+                      <Truck className="h-5 w-5 text-primary" />
+                      Delivery Information
+                    </>
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                {addresses && addresses.length > 0 && (
+                {deliveryMethod === "delivery" && addresses && addresses.length > 0 && (
                   <div className="mb-6">
                     <label className="text-sm font-medium mb-2 block">
                       <MapPin className="h-4 w-4 inline mr-1" />
@@ -390,81 +433,85 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       />
                     </div>
 
-                    <FormField
-                      control={form.control}
-                      name="deliveryAddress"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center gap-2">
-                            <Home className="h-4 w-4 text-muted-foreground" />
-                            Delivery Address
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea placeholder="123 Main Street, Apartment 4B" {...field} data-testid="input-address" className="min-h-[80px]" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="deliveryCity"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>City</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Pretoria" {...field} data-testid="input-city" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="deliveryProvince"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Province</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    {deliveryMethod === "delivery" && (
+                      <>
+                        <FormField
+                          control={form.control}
+                          name="deliveryAddress"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center gap-2">
+                                <Home className="h-4 w-4 text-muted-foreground" />
+                                Delivery Address
+                              </FormLabel>
                               <FormControl>
-                                <SelectTrigger data-testid="select-province">
-                                  <SelectValue placeholder="Select province" />
-                                </SelectTrigger>
+                                <Textarea placeholder="123 Main Street, Apartment 4B" {...field} data-testid="input-address" className="min-h-[80px]" />
                               </FormControl>
-                              <SelectContent>
-                                <SelectItem value="Gauteng" data-testid="select-item-province-gauteng">Gauteng</SelectItem>
-                                <SelectItem value="Western Cape" data-testid="select-item-province-western-cape">Western Cape</SelectItem>
-                                <SelectItem value="KwaZulu-Natal" data-testid="select-item-province-kwazulu-natal">KwaZulu-Natal</SelectItem>
-                                <SelectItem value="Eastern Cape" data-testid="select-item-province-eastern-cape">Eastern Cape</SelectItem>
-                                <SelectItem value="Free State" data-testid="select-item-province-free-state">Free State</SelectItem>
-                                <SelectItem value="Limpopo" data-testid="select-item-province-limpopo">Limpopo</SelectItem>
-                                <SelectItem value="Mpumalanga" data-testid="select-item-province-mpumalanga">Mpumalanga</SelectItem>
-                                <SelectItem value="Northern Cape" data-testid="select-item-province-northern-cape">Northern Cape</SelectItem>
-                                <SelectItem value="North West" data-testid="select-item-province-north-west">North West</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
 
-                      <FormField
-                        control={form.control}
-                        name="deliveryPostalCode"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Postal Code</FormLabel>
-                            <FormControl>
-                              <Input placeholder="0001" {...field} data-testid="input-postal-code" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="deliveryCity"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>City</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Pretoria" {...field} data-testid="input-city" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="deliveryProvince"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Province</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger data-testid="select-province">
+                                      <SelectValue placeholder="Select province" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="Gauteng" data-testid="select-item-province-gauteng">Gauteng</SelectItem>
+                                    <SelectItem value="Western Cape" data-testid="select-item-province-western-cape">Western Cape</SelectItem>
+                                    <SelectItem value="KwaZulu-Natal" data-testid="select-item-province-kwazulu-natal">KwaZulu-Natal</SelectItem>
+                                    <SelectItem value="Eastern Cape" data-testid="select-item-province-eastern-cape">Eastern Cape</SelectItem>
+                                    <SelectItem value="Free State" data-testid="select-item-province-free-state">Free State</SelectItem>
+                                    <SelectItem value="Limpopo" data-testid="select-item-province-limpopo">Limpopo</SelectItem>
+                                    <SelectItem value="Mpumalanga" data-testid="select-item-province-mpumalanga">Mpumalanga</SelectItem>
+                                    <SelectItem value="Northern Cape" data-testid="select-item-province-northern-cape">Northern Cape</SelectItem>
+                                    <SelectItem value="North West" data-testid="select-item-province-north-west">North West</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="deliveryPostalCode"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Postal Code</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="0001" {...field} data-testid="input-postal-code" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </>
+                    )}
 
                     {/* Trust Signals */}
                     <div className="bg-muted/50 rounded-lg p-4 space-y-3" data-testid="trust-signals">
@@ -483,13 +530,27 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                         </div>
                       </div>
                       <div className="flex items-center gap-3" data-testid="trust-delivery">
-                        <Truck className="h-5 w-5 text-primary flex-shrink-0" />
-                        <div>
-                          <p className="text-sm font-medium">Fast Delivery</p>
-                          <p className="text-xs text-muted-foreground">
-                            Nationwide via The Courier Guy • Free shipping on orders R2500+
-                          </p>
-                        </div>
+                        {deliveryMethod === "pickup" ? (
+                          <>
+                            <Home className="h-5 w-5 text-primary flex-shrink-0" />
+                            <div>
+                              <p className="text-sm font-medium">Convenient Pickup</p>
+                              <p className="text-xs text-muted-foreground">
+                                Collect from Alectra Solutions, Wonderboom, Pretoria
+                              </p>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <Truck className="h-5 w-5 text-primary flex-shrink-0" />
+                            <div>
+                              <p className="text-sm font-medium">Fast Delivery</p>
+                              <p className="text-xs text-muted-foreground">
+                                Nationwide via The Courier Guy • Free shipping on orders R2500+
+                              </p>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
 
@@ -591,7 +652,11 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                 </div>
 
                 <div className="text-xs text-muted-foreground pt-4">
-                  <p>Delivery via The Courier Guy nationwide.</p>
+                  {deliveryMethod === "pickup" ? (
+                    <p>Pickup from: Alectra Solutions, Wonderboom, Pretoria, 0182</p>
+                  ) : (
+                    <p>Delivery via The Courier Guy nationwide.</p>
+                  )}
                 </div>
               </CardContent>
             </Card>

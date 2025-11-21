@@ -3,6 +3,7 @@ import nodemailer from "nodemailer";
 export interface OrderEmailData {
   orderId: string;
   reference: string;
+  deliveryMethod: string;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
