@@ -1,7 +1,7 @@
-import { ShoppingCart, Phone, Menu, User, LogOut, ChevronDown } from "lucide-react";
+import { ShoppingCart, Phone, Menu, User, LogOut, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +10,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -26,6 +31,7 @@ interface HeaderProps {
 
 export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [shopMenuOpen, setShopMenuOpen] = useState(false);
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -203,17 +209,64 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-64">
-                <nav className="flex flex-col gap-4 mt-8">
-                  {navigation.map((item) => (
-                    <Link 
-                      key={item.name} 
-                      href={item.href}
-                      className="px-3 py-2 rounded-md text-base font-medium hover-elevate active-elevate-2"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
+                <SheetTitle className="text-lg font-semibold">Menu</SheetTitle>
+                <nav className="flex flex-col gap-2 mt-8">
+                  {/* Shop collapsible menu */}
+                  <Collapsible open={shopMenuOpen} onOpenChange={setShopMenuOpen}>
+                    <CollapsibleTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-between px-3 py-2 text-base font-medium"
+                        data-testid="button-shop-mobile"
+                      >
+                        Shop
+                        <ChevronRight className={`h-4 w-4 transition-transform ${shopMenuOpen ? 'rotate-90' : ''}`} />
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="flex flex-col pl-4 mt-1">
+                      <Link 
+                        href="/products"
+                        className="px-3 py-2 rounded-md text-sm hover-elevate active-elevate-2"
+                        onClick={() => setMobileMenuOpen(false)}
+                        data-testid="link-shop-all-mobile"
+                      >
+                        Shop All Products
+                      </Link>
+                      {categories?.map((category) => (
+                        <Link 
+                          key={category.id}
+                          href={`/categories/${category.slug}`}
+                          className="px-3 py-2 rounded-md text-sm hover-elevate active-elevate-2"
+                          onClick={() => setMobileMenuOpen(false)}
+                          data-testid={`link-category-${category.slug}-mobile`}
+                        >
+                          {category.name}
+                        </Link>
+                      ))}
+                    </CollapsibleContent>
+                  </Collapsible>
+
+                  {/* Contact Us */}
+                  <Link 
+                    href="/contact"
+                    className="px-3 py-2 rounded-md text-base font-medium hover-elevate active-elevate-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                    data-testid="link-contact-mobile"
+                  >
+                    Contact Us
+                  </Link>
+
+                  {/* Trade Account */}
+                  <Link 
+                    href="/trade-signup"
+                    className="px-3 py-2 rounded-md text-base font-medium hover-elevate active-elevate-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                    data-testid="link-trade-signup-mobile"
+                  >
+                    Trade Account
+                  </Link>
+
+                  {/* User section */}
                   {user ? (
                     <>
                       <div className="border-t pt-4 mt-2 text-sm text-muted-foreground px-3">
