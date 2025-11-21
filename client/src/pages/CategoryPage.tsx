@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRoute, Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProductCard from "@/components/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { SEO } from "@/components/SEO";
 import { Breadcrumb } from "@/components/Breadcrumb";
-import { ChevronLeft, Search, X, Filter, ChevronDown, ChevronUp, MapPin } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, X, Filter, ChevronDown, ChevronUp, MapPin } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -19,6 +19,16 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import type { Product, Category } from "@shared/schema";
+
+interface ProductsResponse {
+  products: Product[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
 
 interface CategoryPageProps {
   onAddToCart: (product: Product) => void;
@@ -32,6 +42,8 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [sortBy, setSortBy] = useState<string>("name-asc");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const limit = 24;
 
   const { data: category, isLoading: categoryLoading } = useQuery<Category>({
     queryKey: ["/api/categories", params?.slug],
@@ -50,19 +62,25 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
     if (priceRange[0] > 0) queryParams.append("minPrice", priceRange[0].toString());
     if (priceRange[1] < 10000) queryParams.append("maxPrice", priceRange[1].toString());
     if (sortBy) queryParams.append("sort", sortBy);
+    queryParams.append("page", page.toString());
+    queryParams.append("limit", limit.toString());
     
     const queryString = queryParams.toString();
-    return queryString ? `/api/products?${queryString}` : "/api/products";
+    return queryString ? `/api/products?${queryString}` : `/api/products?page=${page}&limit=${limit}`;
   };
 
-  const { data: products, isLoading: productsLoading } = useQuery<Product[]>({
+  const { data, isLoading: productsLoading } = useQuery<ProductsResponse>({
     queryKey: [buildQueryKey()],
     enabled: !!params?.slug,
   });
 
+  const products = data?.products;
+  const pagination = data?.pagination;
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSearch(searchInput);
+    setPage(1);
   };
 
   const clearFilters = () => {
@@ -70,7 +88,12 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
     setSearchInput("");
     setBrand("all");
     setPriceRange([0, 10000]);
+    setPage(1);
   };
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, brand, priceRange, sortBy]);
 
   const hasActiveFilters = search || (brand && brand !== "all") || priceRange[0] > 0 || priceRange[1] < 10000;
   const isLoading = categoryLoading || productsLoading;
@@ -272,15 +295,72 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                {products?.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onAddToCart={onAddToCart}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                  {products?.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onAddToCart={onAddToCart}
+                    />
+                  ))}
+                </div>
+
+                {/* Pagination Controls */}
+                {pagination && pagination.totalPages > 1 && (
+                  <div className="mt-8 flex items-center justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage(page - 1)}
+                      disabled={page === 1}
+                      data-testid="button-prev-page"
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-1" />
+                      Previous
+                    </Button>
+                    
+                    <div className="flex items-center gap-2">
+                      {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (pagination.totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (page <= 3) {
+                          pageNum = i + 1;
+                        } else if (page >= pagination.totalPages - 2) {
+                          pageNum = pagination.totalPages - 4 + i;
+                        } else {
+                          pageNum = page - 2 + i;
+                        }
+                        
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={page === pageNum ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setPage(pageNum)}
+                            className="min-w-[40px]"
+                            data-testid={`button-page-${pageNum}`}
+                          >
+                            {pageNum}
+                          </Button>
+                        );
+                      })}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage(page + 1)}
+                      disabled={page === pagination.totalPages}
+                      data-testid="button-next-page"
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
