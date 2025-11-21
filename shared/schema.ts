@@ -111,6 +111,20 @@ export const tradeApplications = pgTable("trade_applications", {
   approvedAt: timestamp("approved_at"),
 });
 
+export const blogPosts = pgTable("blog_posts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  excerpt: text("excerpt").notNull(),
+  content: text("content").notNull(),
+  author: text("author").notNull().default("Alectra Solutions"),
+  imageUrl: text("image_url").notNull(),
+  tags: text("tags").array().notNull().default(sql`ARRAY[]::text[]`),
+  metaDescription: text("meta_description").notNull(),
+  publishedAt: timestamp("published_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at"),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   orders: many(orders),
   addresses: many(userAddresses),
@@ -235,6 +249,12 @@ export const insertTradeApplicationSchema = createInsertSchema(tradeApplications
   contactPhone: z.string().min(10, "Valid contact phone is required"),
 });
 
+export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({
+  id: true,
+  publishedAt: true,
+  updatedAt: true,
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
@@ -258,6 +278,9 @@ export type InsertProductReview = z.infer<typeof insertProductReviewSchema>;
 
 export type TradeApplication = typeof tradeApplications.$inferSelect;
 export type InsertTradeApplication = z.infer<typeof insertTradeApplicationSchema>;
+
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
 
 export type CartItem = {
   product: Product;
