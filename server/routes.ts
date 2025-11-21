@@ -678,11 +678,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Blog routes
+  app.get("/api/blog", async (req, res) => {
+    try {
+      const posts = await storage.getAllBlogPosts();
+      res.json(posts);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/blog/:slug", async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const post = await storage.getBlogPostBySlug(slug);
+      
+      if (!post) {
+        return res.status(404).json({ message: "Blog post not found" });
+      }
+      
+      res.json(post);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Sitemap for SEO
   app.get("/sitemap.xml", async (req, res) => {
     try {
       const products = await storage.getAllProducts();
       const categories = await storage.getAllCategories();
+      const blogPosts = await storage.getAllBlogPosts();
       
       const baseUrl = req.protocol + '://' + req.get('host');
       const currentDate = new Date().toISOString();
@@ -723,6 +749,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sitemap += `    <changefreq>weekly</changefreq>\n`;
         sitemap += `    <priority>0.7</priority>\n`;
         sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+        sitemap += `  </url>\n`;
+      }
+      
+      // Blog page
+      sitemap += `  <url>\n`;
+      sitemap += `    <loc>${baseUrl}/blog</loc>\n`;
+      sitemap += `    <changefreq>weekly</changefreq>\n`;
+      sitemap += `    <priority>0.8</priority>\n`;
+      sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+      sitemap += `  </url>\n`;
+      
+      // Blog posts
+      for (const post of blogPosts) {
+        const postDate = post.updatedAt ? new Date(post.updatedAt).toISOString() : new Date(post.publishedAt).toISOString();
+        sitemap += `  <url>\n`;
+        sitemap += `    <loc>${baseUrl}/blog/${post.slug}</loc>\n`;
+        sitemap += `    <changefreq>monthly</changefreq>\n`;
+        sitemap += `    <priority>0.6</priority>\n`;
+        sitemap += `    <lastmod>${postDate}</lastmod>\n`;
         sitemap += `  </url>\n`;
       }
       
