@@ -285,10 +285,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Products
   app.get("/api/products", async (req, res) => {
     try {
-      const { search, brand, minPrice, maxPrice, categorySlug, sort } = req.query;
+      const { search, brand, minPrice, maxPrice, categorySlug, sort, page, limit } = req.query;
+      
+      const pageNum = page ? parseInt(page as string) : 1;
+      const limitNum = limit ? parseInt(limit as string) : 24;
       
       if (search || brand || minPrice || maxPrice || categorySlug || sort) {
-        const products = await storage.searchProducts({
+        const allProducts = await storage.searchProducts({
           search: search as string,
           brand: brand as string,
           minPrice: minPrice ? parseFloat(minPrice as string) : undefined,
@@ -296,11 +299,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
           categorySlug: categorySlug as string,
           sort: sort as any,
         });
-        return res.json(products);
+        
+        const total = allProducts.length;
+        const offset = (pageNum - 1) * limitNum;
+        const products = allProducts.slice(offset, offset + limitNum);
+        
+        return res.json({
+          products,
+          pagination: {
+            page: pageNum,
+            limit: limitNum,
+            total,
+            totalPages: Math.ceil(total / limitNum),
+          },
+        });
       }
       
-      const products = await storage.getAllProducts();
-      res.json(products);
+      const allProducts = await storage.getAllProducts();
+      const total = allProducts.length;
+      const offset = (pageNum - 1) * limitNum;
+      const products = allProducts.slice(offset, offset + limitNum);
+      
+      res.json({
+        products,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total,
+          totalPages: Math.ceil(total / limitNum),
+        },
+      });
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching products: " + error.message });
     }

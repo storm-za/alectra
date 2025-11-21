@@ -14,8 +14,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { X, Search, Filter, ChevronDown, ChevronUp } from "lucide-react";
+import { X, Search, Filter, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product } from "@shared/schema";
+
+interface ProductsResponse {
+  products: Product[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
 
 interface ProductsProps {
   onAddToCart: (product: Product) => void;
@@ -28,6 +38,8 @@ export default function Products({ onAddToCart }: ProductsProps) {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [sortBy, setSortBy] = useState<string>("name-asc");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const limit = 24;
 
   const { data: brands } = useQuery<string[]>({
     queryKey: ["/api/brands"],
@@ -40,18 +52,24 @@ export default function Products({ onAddToCart }: ProductsProps) {
     if (priceRange[0] > 0) params.append("minPrice", priceRange[0].toString());
     if (priceRange[1] < 10000) params.append("maxPrice", priceRange[1].toString());
     if (sortBy) params.append("sort", sortBy);
+    params.append("page", page.toString());
+    params.append("limit", limit.toString());
     
     const queryString = params.toString();
-    return queryString ? `/api/products?${queryString}` : "/api/products";
+    return queryString ? `/api/products?${queryString}` : `/api/products?page=${page}&limit=${limit}`;
   };
 
-  const { data: products, isLoading } = useQuery<Product[]>({
+  const { data, isLoading } = useQuery<ProductsResponse>({
     queryKey: [buildQueryKey()],
   });
+
+  const products = data?.products;
+  const pagination = data?.pagination;
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSearch(searchInput);
+    setPage(1);
   };
 
   const clearFilters = () => {
@@ -60,7 +78,12 @@ export default function Products({ onAddToCart }: ProductsProps) {
     setBrand("all");
     setPriceRange([0, 10000]);
     setSortBy("name-asc");
+    setPage(1);
   };
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, brand, priceRange, sortBy]);
 
   const hasActiveFilters = search || (brand && brand !== "all") || priceRange[0] > 0 || priceRange[1] < 10000;
 
@@ -76,7 +99,7 @@ export default function Products({ onAddToCart }: ProductsProps) {
             All Products
           </h1>
           <p className="text-muted-foreground">
-            {products?.length || 0} products available
+            {pagination ? `${pagination.total} products available` : 'Loading...'}
           </p>
         </div>
 
@@ -221,15 +244,72 @@ export default function Products({ onAddToCart }: ProductsProps) {
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                {products?.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onAddToCart={onAddToCart}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                  {products?.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onAddToCart={onAddToCart}
+                    />
+                  ))}
+                </div>
+
+                {/* Pagination Controls */}
+                {pagination && pagination.totalPages > 1 && (
+                  <div className="mt-8 flex items-center justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage(page - 1)}
+                      disabled={page === 1}
+                      data-testid="button-prev-page"
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-1" />
+                      Previous
+                    </Button>
+                    
+                    <div className="flex items-center gap-2">
+                      {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (pagination.totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (page <= 3) {
+                          pageNum = i + 1;
+                        } else if (page >= pagination.totalPages - 2) {
+                          pageNum = pagination.totalPages - 4 + i;
+                        } else {
+                          pageNum = page - 2 + i;
+                        }
+                        
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={page === pageNum ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setPage(pageNum)}
+                            className="min-w-[40px]"
+                            data-testid={`button-page-${pageNum}`}
+                          >
+                            {pageNum}
+                          </Button>
+                        );
+                      })}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage(page + 1)}
+                      disabled={page === pagination.totalPages}
+                      data-testid="button-next-page"
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
