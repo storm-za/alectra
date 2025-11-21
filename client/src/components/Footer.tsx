@@ -164,24 +164,27 @@ export default function Footer() {
 
             <div className="flex items-center gap-3">
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/alectra.solutions/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-white transition-colors"
+                data-testid="link-facebook"
               >
                 <Facebook className="h-5 w-5" />
               </a>
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/alectrasolutions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-white transition-colors"
+                data-testid="link-instagram"
               >
                 <Instagram className="h-5 w-5" />
               </a>
               <a
-                href="mailto:info@alectra.co.za"
+                href="mailto:solutionsalectra@gmail.com"
                 className="hover:text-white transition-colors"
+                data-testid="link-email"
               >
                 <Mail className="h-5 w-5" />
               </a>
