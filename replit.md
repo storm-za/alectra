@@ -121,6 +121,11 @@ Product data is sourced from alectra.co.za using an automated Shopify scraper:
 Products include:
 - Name, slug, description
 - Price (VAT-inclusive), compare-at price (optional)
-- Brand, SKU, category
+- Brand, SKU, category (nullable for uncategorized products)
 - Primary image URL + image gallery array
 - Stock level, featured flag
+
+### Future Considerations
+- Add automated tests to assert category counts plus uncategorized totals match alectra.co.za
+- Consider exposing an explicit "Uncategorized" filter in the UI for visibility into the 43 uncategorized items
+- Monitor analytics to ensure uncategorized products remain discoverable at historical rates
