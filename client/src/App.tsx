@@ -25,6 +25,8 @@ import FAQ from "@/pages/FAQ";
 import Shipping from "@/pages/Shipping";
 import Returns from "@/pages/Returns";
 import Privacy from "@/pages/Privacy";
+import Blog from "@/pages/Blog";
+import BlogPost from "@/pages/BlogPost";
 import NotFound from "@/pages/not-found";
 import { useToast } from "@/hooks/use-toast";
 import type { Product, CartItem } from "@shared/schema";
@@ -140,6 +142,12 @@ function Router() {
           </Route>
           <Route path="/privacy">
             <Privacy />
+          </Route>
+          <Route path="/blog">
+            <Blog />
+          </Route>
+          <Route path="/blog/:slug">
+            <BlogPost />
           </Route>
           <Route component={NotFound} />
         </Switch>
