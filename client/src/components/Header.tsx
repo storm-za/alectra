@@ -35,6 +35,10 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
     retry: false,
   });
 
+  const { data: categories } = useQuery<Array<{ id: string; name: string; slug: string }>>({
+    queryKey: ["/api/categories"],
+  });
+
   const user = authData?.user;
 
   const logoutMutation = useMutation({
@@ -61,10 +65,9 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
 
   const navigation = [
     { name: "Shop All", href: "/products" },
-    { name: "Gate Motors", href: "/category/gate-motors" },
-    { name: "Batteries", href: "/category/batteries" },
-    { name: "CCTV", href: "/category/cctv" },
-    { name: "Remotes", href: "/category/remotes" },
+    ...(categories || []).map(cat => ({ name: cat.name, href: `/categories/${cat.slug}` })),
+    { name: "Contact Us", href: "/contact" },
+    { name: "Trade Account", href: "/trade-signup" },
   ];
 
   return (
