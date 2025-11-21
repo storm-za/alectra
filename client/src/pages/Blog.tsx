@@ -34,8 +34,6 @@ export default function Blog() {
       <SEO
         title="Security & Automation Blog | Expert Tips & Guides"
         description="Expert advice on security systems, gate motors, electric fencing, CCTV, and automation for South African homes and businesses. Installation tips, buying guides, and load-shedding solutions."
-        keywords="security blog, gate motor tips, CCTV guide, electric fence installation, load-shedding solutions, South Africa security"
-        canonical="https://alectra.co.za/blog"
       />
       
       <div className="min-h-screen bg-background">

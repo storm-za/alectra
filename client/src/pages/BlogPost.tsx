@@ -13,7 +13,7 @@ export default function BlogPostPage() {
   const slug = params.slug || "";
 
   const { data: post, isLoading } = useQuery<BlogPost>({
-    queryKey: ["/api/blog", slug],
+    queryKey: [`/api/blog/${slug}`],
     enabled: !!slug,
   });
 
@@ -75,8 +75,6 @@ export default function BlogPostPage() {
       <SEO
         title={`${post.title} | Alectra Solutions Blog`}
         description={post.metaDescription}
-        keywords={post.tags.join(", ")}
-        canonical={`https://alectra.co.za/blog/${post.slug}`}
         image={post.imageUrl}
         type="article"
       />
