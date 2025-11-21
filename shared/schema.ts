@@ -40,6 +40,7 @@ export const products = pgTable("products", {
   featured: boolean("featured").notNull().default(false),
   discontinued: boolean("discontinued").notNull().default(false),
   specifications: text("specifications"),
+  deliveryFee: decimal("delivery_fee", { precision: 10, scale: 2 }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

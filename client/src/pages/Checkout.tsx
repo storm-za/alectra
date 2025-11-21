@@ -240,16 +240,27 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const subtotal = totalAfterDiscount / 1.15;
   const vat = subtotal * 0.15;
   
+  // Check if cart contains products with custom delivery fees (e.g., heavy items like Glosteel garage doors)
+  const customDeliveryFees = cartItems
+    .filter((item) => item.product.deliveryFee !== null && item.product.deliveryFee !== undefined)
+    .map((item) => parseFloat(item.product.deliveryFee as string));
+  
   // Check if cart contains 48KG LP Gas product (special promotion: FREE delivery)
   const has48kgLPGas = cartItems.some(
     (item) => item.product.id === 'a01d73ab-c728-4fba-ad61-244842c98a59'
   );
   
-  // Calculate shipping cost:
-  // - FREE if cart contains 48KG LP Gas (special promotion)
-  // - FREE if order total is R2500+
-  // - R110 delivery fee otherwise
-  const shippingCost = has48kgLPGas || totalAfterDiscount >= 2500 ? 0 : 110;
+  // Calculate shipping cost priority:
+  // 1. If cart has products with custom delivery fees, use the highest custom fee
+  // 2. Otherwise, FREE if cart contains 48KG LP Gas (special promotion)
+  // 3. Otherwise, FREE if order total is R2500+
+  // 4. Otherwise, R110 standard delivery fee
+  let shippingCost = 110;
+  if (customDeliveryFees.length > 0) {
+    shippingCost = Math.max(...customDeliveryFees);
+  } else if (has48kgLPGas || totalAfterDiscount >= 2500) {
+    shippingCost = 0;
+  }
   
   // Final total includes shipping
   const total = totalAfterDiscount + shippingCost;
