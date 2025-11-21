@@ -116,6 +116,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // XML Sitemap for SEO
+  app.get("/api/sitemap.xml", async (req, res) => {
+    try {
+      const baseUrl = "https://alectra.co.za";
+      const [categories, products] = await Promise.all([
+        storage.getAllCategories(),
+        storage.getAllProducts()
+      ]);
+
+      const staticPages = [
+        { url: "", priority: "1.0", changefreq: "daily" },
+        { url: "/products", priority: "0.9", changefreq: "daily" },
+        { url: "/about", priority: "0.6", changefreq: "monthly" },
+        { url: "/contact", priority: "0.6", changefreq: "monthly" },
+        { url: "/stores", priority: "0.6", changefreq: "monthly" },
+        { url: "/faq", priority: "0.5", changefreq: "monthly" },
+        { url: "/privacy", priority: "0.3", changefreq: "yearly" },
+        { url: "/returns", priority: "0.5", changefreq: "monthly" },
+        { url: "/shipping", priority: "0.5", changefreq: "monthly" },
+      ];
+
+      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+      xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+
+      staticPages.forEach(page => {
+        xml += '  <url>\n';
+        xml += `    <loc>${baseUrl}${page.url}</loc>\n`;
+        xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
+        xml += `    <priority>${page.priority}</priority>\n`;
+        xml += '  </url>\n';
+      });
+
+      categories.forEach(category => {
+        xml += '  <url>\n';
+        xml += `    <loc>${baseUrl}/category/${category.slug}</loc>\n`;
+        xml += '    <changefreq>weekly</changefreq>\n';
+        xml += '    <priority>0.8</priority>\n';
+        xml += '  </url>\n';
+      });
+
+      products.forEach(product => {
+        xml += '  <url>\n';
+        xml += `    <loc>${baseUrl}/product/${product.slug}</loc>\n`;
+        xml += '    <changefreq>weekly</changefreq>\n';
+        xml += '    <priority>0.7</priority>\n';
+        xml += '  </url>\n';
+      });
+
+      xml += '</urlset>';
+
+      res.header('Content-Type', 'application/xml');
+      res.send(xml);
+    } catch (error: any) {
+      res.status(500).send('Error generating sitemap');
+    }
+  });
+
   // User Addresses (Protected)
   app.get("/api/user/addresses", requireAuth, async (req, res) => {
     try {
