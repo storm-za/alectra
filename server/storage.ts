@@ -261,8 +261,13 @@ export class DatabaseStorage implements IStorage {
       const subtotalExclVat = totalAfterDiscount / 1.15;
       const vat = totalAfterDiscount - subtotalExclVat;
       
-      // Calculate shipping cost: R110 delivery fee, FREE if order is R2500+
-      const shippingCost = totalAfterDiscount >= 2500 ? 0 : 110;
+      // Check if cart contains 48KG LP Gas (ID: a01d73ab-c728-4fba-ad61-244842c98a59)
+      const has48kgLPGas = fetchedProducts.some(p => p.id === 'a01d73ab-c728-4fba-ad61-244842c98a59');
+      
+      // Calculate shipping cost: R110 delivery fee, FREE if:
+      // - Order is R2500+ OR
+      // - Cart contains 48KG LP Gas (special promotion)
+      const shippingCost = (totalAfterDiscount >= 2500 || has48kgLPGas) ? 0 : 110;
       
       // Final total includes shipping
       const finalTotal = totalAfterDiscount + shippingCost;

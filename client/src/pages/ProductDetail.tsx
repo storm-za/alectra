@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Dialog,
   DialogContent,
@@ -31,7 +32,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, MessageSquare, Star, Truck, ShieldCheck, CreditCard, Lock } from "lucide-react";
+import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, MessageSquare, Star, Truck, ShieldCheck, CreditCard, Lock, MapPin, BadgePercent } from "lucide-react";
 import { SiVisa, SiMastercard } from "react-icons/si";
 import { StarRating } from "@/components/StarRating";
 import { SEO, createProductStructuredData } from "@/components/SEO";
@@ -302,26 +303,47 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             {/* Delivery Information */}
             <Card className="mb-4">
               <CardContent className="p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-start gap-3">
-                    <div className="bg-primary/10 p-2 rounded-md">
-                      <Truck className="h-5 w-5 text-primary" />
+                {product.categoryId === '39011bcb-7a0c-4b29-9fe3-ecd3fa5c5ac1' ? (
+                  // LP Gas products - Pretoria only delivery
+                  <div className="space-y-4">
+                    <Alert className="border-primary/50 bg-primary/5">
+                      <MapPin className="h-4 w-4 text-primary" />
+                      <AlertDescription>
+                        <strong>Important:</strong> This LP Gas product is only delivered within Pretoria. We do not offer nationwide delivery for LP Gas.
+                      </AlertDescription>
+                    </Alert>
+                    {product.id === 'a01d73ab-c728-4fba-ad61-244842c98a59' && (
+                      <Alert className="border-green-500/50 bg-green-50 dark:bg-green-950/20">
+                        <BadgePercent className="h-4 w-4 text-green-600 dark:text-green-400" />
+                        <AlertDescription className="text-green-900 dark:text-green-100">
+                          <strong>Special Offer:</strong> FREE DELIVERY on this 48KG LP Gas cylinder! Limited time promotion.
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                ) : (
+                  // Other products - Nationwide delivery
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-start gap-3">
+                      <div className="bg-primary/10 p-2 rounded-md">
+                        <Truck className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm mb-1">Nationwide Delivery</h4>
+                        <p className="text-xs text-muted-foreground">We deliver to all areas across South Africa</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-medium text-sm mb-1">Nationwide Delivery</h4>
-                      <p className="text-xs text-muted-foreground">We deliver to all areas across South Africa</p>
+                    <div className="flex items-start gap-3">
+                      <div className="bg-primary/10 p-2 rounded-md">
+                        <ShieldCheck className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm mb-1">Free Shipping on R2500+</h4>
+                        <p className="text-xs text-muted-foreground">Enjoy free delivery on orders over R2500</p>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <div className="bg-primary/10 p-2 rounded-md">
-                      <ShieldCheck className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-sm mb-1">Free Shipping on R2500+</h4>
-                      <p className="text-xs text-muted-foreground">Enjoy free delivery on orders over R2500</p>
-                    </div>
-                  </div>
-                </div>
+                )}
               </CardContent>
             </Card>
 

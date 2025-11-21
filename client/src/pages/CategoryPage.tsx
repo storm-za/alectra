@@ -6,7 +6,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, Search, X, Filter, ChevronDown, ChevronUp } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ChevronLeft, Search, X, Filter, ChevronDown, ChevronUp, MapPin } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -107,6 +108,16 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
               <p className="text-muted-foreground">
                 {products?.length || 0} {products?.length === 1 ? 'product' : 'products'}
               </p>
+              
+              {/* LP Gas Pretoria-only delivery notice */}
+              {category?.slug === 'lp-gas' && (
+                <Alert className="mt-4 border-primary/50 bg-primary/5">
+                  <MapPin className="h-4 w-4 text-primary" />
+                  <AlertDescription>
+                    <strong>Important:</strong> LP Gas products are only delivered within Pretoria. We do not offer nationwide delivery for LP Gas.
+                  </AlertDescription>
+                </Alert>
+              )}
             </>
           )}
         </div>
