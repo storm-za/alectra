@@ -34,6 +34,7 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
                     <img 
                       src={category.imageUrl} 
                       alt={category.name}
+                      loading="lazy"
                       className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity"
                     />
                   )}
