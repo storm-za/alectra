@@ -88,6 +88,7 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
     setSearchInput("");
     setBrand("all");
     setPriceRange([0, 10000]);
+    setSortBy("name-asc");
     setPage(1);
   };
 
