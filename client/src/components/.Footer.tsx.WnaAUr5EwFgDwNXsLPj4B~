@@ -158,7 +158,7 @@ export default function Footer() {
             <div className="flex items-center gap-4">
               <div className="flex gap-2">
                 <div className="px-3 py-1 bg-white rounded text-slate-900 text-xs font-medium">VISA</div>
-                <div className="px-3 py-1 bg-white rounded text-slate-900 text-xs font-medium">MC</div>
+                <div className="px-3 py-1 bg-white rounded text-slate-900 text-xs font-medium">MASTERCARD</div>
               </div>
             </div>
 
