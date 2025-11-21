@@ -93,7 +93,7 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
       <SEO
         title={`${category?.name || 'Category'} - Security Products`}
         description={category?.description || `Browse our ${category?.name || 'security'} products. Quality security and automation solutions for South African homes and businesses.`}
-        image={category?.imageUrl}
+        image={category?.imageUrl || undefined}
       />
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
         <Breadcrumb

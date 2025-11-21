@@ -1,4 +1,5 @@
 import { SEO } from "@/components/SEO";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Phone, Clock } from "lucide-react";
 
@@ -11,6 +12,12 @@ export default function Stores() {
       />
       
       <div className="max-w-6xl mx-auto px-4 md:px-8 lg:px-12 py-12">
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Store Locations", href: "/stores" },
+          ]}
+        />
         <h1 className="text-4xl font-bold mb-2">Our Store Locations</h1>
         <p className="text-muted-foreground mb-12">
           Visit us at any of our three convenient locations in Pretoria. All stores open 7 days a week.

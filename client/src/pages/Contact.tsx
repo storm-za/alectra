@@ -1,4 +1,5 @@
 import { SEO } from "@/components/SEO";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,12 @@ export default function Contact() {
       />
       
       <div className="max-w-6xl mx-auto px-4 md:px-8 lg:px-12 py-12">
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Contact Us", href: "/contact" },
+          ]}
+        />
         <h1 className="text-4xl font-bold mb-2">Contact Us</h1>
         <p className="text-muted-foreground mb-12">
           We're here to help. Reach out to us through any of the channels below.

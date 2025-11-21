@@ -1,4 +1,5 @@
 import { SEO } from "@/components/SEO";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { Card, CardContent } from "@/components/ui/card";
 import { Shield, Truck, Award, Users } from "lucide-react";
 
@@ -10,6 +11,12 @@ export default function About() {
         description="Alectra Solutions is South Africa's trusted provider of security and automation products. Serving both retail customers and professional installers since establishment."
       />
       <div className="max-w-4xl mx-auto px-4 md:px-8 lg:px-12 py-12">
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: "About Us", href: "/about" },
+          ]}
+        />
         <h1 className="text-4xl font-bold mb-6">About Alectra Solutions</h1>
         
         <div className="prose prose-slate max-w-none mb-12">

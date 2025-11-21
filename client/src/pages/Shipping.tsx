@@ -1,4 +1,5 @@
 import { SEO } from "@/components/SEO";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { Card, CardContent } from "@/components/ui/card";
 import { Truck, Package, MapPin, Clock } from "lucide-react";
 
@@ -11,6 +12,12 @@ export default function Shipping() {
       />
       
       <div className="max-w-4xl mx-auto px-4 md:px-8 lg:px-12 py-12">
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Shipping Information", href: "/shipping" },
+          ]}
+        />
         <h1 className="text-4xl font-bold mb-2">Shipping Information</h1>
         <p className="text-muted-foreground mb-12">
           Fast, reliable nationwide delivery via The Courier Guy

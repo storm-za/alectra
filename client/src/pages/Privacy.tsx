@@ -1,4 +1,5 @@
 import { SEO } from "@/components/SEO";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default function Privacy() {
   return (
@@ -9,6 +10,12 @@ export default function Privacy() {
       />
       
       <div className="max-w-4xl mx-auto px-4 md:px-8 lg:px-12 py-12">
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Privacy Policy", href: "/privacy" },
+          ]}
+        />
         <h1 className="text-4xl font-bold mb-2">Privacy Policy</h1>
         <p className="text-sm text-muted-foreground mb-12">
           Last updated: {new Date().toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' })}

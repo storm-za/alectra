@@ -1,4 +1,5 @@
 import { SEO } from "@/components/SEO";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import {
   Accordion,
   AccordionContent,
@@ -16,6 +17,12 @@ export default function FAQ() {
       />
       
       <div className="max-w-4xl mx-auto px-4 md:px-8 lg:px-12 py-12">
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: "FAQ", href: "/faq" },
+          ]}
+        />
         <h1 className="text-4xl font-bold mb-2">Frequently Asked Questions</h1>
         <p className="text-muted-foreground mb-12">
           Find answers to common questions about our products and services.
