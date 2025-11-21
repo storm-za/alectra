@@ -1,4 +1,4 @@
-import { ShoppingCart, Phone, Menu, User, LogOut } from "lucide-react";
+import { ShoppingCart, Phone, Menu, User, LogOut, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -103,11 +103,39 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
 
           {/* Desktop navigation */}
           <nav className="hidden lg:flex items-center gap-1">
-            {navigation.map((item) => (
-              <Link key={item.name} href={item.href} className="px-3 py-2 rounded-md text-sm font-medium hover-elevate active-elevate-2">
-                {item.name}
-              </Link>
-            ))}
+            {/* Shop dropdown with all categories */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="px-3 py-2 text-sm font-medium" data-testid="button-shop-dropdown">
+                  Shop <ChevronDown className="ml-1 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuItem asChild>
+                  <Link href="/products" className="cursor-pointer" data-testid="link-shop-all">
+                    Shop All Products
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {categories?.map((category) => (
+                  <DropdownMenuItem key={category.id} asChild>
+                    <Link href={`/categories/${category.slug}`} className="cursor-pointer" data-testid={`link-category-${category.slug}`}>
+                      {category.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Contact Us */}
+            <Link href="/contact" className="px-3 py-2 rounded-md text-sm font-medium hover-elevate active-elevate-2" data-testid="link-contact">
+              Contact Us
+            </Link>
+
+            {/* Trade Account */}
+            <Link href="/trade-signup" className="px-3 py-2 rounded-md text-sm font-medium hover-elevate active-elevate-2" data-testid="link-trade-signup">
+              Trade Account
+            </Link>
           </nav>
 
           {/* Actions */}
