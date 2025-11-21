@@ -59,11 +59,6 @@ function Router() {
       return [...items, { product, quantity: Math.min(quantity, product.stock) }];
     });
 
-    toast({
-      title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
-    });
-
     setCartOpen(true);
   };
 
