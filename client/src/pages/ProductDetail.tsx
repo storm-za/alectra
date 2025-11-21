@@ -36,6 +36,7 @@ import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, MessageSqu
 import { SiVisa, SiMastercard } from "react-icons/si";
 import { StarRating } from "@/components/StarRating";
 import { SEO, createProductStructuredData } from "@/components/SEO";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductReviewSchema } from "@shared/schema";
@@ -191,18 +192,16 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
         structuredData={structuredData}
       />
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
-        {/* Breadcrumb */}
-        {category ? (
-          <Link href={`/category/${category.slug}`} className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6" data-testid="link-back-to-category">
-            <ChevronLeft className="h-4 w-4" />
-            Back to {category.name}
-          </Link>
-        ) : (
-          <Link href="/products" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6" data-testid="link-back-to-products">
-            <ChevronLeft className="h-4 w-4" />
-            Back to Products
-          </Link>
-        )}
+        {/* Breadcrumb with structured data */}
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            ...(category
+              ? [{ label: category.name, href: `/category/${category.slug}` }]
+              : [{ label: "All Products", href: "/products" }]),
+            { label: product.name, href: `/product/${product.slug}` },
+          ]}
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Images */}
