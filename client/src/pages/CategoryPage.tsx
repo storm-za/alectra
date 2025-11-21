@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { SEO } from "@/components/SEO";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { ChevronLeft, Search, X, Filter, ChevronDown, ChevronUp, MapPin } from "lucide-react";
 import {
   Select,
@@ -88,11 +90,18 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={`${category?.name || 'Category'} - Security Products`}
+        description={category?.description || `Browse our ${category?.name || 'security'} products. Quality security and automation solutions for South African homes and businesses.`}
+        image={category?.imageUrl}
+      />
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
-        <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
-          <ChevronLeft className="h-4 w-4" />
-          Back to Home
-        </Link>
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: category?.name || "Category", href: `/category/${params?.slug}` },
+          ]}
+        />
 
         <div className="mb-8">
           {isLoading ? (
