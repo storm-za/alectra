@@ -9,7 +9,6 @@ export default function About() {
         title="About Us - Leading Security Solutions Provider"
         description="Alectra Solutions is South Africa's trusted provider of security and automation products. Serving both retail customers and professional installers since establishment."
       />
-      
       <div className="max-w-4xl mx-auto px-4 md:px-8 lg:px-12 py-12">
         <h1 className="text-4xl font-bold mb-6">About Alectra Solutions</h1>
         
@@ -84,7 +83,7 @@ export default function About() {
             </div>
             <div>
               <h3 className="font-semibold mb-1">Hatfield</h3>
-              <p className="text-muted-foreground">Mon-Sun: 08:00 - 16:45</p>
+              <p className="text-muted-foreground">Mon-Sat: 08:00 - 16:45</p>
               <p className="text-muted-foreground">012 566 3123</p>
             </div>
             <div>
