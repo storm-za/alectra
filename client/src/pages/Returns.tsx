@@ -9,7 +9,6 @@ export default function Returns() {
         title="Returns Policy - Alectra Solutions"
         description="Our returns policy allows returns within 30 days for unused products in original packaging. Learn about our simple returns process."
       />
-      
       <div className="max-w-4xl mx-auto px-4 md:px-8 lg:px-12 py-12">
         <h1 className="text-4xl font-bold mb-2">Returns Policy</h1>
         <p className="text-muted-foreground mb-12">
@@ -52,10 +51,7 @@ export default function Returns() {
                 </span>
                 <div>
                   <h3 className="font-semibold mb-1">Contact Us</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Email info@alectra.co.za or call 012 566 3123 within 30 days of receiving your order. 
-                    Provide your order number and reason for return.
-                  </p>
+                  <p className="text-sm text-muted-foreground">Email solutionsalectra@gmail.com or call 012 566 3123 within 30 days of receiving your order. Provide your order number and reason for return.</p>
                 </div>
               </li>
               <li className="flex gap-4">
