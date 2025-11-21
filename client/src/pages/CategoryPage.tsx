@@ -96,6 +96,10 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
     setPage(1);
   }, [search, brand, priceRange, sortBy]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [page]);
+
   const hasActiveFilters = search || (brand && brand !== "all") || priceRange[0] > 0 || priceRange[1] < 10000;
   const isLoading = categoryLoading || productsLoading;
 
