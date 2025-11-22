@@ -53,7 +53,7 @@ interface ProductDetailProps {
 const reviewFormSchema = insertProductReviewSchema.omit({ productId: true });
 
 export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
-  const [, params] = useRoute("/product/:slug");
+  const [, params] = useRoute("/products/:slug");
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
@@ -200,7 +200,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             ...(category
               ? [{ label: category.name, href: `/category/${category.slug}` }]
               : [{ label: "All Products", href: "/products" }]),
-            { label: product.name, href: `/product/${product.slug}` },
+            { label: product.name, href: `/products/${product.slug}` },
           ]}
         />
 

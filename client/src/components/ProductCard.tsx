@@ -28,7 +28,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
 
   return (
     <Card className="group overflow-hidden hover-elevate active-elevate-2 flex flex-col h-full" data-testid={`card-product-${product.id}`}>
-      <Link href={`/product/${product.slug}`}>
+      <Link href={`/products/${product.slug}`}>
         <div className="relative aspect-square overflow-hidden bg-muted">
           <img
             src={imageUrl}
@@ -61,7 +61,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
 
       <CardContent className="flex-1 p-2 sm:p-4 space-y-1 sm:space-y-2">
         <div className="text-xs text-muted-foreground font-medium line-clamp-1">{product.brand}</div>
-        <Link href={`/product/${product.slug}`}>
+        <Link href={`/products/${product.slug}`}>
           <h3 className="font-semibold text-sm sm:text-base line-clamp-2 hover:text-primary transition-colors" data-testid={`text-product-name-${product.id}`}>
             {product.name}
           </h3>
@@ -97,7 +97,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           <ShoppingCart className="h-4 w-4 mr-2" />
           {isDiscontinued ? 'Discontinued' : isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
         </Button>
-        <Link href={`/product/${product.slug}`} className="w-full">
+        <Link href={`/products/${product.slug}`} className="w-full">
           <Button 
             variant="outline" 
             className="w-full"

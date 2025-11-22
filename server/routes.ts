@@ -158,7 +158,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       products.forEach(product => {
         xml += '  <url>\n';
-        xml += `    <loc>${baseUrl}/product/${product.slug}</loc>\n`;
+        xml += `    <loc>${baseUrl}/products/${product.slug}</loc>\n`;
         xml += '    <changefreq>weekly</changefreq>\n';
         xml += '    <priority>0.7</priority>\n';
         xml += '  </url>\n';
@@ -745,7 +745,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Individual products
       for (const product of products) {
         sitemap += `  <url>\n`;
-        sitemap += `    <loc>${baseUrl}/product/${product.slug}</loc>\n`;
+        sitemap += `    <loc>${baseUrl}/products/${product.slug}</loc>\n`;
         sitemap += `    <changefreq>weekly</changefreq>\n`;
         sitemap += `    <priority>0.7</priority>\n`;
         sitemap += `    <lastmod>${currentDate}</lastmod>\n`;

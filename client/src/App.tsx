@@ -99,7 +99,7 @@ function Router() {
           <Route path="/category/:slug">
             <CategoryPage onAddToCart={addToCart} />
           </Route>
-          <Route path="/product/:slug">
+          <Route path="/products/:slug">
             <ProductDetail onAddToCart={addToCart} />
           </Route>
           <Route path="/checkout">
