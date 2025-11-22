@@ -83,7 +83,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
         </div>
       </CardContent>
 
-      <CardFooter className="p-2 sm:p-4 pt-0 flex flex-col sm:flex-row gap-2">
+      <CardFooter className="p-2 sm:p-4 pt-0 flex flex-col gap-2">
         <Button
           onClick={(e) => {
             e.preventDefault();
