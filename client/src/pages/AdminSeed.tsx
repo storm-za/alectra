@@ -6,7 +6,7 @@ import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
 
 export default function AdminSeed() {
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ success: boolean; message: string; categoriesCreated?: number; productsCreated?: number; reviewsCreated?: number; blogPostsCreated?: number } | null>(null);
+  const [result, setResult] = useState<{ success: boolean; message: string; categoriesCreated?: number; productsCreated?: number; reviewsCreated?: number; blogPostsCreated?: number; alreadyComplete?: boolean } | null>(null);
 
   const handleSeed = async () => {
     setLoading(true);
@@ -42,21 +42,21 @@ export default function AdminSeed() {
         <CardContent className="space-y-4">
           <Alert>
             <AlertDescription>
-              <strong>Important:</strong> This should only be run ONCE when you first publish your website.
-              If your production database already has products, this will be skipped automatically.
+              <strong>Smart Seeding:</strong> This will check what's missing and only add what you need.
+              Safe to run multiple times - it will only seed missing products, reviews, categories, or blog posts.
             </AlertDescription>
           </Alert>
 
           <div className="flex flex-col gap-4">
             <Button
               onClick={handleSeed}
-              disabled={loading || result?.success === true}
+              disabled={loading}
               size="lg"
               className="w-full"
               data-testid="button-seed-production"
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {result?.success ? "Seeding Complete!" : "Seed Production Database"}
+              {result?.success && result?.alreadyComplete ? "Check Again for Missing Data" : result?.success ? "Seed Complete - Run Again to Check" : "Seed Production Database"}
             </Button>
 
             {result && (

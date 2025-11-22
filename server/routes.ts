@@ -780,29 +780,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // ONE-TIME ADMIN SEEDING ENDPOINT
-  // Visit /api/admin/seed-production once on your published site
+  // ADMIN SEEDING ENDPOINT - Seeds missing data only
+  // Visit /api/admin/seed-production on your published site
   app.post("/api/admin/seed-production", async (req, res) => {
     try {
-      // Security check - only allow when database is empty
+      let categoriesCreated = 0;
+      let productsCreated = 0;
+      let reviewsCreated = 0;
+      let blogPostsCreated = 0;
+
+      // Check what already exists
       const existingProducts = await storage.getAllProducts();
+      const existingCategories = await storage.getAllCategories();
+      const existingBlogs = await storage.getAllBlogPosts();
       
-      if (existingProducts.length > 0) {
-        return res.status(400).json({ 
-          message: "Database already has products. Seeding already complete!",
-          count: existingProducts.length 
-        });
+      // Load product data if we need to seed products
+      let productsData = [];
+      if (existingProducts.length === 0) {
+        const fs = await import("fs");
+        const path = await import("path");
+        const productDataPath = path.join(process.cwd(), "scripts", "product-data.json");
+        const rawData = fs.readFileSync(productDataPath, "utf-8");
+        productsData = JSON.parse(rawData);
       }
 
-      // Load product data
-      const fs = await import("fs");
-      const path = await import("path");
-      
-      const productDataPath = path.join(process.cwd(), "scripts", "product-data.json");
-      const rawData = fs.readFileSync(productDataPath, "utf-8");
-      const productsData = JSON.parse(rawData);
-
-      // Seed categories first
+      // Seed categories if missing
       const categoriesToSeed = [
         { slug: "electric-fencing", name: "Electric Fencing", description: "Electric fence security systems", imageUrl: "https://alectra.co.za/cdn/shop/files/energizer-10km-electric-fence-online-sales-alectra-solutions.png" },
         { slug: "gate-motors", name: "Gate Motors", description: "Premium sliding and swing gate motors", imageUrl: "https://alectra.co.za/cdn/shop/files/centurion-d5-evo-smart-gate-motor.jpg" },
@@ -815,13 +817,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         { slug: "lp-gas", name: "LP Gas", description: "LP Gas cylinders and refills", imageUrl: "https://alectra.co.za/cdn/shop/files/48kg-lp-gas-exchange-refill.png" },
       ];
 
-      let categoryCount = 0;
-      for (const cat of categoriesToSeed) {
-        try {
-          await storage.createCategory(cat);
-          categoryCount++;
-        } catch (e) {
-          // Category might already exist, skip
+      if (existingCategories.length === 0) {
+        for (const cat of categoriesToSeed) {
+          try {
+            await storage.createCategory(cat);
+            categoriesCreated++;
+          } catch (e) {
+            // Category might already exist, skip
+          }
         }
       }
 
@@ -841,33 +844,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         'lp-gas': 'lp-gas',
       };
 
-      // Seed products
-      let productsCreated = 0;
-      for (let i = 0; i < Math.min(productsData.length, 272); i++) {
-        const rawProduct = productsData[i];
-        const categoryHint = rawProduct.categoryHint?.toLowerCase() || "";
-        const categorySlug = CATEGORY_MAP[categoryHint] || null;
-        const categoryId = categorySlug ? categoryMap.get(categorySlug) : null;
+      // Seed products only if database is empty
+      if (existingProducts.length === 0 && productsData.length > 0) {
+        for (let i = 0; i < Math.min(productsData.length, 272); i++) {
+          const rawProduct = productsData[i];
+          const categoryHint = rawProduct.categoryHint?.toLowerCase() || "";
+          const categorySlug = CATEGORY_MAP[categoryHint] || null;
+          const categoryId = categorySlug ? categoryMap.get(categorySlug) : null;
 
-        const sku = `ALEC-${String(i + 1).padStart(4, "0")}-${rawProduct.slug.toUpperCase().substring(0, 20)}`;
+          const sku = `ALEC-${String(i + 1).padStart(4, "0")}-${rawProduct.slug.toUpperCase().substring(0, 20)}`;
 
-        try {
-          await storage.createProduct({
-            name: rawProduct.name,
-            slug: rawProduct.slug,
-            description: rawProduct.description?.substring(0, 500) || "",
-            price: rawProduct.price,
-            brand: rawProduct.brand || "Alectra Solutions",
-            categoryId: categoryId || null,
-            sku: sku,
-            imageUrl: rawProduct.imageUrl,
-            images: rawProduct.imageGallery || [],
-            stock: 100,
-            featured: false,
-          });
-          productsCreated++;
-        } catch (e) {
-          // Skip duplicates
+          try {
+            await storage.createProduct({
+              name: rawProduct.name,
+              slug: rawProduct.slug,
+              description: rawProduct.description?.substring(0, 500) || "",
+              price: rawProduct.price,
+              brand: rawProduct.brand || "Alectra Solutions",
+              categoryId: categoryId || null,
+              sku: sku,
+              imageUrl: rawProduct.imageUrl,
+              images: rawProduct.imageGallery || [],
+              stock: 100,
+              featured: false,
+            });
+            productsCreated++;
+          } catch (e) {
+            // Skip duplicates
+          }
         }
       }
 
@@ -893,25 +897,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return threeStarComments[Math.floor(Math.random() * threeStarComments.length)];
       };
 
-      // Get all products to seed reviews
+      // Check if reviews already exist
       const allProducts = await storage.getAllProducts();
-      let reviewsCreated = 0;
+      let hasReviews = false;
+      if (allProducts.length > 0) {
+        const sampleReviews = await storage.getProductReviews(allProducts[0].id);
+        hasReviews = sampleReviews.length > 0;
+      }
       
-      for (const product of allProducts) {
-        const reviewCount = Math.floor(Math.random() * 3) + 1; // 1-3 reviews per product
-        for (let i = 0; i < reviewCount; i++) {
-          const rating = getRandomRating();
-          const comment = getCommentForRating(rating);
-          try {
-            await storage.createProductReview({
-              productId: product.id,
-              rating,
-              comment: comment || undefined,
-              authorName: getRandomName()
-            });
-            reviewsCreated++;
-          } catch (e) {
-            // Skip if error
+      // Seed reviews only if none exist
+      if (!hasReviews && allProducts.length > 0) {
+        for (const product of allProducts) {
+          const reviewCount = Math.floor(Math.random() * 3) + 1; // 1-3 reviews per product
+          for (let i = 0; i < reviewCount; i++) {
+            const rating = getRandomRating();
+            const comment = getCommentForRating(rating);
+            try {
+              await storage.createProductReview({
+                productId: product.id,
+                rating,
+                comment: comment || undefined,
+                authorName: getRandomName()
+              });
+              reviewsCreated++;
+            } catch (e) {
+              // Skip if error
+            }
           }
         }
       }
@@ -950,23 +961,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       ];
 
-      let blogPostsCreated = 0;
-      for (const post of blogPosts) {
-        try {
-          await storage.createBlogPost(post);
-          blogPostsCreated++;
-        } catch (e) {
-          // Skip if already exists
+      // Seed blog posts only if missing
+      if (existingBlogs.length === 0) {
+        for (const post of blogPosts) {
+          try {
+            await storage.createBlogPost(post);
+            blogPostsCreated++;
+          } catch (e) {
+            // Skip if already exists
+          }
         }
       }
 
+      // Build response message
+      const changes = [];
+      if (categoriesCreated > 0) changes.push(`${categoriesCreated} categories`);
+      if (productsCreated > 0) changes.push(`${productsCreated} products`);
+      if (reviewsCreated > 0) changes.push(`${reviewsCreated} reviews`);
+      if (blogPostsCreated > 0) changes.push(`${blogPostsCreated} blog posts`);
+
+      const message = changes.length > 0 
+        ? `Successfully added: ${changes.join(', ')}!`
+        : 'Database already fully seeded - nothing to add!';
+
       res.json({
         success: true,
-        message: "Production database seeded successfully!",
-        categoriesCreated: categoryCount,
+        message: message,
+        categoriesCreated: categoriesCreated,
         productsCreated: productsCreated,
         reviewsCreated: reviewsCreated,
-        blogPostsCreated: blogPostsCreated
+        blogPostsCreated: blogPostsCreated,
+        alreadyComplete: changes.length === 0
       });
 
     } catch (error: any) {
