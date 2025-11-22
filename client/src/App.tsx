@@ -27,6 +27,7 @@ import Returns from "@/pages/Returns";
 import Privacy from "@/pages/Privacy";
 import Blog from "@/pages/Blog";
 import BlogPost from "@/pages/BlogPost";
+import AdminSeed from "@/pages/AdminSeed";
 import NotFound from "@/pages/not-found";
 import { useToast } from "@/hooks/use-toast";
 import type { Product, CartItem } from "@shared/schema";
@@ -148,6 +149,9 @@ function Router() {
           </Route>
           <Route path="/blog/:slug">
             <BlogPost />
+          </Route>
+          <Route path="/admin/seed">
+            <AdminSeed />
           </Route>
           <Route component={NotFound} />
         </Switch>

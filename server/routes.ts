@@ -780,6 +780,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ONE-TIME ADMIN SEEDING ENDPOINT
+  // Visit /api/admin/seed-production once on your published site
+  app.post("/api/admin/seed-production", async (req, res) => {
+    try {
+      // Security check - only allow in production when database is empty
+      const existingProducts = await storage.getAllProducts();
+      
+      if (existingProducts.length > 0) {
+        return res.status(400).json({ 
+          message: "Database already has products. Seeding already complete!",
+          count: existingProducts.length 
+        });
+      }
+
+      // Load product data from the seeding script
+      const fs = await import("fs");
+      const path = await import("path");
+      const { fileURLToPath } = await import("url");
+      
+      const productDataPath = path.join(process.cwd(), "scripts", "product-data.json");
+      const rawData = fs.readFileSync(productDataPath, "utf-8");
+      const productsData = JSON.parse(rawData);
+
+      // Seed categories first
+      const categoriesToSeed = [
+        { slug: "electric-fencing", name: "Electric Fencing", description: "Electric fence security systems", imageUrl: "https://alectra.co.za/cdn/shop/files/energizer-10km-electric-fence-online-sales-alectra-solutions.png" },
+        { slug: "gate-motors", name: "Gate Motors", description: "Premium sliding and swing gate motors", imageUrl: "https://alectra.co.za/cdn/shop/files/centurion-d5-evo-smart-gate-motor.jpg" },
+        { slug: "cctv", name: "CCTV Systems", description: "HD and 4K CCTV cameras and surveillance", imageUrl: "https://alectra.co.za/cdn/shop/files/4-channel-cctv-camera-kit.jpg" },
+        { slug: "garage-door-parts", name: "Garage Door Parts", description: "Quality garage door components", imageUrl: "https://alectra.co.za/cdn/shop/files/glosteel-garage-door-2134-x-2032.jpg" },
+        { slug: "remotes", name: "Remotes", description: "Gate and garage remote controls", imageUrl: "https://alectra.co.za/cdn/shop/files/nova-4-button-remote-alectra-solutions.png" },
+        { slug: "intercoms", name: "Intercoms", description: "Gate intercoms and access control", imageUrl: "https://alectra.co.za/cdn/shop/files/g-speak-ultra-intercom.jpg" },
+        { slug: "batteries", name: "Batteries", description: "Backup batteries for security systems", imageUrl: "https://alectra.co.za/cdn/shop/files/12v-7ah-battery-backup-power.jpg" },
+        { slug: "garage-motors", name: "Garage Motors", description: "Garage door motors and automation", imageUrl: "https://alectra.co.za/cdn/shop/files/gemini-sectional-garage-door-motor-kit.jpg" },
+        { slug: "lp-gas", name: "LP Gas", description: "LP Gas cylinders and refills", imageUrl: "https://alectra.co.za/cdn/shop/files/48kg-lp-gas-exchange-refill.png" },
+      ];
+
+      let categoryCount = 0;
+      for (const cat of categoriesToSeed) {
+        try {
+          await storage.createCategory(cat);
+          categoryCount++;
+        } catch (e) {
+          // Category might already exist, skip
+        }
+      }
+
+      // Get categories for mapping
+      const categories = await storage.getAllCategories();
+      const categoryMap = new Map(categories.map(c => [c.slug, c.id]));
+
+      // Category mapping
+      const CATEGORY_MAP: Record<string, string> = {
+        'gate-motors': 'gate-motors',
+        'garage-motors': 'gate-motors',
+        'electric-fencing': 'electric-fencing',
+        'cctv-cameras': 'cctv',
+        'intercoms': 'intercoms',
+        'remotes': 'remotes',
+        'batteries': 'batteries',
+        'lp-gas': 'lp-gas',
+      };
+
+      // Seed products
+      let productsCreated = 0;
+      for (let i = 0; i < Math.min(productsData.length, 272); i++) {
+        const rawProduct = productsData[i];
+        const categoryHint = rawProduct.categoryHint?.toLowerCase() || "";
+        const categorySlug = CATEGORY_MAP[categoryHint] || null;
+        const categoryId = categorySlug ? categoryMap.get(categorySlug) : null;
+
+        const sku = `ALEC-${String(i + 1).padStart(4, "0")}-${rawProduct.slug.toUpperCase().substring(0, 20)}`;
+
+        try {
+          await storage.createProduct({
+            name: rawProduct.name,
+            slug: rawProduct.slug,
+            description: rawProduct.description?.substring(0, 500) || "",
+            price: rawProduct.price,
+            brand: rawProduct.brand || "Alectra Solutions",
+            categoryId: categoryId || null,
+            sku: sku,
+            imageUrl: rawProduct.imageUrl,
+            images: rawProduct.imageGallery || [],
+            stock: 100,
+            featured: false,
+          });
+          productsCreated++;
+        } catch (e) {
+          // Skip duplicates
+        }
+      }
+
+      res.json({
+        success: true,
+        message: "Production database seeded successfully!",
+        categoriesCreated: categoryCount,
+        productsCreated: productsCreated
+      });
+
+    } catch (error: any) {
+      res.status(500).json({ 
+        success: false,
+        message: "Seeding failed: " + error.message 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
