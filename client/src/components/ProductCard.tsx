@@ -14,7 +14,8 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const displayPrice = parseFloat(product.price).toFixed(2);
-  const isDiscontinued = (product as any).discontinued === true;
+  const priceValue = parseFloat(product.price);
+  const isDiscontinued = (product as any).discontinued === true || priceValue === 0;
   const isLowStock = product.stock > 0 && product.stock <= 5 && !isDiscontinued;
   const isOutOfStock = product.stock === 0 || isDiscontinued;
 
