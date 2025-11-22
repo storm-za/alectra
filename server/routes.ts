@@ -780,7 +780,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // ADMIN SEEDING ENDPOINT - Seeds missing data only
+  // EXPORT DEV DATABASE (for copying to production)
+  app.get("/api/admin/export-dev-data", async (req, res) => {
+    try {
+      const products = await storage.getAllProducts();
+      const categories = await storage.getAllCategories();
+      const blogs = await storage.getAllBlogPosts();
+      
+      res.json({
+        products: products.map(p => ({
+          name: p.name,
+          slug: p.slug,
+          description: p.description,
+          price: p.price,
+          brand: p.brand,
+          sku: p.sku,
+          categoryId: p.categoryId,
+          imageUrl: p.imageUrl,
+          images: p.images,
+          stock: p.stock,
+          featured: p.featured,
+        })),
+        categories,
+        blogs,
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // ADMIN SEEDING ENDPOINT - Seeds from dev database export
   // Visit /api/admin/seed-production on your published site
   app.post("/api/admin/seed-production", async (req, res) => {
     try {
@@ -794,83 +823,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const existingCategories = await storage.getAllCategories();
       const existingBlogs = await storage.getAllBlogPosts();
       
-      // Load product data if we need to seed products
-      let productsData = [];
-      if (existingProducts.length === 0) {
-        const fs = await import("fs");
-        const path = await import("path");
-        const productDataPath = path.join(process.cwd(), "scripts", "product-data.json");
-        const rawData = fs.readFileSync(productDataPath, "utf-8");
-        productsData = JSON.parse(rawData);
-      }
-
-      // Seed categories if missing
-      const categoriesToSeed = [
-        { slug: "electric-fencing", name: "Electric Fencing", description: "Electric fence security systems", imageUrl: "https://alectra.co.za/cdn/shop/files/energizer-10km-electric-fence-online-sales-alectra-solutions.png" },
-        { slug: "gate-motors", name: "Gate Motors", description: "Premium sliding and swing gate motors", imageUrl: "https://alectra.co.za/cdn/shop/files/centurion-d5-evo-smart-gate-motor.jpg" },
-        { slug: "cctv", name: "CCTV Systems", description: "HD and 4K CCTV cameras and surveillance", imageUrl: "https://alectra.co.za/cdn/shop/files/4-channel-cctv-camera-kit.jpg" },
-        { slug: "garage-door-parts", name: "Garage Door Parts", description: "Quality garage door components", imageUrl: "https://alectra.co.za/cdn/shop/files/glosteel-garage-door-2134-x-2032.jpg" },
-        { slug: "remotes", name: "Remotes", description: "Gate and garage remote controls", imageUrl: "https://alectra.co.za/cdn/shop/files/nova-4-button-remote-alectra-solutions.png" },
-        { slug: "intercoms", name: "Intercoms", description: "Gate intercoms and access control", imageUrl: "https://alectra.co.za/cdn/shop/files/g-speak-ultra-intercom.jpg" },
-        { slug: "batteries", name: "Batteries", description: "Backup batteries for security systems", imageUrl: "https://alectra.co.za/cdn/shop/files/12v-7ah-battery-backup-power.jpg" },
-        { slug: "garage-motors", name: "Garage Motors", description: "Garage door motors and automation", imageUrl: "https://alectra.co.za/cdn/shop/files/gemini-sectional-garage-door-motor-kit.jpg" },
-        { slug: "lp-gas", name: "LP Gas", description: "LP Gas cylinders and refills", imageUrl: "https://alectra.co.za/cdn/shop/files/48kg-lp-gas-exchange-refill.png" },
-      ];
-
-      if (existingCategories.length === 0) {
-        for (const cat of categoriesToSeed) {
-          try {
-            await storage.createCategory(cat);
-            categoriesCreated++;
-          } catch (e) {
-            // Category might already exist, skip
-          }
+      // Get dev data from request body OR load from exported file
+      let devData = req.body?.devData;
+      
+      if (!devData) {
+        // Try to load from dev database export file
+        try {
+          const fs = await import("fs");
+          const path = await import("path");
+          const exportPath = path.join(process.cwd(), "scripts", "dev-database-export.json");
+          const rawData = fs.readFileSync(exportPath, "utf-8");
+          devData = JSON.parse(rawData);
+          console.log("Loaded dev database export with", devData.products?.length, "products");
+        } catch (e) {
+          console.log("Could not load dev database export:", e);
         }
       }
+      
+      if (devData) {
+        // SEED FROM DEV DATABASE EXPORT
+        
+        // Create categories first (with slug-to-id mapping)
+        const categorySlugToId = new Map<string, string>();
+        
+        if (existingCategories.length === 0 && devData.categories) {
+          for (const cat of devData.categories) {
+            try {
+              const created = await storage.createCategory({
+                slug: cat.slug,
+                name: cat.name,
+                description: cat.description,
+                imageUrl: cat.imageUrl
+              });
+              categorySlugToId.set(cat.slug, created.id);
+              categoriesCreated++;
+            } catch (e) {
+              // Skip if exists
+            }
+          }
+        } else {
+          // Build mapping from existing
+          existingCategories.forEach(cat => {
+            categorySlugToId.set(cat.slug, cat.id);
+          });
+        }
 
-      // Get categories for mapping
-      const categories = await storage.getAllCategories();
-      const categoryMap = new Map(categories.map(c => [c.slug, c.id]));
+        // Create products with proper category mapping
+        if (existingProducts.length === 0 && devData.products) {
+          // Build reverse lookup: oldCategoryId -> categorySlug
+          const oldCategoryIdToSlug = new Map<string, string>();
+          devData.categories?.forEach((cat: any) => {
+            oldCategoryIdToSlug.set(cat.id, cat.slug);
+          });
 
-      // Category mapping
-      const CATEGORY_MAP: Record<string, string> = {
-        'gate-motors': 'gate-motors',
-        'garage-motors': 'gate-motors',
-        'electric-fencing': 'electric-fencing',
-        'cctv-cameras': 'cctv',
-        'intercoms': 'intercoms',
-        'remotes': 'remotes',
-        'batteries': 'batteries',
-        'lp-gas': 'lp-gas',
-      };
+          for (const p of devData.products) {
+            try {
+              // Map old category ID to new category ID via slug
+              let newCategoryId = null;
+              if (p.categoryId) {
+                const categorySlug = oldCategoryIdToSlug.get(p.categoryId);
+                if (categorySlug) {
+                  newCategoryId = categorySlugToId.get(categorySlug) || null;
+                }
+              }
 
-      // Seed products only if database is empty
-      if (existingProducts.length === 0 && productsData.length > 0) {
-        for (let i = 0; i < Math.min(productsData.length, 272); i++) {
-          const rawProduct = productsData[i];
-          const categoryHint = rawProduct.categoryHint?.toLowerCase() || "";
-          const categorySlug = CATEGORY_MAP[categoryHint] || null;
-          const categoryId = categorySlug ? categoryMap.get(categorySlug) : null;
-
-          const sku = `ALEC-${String(i + 1).padStart(4, "0")}-${rawProduct.slug.toUpperCase().substring(0, 20)}`;
-
-          try {
-            await storage.createProduct({
-              name: rawProduct.name,
-              slug: rawProduct.slug,
-              description: rawProduct.description?.substring(0, 500) || "",
-              price: rawProduct.price,
-              brand: rawProduct.brand || "Alectra Solutions",
-              categoryId: categoryId || null,
-              sku: sku,
-              imageUrl: rawProduct.imageUrl,
-              images: rawProduct.imageGallery || [],
-              stock: 100,
-              featured: false,
-            });
-            productsCreated++;
-          } catch (e) {
-            // Skip duplicates
+              await storage.createProduct({
+                name: p.name,
+                slug: p.slug,
+                description: p.description,
+                price: p.price,
+                brand: p.brand,
+                sku: p.sku,
+                categoryId: newCategoryId,
+                imageUrl: p.imageUrl,
+                images: p.images || [],
+                stock: p.stock || 100,
+                featured: p.featured || false,
+              });
+              productsCreated++;
+            } catch (e) {
+              // Skip duplicates
+            }
           }
         }
       }
@@ -961,11 +994,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       ];
 
-      // Seed blog posts only if missing
+      // Seed blog posts (from dev data or defaults)
       if (existingBlogs.length === 0) {
-        for (const post of blogPosts) {
+        const postsToSeed = devData?.blogs || blogPosts;
+        for (const post of postsToSeed) {
           try {
-            await storage.createBlogPost(post);
+            await storage.createBlogPost({
+              title: post.title,
+              slug: post.slug,
+              excerpt: post.excerpt,
+              content: post.content,
+              author: post.author || "Alectra Solutions",
+              imageUrl: post.imageUrl,
+              tags: post.tags || [],
+              metaDescription: post.metaDescription
+            });
             blogPostsCreated++;
           } catch (e) {
             // Skip if already exists

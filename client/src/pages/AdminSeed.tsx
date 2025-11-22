@@ -13,9 +13,23 @@ export default function AdminSeed() {
     setResult(null);
 
     try {
+      // First, try to fetch dev data (only works in dev environment)
+      let devData = null;
+      try {
+        const devExport = await fetch("/api/admin/export-dev-data");
+        if (devExport.ok) {
+          devData = await devExport.json();
+          console.log("Fetched dev data:", devData?.products?.length, "products");
+        }
+      } catch (e) {
+        console.log("Could not fetch dev data, will seed with defaults");
+      }
+
+      // Seed production (with dev data if available)
       const response = await fetch("/api/admin/seed-production", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ devData }),
       });
 
       const data = await response.json();
@@ -89,7 +103,8 @@ export default function AdminSeed() {
 
           {loading && (
             <div className="text-center text-sm text-muted-foreground">
-              <p>Seeding database... This may take 1-2 minutes.</p>
+              <p>Seeding database... This may take 2-3 minutes.</p>
+              <p className="mt-1">Copying exact data from development database.</p>
               <p className="mt-1">Please wait, do not refresh the page.</p>
             </div>
           )}
