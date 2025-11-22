@@ -783,15 +783,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // CLEAR PRODUCTION DATABASE - Deletes all products, categories, reviews
   app.post("/api/admin/clear-production", async (req, res) => {
     try {
+      const { sql } = await import("drizzle-orm");
       const { db } = await import("../server/db");
-      const { reviews, orderItems, orders, products, categories } = await import("@shared/schema");
       
       // Delete in correct order to avoid foreign key constraints
-      await db.delete(reviews);
-      await db.delete(orderItems);
-      await db.delete(orders);
-      await db.delete(products);
-      await db.delete(categories);
+      // Use raw SQL TRUNCATE for cleaner deletion
+      // CASCADE will handle foreign keys automatically
+      const tablesToClear = ['reviews', 'order_items', 'orders', 'products', 'categories', 'blog_posts'];
+      
+      for (const table of tablesToClear) {
+        try {
+          await db.execute(sql.raw(`TRUNCATE TABLE ${table} CASCADE`));
+        } catch (e: any) {
+          // Ignore "table does not exist" errors - that's fine, nothing to clear
+          if (!e.message?.includes('does not exist')) {
+            throw e;
+          }
+        }
+      }
       
       res.json({
         success: true,
