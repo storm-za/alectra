@@ -33,10 +33,8 @@ async function exportDevDatabase() {
 
   const exportData = {
     products: allProducts.map(p => {
-      // Use original Shopify URL if available, otherwise use database URL
-      const originalImageUrl = slugToImageUrl.get(p.slug);
-      const originalGallery = slugToImageGallery.get(p.slug);
-      
+      // Prefer local images over remote Shopify URLs for independence
+      // Local images are bundled with the app, no dependency on external CDN
       return {
         name: p.name,
         slug: p.slug,
@@ -45,8 +43,8 @@ async function exportDevDatabase() {
         brand: p.brand,
         sku: p.sku,
         categoryId: p.categoryId,
-        imageUrl: originalImageUrl || p.imageUrl,
-        images: originalGallery || p.images || [],
+        imageUrl: p.imageUrl, // Use database URL (local paths from migration)
+        images: p.images || [], // Use database gallery
         stock: p.stock,
         featured: p.featured,
       };
