@@ -2,11 +2,38 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import { Loader2, CheckCircle, AlertCircle, Trash2 } from "lucide-react";
 
 export default function AdminSeed() {
   const [loading, setLoading] = useState(false);
+  const [clearing, setClearing] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string; categoriesCreated?: number; productsCreated?: number; reviewsCreated?: number; blogPostsCreated?: number; alreadyComplete?: boolean } | null>(null);
+
+  const handleClear = async () => {
+    if (!confirm("⚠️ WARNING: This will DELETE ALL products, categories, reviews, and orders from the production database!\n\nThis action cannot be undone. Are you sure?")) {
+      return;
+    }
+
+    setClearing(true);
+    setResult(null);
+
+    try {
+      const response = await fetch("/api/admin/clear-production", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await response.json();
+      setResult(data);
+    } catch (error: any) {
+      setResult({
+        success: false,
+        message: "Failed to clear database: " + error.message,
+      });
+    } finally {
+      setClearing(false);
+    }
+  };
 
   const handleSeed = async () => {
     setLoading(true);
@@ -51,7 +78,7 @@ export default function AdminSeed() {
           <div className="flex flex-col gap-4">
             <Button
               onClick={handleSeed}
-              disabled={loading}
+              disabled={loading || clearing}
               size="lg"
               className="w-full"
               data-testid="button-seed-production"
@@ -59,6 +86,38 @@ export default function AdminSeed() {
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {result?.success && result?.alreadyComplete ? "Check Again for Missing Data" : result?.success ? "Seed Complete - Run Again to Check" : "Seed Production Database"}
             </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Troubleshooting
+                </span>
+              </div>
+            </div>
+
+            <Button
+              onClick={handleClear}
+              disabled={loading || clearing}
+              size="lg"
+              variant="destructive"
+              className="w-full"
+              data-testid="button-clear-production"
+            >
+              {clearing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {!clearing && <Trash2 className="mr-2 h-4 w-4" />}
+              Clear Production Database
+            </Button>
+
+            <Alert variant="destructive" className="text-sm">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Danger Zone:</strong> The clear button will delete ALL data from production.
+                Use this if products have wrong categories or images aren't loading. After clearing, click "Seed Production Database" above to repopulate with fresh data.
+              </AlertDescription>
+            </Alert>
 
             {result && (
               <Alert variant={result.success ? "default" : "destructive"}>

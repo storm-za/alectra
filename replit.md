@@ -88,12 +88,13 @@ Partners with Centurion, ET Nice, Digidoor, Gemini, DTS, Hansa, Nemtek, IDS, Sen
    ```bash
    tsx scripts/export-dev-database.ts
    ```
-   Creates `scripts/dev-database-export.json` (266KB)
+   Creates `scripts/dev-database-export.json` (278KB) with remote Shopify CDN URLs
 
 2. **Republish the website** to include the export file
 
 3. **Seed production database**:
    - Visit `https://your-published-url.replit.app/admin/seed`
+   - **If needed:** Click "Clear Production Database" to remove stale data
    - Click "Seed Production Database"
    - Backend reads `dev-database-export.json` directly from filesystem
    - Smart seeding: only adds missing data, safe to run multiple times

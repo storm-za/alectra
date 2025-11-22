@@ -780,6 +780,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // CLEAR PRODUCTION DATABASE - Deletes all products, categories, reviews
+  app.post("/api/admin/clear-production", async (req, res) => {
+    try {
+      const { db } = await import("../server/db");
+      const { reviews, orderItems, orders, products, categories } = await import("@shared/schema");
+      
+      // Delete in correct order to avoid foreign key constraints
+      await db.delete(reviews);
+      await db.delete(orderItems);
+      await db.delete(orders);
+      await db.delete(products);
+      await db.delete(categories);
+      
+      res.json({
+        success: true,
+        message: "Production database cleared successfully. You can now re-seed with fresh data.",
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: "Failed to clear database: " + error.message,
+      });
+    }
+  });
+
   // EXPORT DEV DATABASE (for copying to production)
   app.get("/api/admin/export-dev-data", async (req, res) => {
     try {
