@@ -4,26 +4,53 @@ import * as fs from "fs";
 import * as path from "path";
 
 async function exportDevDatabase() {
-  console.log("Exporting development database...");
+  console.log("Exporting development database with original image URLs...");
 
   const allProducts = await db.select().from(products);
   const allCategories = await db.select().from(categories);
   const allBlogs = await db.select().from(blogPosts);
 
+  // Load original scraped data to get remote image URLs
+  const scrapedDataPath = path.join(process.cwd(), "scripts", "product-data.json");
+  let scrapedData: any[] = [];
+  try {
+    const rawData = fs.readFileSync(scrapedDataPath, "utf-8");
+    scrapedData = JSON.parse(rawData);
+    console.log(`Loaded ${scrapedData.length} products from scraper with original URLs`);
+  } catch (e) {
+    console.warn("Could not load product-data.json, will use database URLs");
+  }
+
+  // Create a map of slug -> original imageUrl
+  const slugToImageUrl = new Map<string, string>();
+  const slugToImageGallery = new Map<string, string[]>();
+  scrapedData.forEach((p: any) => {
+    slugToImageUrl.set(p.slug, p.imageUrl);
+    if (p.imageGallery && p.imageGallery.length > 0) {
+      slugToImageGallery.set(p.slug, p.imageGallery);
+    }
+  });
+
   const exportData = {
-    products: allProducts.map(p => ({
-      name: p.name,
-      slug: p.slug,
-      description: p.description,
-      price: p.price,
-      brand: p.brand,
-      sku: p.sku,
-      categoryId: p.categoryId,
-      imageUrl: p.imageUrl,
-      images: p.images,
-      stock: p.stock,
-      featured: p.featured,
-    })),
+    products: allProducts.map(p => {
+      // Use original Shopify URL if available, otherwise use database URL
+      const originalImageUrl = slugToImageUrl.get(p.slug);
+      const originalGallery = slugToImageGallery.get(p.slug);
+      
+      return {
+        name: p.name,
+        slug: p.slug,
+        description: p.description,
+        price: p.price,
+        brand: p.brand,
+        sku: p.sku,
+        categoryId: p.categoryId,
+        imageUrl: originalImageUrl || p.imageUrl,
+        images: originalGallery || p.images || [],
+        stock: p.stock,
+        featured: p.featured,
+      };
+    }),
     categories: allCategories.map(c => ({
       id: c.id,
       name: c.name,
@@ -46,7 +73,12 @@ async function exportDevDatabase() {
   const outputPath = path.join(process.cwd(), "scripts", "dev-database-export.json");
   fs.writeFileSync(outputPath, JSON.stringify(exportData, null, 2));
 
+  const remoteImages = exportData.products.filter(p => p.imageUrl.startsWith('http')).length;
+  const localImages = exportData.products.filter(p => !p.imageUrl.startsWith('http')).length;
+
   console.log(`✅ Exported ${allProducts.length} products`);
+  console.log(`   - ${remoteImages} with remote URLs (Shopify CDN)`);
+  console.log(`   - ${localImages} with local paths (will fallback to DB)`);
   console.log(`✅ Exported ${allCategories.length} categories`);
   console.log(`✅ Exported ${allBlogs.length} blog posts`);
   console.log(`📁 Saved to: ${outputPath}`);
