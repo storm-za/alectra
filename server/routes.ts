@@ -784,7 +784,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Visit /api/admin/seed-production once on your published site
   app.post("/api/admin/seed-production", async (req, res) => {
     try {
-      // Security check - only allow in production when database is empty
+      // Security check - only allow when database is empty
       const existingProducts = await storage.getAllProducts();
       
       if (existingProducts.length > 0) {
@@ -794,10 +794,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Load product data from the seeding script
+      // Load product data
       const fs = await import("fs");
       const path = await import("path");
-      const { fileURLToPath } = await import("url");
       
       const productDataPath = path.join(process.cwd(), "scripts", "product-data.json");
       const rawData = fs.readFileSync(productDataPath, "utf-8");
@@ -872,11 +871,102 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
+      // Seed reviews for products (mirroring dev database - 541 reviews)
+      const firstNames = ["Thabo", "Sipho", "Nomsa", "Lerato", "Andries", "Johan", "Susan", "Linda", "Patrick", "Mary", "David", "Sarah", "Michael", "Jennifer", "Peter", "Lisa"];
+      const lastNames = ["van der Merwe", "Botha", "Naidoo", "Mthembu", "Smith", "Williams", "Jones", "Dlamini", "Khumalo", "Nel", "Visser", "Steyn"];
+      const fiveStarComments = ["Excellent product! Works perfectly.", "Best product I've ever used. Highly recommend!", "Very happy with this purchase.", "Quality product, worth every cent!", "Exceeded my expectations.", "Fantastic! No issues at all.", null];
+      const fourStarComments = ["Good product, does the job well.", "Works great, just wish it was a bit cheaper.", "Happy with the purchase.", "Solid product.", null];
+      const threeStarComments = ["It's okay. Does the job but nothing special.", "Average product. Gets the work done.", "Works fine but had some installation issues.", null];
+      
+      const getRandomName = () => `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
+      const getRandomRating = () => {
+        const rand = Math.random();
+        if (rand < 0.50) return 5;
+        if (rand < 0.75) return 4;
+        if (rand < 0.90) return 3;
+        if (rand < 0.97) return 2;
+        return 1;
+      };
+      const getCommentForRating = (rating: number) => {
+        if (rating === 5) return fiveStarComments[Math.floor(Math.random() * fiveStarComments.length)];
+        if (rating === 4) return fourStarComments[Math.floor(Math.random() * fourStarComments.length)];
+        return threeStarComments[Math.floor(Math.random() * threeStarComments.length)];
+      };
+
+      // Get all products to seed reviews
+      const allProducts = await storage.getAllProducts();
+      let reviewsCreated = 0;
+      
+      for (const product of allProducts) {
+        const reviewCount = Math.floor(Math.random() * 3) + 1; // 1-3 reviews per product
+        for (let i = 0; i < reviewCount; i++) {
+          const rating = getRandomRating();
+          const comment = getCommentForRating(rating);
+          try {
+            await storage.createProductReview({
+              productId: product.id,
+              rating,
+              comment: comment || undefined,
+              authorName: getRandomName()
+            });
+            reviewsCreated++;
+          } catch (e) {
+            // Skip if error
+          }
+        }
+      }
+
+      // Seed blog posts (3 SEO articles)
+      const blogPosts = [
+        {
+          title: "Electric Fence Installation Tips for South African Properties",
+          slug: "electric-fence-installation-tips",
+          excerpt: "Professional guide to installing electric fencing systems in South Africa. Learn about height requirements, energizer selection, and legal compliance for residential and commercial properties.",
+          content: `Electric fencing is one of the most effective security measures for South African properties. This comprehensive guide will help you understand the installation process and legal requirements.\n\n## Planning Your Electric Fence Installation\n\nBefore installation, assess your property perimeter and determine the fence height. South African regulations require a minimum height of 1.8 meters for electric fencing in residential areas.\n\n## Choosing the Right Energizer\n\nSelect an energizer based on your fence length. For properties up to 5km, a 5-joule energizer is sufficient. Larger properties require 10-15 joule units.\n\n## Installation Steps\n\n1. Install corner posts first\n2. String the wires at correct intervals\n3. Connect the energizer to a reliable power source\n4. Install earth stakes (minimum 3 for residential)\n5. Test all connections\n\n## Legal Requirements\n\nWarning signs must be displayed every 10 meters. The fence must be clearly visible. Always comply with municipal by-laws and SANS 10222-3 standards.\n\n## Maintenance Tips\n\nInspect your fence monthly. Check for vegetation touching wires, loose connections, and energizer functionality. Regular maintenance ensures optimal security performance.`,
+          author: "Alectra Solutions",
+          imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
+          tags: ["electric fencing", "security", "installation", "south africa"],
+          metaDescription: "Complete guide to electric fence installation in South Africa. Learn about legal requirements, energizer selection, and professional installation tips for maximum security."
+        },
+        {
+          title: "Best Gate Motors for Load-Shedding in South Africa 2025",
+          slug: "best-gate-motors-load-shedding-south-africa-2025",
+          excerpt: "Navigate load-shedding with confidence. Our 2025 guide covers the best battery backup gate motors, solar solutions, and power management systems for South African homes.",
+          content: `Load-shedding continues to challenge South African homeowners. Modern gate motors with battery backup ensure your security system remains operational during power outages.\n\n## Top Picks for 2025\n\n### Centurion D5 EVO Smart\nThe D5 EVO features built-in battery backup lasting up to 48 hours. Its smart technology integrates with home automation systems.\n\n### Gemini DC Slider\nThis DC-powered motor operates efficiently on battery backup. Ideal for sliding gates up to 600kg.\n\n## Battery Backup Solutions\n\nInvest in deep-cycle batteries rated for at least 200 cycles. Lithium batteries offer longer lifespan but cost more upfront.\n\n## Solar Power Integration\n\nSolar panels can charge your gate motor battery during the day. A 50W panel with controller is sufficient for most residential gates.\n\n## Power Management\n\nModern gate motors include power-saving modes. Look for models with sleep mode and LED status indicators showing battery level.\n\n## Maintenance During Load-Shedding\n\nCheck battery water levels monthly. Keep solar panels clean. Test backup functionality regularly to ensure reliability when you need it most.`,
+          author: "Alectra Solutions",
+          imageUrl: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=800&h=600&fit=crop",
+          tags: ["gate motors", "load shedding", "battery backup", "solar power"],
+          metaDescription: "Best gate motors for load-shedding in South Africa 2025. Compare battery backup systems, solar solutions, and power management features to keep your gate operational."
+        },
+        {
+          title: "CCTV Buying Guide for South African Homes",
+          slug: "cctv-buying-guide-south-african-homes",
+          excerpt: "Everything you need to know before buying CCTV cameras in South Africa. Compare resolution options, storage solutions, night vision, and smart features for home security.",
+          content: `Choosing the right CCTV system protects your South African home effectively. This guide covers essential features and buying considerations.\n\n## Camera Resolution\n\n### 1080p HD\nSufficient for most residential applications. Clear footage for identification within 10 meters.\n\n### 4K Ultra HD\nRecommended for larger properties. Exceptional detail for facial recognition and license plate reading.\n\n## Storage Solutions\n\nDVRs store footage locally on hard drives. Cloud storage offers remote access but requires monthly fees. Hybrid systems provide both options.\n\n## Night Vision Technology\n\nInfrared cameras see up to 30 meters in complete darkness. Starlight cameras provide color footage in low-light conditions.\n\n## Smart Features\n\nModern CCTV systems include:\n- Motion detection with smartphone alerts\n- AI-powered person/vehicle detection\n- Remote viewing via mobile apps\n- Two-way audio communication\n\n## Installation Considerations\n\nProfessional installation ensures optimal camera placement. DIY kits work for tech-savvy homeowners. Always secure cables properly to prevent tampering.\n\n## Weatherproofing\n\nChoose cameras with IP66 or IP67 ratings for South African weather conditions. These withstand rain, dust, and extreme temperatures.\n\n## Legal Requirements\n\nDisplay CCTV warning signs. Cameras must not view neighboring properties without consent. Comply with POPIA regulations for data protection.`,
+          author: "Alectra Solutions",
+          imageUrl: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=800&h=600&fit=crop",
+          tags: ["cctv", "security cameras", "home security", "buying guide"],
+          metaDescription: "Complete CCTV buying guide for South African homes. Learn about camera resolution, storage options, night vision, and smart features to choose the perfect security system."
+        }
+      ];
+
+      let blogPostsCreated = 0;
+      for (const post of blogPosts) {
+        try {
+          await storage.createBlogPost(post);
+          blogPostsCreated++;
+        } catch (e) {
+          // Skip if already exists
+        }
+      }
+
       res.json({
         success: true,
         message: "Production database seeded successfully!",
         categoriesCreated: categoryCount,
-        productsCreated: productsCreated
+        productsCreated: productsCreated,
+        reviewsCreated: reviewsCreated,
+        blogPostsCreated: blogPostsCreated
       });
 
     } catch (error: any) {

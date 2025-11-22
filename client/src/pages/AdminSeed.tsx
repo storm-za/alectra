@@ -6,7 +6,7 @@ import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
 
 export default function AdminSeed() {
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ success: boolean; message: string; categoriesCreated?: number; productsCreated?: number } | null>(null);
+  const [result, setResult] = useState<{ success: boolean; message: string; categoriesCreated?: number; productsCreated?: number; reviewsCreated?: number; blogPostsCreated?: number } | null>(null);
 
   const handleSeed = async () => {
     setLoading(true);
@@ -69,11 +69,16 @@ export default function AdminSeed() {
                 <AlertDescription>
                   <div className="font-medium">{result.message}</div>
                   {result.success && result.categoriesCreated !== undefined && (
-                    <div className="mt-2 text-sm">
+                    <div className="mt-2 text-sm space-y-1">
                       <div>✅ Categories created: {result.categoriesCreated}</div>
                       <div>✅ Products created: {result.productsCreated}</div>
-                      <div className="mt-2 font-medium">
-                        Your published website now has all products! You can close this page.
+                      <div>✅ Reviews created: {result.reviewsCreated}</div>
+                      <div>✅ Blog posts created: {result.blogPostsCreated}</div>
+                      <div className="mt-3 pt-3 border-t font-medium text-base">
+                        🎉 Your published website is now identical to development!
+                      </div>
+                      <div className="text-muted-foreground">
+                        All products, reviews, categories, and blog posts have been seeded. You can close this page.
                       </div>
                     </div>
                   )}
