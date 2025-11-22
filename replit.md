@@ -70,6 +70,48 @@ Preferred communication style: Simple, everyday language.
 ### Third-Party Brands
 Partners with Centurion, ET Nice, Digidoor, Gemini, DTS, Hansa, Nemtek, IDS, Sentry, Hilook, and Hikvision.
 
+## Deployment & Production Database Sync
+
+### Dev to Production Database Synchronization
+
+**Critical Requirement**: Development and production must have identical product catalogs.
+
+**Solution**: Automated dev database export system that captures exact product-category mappings.
+
+**Files**:
+- `scripts/export-dev-database.ts` - Exports dev database to JSON
+- `scripts/dev-database-export.json` - Complete snapshot (272 products, 9 categories, 3 blog posts)
+- `server/routes.ts` - `/api/admin/seed-production` endpoint reads export file
+
+**Deployment Workflow**:
+1. **Export dev database** (already done, kept in source control):
+   ```bash
+   tsx scripts/export-dev-database.ts
+   ```
+   Creates `scripts/dev-database-export.json` (266KB)
+
+2. **Republish the website** to include the export file
+
+3. **Seed production database**:
+   - Visit `https://your-published-url.replit.app/admin/seed`
+   - Click "Seed Production Database"
+   - Backend reads `dev-database-export.json` directly from filesystem
+   - Smart seeding: only adds missing data, safe to run multiple times
+
+**Key Features**:
+- ✅ Preserves exact product-category mappings via slug-based matching
+- ✅ Includes all 58 uncategorized products
+- ✅ No request size limits (reads from filesystem, not HTTP POST)
+- ✅ Idempotent: safe to run multiple times
+- ✅ Automatically seeds 500+ reviews across all products
+
+**Production Seeding Endpoint**: `POST /api/admin/seed-production`
+- Reads `scripts/dev-database-export.json` from filesystem
+- Creates categories first (slug → ID mapping)
+- Maps products to categories via slug lookup
+- Generates reviews with South African names
+- Seeds blog posts
+
 ## Product Catalog
 
 ### Current Product Count
