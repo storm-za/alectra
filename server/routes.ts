@@ -116,63 +116,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // XML Sitemap for SEO
-  app.get("/api/sitemap.xml", async (req, res) => {
-    try {
-      const baseUrl = "https://alectra.co.za";
-      const [categories, products] = await Promise.all([
-        storage.getAllCategories(),
-        storage.getAllProducts()
-      ]);
-
-      const staticPages = [
-        { url: "", priority: "1.0", changefreq: "daily" },
-        { url: "/products", priority: "0.9", changefreq: "daily" },
-        { url: "/about", priority: "0.6", changefreq: "monthly" },
-        { url: "/contact", priority: "0.6", changefreq: "monthly" },
-        { url: "/stores", priority: "0.6", changefreq: "monthly" },
-        { url: "/faq", priority: "0.5", changefreq: "monthly" },
-        { url: "/privacy", priority: "0.3", changefreq: "yearly" },
-        { url: "/returns", priority: "0.5", changefreq: "monthly" },
-        { url: "/shipping", priority: "0.5", changefreq: "monthly" },
-      ];
-
-      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-      xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
-
-      staticPages.forEach(page => {
-        xml += '  <url>\n';
-        xml += `    <loc>${baseUrl}${page.url}</loc>\n`;
-        xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
-        xml += `    <priority>${page.priority}</priority>\n`;
-        xml += '  </url>\n';
-      });
-
-      categories.forEach(category => {
-        xml += '  <url>\n';
-        xml += `    <loc>${baseUrl}/category/${category.slug}</loc>\n`;
-        xml += '    <changefreq>weekly</changefreq>\n';
-        xml += '    <priority>0.8</priority>\n';
-        xml += '  </url>\n';
-      });
-
-      products.forEach(product => {
-        xml += '  <url>\n';
-        xml += `    <loc>${baseUrl}/products/${product.slug}</loc>\n`;
-        xml += '    <changefreq>weekly</changefreq>\n';
-        xml += '    <priority>0.7</priority>\n';
-        xml += '  </url>\n';
-      });
-
-      xml += '</urlset>';
-
-      res.header('Content-Type', 'application/xml');
-      res.send(xml);
-    } catch (error: any) {
-      res.status(500).send('Error generating sitemap');
-    }
-  });
-
   // User Addresses (Protected)
   app.get("/api/user/addresses", requireAuth, async (req, res) => {
     try {
@@ -703,72 +646,184 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Sitemap for SEO
+  // SITEMAP INDEX - Main sitemap pointing to all sub-sitemaps (like Security King)
   app.get("/sitemap.xml", async (req, res) => {
     try {
-      const products = await storage.getAllProducts();
-      const categories = await storage.getAllCategories();
-      const blogPosts = await storage.getAllBlogPosts();
+      const baseUrl = req.protocol + '://' + req.get('host');
+      const currentDate = new Date().toISOString();
       
+      let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
+      sitemap += '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+      sitemap += '  <!-- This is the parent sitemap linking to additional sitemaps for products, categories, pages, and blog posts. -->\n';
+      
+      // Products sitemap
+      sitemap += '  <sitemap>\n';
+      sitemap += `    <loc>${baseUrl}/sitemap_products.xml</loc>\n`;
+      sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+      sitemap += '  </sitemap>\n';
+      
+      // Categories sitemap
+      sitemap += '  <sitemap>\n';
+      sitemap += `    <loc>${baseUrl}/sitemap_categories.xml</loc>\n`;
+      sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+      sitemap += '  </sitemap>\n';
+      
+      // Pages sitemap
+      sitemap += '  <sitemap>\n';
+      sitemap += `    <loc>${baseUrl}/sitemap_pages.xml</loc>\n`;
+      sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+      sitemap += '  </sitemap>\n';
+      
+      // Blog sitemap
+      sitemap += '  <sitemap>\n';
+      sitemap += `    <loc>${baseUrl}/sitemap_blog.xml</loc>\n`;
+      sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+      sitemap += '  </sitemap>\n';
+      
+      sitemap += '</sitemapindex>';
+      
+      res.header('Content-Type', 'application/xml');
+      res.send(sitemap);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // SITEMAP - Products (all individual product pages)
+  app.get("/sitemap_products.xml", async (req, res) => {
+    try {
+      const products = await storage.getAllProducts();
       const baseUrl = req.protocol + '://' + req.get('host');
       const currentDate = new Date().toISOString();
       
       let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
       sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
       
-      // Home page
-      sitemap += `  <url>\n`;
-      sitemap += `    <loc>${baseUrl}/</loc>\n`;
-      sitemap += `    <changefreq>daily</changefreq>\n`;
-      sitemap += `    <priority>1.0</priority>\n`;
-      sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
-      sitemap += `  </url>\n`;
-      
-      // Products page
-      sitemap += `  <url>\n`;
-      sitemap += `    <loc>${baseUrl}/products</loc>\n`;
-      sitemap += `    <changefreq>daily</changefreq>\n`;
-      sitemap += `    <priority>0.9</priority>\n`;
-      sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
-      sitemap += `  </url>\n`;
-      
-      // Categories
-      for (const category of categories) {
-        sitemap += `  <url>\n`;
-        sitemap += `    <loc>${baseUrl}/category/${category.slug}</loc>\n`;
-        sitemap += `    <changefreq>weekly</changefreq>\n`;
-        sitemap += `    <priority>0.8</priority>\n`;
-        sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
-        sitemap += `  </url>\n`;
-      }
-      
-      // Individual products
       for (const product of products) {
-        sitemap += `  <url>\n`;
+        sitemap += '  <url>\n';
         sitemap += `    <loc>${baseUrl}/products/${product.slug}</loc>\n`;
-        sitemap += `    <changefreq>weekly</changefreq>\n`;
-        sitemap += `    <priority>0.7</priority>\n`;
+        sitemap += '    <changefreq>weekly</changefreq>\n';
+        sitemap += '    <priority>0.8</priority>\n';
         sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
-        sitemap += `  </url>\n`;
+        sitemap += '  </url>\n';
       }
       
-      // Blog page
-      sitemap += `  <url>\n`;
-      sitemap += `    <loc>${baseUrl}/blog</loc>\n`;
-      sitemap += `    <changefreq>weekly</changefreq>\n`;
-      sitemap += `    <priority>0.8</priority>\n`;
-      sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
-      sitemap += `  </url>\n`;
+      sitemap += '</urlset>';
       
-      // Blog posts
+      res.header('Content-Type', 'application/xml');
+      res.send(sitemap);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // SITEMAP - Categories (all category pages)
+  app.get("/sitemap_categories.xml", async (req, res) => {
+    try {
+      const categories = await storage.getAllCategories();
+      const baseUrl = req.protocol + '://' + req.get('host');
+      const currentDate = new Date().toISOString();
+      
+      let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
+      sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+      
+      // Products listing page
+      sitemap += '  <url>\n';
+      sitemap += `    <loc>${baseUrl}/products</loc>\n`;
+      sitemap += '    <changefreq>daily</changefreq>\n';
+      sitemap += '    <priority>0.9</priority>\n';
+      sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+      sitemap += '  </url>\n';
+      
+      // Individual categories
+      for (const category of categories) {
+        sitemap += '  <url>\n';
+        sitemap += `    <loc>${baseUrl}/category/${category.slug}</loc>\n`;
+        sitemap += '    <changefreq>weekly</changefreq>\n';
+        sitemap += '    <priority>0.8</priority>\n';
+        sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+        sitemap += '  </url>\n';
+      }
+      
+      sitemap += '</urlset>';
+      
+      res.header('Content-Type', 'application/xml');
+      res.send(sitemap);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // SITEMAP - Static Pages (about, contact, stores, etc.)
+  app.get("/sitemap_pages.xml", async (req, res) => {
+    try {
+      const baseUrl = req.protocol + '://' + req.get('host');
+      const currentDate = new Date().toISOString();
+      
+      const staticPages = [
+        { url: '/', priority: '1.0', changefreq: 'daily' },
+        { url: '/about', priority: '0.7', changefreq: 'monthly' },
+        { url: '/contact', priority: '0.7', changefreq: 'monthly' },
+        { url: '/stores', priority: '0.7', changefreq: 'monthly' },
+        { url: '/faq', priority: '0.6', changefreq: 'monthly' },
+        { url: '/shipping', priority: '0.6', changefreq: 'monthly' },
+        { url: '/returns', priority: '0.6', changefreq: 'monthly' },
+        { url: '/privacy', priority: '0.4', changefreq: 'yearly' },
+        { url: '/trade-signup', priority: '0.7', changefreq: 'monthly' },
+        { url: '/quote', priority: '0.7', changefreq: 'monthly' },
+      ];
+      
+      let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
+      sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+      
+      for (const page of staticPages) {
+        sitemap += '  <url>\n';
+        sitemap += `    <loc>${baseUrl}${page.url}</loc>\n`;
+        sitemap += `    <changefreq>${page.changefreq}</changefreq>\n`;
+        sitemap += `    <priority>${page.priority}</priority>\n`;
+        sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+        sitemap += '  </url>\n';
+      }
+      
+      sitemap += '</urlset>';
+      
+      res.header('Content-Type', 'application/xml');
+      res.send(sitemap);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // SITEMAP - Blog (blog listing + individual posts)
+  app.get("/sitemap_blog.xml", async (req, res) => {
+    try {
+      const blogPosts = await storage.getAllBlogPosts();
+      const baseUrl = req.protocol + '://' + req.get('host');
+      const currentDate = new Date().toISOString();
+      
+      let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
+      sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+      
+      // Blog listing page
+      sitemap += '  <url>\n';
+      sitemap += `    <loc>${baseUrl}/blog</loc>\n`;
+      sitemap += '    <changefreq>weekly</changefreq>\n';
+      sitemap += '    <priority>0.8</priority>\n';
+      sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+      sitemap += '  </url>\n';
+      
+      // Individual blog posts
       for (const post of blogPosts) {
-        const postDate = post.updatedAt ? new Date(post.updatedAt).toISOString() : new Date(post.publishedAt).toISOString();
-        sitemap += `  <url>\n`;
+        const postDate = post.updatedAt 
+          ? new Date(post.updatedAt).toISOString() 
+          : new Date(post.publishedAt).toISOString();
+        
+        sitemap += '  <url>\n';
         sitemap += `    <loc>${baseUrl}/blog/${post.slug}</loc>\n`;
-        sitemap += `    <changefreq>monthly</changefreq>\n`;
-        sitemap += `    <priority>0.6</priority>\n`;
+        sitemap += '    <changefreq>monthly</changefreq>\n';
+        sitemap += '    <priority>0.7</priority>\n';
         sitemap += `    <lastmod>${postDate}</lastmod>\n`;
-        sitemap += `  </url>\n`;
+        sitemap += '  </url>\n';
       }
       
       sitemap += '</urlset>';
