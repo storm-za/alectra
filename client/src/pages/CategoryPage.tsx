@@ -36,8 +36,9 @@ interface CategoryPageProps {
 }
 
 export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPageProps) {
-  const [, params] = useRoute("/category/:slug");
-  const slug = propSlug || params?.slug;
+  const [, categoryParams] = useRoute("/category/:slug");
+  const [, collectionsParams] = useRoute("/collections/:slug");
+  const slug = propSlug || categoryParams?.slug || collectionsParams?.slug;
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [brand, setBrand] = useState<string>("all");
