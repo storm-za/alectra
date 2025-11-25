@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, Truck, Wrench, Headset } from "lucide-react";
 import { Link } from "wouter";
-import heroBackground from "@assets/STORM (500 x 250 px) (2)_1764057402889.png";
-import cameraImage1 from "@assets/stock_images/white_cctv_bullet_ca_661cb0fa.jpg";
+import heroBackground from "@assets/STORM (500 x 250 px) (2)_1764057515430.png";
 
 export default function Hero() {
   const scrollToCategories = () => {
@@ -11,34 +10,29 @@ export default function Hero() {
 
   return (
     <div className="relative">
-      {/* Hero section - Desktop version with custom background */}
-      <div className="relative overflow-hidden">
-        
-        {/* ===== DESKTOP HERO (md and up) ===== */}
-        <div className="hidden md:block relative min-h-[480px] lg:min-h-[520px]">
-          {/* Custom background image with cameras */}
-          <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${heroBackground})` }}
-          />
-          
-          {/* Content - Left Aligned */}
-          <div className="relative z-10 max-w-7xl mx-auto px-8 lg:px-12 h-full flex items-center min-h-[480px] lg:min-h-[520px]">
-            <div className="w-full md:w-[50%] lg:w-[45%]">
-              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-white mb-5 leading-tight">
+      {/* Hero section with background image */}
+      <div 
+        className="relative min-h-[400px] md:min-h-[500px] bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${heroBackground})` }}
+      >
+        {/* Content overlay */}
+        <div className="absolute inset-0 flex items-center">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 w-full">
+            <div className="max-w-lg">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-4 md:mb-5 leading-tight">
                 South Africa's Trusted{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400">
                   Security Store
                 </span>
               </h1>
-              <p className="text-lg lg:text-xl text-slate-200 mb-8 max-w-md leading-relaxed">
+              <p className="text-base md:text-lg lg:text-xl text-slate-200 mb-6 md:mb-8 leading-relaxed">
                 Gate Motors, Remotes, Batteries, CCTV Systems & More. Delivered Nationwide with Expert Support.
               </p>
               
-              <div className="flex items-start gap-4">
+              <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
                 <Button 
                   size="lg" 
-                  className="text-base font-semibold px-8 py-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 border-0 rounded-full"
+                  className="text-base font-semibold px-6 md:px-8 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 border-0 rounded-full"
                   onClick={scrollToCategories}
                   data-testid="button-shop-now"
                 >
@@ -48,7 +42,7 @@ export default function Hero() {
                   <Button 
                     size="lg" 
                     variant="outline"
-                    className="text-base font-semibold px-8 py-6 bg-transparent border-2 border-white/40 text-white hover:bg-white/10 hover:border-white/60 rounded-full"
+                    className="text-base font-semibold px-6 md:px-8 bg-black/20 backdrop-blur-sm border-2 border-white/40 text-white hover:bg-black/30 hover:border-white/60 rounded-full"
                     data-testid="button-request-quote"
                   >
                     Request Quote
@@ -58,65 +52,6 @@ export default function Hero() {
             </div>
           </div>
         </div>
-        
-        {/* ===== MOBILE HERO (below md) ===== */}
-        <div className="md:hidden relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
-          {/* Orange glow accents */}
-          <div className="absolute -top-20 -right-20 w-64 h-64 bg-orange-500/20 rounded-full blur-[80px]"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-yellow-500/15 rounded-full blur-[60px]"></div>
-          
-          {/* Camera image positioned strategically */}
-          <div className="absolute top-6 right-0 w-40 h-32 pointer-events-none opacity-80">
-            <img 
-              src={cameraImage1} 
-              alt="Security Camera" 
-              className="w-full h-full object-contain drop-shadow-xl"
-            />
-          </div>
-          
-          {/* Content */}
-          <div className="relative z-10 px-4 pt-20 pb-12">
-            <div className="text-center">
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4">
-                South Africa's Trusted{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400">
-                  Security Store
-                </span>
-              </h1>
-              <p className="text-base text-slate-300 mb-6 max-w-sm mx-auto">
-                Gate Motors, Remotes, CCTV & More. Delivered Nationwide.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <Button 
-                  size="lg" 
-                  className="text-base font-semibold w-full sm:w-auto min-w-[160px] bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 border-0 rounded-full"
-                  onClick={scrollToCategories}
-                  data-testid="button-shop-now-mobile"
-                >
-                  Shop Now
-                </Button>
-                <Link href="/quote">
-                  <Button 
-                    size="lg" 
-                    variant="outline"
-                    className="text-base font-semibold w-full sm:w-auto min-w-[160px] bg-transparent border-2 border-white/40 text-white hover:bg-white/10 rounded-full"
-                    data-testid="button-request-quote-mobile"
-                  >
-                    Request Quote
-                  </Button>
-                </Link>
-              </div>
-              
-              {/* Trust badge - Mobile */}
-              <div className="mt-6 inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm">
-                <span className="text-yellow-400">★★★★★</span>
-                <span className="font-medium">4.5 Rating</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
       </div>
 
       {/* Trust badges */}
