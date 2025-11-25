@@ -737,8 +737,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Individual categories
       for (const category of categories) {
+        const categoryPath = category.slug === 'lp-gas-exchange' ? '/collections/' : '/category/';
         sitemap += '  <url>\n';
-        sitemap += `    <loc>${baseUrl}/category/${category.slug}</loc>\n`;
+        sitemap += `    <loc>${baseUrl}${categoryPath}${category.slug}</loc>\n`;
         sitemap += '    <changefreq>weekly</changefreq>\n';
         sitemap += '    <priority>0.8</priority>\n';
         sitemap += `    <lastmod>${currentDate}</lastmod>\n`;

@@ -4105,13 +4105,6 @@
       "imageUrl": "/attached_assets/products/centurion-d10-smart-turbo-gate-motor.png"
     },
     {
-      "id": "e110c296-9deb-457b-9a4d-edfa9aa529e0",
-      "name": "LP Gas",
-      "slug": "lp-gas",
-      "description": "LPG cylinders, regulators, and gas appliances",
-      "imageUrl": "/attached_assets/products/19kg-exchange.png"
-    },
-    {
       "id": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "name": "Remotes",
       "slug": "remotes",
@@ -4138,6 +4131,13 @@
       "slug": "garage-door-parts",
       "description": "Garage doors and related components",
       "imageUrl": "attached_assets/products/nylon-roller-heavy-duty.png"
+    },
+    {
+      "id": "e110c296-9deb-457b-9a4d-edfa9aa529e0",
+      "name": "LP Gas",
+      "slug": "lp-gas-exchange",
+      "description": "LPG cylinders, regulators, and gas appliances",
+      "imageUrl": "/attached_assets/products/19kg-exchange.png"
     }
   ],
   "blogs": [
