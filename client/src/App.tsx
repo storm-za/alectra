@@ -100,6 +100,9 @@ function Router() {
           <Route path="/category/:slug">
             <CategoryPage onAddToCart={addToCart} />
           </Route>
+          <Route path="/collections/lp-gas-exchange">
+            <CategoryPage onAddToCart={addToCart} slug="lp-gas" />
+          </Route>
           <Route path="/products/:slug">
             <ProductDetail onAddToCart={addToCart} />
           </Route>

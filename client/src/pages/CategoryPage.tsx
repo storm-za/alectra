@@ -32,10 +32,12 @@ interface ProductsResponse {
 
 interface CategoryPageProps {
   onAddToCart: (product: Product) => void;
+  slug?: string;
 }
 
-export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
+export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPageProps) {
   const [, params] = useRoute("/category/:slug");
+  const slug = propSlug || params?.slug;
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [brand, setBrand] = useState<string>("all");
@@ -46,8 +48,8 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
   const limit = 24;
 
   const { data: category, isLoading: categoryLoading } = useQuery<Category>({
-    queryKey: ["/api/categories", params?.slug],
-    enabled: !!params?.slug,
+    queryKey: ["/api/categories", slug],
+    enabled: !!slug,
   });
 
   const { data: brands } = useQuery<string[]>({
@@ -56,7 +58,7 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
 
   const buildQueryKey = () => {
     const queryParams = new URLSearchParams();
-    if (params?.slug) queryParams.append("categorySlug", params.slug);
+    if (slug) queryParams.append("categorySlug", slug);
     if (search) queryParams.append("search", search);
     if (brand && brand !== "all") queryParams.append("brand", brand);
     if (priceRange[0] > 0) queryParams.append("minPrice", priceRange[0].toString());
@@ -71,7 +73,7 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
 
   const { data, isLoading: productsLoading } = useQuery<ProductsResponse>({
     queryKey: [buildQueryKey()],
-    enabled: !!params?.slug,
+    enabled: !!slug,
   });
 
   const products = data?.products;
@@ -127,7 +129,7 @@ export default function CategoryPage({ onAddToCart }: CategoryPageProps) {
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },
-            { label: category?.name || "Category", href: `/category/${params?.slug}` },
+            { label: category?.name || "Category", href: `/category/${slug}` },
           ]}
         />
 
