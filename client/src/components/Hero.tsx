@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, Truck, Wrench, Headset } from "lucide-react";
 import { Link } from "wouter";
-import heroBackground from "@assets/hero-background.png";
+import heroBackgroundDesktop from "@assets/hero-background.png";
+import heroBackgroundMobile from "@assets/hero-background-mobile.png";
 
 export default function Hero() {
   const scrollToCategories = () => {
@@ -10,29 +11,28 @@ export default function Hero() {
 
   return (
     <div className="relative">
-      {/* Hero section with background image */}
+      {/* Desktop Hero - md and up */}
       <div 
-        className="relative min-h-[400px] md:min-h-[500px] bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroBackground})` }}
+        className="hidden md:block relative min-h-[500px] bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${heroBackgroundDesktop})` }}
       >
-        {/* Content overlay */}
         <div className="absolute inset-0 flex items-center">
-          <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 w-full">
+          <div className="max-w-7xl mx-auto px-8 lg:px-12 w-full">
             <div className="max-w-lg">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-4 md:mb-5 leading-tight">
+              <h1 className="text-5xl lg:text-6xl font-bold tracking-tight text-white mb-5 leading-tight">
                 South Africa's Trusted{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400">
                   Security Store
                 </span>
               </h1>
-              <p className="text-base md:text-lg lg:text-xl text-slate-200 mb-6 md:mb-8 leading-relaxed">
+              <p className="text-lg lg:text-xl text-slate-200 mb-8 leading-relaxed">
                 Gate Motors, Remotes, Batteries, CCTV Systems & More. Delivered Nationwide with Expert Support.
               </p>
               
-              <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 mb-6">
+              <div className="flex items-start gap-4 mb-6">
                 <Button 
                   size="lg" 
-                  className="text-base font-semibold px-6 md:px-8 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 border-0 rounded-full"
+                  className="text-base font-semibold px-8 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 border-0 rounded-full"
                   onClick={scrollToCategories}
                   data-testid="button-shop-now"
                 >
@@ -42,7 +42,7 @@ export default function Hero() {
                   <Button 
                     size="lg" 
                     variant="outline"
-                    className="text-base font-semibold px-6 md:px-8 bg-black/20 backdrop-blur-sm border-2 border-white/40 text-white hover:bg-black/30 hover:border-white/60 rounded-full"
+                    className="text-base font-semibold px-8 bg-black/20 backdrop-blur-sm border-2 border-white/40 text-white hover:bg-black/30 hover:border-white/60 rounded-full"
                     data-testid="button-request-quote"
                   >
                     Request Quote
@@ -50,11 +50,58 @@ export default function Hero() {
                 </Link>
               </div>
               
-              {/* Google Rating Badge */}
               <div className="inline-flex items-center gap-2 bg-black/30 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm">
                 <span className="text-yellow-400">★★★★★</span>
                 <span className="font-medium">4.5 Google Rating</span>
                 <span className="text-white/60">· 49 Reviews</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Hero - below md */}
+      <div 
+        className="md:hidden relative min-h-[450px] bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${heroBackgroundMobile})` }}
+      >
+        <div className="absolute inset-0 flex items-center">
+          <div className="max-w-7xl mx-auto px-4 w-full">
+            <div className="max-w-sm">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4 leading-tight">
+                South Africa's Trusted{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400">
+                  Security Store
+                </span>
+              </h1>
+              <p className="text-base text-slate-200 mb-6 leading-relaxed">
+                Gate Motors, Remotes, Batteries, CCTV Systems & More. Delivered Nationwide.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row items-start gap-3 mb-5">
+                <Button 
+                  size="lg" 
+                  className="text-base font-semibold px-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 border-0 rounded-full"
+                  onClick={scrollToCategories}
+                  data-testid="button-shop-now-mobile"
+                >
+                  Shop Now
+                </Button>
+                <Link href="/quote">
+                  <Button 
+                    size="lg" 
+                    variant="outline"
+                    className="text-base font-semibold px-6 bg-black/20 backdrop-blur-sm border-2 border-white/40 text-white hover:bg-black/30 hover:border-white/60 rounded-full"
+                    data-testid="button-request-quote-mobile"
+                  >
+                    Request Quote
+                  </Button>
+                </Link>
+              </div>
+              
+              <div className="inline-flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full text-white text-xs">
+                <span className="text-yellow-400">★★★★★</span>
+                <span className="font-medium">4.5 Rating</span>
               </div>
             </div>
           </div>
