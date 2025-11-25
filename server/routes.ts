@@ -646,17 +646,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // SITEMAP INDEX - Main sitemap pointing to all sub-sitemaps (like Security King)
+  // SITEMAP INDEX - Main sitemap pointing to all sub-sitemaps
+  // Following Google 2024 best practices: https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
   app.get("/sitemap.xml", async (req, res) => {
     try {
       const baseUrl = 'https://alectra.co.za';
-      const currentDate = new Date().toISOString();
+      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
       
       let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
       sitemap += '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
-      sitemap += '  <!-- This is the parent sitemap linking to additional sitemaps for products, categories, pages, and blog posts. -->\n';
       
-      // Products sitemap
+      // Products sitemap (with images)
       sitemap += '  <sitemap>\n';
       sitemap += `    <loc>${baseUrl}/sitemap_products.xml</loc>\n`;
       sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
@@ -668,7 +668,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
       sitemap += '  </sitemap>\n';
       
-      // Pages sitemap
+      // Static pages sitemap
       sitemap += '  <sitemap>\n';
       sitemap += `    <loc>${baseUrl}/sitemap_pages.xml</loc>\n`;
       sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
@@ -683,46 +683,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
       sitemap += '</sitemapindex>';
       
       res.header('Content-Type', 'application/xml');
+      res.header('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
       res.send(sitemap);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  // SITEMAP - Products (all individual product pages)
+  // SITEMAP - Products with Image Extension (Google 2024 best practice for eCommerce)
   app.get("/sitemap_products.xml", async (req, res) => {
     try {
       const products = await storage.getAllProducts();
       const baseUrl = 'https://alectra.co.za';
-      const currentDate = new Date().toISOString();
+      const currentDate = new Date().toISOString().split('T')[0];
       
       let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
-      sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+      sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n';
+      sitemap += '        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n';
       
       for (const product of products) {
+        // Skip discontinued products from sitemap
+        if (product.discontinued) continue;
+        
         sitemap += '  <url>\n';
         sitemap += `    <loc>${baseUrl}/products/${product.slug}</loc>\n`;
-        sitemap += '    <changefreq>weekly</changefreq>\n';
-        sitemap += '    <priority>0.8</priority>\n';
         sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+        
+        // Add product image for Google Image Search
+        if (product.imageUrl) {
+          const imageUrl = product.imageUrl.startsWith('http') 
+            ? product.imageUrl 
+            : `${baseUrl}${product.imageUrl.startsWith('/') ? '' : '/'}${product.imageUrl}`;
+          sitemap += '    <image:image>\n';
+          sitemap += `      <image:loc>${imageUrl}</image:loc>\n`;
+          sitemap += `      <image:title>${product.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</image:title>\n`;
+          sitemap += '    </image:image>\n';
+        }
+        
         sitemap += '  </url>\n';
       }
       
       sitemap += '</urlset>';
       
       res.header('Content-Type', 'application/xml');
+      res.header('Cache-Control', 'public, max-age=3600');
       res.send(sitemap);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  // SITEMAP - Categories (all category pages)
+  // SITEMAP - Categories (collection pages)
   app.get("/sitemap_categories.xml", async (req, res) => {
     try {
       const categories = await storage.getAllCategories();
       const baseUrl = 'https://alectra.co.za';
-      const currentDate = new Date().toISOString();
+      const currentDate = new Date().toISOString().split('T')[0];
       
       let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
       sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
@@ -730,17 +746,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Products listing page
       sitemap += '  <url>\n';
       sitemap += `    <loc>${baseUrl}/products</loc>\n`;
-      sitemap += '    <changefreq>daily</changefreq>\n';
-      sitemap += '    <priority>0.9</priority>\n';
       sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
       sitemap += '  </url>\n';
       
-      // Individual categories - all use /collections/
+      // Individual category/collection pages
       for (const category of categories) {
         sitemap += '  <url>\n';
         sitemap += `    <loc>${baseUrl}/collections/${category.slug}</loc>\n`;
-        sitemap += '    <changefreq>weekly</changefreq>\n';
-        sitemap += '    <priority>0.8</priority>\n';
         sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
         sitemap += '  </url>\n';
       }
@@ -748,29 +760,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       sitemap += '</urlset>';
       
       res.header('Content-Type', 'application/xml');
+      res.header('Cache-Control', 'public, max-age=3600');
       res.send(sitemap);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  // SITEMAP - Static Pages (about, contact, stores, etc.)
+  // SITEMAP - Static Pages
   app.get("/sitemap_pages.xml", async (req, res) => {
     try {
       const baseUrl = 'https://alectra.co.za';
-      const currentDate = new Date().toISOString();
+      const currentDate = new Date().toISOString().split('T')[0];
       
       const staticPages = [
-        { url: '/', priority: '1.0', changefreq: 'daily' },
-        { url: '/about', priority: '0.7', changefreq: 'monthly' },
-        { url: '/contact', priority: '0.7', changefreq: 'monthly' },
-        { url: '/stores', priority: '0.7', changefreq: 'monthly' },
-        { url: '/faq', priority: '0.6', changefreq: 'monthly' },
-        { url: '/shipping', priority: '0.6', changefreq: 'monthly' },
-        { url: '/returns', priority: '0.6', changefreq: 'monthly' },
-        { url: '/privacy', priority: '0.4', changefreq: 'yearly' },
-        { url: '/trade-signup', priority: '0.7', changefreq: 'monthly' },
-        { url: '/quote', priority: '0.7', changefreq: 'monthly' },
+        '/',
+        '/about',
+        '/contact',
+        '/stores',
+        '/faq',
+        '/shipping',
+        '/returns',
+        '/privacy',
+        '/trade-signup',
+        '/quote',
+        '/blog',
       ];
       
       let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
@@ -778,9 +792,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       for (const page of staticPages) {
         sitemap += '  <url>\n';
-        sitemap += `    <loc>${baseUrl}${page.url}</loc>\n`;
-        sitemap += `    <changefreq>${page.changefreq}</changefreq>\n`;
-        sitemap += `    <priority>${page.priority}</priority>\n`;
+        sitemap += `    <loc>${baseUrl}${page}</loc>\n`;
         sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
         sitemap += '  </url>\n';
       }
@@ -788,40 +800,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       sitemap += '</urlset>';
       
       res.header('Content-Type', 'application/xml');
+      res.header('Cache-Control', 'public, max-age=3600');
       res.send(sitemap);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  // SITEMAP - Blog (blog listing + individual posts)
+  // SITEMAP - Blog posts
   app.get("/sitemap_blog.xml", async (req, res) => {
     try {
       const blogPosts = await storage.getAllBlogPosts();
       const baseUrl = 'https://alectra.co.za';
-      const currentDate = new Date().toISOString();
+      const currentDate = new Date().toISOString().split('T')[0];
       
       let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
       sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
       
-      // Blog listing page
-      sitemap += '  <url>\n';
-      sitemap += `    <loc>${baseUrl}/blog</loc>\n`;
-      sitemap += '    <changefreq>weekly</changefreq>\n';
-      sitemap += '    <priority>0.8</priority>\n';
-      sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
-      sitemap += '  </url>\n';
-      
-      // Individual blog posts
+      // Individual blog posts with actual publish dates
       for (const post of blogPosts) {
         const postDate = post.updatedAt 
-          ? new Date(post.updatedAt).toISOString() 
-          : new Date(post.publishedAt).toISOString();
+          ? new Date(post.updatedAt).toISOString().split('T')[0]
+          : new Date(post.publishedAt).toISOString().split('T')[0];
         
         sitemap += '  <url>\n';
         sitemap += `    <loc>${baseUrl}/blog/${post.slug}</loc>\n`;
-        sitemap += '    <changefreq>monthly</changefreq>\n';
-        sitemap += '    <priority>0.7</priority>\n';
         sitemap += `    <lastmod>${postDate}</lastmod>\n`;
         sitemap += '  </url>\n';
       }
@@ -829,6 +832,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       sitemap += '</urlset>';
       
       res.header('Content-Type', 'application/xml');
+      res.header('Cache-Control', 'public, max-age=3600');
       res.send(sitemap);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
