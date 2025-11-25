@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import Home from "@/pages/Home";
 import Products from "@/pages/Products";
 import ProductDetail from "@/pages/ProductDetail";
@@ -158,6 +159,7 @@ function Router() {
       </main>
 
       <Footer />
+      <WhatsAppButton />
 
       <CartDrawer
         open={cartOpen}

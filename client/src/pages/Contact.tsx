@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, MessageCircle } from "lucide-react";
+import { SiWhatsapp } from "react-icons/si";
 import { Link } from "wouter";
 
 export default function Contact() {
@@ -49,6 +50,23 @@ export default function Contact() {
                     <a href="mailto:solutionsalectra@gmail.com" className="text-primary hover:underline" data-testid="link-contact-email">
                       solutionsalectra@gmail.com
                     </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 mb-6">
+                  <SiWhatsapp className="h-6 w-6 text-green-500 flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-semibold mb-1">WhatsApp</h3>
+                    <a 
+                      href="https://wa.me/27745124065" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-green-600 hover:underline" 
+                      data-testid="link-contact-whatsapp"
+                    >
+                      074 512 4065
+                    </a>
+                    <p className="text-sm text-muted-foreground mt-1">Chat with us instantly</p>
                   </div>
                 </div>
 

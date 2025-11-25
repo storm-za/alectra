@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Facebook, Instagram, Mail } from "lucide-react";
+import { SiWhatsapp } from "react-icons/si";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 
@@ -168,6 +169,15 @@ export default function Footer() {
             </div>
 
             <div className="flex items-center gap-3">
+              <a
+                href="https://wa.me/27745124065"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-green-400 transition-colors"
+                data-testid="link-whatsapp"
+              >
+                <SiWhatsapp className="h-5 w-5" />
+              </a>
               <a
                 href="https://www.facebook.com/alectra.solutions/"
                 target="_blank"
