@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, Truck, Wrench, Headset } from "lucide-react";
 import { Link } from "wouter";
-import heroBackground from "@assets/generated_images/hero_background_gradient_orange.png";
+import heroBackground from "@assets/STORM (500 x 250 px) (2)_1764057402889.png";
 import cameraImage1 from "@assets/stock_images/white_cctv_bullet_ca_661cb0fa.jpg";
-import cameraImage2 from "@assets/stock_images/white_cctv_bullet_ca_37ebb3b2.jpg";
 
 export default function Hero() {
   const scrollToCategories = () => {
@@ -12,57 +11,28 @@ export default function Hero() {
 
   return (
     <div className="relative">
-      {/* Hero section - Desktop version matching reference */}
+      {/* Hero section - Desktop version with custom background */}
       <div className="relative overflow-hidden">
         
-        {/* ===== DESKTOP HERO (md and up) - Matches reference exactly ===== */}
-        <div className="hidden md:block relative min-h-[520px] lg:min-h-[580px]">
-          {/* Background with gradient - dark left, lighter orange-tinted right */}
+        {/* ===== DESKTOP HERO (md and up) ===== */}
+        <div className="hidden md:block relative min-h-[480px] lg:min-h-[520px]">
+          {/* Custom background image with cameras */}
           <div 
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${heroBackground})` }}
           />
           
-          {/* Fallback gradient overlay to ensure correct colors */}
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/95 via-40% to-orange-900/40"></div>
-          
-          {/* Right side lighter panel for cameras */}
-          <div className="absolute right-0 top-0 bottom-0 w-[45%] bg-gradient-to-l from-orange-100/20 via-orange-200/10 to-transparent"></div>
-          
-          {/* Camera Images - Right Side */}
-          <div className="absolute right-0 top-0 bottom-0 w-[50%] flex items-center justify-center pointer-events-none">
-            {/* Main camera - top right, angled */}
-            <div className="absolute right-[5%] top-[15%] transform">
-              <img 
-                src={cameraImage1} 
-                alt="CCTV Bullet Camera" 
-                className="w-64 lg:w-80 xl:w-96 h-auto object-contain drop-shadow-2xl"
-                style={{ filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.3))' }}
-              />
-            </div>
-            
-            {/* Secondary camera - bottom center-right */}
-            <div className="absolute right-[20%] bottom-[15%] transform">
-              <img 
-                src={cameraImage2} 
-                alt="CCTV Security Camera" 
-                className="w-56 lg:w-72 xl:w-80 h-auto object-contain drop-shadow-2xl"
-                style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.25))' }}
-              />
-            </div>
-          </div>
-          
           {/* Content - Left Aligned */}
-          <div className="relative z-10 max-w-7xl mx-auto px-8 lg:px-12 h-full flex items-center min-h-[520px] lg:min-h-[580px]">
-            <div className="w-full md:w-[55%] lg:w-[50%]">
+          <div className="relative z-10 max-w-7xl mx-auto px-8 lg:px-12 h-full flex items-center min-h-[480px] lg:min-h-[520px]">
+            <div className="w-full md:w-[50%] lg:w-[45%]">
               <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-white mb-5 leading-tight">
                 South Africa's Trusted{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400">
                   Security Store
                 </span>
               </h1>
-              <p className="text-lg lg:text-xl text-slate-300 mb-8 max-w-md leading-relaxed">
-                We provide leading Security cameras and represent High Definition CCTV. Products delivered nationwide.
+              <p className="text-lg lg:text-xl text-slate-200 mb-8 max-w-md leading-relaxed">
+                Gate Motors, Remotes, Batteries, CCTV Systems & More. Delivered Nationwide with Expert Support.
               </p>
               
               <div className="flex items-start gap-4">
