@@ -4077,13 +4077,6 @@
   ],
   "categories": [
     {
-      "id": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
-      "name": "CCTV Systems",
-      "slug": "cctv",
-      "description": "Security cameras, DVRs, NVRs, and complete surveillance systems",
-      "imageUrl": "/attached_assets/products/4k-solar-powered-security-camera.png"
-    },
-    {
       "id": "4a2a1b8c-5003-4758-a893-9cfec30316b3",
       "name": "Batteries",
       "slug": "batteries",
@@ -4138,6 +4131,13 @@
       "slug": "lp-gas-exchange",
       "description": "LPG cylinders, regulators, and gas appliances",
       "imageUrl": "/attached_assets/products/19kg-exchange.png"
+    },
+    {
+      "id": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
+      "name": "CCTV Systems",
+      "slug": "cctv-cameras",
+      "description": "Security cameras, DVRs, NVRs, and complete surveillance systems",
+      "imageUrl": "/attached_assets/products/4k-solar-powered-security-camera.png"
     }
   ],
   "blogs": [

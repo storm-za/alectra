@@ -130,7 +130,7 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },
-            { label: category?.name || "Category", href: `/category/${slug}` },
+            { label: category?.name || "Category", href: `/collections/${slug}` },
           ]}
         />
 

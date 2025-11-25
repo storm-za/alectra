@@ -649,7 +649,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // SITEMAP INDEX - Main sitemap pointing to all sub-sitemaps (like Security King)
   app.get("/sitemap.xml", async (req, res) => {
     try {
-      const baseUrl = req.protocol + '://' + req.get('host');
+      const baseUrl = 'https://alectra.co.za';
       const currentDate = new Date().toISOString();
       
       let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
@@ -693,7 +693,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/sitemap_products.xml", async (req, res) => {
     try {
       const products = await storage.getAllProducts();
-      const baseUrl = req.protocol + '://' + req.get('host');
+      const baseUrl = 'https://alectra.co.za';
       const currentDate = new Date().toISOString();
       
       let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
@@ -721,7 +721,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/sitemap_categories.xml", async (req, res) => {
     try {
       const categories = await storage.getAllCategories();
-      const baseUrl = req.protocol + '://' + req.get('host');
+      const baseUrl = 'https://alectra.co.za';
       const currentDate = new Date().toISOString();
       
       let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
@@ -735,11 +735,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
       sitemap += '  </url>\n';
       
-      // Individual categories
+      // Individual categories - all use /collections/
       for (const category of categories) {
-        const categoryPath = category.slug === 'lp-gas-exchange' ? '/collections/' : '/category/';
         sitemap += '  <url>\n';
-        sitemap += `    <loc>${baseUrl}${categoryPath}${category.slug}</loc>\n`;
+        sitemap += `    <loc>${baseUrl}/collections/${category.slug}</loc>\n`;
         sitemap += '    <changefreq>weekly</changefreq>\n';
         sitemap += '    <priority>0.8</priority>\n';
         sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
@@ -758,7 +757,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // SITEMAP - Static Pages (about, contact, stores, etc.)
   app.get("/sitemap_pages.xml", async (req, res) => {
     try {
-      const baseUrl = req.protocol + '://' + req.get('host');
+      const baseUrl = 'https://alectra.co.za';
       const currentDate = new Date().toISOString();
       
       const staticPages = [
@@ -799,7 +798,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/sitemap_blog.xml", async (req, res) => {
     try {
       const blogPosts = await storage.getAllBlogPosts();
-      const baseUrl = req.protocol + '://' + req.get('host');
+      const baseUrl = 'https://alectra.co.za';
       const currentDate = new Date().toISOString();
       
       let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';

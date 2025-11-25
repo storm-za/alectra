@@ -63,17 +63,17 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/category/gate-motors" className="hover:text-white transition-colors">
+                <Link href="/collections/gate-motors" className="hover:text-white transition-colors">
                   Gate Motors
                 </Link>
               </li>
               <li>
-                <Link href="/category/batteries" className="hover:text-white transition-colors">
+                <Link href="/collections/batteries" className="hover:text-white transition-colors">
                   Batteries
                 </Link>
               </li>
               <li>
-                <Link href="/category/cctv" className="hover:text-white transition-colors">
+                <Link href="/collections/cctv-cameras" className="hover:text-white transition-colors">
                   CCTV Systems
                 </Link>
               </li>

@@ -198,7 +198,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
           items={[
             { label: "Home", href: "/" },
             ...(category
-              ? [{ label: category.name, href: `/category/${category.slug}` }]
+              ? [{ label: category.name, href: `/collections/${category.slug}` }]
               : [{ label: "All Products", href: "/products" }]),
             { label: product.name, href: `/products/${product.slug}` },
           ]}
