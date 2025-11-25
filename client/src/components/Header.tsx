@@ -71,7 +71,7 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
 
   const navigation = [
     { name: "Shop All", href: "/products" },
-    ...(categories || []).map(cat => ({ name: cat.name, href: `/categories/${cat.slug}` })),
+    ...(categories || []).map(cat => ({ name: cat.name, href: `/collections/${cat.slug}` })),
     { name: "Contact Us", href: "/contact" },
     { name: "Trade Account", href: "/trade-signup" },
   ];
@@ -125,7 +125,7 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
                 <DropdownMenuSeparator />
                 {categories?.map((category) => (
                   <DropdownMenuItem key={category.id} asChild>
-                    <Link href={`/categories/${category.slug}`} className="cursor-pointer" data-testid={`link-category-${category.slug}`}>
+                    <Link href={`/collections/${category.slug}`} className="cursor-pointer" data-testid={`link-category-${category.slug}`}>
                       {category.name}
                     </Link>
                   </DropdownMenuItem>
@@ -235,7 +235,7 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
                       {categories?.map((category) => (
                         <Link 
                           key={category.id}
-                          href={`/categories/${category.slug}`}
+                          href={`/collections/${category.slug}`}
                           className="px-3 py-2 rounded-md text-sm hover-elevate active-elevate-2"
                           onClick={() => setMobileMenuOpen(false)}
                           data-testid={`link-category-${category.slug}-mobile`}
