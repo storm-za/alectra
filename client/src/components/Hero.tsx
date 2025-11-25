@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, Truck, Wrench, Headset, Camera, Shield, Lock, Wifi, Radio, Eye } from "lucide-react";
+import { ShieldCheck, Truck, Wrench, Headset } from "lucide-react";
 import { Link } from "wouter";
+import cctvImage from "@assets/stock_images/cctv_security_camera_dd146803.jpg";
+import gateImage from "@assets/stock_images/automatic_gate_motor_77a09190.jpg";
+import fenceImage from "@assets/stock_images/electric_fence_secur_af307da6.jpg";
 
 export default function Hero() {
   const scrollToCategories = () => {
@@ -9,62 +12,57 @@ export default function Hero() {
 
   return (
     <div className="relative">
-      {/* Hero section with gradient overlay */}
-      <div className="relative bg-gradient-to-br from-gray-900 via-orange-950 to-gray-900 overflow-hidden">
-        {/* Subtle orange pattern overlay */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNGRjk4MDAiIGZpbGwtb3BhY2l0eT0iMC4wOCI+PHBhdGggZD0iTTM2IDE0YzMuMzEgMCA2LTIuNjkgNi02cy0yLjY5LTYtNi02LTYgMi42OS02IDYgMi42OSA2IDYgNnpNNiAzNGMzLjMxIDAgNi0yLjY5IDYtNnMtMi42OS02LTYtNi02IDIuNjktNiA2IDIuNjkgNiA2IDZ6TTM2IDU0YzMuMzEgMCA2LTIuNjkgNi02cy0yLjY5LTYtNi02LTYgMi42OS02IDYgMi42OSA2IDYgNnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-50"></div>
-        {/* Gradient overlay for depth */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-        {/* Radial gradient accent */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-orange-900/30 via-transparent to-transparent"></div>
-        
-        {/* Security Background Imagery - Left Side */}
-        <div className="absolute left-0 top-0 bottom-0 w-1/3 pointer-events-none overflow-hidden">
-          {/* Large CCTV Camera - Top Left */}
-          <div className="absolute -left-8 top-8 md:left-4 md:top-12 opacity-[0.08] md:opacity-[0.12]">
-            <Camera className="w-32 h-32 md:w-48 md:h-48 text-orange-400 transform -rotate-12" strokeWidth={1} />
+      {/* Hero section with real security images background */}
+      <div className="relative bg-gray-900 overflow-hidden">
+        {/* Real Security Images - Positioned as background collage */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* CCTV Camera - Left side */}
+          <div className="absolute left-0 top-0 w-1/2 md:w-1/3 h-full overflow-hidden">
+            <img 
+              src={cctvImage} 
+              alt="" 
+              className="absolute w-full h-full object-cover opacity-30 md:opacity-40"
+              style={{ objectPosition: 'center right' }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-900/50 to-gray-900"></div>
           </div>
-          {/* Shield - Middle Left */}
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 opacity-[0.06] md:opacity-[0.10] hidden sm:block">
-            <Shield className="w-24 h-24 md:w-36 md:h-36 text-orange-300 transform rotate-6" strokeWidth={1} />
+          
+          {/* Gate Motor - Right side */}
+          <div className="absolute right-0 top-0 w-1/2 md:w-1/3 h-full overflow-hidden">
+            <img 
+              src={gateImage} 
+              alt="" 
+              className="absolute w-full h-full object-cover opacity-30 md:opacity-40"
+              style={{ objectPosition: 'center left' }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-gray-900/50 to-gray-900"></div>
           </div>
-          {/* Lock - Bottom Left */}
-          <div className="absolute left-8 bottom-12 md:left-16 md:bottom-16 opacity-[0.07] md:opacity-[0.11]">
-            <Lock className="w-20 h-20 md:w-28 md:h-28 text-orange-400 transform -rotate-6" strokeWidth={1} />
-          </div>
-        </div>
-        
-        {/* Security Background Imagery - Right Side */}
-        <div className="absolute right-0 top-0 bottom-0 w-1/3 pointer-events-none overflow-hidden">
-          {/* Eye/Surveillance - Top Right */}
-          <div className="absolute -right-4 top-16 md:right-8 md:top-16 opacity-[0.08] md:opacity-[0.12]">
-            <Eye className="w-28 h-28 md:w-40 md:h-40 text-orange-300 transform rotate-12" strokeWidth={1} />
-          </div>
-          {/* Wifi Signal - Middle Right */}
-          <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-[0.06] md:opacity-[0.10] hidden sm:block">
-            <Wifi className="w-20 h-20 md:w-32 md:h-32 text-orange-400 transform -rotate-12" strokeWidth={1} />
-          </div>
-          {/* Radio/Remote - Bottom Right */}
-          <div className="absolute right-4 bottom-8 md:right-12 md:bottom-12 opacity-[0.07] md:opacity-[0.11]">
-            <Radio className="w-24 h-24 md:w-32 md:h-32 text-orange-300 transform rotate-6" strokeWidth={1} />
+          
+          {/* Electric Fence - Bottom subtle layer (desktop only) */}
+          <div className="absolute bottom-0 left-1/4 right-1/4 h-1/2 overflow-hidden hidden lg:block">
+            <img 
+              src={fenceImage} 
+              alt="" 
+              className="absolute w-full h-full object-cover opacity-15"
+              style={{ objectPosition: 'center top' }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent"></div>
           </div>
         </div>
         
-        {/* Additional floating security elements - Center background */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {/* Small floating cameras scattered */}
-          <div className="absolute left-1/4 top-8 opacity-[0.04] md:opacity-[0.06] hidden lg:block">
-            <Camera className="w-16 h-16 text-white transform rotate-45" strokeWidth={1} />
-          </div>
-          <div className="absolute right-1/4 bottom-16 opacity-[0.04] md:opacity-[0.06] hidden lg:block">
-            <Camera className="w-14 h-14 text-white transform -rotate-12" strokeWidth={1} />
-          </div>
-          <div className="absolute left-1/3 bottom-20 opacity-[0.03] md:opacity-[0.05] hidden lg:block">
-            <Shield className="w-12 h-12 text-orange-200" strokeWidth={1} />
-          </div>
-        </div>
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-gray-900/60"></div>
         
-        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-20 md:py-32 relative">
+        {/* Orange gradient accent */}
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-950/40 via-transparent to-orange-950/30"></div>
+        
+        {/* Bottom gradient for smooth transition */}
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
+        
+        {/* Subtle vignette effect */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_rgba(0,0,0,0.4)_100%)]"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-20 md:py-32 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6">
               South Africa's Trusted Security Store
