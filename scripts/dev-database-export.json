@@ -7,7 +7,7 @@
       "price": "259.00",
       "brand": "Centurion",
       "sku": "ALEC-0043-CENTURION_NOVA_4_BUTTON_REMOTE",
-      "categoryId": "4fdf00e5-23af-468a-96a1-ebf32b4d433f",
+      "categoryId": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "imageUrl": "attached_assets/products/centurion-nova-4-button-remote.png",
       "images": [
         "attached_assets/products/centurion-nova-4-button-remote.png"
@@ -22,7 +22,7 @@
       "price": "383.00",
       "brand": "Centurion",
       "sku": "ALEC-0024-CENTURION_D5_EVO_MAIN_COVER",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d5-evo-main-cover.jpg",
       "images": [
         "attached_assets/products/centurion-d5-evo-main-cover.jpg"
@@ -37,7 +37,7 @@
       "price": "5099.00",
       "brand": "Centurion",
       "sku": "ALEC-0018-CENTURION_D5_EVO_SMART_GATE_MO",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d5-evo-smart-gate-motor.jpg",
       "images": [
         "attached_assets/products/centurion-d5-evo-smart-gate-motor.jpg"
@@ -67,27 +67,12 @@
       "price": "159.00",
       "brand": "Centurion",
       "sku": "ALEC-0041-CENTURION_NOVA_1_BUTTON_REMOTE",
-      "categoryId": "4fdf00e5-23af-468a-96a1-ebf32b4d433f",
+      "categoryId": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "imageUrl": "attached_assets/products/centurion-nova-1-button-remote.png",
       "images": [
         "attached_assets/products/centurion-nova-1-button-remote.png"
       ],
       "stock": 96,
-      "featured": false
-    },
-    {
-      "name": "Zartek Wireless Intercom System",
-      "slug": "zartek-wireless-intercom-system",
-      "description": "Zartek wireless intercom for gate communication without wiring. Battery-powered system eliminates installation wiring requirements.",
-      "price": "2335.00",
-      "brand": "Zartek",
-      "sku": "ALEC-0075-ZARTEK_WIRELESS_INTERCOM_SYSTE",
-      "categoryId": "94f0c227-27e1-49b6-877a-28960097c86a",
-      "imageUrl": "attached_assets/products/zartek-wireless-intercom-system.jpg",
-      "images": [
-        "attached_assets/products/zartek-wireless-intercom-system.jpg"
-      ],
-      "stock": 100,
       "featured": false
     },
     {
@@ -97,7 +82,7 @@
       "price": "399.00",
       "brand": "Hilook",
       "sku": "ALEC-0081-HILOOK_2MP_FULL_COLOUR_VU_DOME",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/hilook-2mp-full-colour-vu-dome-camera.jpg",
       "images": [
         "attached_assets/products/hilook-2mp-full-colour-vu-dome-camera.jpg"
@@ -112,7 +97,7 @@
       "price": "53.00",
       "brand": "Alectra",
       "sku": "ALEC-0074-VECTOR_VANTAGE_CABLE_PER_METER",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/vector-vantage-cable-per-meter.jpg",
       "images": [
         "attached_assets/products/vector-vantage-cable-per-meter.jpg"
@@ -127,7 +112,7 @@
       "price": "999.00",
       "brand": "E.T",
       "sku": "ALEC-0103-E_T_NICE_COLOUR_VIDEO_INTERCOM",
-      "categoryId": "94f0c227-27e1-49b6-877a-28960097c86a",
+      "categoryId": "d403d6fb-44d5-4652-849a-e81e31a05b27",
       "imageUrl": "attached_assets/products/e-t-nice-colour-video-intercom-gate-station.jpg",
       "images": [
         "attached_assets/products/e-t-nice-colour-video-intercom-gate-station.jpg"
@@ -142,7 +127,7 @@
       "price": "165.00",
       "brand": "Gemini",
       "sku": "ALEC-0063-GEMINI_4_BUTTON_REMOTE",
-      "categoryId": "4fdf00e5-23af-468a-96a1-ebf32b4d433f",
+      "categoryId": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "imageUrl": "attached_assets/products/gemini-4-button-remote.png",
       "images": [
         "attached_assets/products/gemini-4-button-remote.png"
@@ -157,7 +142,7 @@
       "price": "899.00",
       "brand": "Centurion",
       "sku": "ALEC-0017-CENTURION_D3_D5_EVO_SMART_ANTI",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d3-d5-evo-smart-anti-theft-bracket.jpg",
       "images": [
         "attached_assets/products/centurion-d3-d5-evo-smart-anti-theft-bracket.jpg"
@@ -172,7 +157,7 @@
       "price": "98.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0272-WOOD_HINGE_SCREWS_85_IN_A_PACK",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/wood-hinge-screws-85-in-a-pack.png",
       "images": [
         "attached_assets/products/wood-hinge-screws-85-in-a-pack.png"
@@ -202,7 +187,7 @@
       "price": "229.00",
       "brand": "Hikvision",
       "sku": "ALEC-0089-HIKVISION_4_CHANNEL_CCTV_POWER",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/hikvision-4-channel-cctv-power-supply.png",
       "images": [
         "attached_assets/products/hikvision-4-channel-cctv-power-supply.png"
@@ -217,7 +202,7 @@
       "price": "1099.00",
       "brand": "My Store",
       "sku": "ALEC-0011-CENTURION_D5_D6_SMART_ANTI_THE",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d5-d6-smart-anti-theft-bracket.jpg",
       "images": [
         "attached_assets/products/centurion-d5-d6-smart-anti-theft-bracket.jpg"
@@ -271,13 +256,28 @@
       "featured": false
     },
     {
+      "name": "DC Blue Advance Sectional Garage Motor Kit + Extrusion",
+      "slug": "dc-blue-advance-sectional-garage-motor-extrusion",
+      "description": "DC Blue Advance garage motor with extrusion rail for sectional doors. Features modern design with reliable performance and safety features.",
+      "price": "4199.00",
+      "brand": "DC",
+      "sku": "ALEC-0051-DC_BLUE_ADVANCE_SECTIONAL_GARA",
+      "categoryId": "9da5ba6b-1973-4969-a9d6-ee1631773f23",
+      "imageUrl": "attached_assets/products/dc-blue-advance-sectional-garage-motor-extrusion.jpg",
+      "images": [
+        "attached_assets/products/dc-blue-advance-sectional-garage-motor-extrusion.jpg"
+      ],
+      "stock": 100,
+      "featured": false
+    },
+    {
       "name": "Centurion D10 Smart Sliding Gate Motor (No remotes included)",
       "slug": "centurion-d10-sliding-gate-motor",
       "description": "Centurion D10 Smart Sliding Gate Motor – Advanced Power and Precision for Your Gate The Centurion D10 Smart Sliding Gate Motor delivers robust performance with cutting-edge technology, making it the ultimate solution for high-security and high-traffic environments. Built for durability, speed, and intelligent operation, the D10 Smart is equipped with smart technology for effortless control and monitoring. Perfect for residential and commercial properties, this motor ensures reliable automation f",
       "price": "9999.00",
       "brand": "My Store",
       "sku": "ALEC-0001-CENTURION_D10_SLIDING_GATE_MOT",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d10-sliding-gate-motor.png",
       "images": [
         "attached_assets/products/centurion-d10-sliding-gate-motor.png"
@@ -292,7 +292,7 @@
       "price": "6599.00",
       "brand": "My Store",
       "sku": "ALEC-0012-CENTURION_D6_SMART_GATE_MOTOR",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d6-smart-gate-motor.jpg",
       "images": [
         "attached_assets/products/centurion-d6-smart-gate-motor.jpg"
@@ -307,7 +307,7 @@
       "price": "220.00",
       "brand": "Nemtek",
       "sku": "ALEC-0113-NEMTEK_COMPRESSION_SPRING_1_SI",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-compression-spring-1-silver-5kg-black-50-box.jpg",
       "images": [
         "attached_assets/products/nemtek-compression-spring-1-silver-5kg-black-50-box.jpg"
@@ -322,7 +322,7 @@
       "price": "7899.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0131-16_CHANNEL_ADVANCED_CCTV_CAMER",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/16-channel-advanced-cctv-camera-kit.png",
       "images": [
         "attached_assets/products/16-channel-advanced-cctv-camera-kit.png"
@@ -337,7 +337,7 @@
       "price": "5099.00",
       "brand": "My Store",
       "sku": "ALEC-0017-DTS_EXPERT_GATE_MOTOR_BATTERY",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/dts-expert-gate-motor-battery.jpg",
       "images": [
         "attached_assets/products/dts-expert-gate-motor-battery.jpg"
@@ -352,7 +352,7 @@
       "price": "1899.00",
       "brand": "Glosteel",
       "sku": "ALEC-0095-GLOSTEEL_GARAGE_DOOR_SAFARI_BR",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/glosteel-garage-door-safari-brown.jpg",
       "images": [
         "attached_assets/products/glosteel-garage-door-safari-brown.jpg"
@@ -436,28 +436,13 @@
       "featured": false
     },
     {
-      "name": "DC Blue Advance Sectional Garage Motor Kit + Extrusion",
-      "slug": "dc-blue-advance-sectional-garage-motor-extrusion",
-      "description": "DC Blue Advance garage motor with extrusion rail for sectional doors. Features modern design with reliable performance and safety features.",
-      "price": "4199.00",
-      "brand": "DC",
-      "sku": "ALEC-0051-DC_BLUE_ADVANCE_SECTIONAL_GARA",
-      "categoryId": "b8edbd68-50b5-4c4e-b9e0-56bea081f8d5",
-      "imageUrl": "attached_assets/products/dc-blue-advance-sectional-garage-motor-extrusion.jpg",
-      "images": [
-        "attached_assets/products/dc-blue-advance-sectional-garage-motor-extrusion.jpg"
-      ],
-      "stock": 100,
-      "featured": false
-    },
-    {
       "name": "E.T Roll-up Advance Garage Door Motor Kit",
       "slug": "e-t-roll-up-advance-garage-door-motor-kit",
       "description": "E.T roll-up garage door motor complete kit for automated access. Includes motor, remote control, and all mounting hardware.",
       "price": "2799.00",
       "brand": "E.T",
       "sku": "ALEC-0054-E_T_ROLL_UP_ADVANCE_GARAGE_DOO",
-      "categoryId": "b8edbd68-50b5-4c4e-b9e0-56bea081f8d5",
+      "categoryId": "9da5ba6b-1973-4969-a9d6-ee1631773f23",
       "imageUrl": "attached_assets/products/e-t-roll-up-advance-garage-door-motor-kit.jpg",
       "images": [
         "attached_assets/products/e-t-roll-up-advance-garage-door-motor-kit.jpg"
@@ -472,7 +457,7 @@
       "price": "3799.00",
       "brand": "Gemini",
       "sku": "ALEC-0049-GEMINI_SECTIONAL_GARAGE_DOOR_M",
-      "categoryId": "b8edbd68-50b5-4c4e-b9e0-56bea081f8d5",
+      "categoryId": "9da5ba6b-1973-4969-a9d6-ee1631773f23",
       "imageUrl": "attached_assets/products/gemini-sectional-garage-door-motor-kit.jpg",
       "images": [
         "attached_assets/products/gemini-sectional-garage-door-motor-kit.jpg"
@@ -487,7 +472,7 @@
       "price": "2699.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0134-CENTURION_G_ULTRA_GSM_SMART_SW",
-      "categoryId": "94f0c227-27e1-49b6-877a-28960097c86a",
+      "categoryId": "d403d6fb-44d5-4652-849a-e81e31a05b27",
       "imageUrl": "attached_assets/products/centurion-g-ultra-gsm-smart-switch.png",
       "images": [
         "attached_assets/products/centurion-g-ultra-gsm-smart-switch.png"
@@ -502,7 +487,7 @@
       "price": "3999.00",
       "brand": "Centurion",
       "sku": "ALEC-0037-CENTURION_G_SPEAK_ULTRA",
-      "categoryId": "94f0c227-27e1-49b6-877a-28960097c86a",
+      "categoryId": "d403d6fb-44d5-4652-849a-e81e31a05b27",
       "imageUrl": "attached_assets/products/centurion-g-speak-ultra.jpg",
       "images": [
         "attached_assets/products/centurion-g-speak-ultra.jpg"
@@ -517,7 +502,7 @@
       "price": "320.00",
       "brand": "Gemini",
       "sku": "ALEC-0068-GEMINI_STEEL_RACK_2M",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/gemini-steel-rack-2m.jpg",
       "images": [
         "attached_assets/products/gemini-steel-rack-2m.jpg"
@@ -532,7 +517,7 @@
       "price": "1899.00",
       "brand": "Glosteel",
       "sku": "ALEC-0069-GLOSTEEL_GARAGE_DOOR",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/glosteel-garage-door.jpg",
       "images": [
         "attached_assets/products/glosteel-garage-door.jpg"
@@ -607,7 +592,7 @@
       "price": "2899.00",
       "brand": "Centurion",
       "sku": "ALEC-0046-CENTURION_RDO_II_ROLL_UP_MOTOR",
-      "categoryId": "b8edbd68-50b5-4c4e-b9e0-56bea081f8d5",
+      "categoryId": "9da5ba6b-1973-4969-a9d6-ee1631773f23",
       "imageUrl": "attached_assets/products/centurion-rdo-ii-roll-up-motor.jpg",
       "images": [
         "attached_assets/products/centurion-rdo-ii-roll-up-motor.jpg"
@@ -622,7 +607,7 @@
       "price": "3399.00",
       "brand": "Centurion",
       "sku": "ALEC-0048-CENTURION_SDO4_T12_SMART_KIT",
-      "categoryId": "b8edbd68-50b5-4c4e-b9e0-56bea081f8d5",
+      "categoryId": "9da5ba6b-1973-4969-a9d6-ee1631773f23",
       "imageUrl": "attached_assets/products/centurion-sdo4-t12-smart-kit.png",
       "images": [
         "attached_assets/products/centurion-sdo4-t12-smart-kit.png"
@@ -637,7 +622,7 @@
       "price": "3399.00",
       "brand": "DC",
       "sku": "ALEC-0052-DC_BLUE_ADVANCE_GARAGE_DOOR_MO",
-      "categoryId": "b8edbd68-50b5-4c4e-b9e0-56bea081f8d5",
+      "categoryId": "9da5ba6b-1973-4969-a9d6-ee1631773f23",
       "imageUrl": "attached_assets/products/dc-blue-advance-garage-door-motor.jpg",
       "images": [
         "attached_assets/products/dc-blue-advance-garage-door-motor.jpg"
@@ -652,7 +637,7 @@
       "price": "69.00",
       "brand": "Nemtek",
       "sku": "ALEC-0111-NEMTEK_SPRING_HOOK_LARGE_TAIL_",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-spring-hook-large-tail-2mm-50-pack.png",
       "images": [
         "attached_assets/products/nemtek-spring-hook-large-tail-2mm-50-pack.png"
@@ -667,7 +652,7 @@
       "price": "69.00",
       "brand": "Nemtek",
       "sku": "ALEC-0110-NEMTEK_ELECTRIC_FENCE_ALUMINIU",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-electric-fence-aluminium-ferrules-6mm-100-pack.png",
       "images": [
         "attached_assets/products/nemtek-electric-fence-aluminium-ferrules-6mm-100-pack.png"
@@ -682,7 +667,7 @@
       "price": "120.00",
       "brand": "JVA",
       "sku": "ALEC-0116-JVA_HIGH_VOLTAGE_ELECTRIC_FENC",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/jva-high-voltage-electric-fence-warning-light-red-led.png",
       "images": [
         "attached_assets/products/jva-high-voltage-electric-fence-warning-light-red-led.png"
@@ -697,7 +682,7 @@
       "price": "140.00",
       "brand": "Nemtek",
       "sku": "ALEC-0115-NEMTEK_ELECTRIC_FENCE_HIGH_VOL",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-electric-fence-high-voltage-timed-warning-light-blue.png",
       "images": [
         "attached_assets/products/nemtek-electric-fence-high-voltage-timed-warning-light-blue.png"
@@ -712,7 +697,7 @@
       "price": "6099.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0036-8_LINE_30_METER_ADVANCED_ELECT",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/8-line-30-meter-advanced-electric-fence-kit.png",
       "images": [
         "attached_assets/products/8-line-30-meter-advanced-electric-fence-kit.png"
@@ -727,7 +712,7 @@
       "price": "5779.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0037-6_LINE_20_METER_ADVANCED_ELECT",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/6-line-20-meter-advanced-electric-fence-kit.png",
       "images": [
         "attached_assets/products/6-line-20-meter-advanced-electric-fence-kit.png"
@@ -742,7 +727,7 @@
       "price": "220.00",
       "brand": "Alectra",
       "sku": "ALEC-0112-STAINLESS_STEEL_TENSION_SPRING",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/stainless-steel-tension-springs-with-limiters-50-pack.jpg",
       "images": [
         "attached_assets/products/stainless-steel-tension-springs-with-limiters-50-pack.jpg"
@@ -772,7 +757,7 @@
       "price": "50.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0039-IN_LINE_EARTH_LOOP_STAINLESS_S",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/in-line-earth-loop-stainless-steel-10-pack.png",
       "images": [
         "attached_assets/products/in-line-earth-loop-stainless-steel-10-pack.png"
@@ -787,7 +772,7 @@
       "price": "400.00",
       "brand": "Nemtek",
       "sku": "ALEC-0114-NEMTEK_HYBRID_COMPRESSION_SPRI",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-hybrid-compression-spring-2-8kg-gold-black-50-pack.jpg",
       "images": [
         "attached_assets/products/nemtek-hybrid-compression-spring-2-8kg-gold-black-50-pack.jpg"
@@ -802,7 +787,7 @@
       "price": "30.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0038-WALL_MOUNT_LOOP_ANGLE_304_STAI",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/wall-mount-loop-angle-304-stainless-steel.png",
       "images": [
         "attached_assets/products/wall-mount-loop-angle-304-stainless-steel.png"
@@ -832,7 +817,7 @@
       "price": "65.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0040-COPPER_EARTH_SPIKE_1_2M_WITH_N",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/copper-earth-spike-1-2m-with-nut-and-washer.png",
       "images": [
         "attached_assets/products/copper-earth-spike-1-2m-with-nut-and-washer.png"
@@ -847,7 +832,7 @@
       "price": "59.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0041-8_LINE_ROUND_BAR_BLACK",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/8-line-round-bar-black.png",
       "images": [
         "attached_assets/products/8-line-round-bar-black.png"
@@ -862,7 +847,7 @@
       "price": "240.00",
       "brand": "Hilook",
       "sku": "ALEC-0077-HILOOK_2MP_BULLET_CAMERA",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/hilook-2mp-bullet-camera.jpg",
       "images": [
         "attached_assets/products/hilook-2mp-bullet-camera.jpg"
@@ -877,7 +862,7 @@
       "price": "375.00",
       "brand": "Centurion",
       "sku": "ALEC-0098-CENTURION_12V_7_2AH_BATTERY",
-      "categoryId": "c8616edc-a595-42a8-9c35-9cd2f138d47b",
+      "categoryId": "4a2a1b8c-5003-4758-a893-9cfec30316b3",
       "imageUrl": "attached_assets/products/centurion-12v-7-2ah-battery.jpg",
       "images": [
         "attached_assets/products/centurion-12v-7-2ah-battery.jpg"
@@ -892,7 +877,7 @@
       "price": "85.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0043-8_WIRE_ANGLE_SQUARE_TUBE_BLACK",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/8-wire-angle-square-tube-black.png",
       "images": [
         "attached_assets/products/8-wire-angle-square-tube-black.png"
@@ -907,10 +892,25 @@
       "price": "1050.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0050-DTS_MS5_ENERGIZER_WEATHERPROOF",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/dts-ms5-energizer-weatherproof-box-only-grey.png",
       "images": [
         "attached_assets/products/dts-ms5-energizer-weatherproof-box-only-grey.png"
+      ],
+      "stock": 100,
+      "featured": false
+    },
+    {
+      "name": "Centurion D3 Smart Gate Motor Kit",
+      "slug": "centurion-d3-smart-motor-only",
+      "description": "Complete Centurion D3 Smart Gate Motor Kit with all essential components for gate automation. Designed for gates up to 400kg with smart technology integration and battery backup ready configuration.",
+      "price": "4919.00",
+      "brand": "Centurion",
+      "sku": "ALEC-0012-CENTURION_D3_SMART_MOTOR_ONLY",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "imageUrl": "attached_assets/products/centurion-d3-smart-motor-only.png",
+      "images": [
+        "attached_assets/products/centurion-d3-smart-motor-only.png"
       ],
       "stock": 100,
       "featured": false
@@ -922,7 +922,7 @@
       "price": "70.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0048-6_WIRE_FLAT_BAR",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/6-wire-flat-bar.png",
       "images": [
         "attached_assets/products/6-wire-flat-bar.png"
@@ -937,7 +937,7 @@
       "price": "1.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0212-CUSTOM-AMOUNT",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "",
       "images": [],
       "stock": 100,
@@ -950,7 +950,7 @@
       "price": "260.00",
       "brand": "My Store",
       "sku": "ALEC-0214-DIGIDOOR",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "https://cdn.shopify.com/s/files/1/0653/9640/8365/files/digidoor-remotes-icon.jpg?v=1732102124",
       "images": [],
       "stock": 100,
@@ -963,24 +963,11 @@
       "price": "70.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0046-6_LINE_ANGLE_SQUARE_TUBE_BLACK",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/6-line-angle-square-tube-black.png",
       "images": [
         "attached_assets/products/6-line-angle-square-tube-black.png"
       ],
-      "stock": 100,
-      "featured": false
-    },
-    {
-      "name": "Duraslide Remotes",
-      "slug": "duraslide",
-      "description": "Duraslide Remotes – Reliable Gate Control Starting from Only R165 The Duraslide Remotes provide an affordable and secure solution for controlling your Duraslide gate motors. Starting from just R165 , these remotes are designed for smooth and efficient operation, offering secure access at the press of a button. Whether you need a single-button remote for quick access or a multi-button remote for controlling multiple gates, Duraslide remotes are durable and dependable for both residential and ligh",
-      "price": "165.00",
-      "brand": "My Store",
-      "sku": "ALEC-0223-DURASLIDE",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
-      "imageUrl": "https://cdn.shopify.com/s/files/1/0653/9640/8365/files/Duraslide-Remotes.jpg?v=1732102129",
-      "images": [],
       "stock": 100,
       "featured": false
     },
@@ -991,7 +978,7 @@
       "price": "85.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0045-8_WIRE_TOP_ANGLE_SQUARE_TUBE_B",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/8-wire-top-angle-square-tube-black.png",
       "images": [
         "attached_assets/products/8-wire-top-angle-square-tube-black.png"
@@ -1006,7 +993,7 @@
       "price": "70.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0047-6_LINE_STRAIGHT_SQUARE_TUBE_BL",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/6-line-straight-square-tube-black.png",
       "images": [
         "attached_assets/products/6-line-straight-square-tube-black.png"
@@ -1021,7 +1008,7 @@
       "price": "168.00",
       "brand": "Centurion",
       "sku": "ALEC-0016-CENTURION_D3_D5_EVO_SMART_D6_S",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d3-d5-evo-smart-d6-smart-base-plate.jpg",
       "images": [
         "attached_assets/products/centurion-d3-d5-evo-smart-d6-smart-base-plate.jpg"
@@ -1030,16 +1017,31 @@
       "featured": false
     },
     {
-      "name": "4K Solar CCTV Camera",
-      "slug": "4k-solar-powered-security-camera",
-      "description": "Experience ultimate wireless security with this cutting-edge 4K Solar Powered Security Camera featuring WiFi connectivity and advanced night vision technology. The 8-megapixel ultra-high-definition sensor delivers four times the clarity of 1080p, capturing license plates, faces, and fine details with exceptional precision. Solar panel technology with high-efficiency photovoltaic cells ensures 24/7 operation without electrical wiring or frequent battery charging—perfect for remote locations, farms, construction sites, and perimeter monitoring. Built-in rechargeable battery provides up to 30 days standby during extended overcast periods. Advanced infrared LEDs illuminate up to 10-15 meters for full-color or black-and-white night vision modes. WiFi connectivity (2.4GHz) enables real-time mobile monitoring from anywhere via smartphone app with instant motion detection alerts, two-way audio communication, and cloud or microSD storage options (supports up to 128GB). IP66 weatherproof rating protects against dust, rain, and temperature extremes. PIR motion sensor reduces false alarms, while 355° pan and 90° tilt provide comprehensive coverage. Ideal for off-grid security applications where traditional power and cabling are impractical.",
-      "price": "1099.00",
-      "brand": "Andowl",
-      "sku": "ALEC-0001-4K_SOLAR_POWERED_SECURITY_CAME",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
-      "imageUrl": "attached_assets/products/4k-solar-powered-security-camera.png",
+      "name": "12V 1.4Ah Battery",
+      "slug": "12v-1-4ah-battery",
+      "description": "Reliable 12V 1.4Ah sealed lead-acid battery perfect for backup power supplies, alarm systems, gate motors, UPS devices, and more. This maintenance-free battery ensures consistent performance and long service life.",
+      "price": "135.00",
+      "brand": "EPS",
+      "sku": "ALEC-0002-12V_1_4AH_BATTERY",
+      "categoryId": "4a2a1b8c-5003-4758-a893-9cfec30316b3",
+      "imageUrl": "attached_assets/products/12v-1-4ah-battery.png",
       "images": [
-        "attached_assets/products/4k-solar-powered-security-camera.png"
+        "attached_assets/products/12v-1-4ah-battery.png"
+      ],
+      "stock": 100,
+      "featured": false
+    },
+    {
+      "name": "24V 3.5AH Battery",
+      "slug": "24v-3-5ah",
+      "description": "High-performance 24V 3.5Ah battery specifically designed for gate and garage motors requiring 24-volt power systems. Perfect for heavy-duty gate motors and commercial installations. Features maintenance-free operation and long service life.",
+      "price": "485.00",
+      "brand": "Alectra",
+      "sku": "ALEC-0006-24V_3_5AH",
+      "categoryId": "4a2a1b8c-5003-4758-a893-9cfec30316b3",
+      "imageUrl": "attached_assets/products/24v-3-5ah.png",
+      "images": [
+        "attached_assets/products/24v-3-5ah.png"
       ],
       "stock": 100,
       "featured": false
@@ -1051,7 +1053,7 @@
       "price": "330.00",
       "brand": "Eazylift",
       "sku": "ALEC-0055-EAZYLIFT_GARAGE_DOOR_REMOTE_4_",
-      "categoryId": "4fdf00e5-23af-468a-96a1-ebf32b4d433f",
+      "categoryId": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "imageUrl": "attached_assets/products/eazylift-garage-door-remote-4-button.jpg",
       "images": [
         "attached_assets/products/eazylift-garage-door-remote-4-button.jpg"
@@ -1066,7 +1068,7 @@
       "price": "2.30",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0051-OMEGA_BOBBIN_WITH_CLIP",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/omega-bobbin-with-clip.png",
       "images": [
         "attached_assets/products/omega-bobbin-with-clip.png"
@@ -1081,7 +1083,7 @@
       "price": "275.00",
       "brand": "Alectra",
       "sku": "ALEC-0007-9KG_EXCHANGE",
-      "categoryId": "39011bcb-7a0c-4b29-9fe3-ecd3fa5c5ac1",
+      "categoryId": "e110c296-9deb-457b-9a4d-edfa9aa529e0",
       "imageUrl": "attached_assets/products/9kg-exchange.png",
       "images": [
         "attached_assets/products/9kg-exchange.png"
@@ -1096,7 +1098,7 @@
       "price": "5419.00",
       "brand": "Centurion",
       "sku": "ALEC-0013-CENTURION_D3_SMART_FULL_KIT_NO",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d3-smart-full-kit-no-anti-theft-bracket.jpg",
       "images": [
         "attached_assets/products/centurion-d3-smart-full-kit-no-anti-theft-bracket.jpg"
@@ -1111,7 +1113,7 @@
       "price": "1.63",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0052-BOBBIN_ROUND_BAR_INSULATOR",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/bobbin-round-bar-insulator.png",
       "images": [
         "attached_assets/products/bobbin-round-bar-insulator.png"
@@ -1141,7 +1143,7 @@
       "price": "4399.00",
       "brand": "Centurion",
       "sku": "ALEC-0011-CENTURION_D3_SMART_GATE_MOTOR",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d3-smart-gate-motor.jpg",
       "images": [
         "attached_assets/products/centurion-d3-smart-gate-motor.jpg"
@@ -1156,7 +1158,7 @@
       "price": "160.00",
       "brand": "Battery",
       "sku": "ALEC-0003-12V_2_4AH",
-      "categoryId": "c8616edc-a595-42a8-9c35-9cd2f138d47b",
+      "categoryId": "4a2a1b8c-5003-4758-a893-9cfec30316b3",
       "imageUrl": "attached_assets/products/12v-2-4ah.png",
       "images": [
         "attached_assets/products/12v-2-4ah.png"
@@ -1165,61 +1167,16 @@
       "featured": false
     },
     {
-      "name": "Centurion D2 Sliding Gate Motor (discontinued)",
-      "slug": "centurion-d2-sliding-gate-motor",
-      "description": "Centurion D2 sliding gate motor - discontinued model that served as a reliable automation solution for residential sliding gates up to 400kg. While discontinued, replacement parts and service support may still be available.",
-      "price": "3999.00",
-      "brand": "Centurion",
-      "sku": "ALEC-0010-CENTURION_D2_SLIDING_GATE_MOTO",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
-      "imageUrl": "attached_assets/products/centurion-d2-sliding-gate-motor.png",
+      "name": "E.T Nice 7\" Monitor Only",
+      "slug": "e-t-nice-7-monitor-only",
+      "description": "7-inch monitor for E.T Nice intercom system. Replacement or additional monitor provides clear video display for gate intercom communication.",
+      "price": "1860.00",
+      "brand": "E.T",
+      "sku": "ALEC-0102-E_T_NICE_7_MONITOR_ONLY",
+      "categoryId": "d403d6fb-44d5-4652-849a-e81e31a05b27",
+      "imageUrl": "attached_assets/products/e-t-nice-7-monitor-only.jpg",
       "images": [
-        "attached_assets/products/centurion-d2-sliding-gate-motor.png"
-      ],
-      "stock": 0,
-      "featured": false
-    },
-    {
-      "name": "Centurion D3 Smart Gate Motor Kit",
-      "slug": "centurion-d3-smart-motor-only",
-      "description": "Complete Centurion D3 Smart Gate Motor Kit with all essential components for gate automation. Designed for gates up to 400kg with smart technology integration and battery backup ready configuration.",
-      "price": "4919.00",
-      "brand": "Centurion",
-      "sku": "ALEC-0012-CENTURION_D3_SMART_MOTOR_ONLY",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
-      "imageUrl": "attached_assets/products/centurion-d3-smart-motor-only.png",
-      "images": [
-        "attached_assets/products/centurion-d3-smart-motor-only.png"
-      ],
-      "stock": 100,
-      "featured": false
-    },
-    {
-      "name": "12V 1.4Ah Battery",
-      "slug": "12v-1-4ah-battery",
-      "description": "Reliable 12V 1.4Ah sealed lead-acid battery perfect for backup power supplies, alarm systems, gate motors, UPS devices, and more. This maintenance-free battery ensures consistent performance and long service life.",
-      "price": "135.00",
-      "brand": "EPS",
-      "sku": "ALEC-0002-12V_1_4AH_BATTERY",
-      "categoryId": "c8616edc-a595-42a8-9c35-9cd2f138d47b",
-      "imageUrl": "attached_assets/products/12v-1-4ah-battery.png",
-      "images": [
-        "attached_assets/products/12v-1-4ah-battery.png"
-      ],
-      "stock": 100,
-      "featured": false
-    },
-    {
-      "name": "24V 3.5AH Battery",
-      "slug": "24v-3-5ah",
-      "description": "High-performance 24V 3.5Ah battery specifically designed for gate and garage motors requiring 24-volt power systems. Perfect for heavy-duty gate motors and commercial installations. Features maintenance-free operation and long service life.",
-      "price": "485.00",
-      "brand": "Alectra",
-      "sku": "ALEC-0006-24V_3_5AH",
-      "categoryId": "c8616edc-a595-42a8-9c35-9cd2f138d47b",
-      "imageUrl": "attached_assets/products/24v-3-5ah.png",
-      "images": [
-        "attached_assets/products/24v-3-5ah.png"
+        "attached_assets/products/e-t-nice-7-monitor-only.jpg"
       ],
       "stock": 100,
       "featured": false
@@ -1231,7 +1188,7 @@
       "price": "7399.00",
       "brand": "Centurion",
       "sku": "ALEC-0021-CENTURION_D3_SMART_FULL_KIT_AD",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d3-smart-full-kit-advanced-gate-automation-solution.png",
       "images": [
         "attached_assets/products/centurion-d3-smart-full-kit-advanced-gate-automation-solution.png"
@@ -1246,7 +1203,7 @@
       "price": "85.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0055-12V_RED_STROBE_LIGHT",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/12v-red-strobe-light.png",
       "images": [
         "attached_assets/products/12v-red-strobe-light.png"
@@ -1261,7 +1218,7 @@
       "price": "6319.00",
       "brand": "Centurion",
       "sku": "ALEC-0014-CENTURION_D3_SMART_FULL_KIT_AD",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d3-smart-full-kit-advanced-gate-automation-solution-1.jpg",
       "images": [
         "attached_assets/products/centurion-d3-smart-full-kit-advanced-gate-automation-solution-1.jpg"
@@ -1270,28 +1227,13 @@
       "featured": true
     },
     {
-      "name": "CENTURION D5 EVO FULL KIT(Discontinued)",
-      "slug": "centurion-d5-evo-full-kit",
-      "description": "Complete D5 EVO kit - discontinued model that included motor, rack, battery, and accessories for gates up to 500kg. While no longer in production, it remains a reliable system with available service support.",
-      "price": "8699.00",
-      "brand": "Centurion",
-      "sku": "ALEC-0023-CENTURION_D5_EVO_FULL_KIT",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
-      "imageUrl": "attached_assets/products/centurion-d5-evo-full-kit.png",
-      "images": [
-        "attached_assets/products/centurion-d5-evo-full-kit.png"
-      ],
-      "stock": 0,
-      "featured": false
-    },
-    {
       "name": "Centurion D5 Evo Smart Gate Motor Full Kit No Anti-Theft Bracket",
       "slug": "centurion-d5-evo-smart-full-kit-advanced-gate-automation-solution-copy",
       "description": "Full Centurion D5 EVO Smart kit without anti-theft bracket for gates up to 500kg. This comprehensive package includes motor, steel rack, battery, remote controls, and safety accessories.",
       "price": "6659.00",
       "brand": "Centurion",
       "sku": "ALEC-0020-CENTURION_D5_EVO_SMART_FULL_KI",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d5-evo-smart-full-kit-advanced-gate-automation-solution-copy.png",
       "images": [
         "attached_assets/products/centurion-d5-evo-smart-full-kit-advanced-gate-automation-solution-copy.png"
@@ -1306,7 +1248,7 @@
       "price": "5999.00",
       "brand": "Centurion",
       "sku": "ALEC-0019-CENTURION_D5_EVO_SMART_MOTOR_O",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d5-evo-smart-motor-only.png",
       "images": [
         "attached_assets/products/centurion-d5-evo-smart-motor-only.png"
@@ -1321,7 +1263,7 @@
       "price": "1.45",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0053-BOBBIN_FLAT_BAR_BLACK_4_5MM",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/bobbin-flat-bar-black-4-5mm.png",
       "images": [
         "attached_assets/products/bobbin-flat-bar-black-4-5mm.png"
@@ -1336,7 +1278,7 @@
       "price": "99.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0054-NEMTEK_ENERGIZER_MAGNETIC_TAG_",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-energizer-magnetic-tag-with-holder.png",
       "images": [
         "attached_assets/products/nemtek-energizer-magnetic-tag-with-holder.png"
@@ -1351,7 +1293,7 @@
       "price": "250.00",
       "brand": "Centurion",
       "sku": "ALEC-0031-CENTURION_GATE_MOTOR_NYLON_RAC",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-gate-motor-nylon-rack-2m.jpg",
       "images": [
         "attached_assets/products/centurion-gate-motor-nylon-rack-2m.jpg"
@@ -1366,7 +1308,7 @@
       "price": "5499.00",
       "brand": "Centurion",
       "sku": "ALEC-0033-CENTURION_VANTAGE_400_GATE_MOT",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-vantage-400-gate-motor.jpg",
       "images": [
         "attached_assets/products/centurion-vantage-400-gate-motor.jpg"
@@ -1381,7 +1323,7 @@
       "price": "10799.00",
       "brand": "Centurion",
       "sku": "ALEC-0034-CENTURION_VANTAGE_500_GATE_MOT",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-vantage-500-gate-motor.jpg",
       "images": [
         "attached_assets/products/centurion-vantage-500-gate-motor.jpg"
@@ -1396,7 +1338,7 @@
       "price": "238.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0056-12V_40W_WHITE_SECURITY_SIREN",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/12v-40w-white-security-siren.png",
       "images": [
         "attached_assets/products/12v-40w-white-security-siren.png"
@@ -1426,7 +1368,7 @@
       "price": "185.00",
       "brand": "Centurion",
       "sku": "ALEC-0042-CENTURION_NOVA_1_BUTTON_REMOTE",
-      "categoryId": "4fdf00e5-23af-468a-96a1-ebf32b4d433f",
+      "categoryId": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "imageUrl": "attached_assets/products/centurion-nova-1-button-remote-copy.png",
       "images": [
         "attached_assets/products/centurion-nova-1-button-remote-copy.png"
@@ -1441,7 +1383,7 @@
       "price": "2999.00",
       "brand": "Centurion",
       "sku": "ALEC-0038-CENTURION_G_SPEAK_ULTRA_UPGRAD",
-      "categoryId": "94f0c227-27e1-49b6-877a-28960097c86a",
+      "categoryId": "d403d6fb-44d5-4652-849a-e81e31a05b27",
       "imageUrl": "attached_assets/products/centurion-g-speak-ultra-upgrade-kit.png",
       "images": [
         "attached_assets/products/centurion-g-speak-ultra-upgrade-kit.png"
@@ -1456,7 +1398,7 @@
       "price": "1327.49",
       "brand": "Centurion",
       "sku": "ALEC-0039-CENTURION_POLOPHONE",
-      "categoryId": "94f0c227-27e1-49b6-877a-28960097c86a",
+      "categoryId": "d403d6fb-44d5-4652-849a-e81e31a05b27",
       "imageUrl": "attached_assets/products/centurion-polophone.jpg",
       "images": [
         "attached_assets/products/centurion-polophone.jpg"
@@ -1471,7 +1413,7 @@
       "price": "270.00",
       "brand": "Absolute",
       "sku": "ALEC-0040-ABSOLUTE_4_BUTTON_REMOTE",
-      "categoryId": "4fdf00e5-23af-468a-96a1-ebf32b4d433f",
+      "categoryId": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "imageUrl": "attached_assets/products/absolute-4-button-remote.jpg",
       "images": [
         "attached_assets/products/absolute-4-button-remote.jpg"
@@ -1486,7 +1428,7 @@
       "price": "5249.00",
       "brand": "Gemini",
       "sku": "ALEC-0064-GEMINI_SLIDER_12V_7AH_FULL_KIT",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/gemini-slider-12v-7ah-full-kit-complete-gate-automation-solution-copy.png",
       "images": [
         "attached_assets/products/gemini-slider-12v-7ah-full-kit-complete-gate-automation-solution-copy.png"
@@ -1501,7 +1443,7 @@
       "price": "11899.00",
       "brand": "E.T",
       "sku": "ALEC-0057-ET_NICE_DRIVE_1000_GATE_MOTOR",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/et-nice-drive-1000-gate-motor.jpg",
       "images": [
         "attached_assets/products/et-nice-drive-1000-gate-motor.jpg"
@@ -1516,7 +1458,7 @@
       "price": "4399.00",
       "brand": "E.T",
       "sku": "ALEC-0058-ET_NICE_DRIVE_300_GATE_MOTOR",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/et-nice-drive-300-gate-motor.jpg",
       "images": [
         "attached_assets/products/et-nice-drive-300-gate-motor.jpg"
@@ -1531,7 +1473,7 @@
       "price": "6299.00",
       "brand": "E.T",
       "sku": "ALEC-0059-ET_NICE_DRIVE_500_GATE_MOTOR",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/et-nice-drive-500-gate-motor.jpg",
       "images": [
         "attached_assets/products/et-nice-drive-500-gate-motor.jpg"
@@ -1546,7 +1488,7 @@
       "price": "6199.00",
       "brand": "E.T",
       "sku": "ALEC-0060-ET_NICE_DRIVE_600_GATE_MOTOR",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/et-nice-drive-600-gate-motor.jpg",
       "images": [
         "attached_assets/products/et-nice-drive-600-gate-motor.jpg"
@@ -1561,7 +1503,7 @@
       "price": "6199.00",
       "brand": "E.T",
       "sku": "ALEC-0053-E_T_DRIVE_500_GATE_MOTOR_KIT",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/e-t-drive-500-gate-motor-kit.png",
       "images": [
         "attached_assets/products/e-t-drive-500-gate-motor-kit.png"
@@ -1576,7 +1518,7 @@
       "price": "3599.00",
       "brand": "Garador",
       "sku": "ALEC-0061-GARADOR_ELEV8TOR_GARAGE_DOOR_M",
-      "categoryId": "b8edbd68-50b5-4c4e-b9e0-56bea081f8d5",
+      "categoryId": "9da5ba6b-1973-4969-a9d6-ee1631773f23",
       "imageUrl": "attached_assets/products/garador-elev8tor-garage-door-motor.jpg",
       "images": [
         "attached_assets/products/garador-elev8tor-garage-door-motor.jpg"
@@ -1591,7 +1533,7 @@
       "price": "999.00",
       "brand": "Hilook",
       "sku": "ALEC-0084-HILOOK_8_CHANNEL_TURBO_HD_DVR",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/hilook-8-channel-turbo-hd-dvr.png",
       "images": [
         "attached_assets/products/hilook-8-channel-turbo-hd-dvr.png"
@@ -1606,7 +1548,7 @@
       "price": "225.00",
       "brand": "Elev8tor",
       "sku": "ALEC-0056-ELEV8TOR_4_BUTTON_GARAGE_DOOR_",
-      "categoryId": "4fdf00e5-23af-468a-96a1-ebf32b4d433f",
+      "categoryId": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "imageUrl": "attached_assets/products/elev8tor-4-button-garage-door-remote.jpg",
       "images": [
         "attached_assets/products/elev8tor-4-button-garage-door-remote.jpg"
@@ -1621,7 +1563,7 @@
       "price": "149.00",
       "brand": "Gemini",
       "sku": "ALEC-0062-GEMINI_1_BUTTON_REMOTE",
-      "categoryId": "4fdf00e5-23af-468a-96a1-ebf32b4d433f",
+      "categoryId": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "imageUrl": "attached_assets/products/gemini-1-button-remote.jpg",
       "images": [
         "attached_assets/products/gemini-1-button-remote.jpg"
@@ -1636,7 +1578,7 @@
       "price": "4499.00",
       "brand": "Gemini",
       "sku": "ALEC-0065-GEMINI_SEL_GATE_MOTOR",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/gemini-sel-gate-motor.png",
       "images": [
         "attached_assets/products/gemini-sel-gate-motor.png"
@@ -1651,7 +1593,7 @@
       "price": "249.00",
       "brand": "Hilook",
       "sku": "ALEC-0080-HILOOK_2MP_DOME_CAMERA",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/hilook-2mp-dome-camera.jpg",
       "images": [
         "attached_assets/products/hilook-2mp-dome-camera.jpg"
@@ -1681,7 +1623,7 @@
       "price": "5999.00",
       "brand": "Gemini",
       "sku": "ALEC-0066-GEMINI_SLIDER_12V_7AH_FULL_KIT",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/gemini-slider-12v-7ah-full-kit-complete-gate-automation-solution.png",
       "images": [
         "attached_assets/products/gemini-slider-12v-7ah-full-kit-complete-gate-automation-solution.png"
@@ -1696,7 +1638,7 @@
       "price": "100.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0058-TEK_SCREWS_12X65MM_100_PACK",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/tek-screws-12x65mm-100-pack.png",
       "images": [
         "attached_assets/products/tek-screws-12x65mm-100-pack.png"
@@ -1711,7 +1653,7 @@
       "price": "299.00",
       "brand": "Hilook",
       "sku": "ALEC-0078-HILOOK_2MP_HYBRID_DUAL_LIGHT_C",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/hilook-2mp-hybrid-dual-light-camera.jpg",
       "images": [
         "attached_assets/products/hilook-2mp-hybrid-dual-light-camera.jpg"
@@ -1726,7 +1668,7 @@
       "price": "449.00",
       "brand": "Hilook",
       "sku": "ALEC-0079-HILOOK_2MP_FULL_COLOUR_VU_BULL",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/hilook-2mp-full-colour-vu-bullet-camera.jpg",
       "images": [
         "attached_assets/products/hilook-2mp-full-colour-vu-bullet-camera.jpg"
@@ -1741,7 +1683,7 @@
       "price": "160.00",
       "brand": "Sentry",
       "sku": "ALEC-0072-SENTRY_3_BUTTON_C_HOP_433_NOVA",
-      "categoryId": "4fdf00e5-23af-468a-96a1-ebf32b4d433f",
+      "categoryId": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "imageUrl": "attached_assets/products/sentry-3-button-c-hop-433-nova-remote-copy.jpg",
       "images": [
         "attached_assets/products/sentry-3-button-c-hop-433-nova-remote-copy.jpg"
@@ -1756,7 +1698,7 @@
       "price": "175.00",
       "brand": "Sentry",
       "sku": "ALEC-0073-SENTRY_4_BUTTON_C_HOP_433_NOVA",
-      "categoryId": "4fdf00e5-23af-468a-96a1-ebf32b4d433f",
+      "categoryId": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "imageUrl": "attached_assets/products/sentry-4-button-c-hop-433-nova-remote.jpg",
       "images": [
         "attached_assets/products/sentry-4-button-c-hop-433-nova-remote.jpg"
@@ -1771,7 +1713,7 @@
       "price": "145.00",
       "brand": "Sentry",
       "sku": "ALEC-0071-SENTRY_1_BUTTON_C_HOP_433_NOVA",
-      "categoryId": "4fdf00e5-23af-468a-96a1-ebf32b4d433f",
+      "categoryId": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "imageUrl": "attached_assets/products/sentry-1-button-c-hop-433-nova-remote.jpg",
       "images": [
         "attached_assets/products/sentry-1-button-c-hop-433-nova-remote.jpg"
@@ -1786,7 +1728,7 @@
       "price": "799.00",
       "brand": "Hilook",
       "sku": "ALEC-0082-HILOOK_4_CHANNEL_TURBO_HD_DVR",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/hilook-4-channel-turbo-hd-dvr.png",
       "images": [
         "attached_assets/products/hilook-4-channel-turbo-hd-dvr.png"
@@ -1801,7 +1743,7 @@
       "price": "1449.00",
       "brand": "Hilook",
       "sku": "ALEC-0083-HILOOK_4_CHANNEL_TURBO_HD_DVR_",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/hilook-4-channel-turbo-hd-dvr-with-built-in-320gb-hdd.png",
       "images": [
         "attached_assets/products/hilook-4-channel-turbo-hd-dvr-with-built-in-320gb-hdd.png"
@@ -1816,7 +1758,7 @@
       "price": "747.50",
       "brand": "Kocom",
       "sku": "ALEC-0070-KOCOM_INTERCOM_SYSTEM",
-      "categoryId": "94f0c227-27e1-49b6-877a-28960097c86a",
+      "categoryId": "d403d6fb-44d5-4652-849a-e81e31a05b27",
       "imageUrl": "attached_assets/products/kocom-intercom-system.jpg",
       "images": [
         "attached_assets/products/kocom-intercom-system.jpg"
@@ -1846,7 +1788,7 @@
       "price": "325.00",
       "brand": "Alectra",
       "sku": "ALEC-0099-12V_8AH_GEL_BATTERY",
-      "categoryId": "c8616edc-a595-42a8-9c35-9cd2f138d47b",
+      "categoryId": "4a2a1b8c-5003-4758-a893-9cfec30316b3",
       "imageUrl": "attached_assets/products/12v-8ah-gel-battery.jpg",
       "images": [
         "attached_assets/products/12v-8ah-gel-battery.jpg"
@@ -1861,7 +1803,7 @@
       "price": "349.00",
       "brand": "Alectra",
       "sku": "ALEC-0092-10A_9_CHANNEL_CCTV_POWER_SUPPL",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/10a-9-channel-cctv-power-supply-with-metal-casing.png",
       "images": [
         "attached_assets/products/10a-9-channel-cctv-power-supply-with-metal-casing.png"
@@ -1876,7 +1818,7 @@
       "price": "60.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0060-TEK_SCREWS_12X25MM_100_PACK",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/tek-screws-12x25mm-100-pack.png",
       "images": [
         "attached_assets/products/tek-screws-12x25mm-100-pack.png"
@@ -1891,7 +1833,7 @@
       "price": "850.00",
       "brand": "Andowl",
       "sku": "ALEC-0087-ANDOWL_Q_S4MAX_8K_WIFI_SECURIT",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/andowl-q-s4max-8k-wifi-security-camera.png",
       "images": [
         "attached_assets/products/andowl-q-s4max-8k-wifi-security-camera.png"
@@ -1906,7 +1848,7 @@
       "price": "250.00",
       "brand": "Gemini",
       "sku": "ALEC-0100-GEMINI_12V_7_2AH_BATTERY",
-      "categoryId": "c8616edc-a595-42a8-9c35-9cd2f138d47b",
+      "categoryId": "4a2a1b8c-5003-4758-a893-9cfec30316b3",
       "imageUrl": "attached_assets/products/gemini-12v-7-2ah-battery.jpg",
       "images": [
         "attached_assets/products/gemini-12v-7-2ah-battery.jpg"
@@ -1921,7 +1863,7 @@
       "price": "1395.00",
       "brand": "Andowl",
       "sku": "ALEC-0088-ANDOWL_SOLAR_SMART_4G_CAMERA_S",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/andowl-solar-smart-4g-camera-sim-card-powered-wireless-security.png",
       "images": [
         "attached_assets/products/andowl-solar-smart-4g-camera-sim-card-powered-wireless-security.png"
@@ -1936,7 +1878,7 @@
       "price": "2399.00",
       "brand": "Hilook",
       "sku": "ALEC-0086-HILOOK_16_CHANNEL_TURBO_HD_DVR",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/hilook-16-channel-turbo-hd-dvr-with-built-in-1tb-hdd.png",
       "images": [
         "attached_assets/products/hilook-16-channel-turbo-hd-dvr-with-built-in-1tb-hdd.png"
@@ -1951,7 +1893,7 @@
       "price": "1499.00",
       "brand": "Hilook",
       "sku": "ALEC-0085-HILOOK_8_CHANNEL_TURBO_HD_DVR_",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/hilook-8-channel-turbo-hd-dvr-with-built-in-512gb-hdd.png",
       "images": [
         "attached_assets/products/hilook-8-channel-turbo-hd-dvr-with-built-in-512gb-hdd.png"
@@ -1966,7 +1908,7 @@
       "price": "249.00",
       "brand": "Hikvision",
       "sku": "ALEC-0090-HIKVISION_8_CHANNEL_CCTV_POWER",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/hikvision-8-channel-cctv-power-supply.png",
       "images": [
         "attached_assets/products/hikvision-8-channel-cctv-power-supply.png"
@@ -1990,28 +1932,13 @@
       "featured": false
     },
     {
-      "name": "E.T Nice 7\" Monitor Only",
-      "slug": "e-t-nice-7-monitor-only",
-      "description": "7-inch monitor for E.T Nice intercom system. Replacement or additional monitor provides clear video display for gate intercom communication.",
-      "price": "1860.00",
-      "brand": "E.T",
-      "sku": "ALEC-0102-E_T_NICE_7_MONITOR_ONLY",
-      "categoryId": "94f0c227-27e1-49b6-877a-28960097c86a",
-      "imageUrl": "attached_assets/products/e-t-nice-7-monitor-only.jpg",
-      "images": [
-        "attached_assets/products/e-t-nice-7-monitor-only.jpg"
-      ],
-      "stock": 100,
-      "featured": false
-    },
-    {
       "name": "Alectra Solutions Electric Fence Warning Sign",
       "slug": "alectra-solutions-electric-fence-warning-sign",
       "description": "The Alectra Solutions Fence Warning Sign is a legally required and essential safety accessory for all electric fencing installations. Designed with bright yellow, UV-stabilized plastic and bold black graphics, this sign provides clear and visible warnings to deter accidental contact with your electric fence. It features the international electric fence warning symbol , along with multilingual text to comply with South African and international safety standards . This durable sign is weather-resi",
       "price": "15.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0064-ALECTRA_SOLUTIONS_ELECTRIC_FEN",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/alectra-solutions-electric-fence-warning-sign.png",
       "images": [
         "attached_assets/products/alectra-solutions-electric-fence-warning-sign.png"
@@ -2026,7 +1953,7 @@
       "price": "15.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0065-NEMTEK_ELECTRIC_FENCE_WARNING_",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-electric-fence-warning-sign.png",
       "images": [
         "attached_assets/products/nemtek-electric-fence-warning-sign.png"
@@ -2041,7 +1968,7 @@
       "price": "3060.00",
       "brand": "E.T",
       "sku": "ALEC-0104-E_T_NICE_7_MONITOR_INTERCOM_GA",
-      "categoryId": "94f0c227-27e1-49b6-877a-28960097c86a",
+      "categoryId": "d403d6fb-44d5-4652-849a-e81e31a05b27",
       "imageUrl": "attached_assets/products/e-t-nice-7-monitor-intercom-gate-station-full-kit.jpg",
       "images": [
         "attached_assets/products/e-t-nice-7-monitor-intercom-gate-station-full-kit.jpg"
@@ -2056,7 +1983,7 @@
       "price": "99.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0062-NAIL_IN_ANCHORS_8X80MM_50_PACK",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nail-in-anchors-8x80mm-50-pack.png",
       "images": [
         "attached_assets/products/nail-in-anchors-8x80mm-50-pack.png"
@@ -2071,7 +1998,7 @@
       "price": "4299.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0068-NEMTEK_MERLIN_M18S_SINGLE_ZONE",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-merlin-m18s-single-zone-electric-fence-energizer-8-joule.png",
       "images": [
         "attached_assets/products/nemtek-merlin-m18s-single-zone-electric-fence-energizer-8-joule.png"
@@ -2086,7 +2013,7 @@
       "price": "2999.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0069-DRUID_15_LCD_ELECTRIC_FENCE_EN",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/druid-15-lcd-electric-fence-energizer-15-joule.png",
       "images": [
         "attached_assets/products/druid-15-lcd-electric-fence-energizer-15-joule.png"
@@ -2101,7 +2028,7 @@
       "price": "2899.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0070-NEMTEK_WIZORD_4I_ELECTRIC_FENC",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-wizord-4i-electric-fence-energizer-4-joule.png",
       "images": [
         "attached_assets/products/nemtek-wizord-4i-electric-fence-energizer-4-joule.png"
@@ -2116,12 +2043,27 @@
       "price": "720.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0071-NEMTEK_ORIGINAL_HT_CABLE_100M_",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-original-ht-cable-100m-black-single-core.png",
       "images": [
         "attached_assets/products/nemtek-original-ht-cable-100m-black-single-core.png"
       ],
       "stock": 100,
+      "featured": false
+    },
+    {
+      "name": "Centurion D5 Evo Anti-Theft Bracket(discontinued)",
+      "slug": "centurion-d5-d6-smart-anti-theft",
+      "description": "Centurion D5 Evo Anti-Theft Bracket - discontinued security accessory for D5 Evo gate motors. This bracket provided additional security by making motor removal more difficult.",
+      "price": "1350.00",
+      "brand": "Centurion",
+      "sku": "ALEC-0025-CENTURION_D5_D6_SMART_ANTI_THE",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "imageUrl": "attached_assets/products/centurion-d5-d6-smart-anti-theft.jpg",
+      "images": [
+        "attached_assets/products/centurion-d5-d6-smart-anti-theft.jpg"
+      ],
+      "stock": 0,
       "featured": false
     },
     {
@@ -2131,7 +2073,7 @@
       "price": "499.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0076-NEMTEK_1_2MM_GALVANISED_STRAND",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-1-2mm-galvanised-stranded-electric-fence-wire-680m-5kg-roll.png",
       "images": [
         "attached_assets/products/nemtek-1-2mm-galvanised-stranded-electric-fence-wire-680m-5kg-roll.png"
@@ -2146,7 +2088,7 @@
       "price": "399.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0077-NEMTEK_1_6MM_ALUMINIUM_STRANDE",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-1-6mm-aluminium-stranded-electric-fence-wire-500m-roll.png",
       "images": [
         "attached_assets/products/nemtek-1-6mm-aluminium-stranded-electric-fence-wire-500m-roll.png"
@@ -2161,7 +2103,7 @@
       "price": "699.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0078-NEMTEK_1_6MM_ALUMINIUM_STRANDE",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-1-6mm-aluminium-stranded-electric-fence-wire-1000m-roll.png",
       "images": [
         "attached_assets/products/nemtek-1-6mm-aluminium-stranded-electric-fence-wire-1000m-roll.png"
@@ -2176,7 +2118,7 @@
       "price": "999.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0079-NEMTEK_1_6MM_SOLID_ALUMINIUM_A",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-1-6mm-solid-aluminium-alloy-wire-1000m.png",
       "images": [
         "attached_assets/products/nemtek-1-6mm-solid-aluminium-alloy-wire-1000m.png"
@@ -2191,7 +2133,7 @@
       "price": "80.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0080-JVA_BASIC_STEEL_GATE_CONTACT",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/jva-basic-steel-gate-contact.png",
       "images": [
         "attached_assets/products/jva-basic-steel-gate-contact.png"
@@ -2206,7 +2148,7 @@
       "price": "280.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0081-NEMTEK_ELECTRIC_FENCING_DOUBLE",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-electric-fencing-double-pole-lightning-diverter.png",
       "images": [
         "attached_assets/products/nemtek-electric-fencing-double-pole-lightning-diverter.png"
@@ -2221,7 +2163,7 @@
       "price": "375.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0084-TENSIONER_COMPRESSION_SPRING_H",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/tensioner-compression-spring-hybrid-1-silver-5kg-nylon-50-pack.jpg",
       "images": [
         "attached_assets/products/tensioner-compression-spring-hybrid-1-silver-5kg-nylon-50-pack.jpg"
@@ -2236,7 +2178,7 @@
       "price": "550.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0085-NEMTEK_SLIDING_GATE_CONTACT_IN",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-sliding-gate-contact-in-line-3-way.png",
       "images": [
         "attached_assets/products/nemtek-sliding-gate-contact-in-line-3-way.png"
@@ -2251,7 +2193,7 @@
       "price": "32.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0087-NEMTEK_200MM_X_4_8MM_BLACK_CAB",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-200mm-x-4-8mm-black-cable-ties-pack-of-100.png",
       "images": [
         "attached_assets/products/nemtek-200mm-x-4-8mm-black-cable-ties-pack-of-100.png"
@@ -2266,7 +2208,7 @@
       "price": "2.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0089-NEMTEK_6MM_ELECTRIC_FENCE_LINE",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-6mm-electric-fence-line-clamp.png",
       "images": [
         "attached_assets/products/nemtek-6mm-electric-fence-line-clamp.png"
@@ -2281,7 +2223,7 @@
       "price": "100.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0090-NEMTEK_6MM_ELECTRIC_FENCE_LINE",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-6mm-electric-fence-line-clamps-50-pack.png",
       "images": [
         "attached_assets/products/nemtek-6mm-electric-fence-line-clamps-50-pack.png"
@@ -2296,7 +2238,7 @@
       "price": "395.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0086-NEMTEK_2_WAY_GATE_CONTACT",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-2-way-gate-contact.png",
       "images": [
         "attached_assets/products/nemtek-2-way-gate-contact.png"
@@ -2326,7 +2268,7 @@
       "price": "4.60",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0096-NEMTEK_COMPRESSION_SPRING_1_SI",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-compression-spring-1-silver-5kg-black.jpg",
       "images": [
         "attached_assets/products/nemtek-compression-spring-1-silver-5kg-black.jpg"
@@ -2341,7 +2283,7 @@
       "price": "449.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0118-20A_18_CHANNEL_CCTV_POWER_SUPP",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/20a-18-channel-cctv-power-supply-with-metal-casing.png",
       "images": [
         "attached_assets/products/20a-18-channel-cctv-power-supply-with-metal-casing.png"
@@ -2356,25 +2298,10 @@
       "price": "399.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0119-12V_10A_9_CHANNEL_CCTV_BATTERY",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/12v-10a-9-channel-cctv-battery-backup.png",
       "images": [
         "attached_assets/products/12v-10a-9-channel-cctv-battery-backup.png"
-      ],
-      "stock": 100,
-      "featured": false
-    },
-    {
-      "name": "100×100×70 mm Waterproof PVC Electrical Junction Box",
-      "slug": "100-100-70-mm-waterproof-pvc-electrical-junction-box",
-      "description": "Protect your electrical connections from dust, rain, and impact with the 100×100×70 mm Waterproof Outdoor PVC Junction Box — the ideal weatherproof solution for installers working outdoors or in high-moisture areas. Perfect for: Outdoor lighting CCTV installations Solar setups Gate motors Pool pumps Garden electrics ✅ Key Features: 📏 Size : 100 mm × 100 mm × 70 mm — compact yet spacious for multiple wiring connections. 💧 IP65 Waterproof Rating : Fully sealed to protect from dust and strong wat",
-      "price": "36.00",
-      "brand": "Alectra Solutions",
-      "sku": "ALEC-0122-100_100_70_MM_WATERPROOF_PVC_E",
-      "categoryId": null,
-      "imageUrl": "attached_assets/products/100-100-70-mm-waterproof-pvc-electrical-junction-box.png",
-      "images": [
-        "attached_assets/products/100-100-70-mm-waterproof-pvc-electrical-junction-box.png"
       ],
       "stock": 100,
       "featured": false
@@ -2386,7 +2313,7 @@
       "price": "850.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0121-ANDOWL_Q_A129_SOLAR_WIFI_SECUR",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/andowl-q-a129-solar-wifi-security-camera.png",
       "images": [
         "attached_assets/products/andowl-q-a129-solar-wifi-security-camera.png"
@@ -2401,7 +2328,7 @@
       "price": "5.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0097-STAINLESS_STEEL_TENSION_SPRING",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/stainless-steel-tension-spring-with-limiter.jpg",
       "images": [
         "attached_assets/products/stainless-steel-tension-spring-with-limiter.jpg"
@@ -2446,7 +2373,7 @@
       "price": "340.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0127-RG59_CCTV_CABLE_WITH_POWER_PAI",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/rg59-cctv-cable-with-power-pair-100-m.png",
       "images": [
         "attached_assets/products/rg59-cctv-cable-with-power-pair-100-m.png"
@@ -2476,7 +2403,7 @@
       "price": "3199.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0129-4_CHANNEL_ADVANCED_CCTV_CAMERA",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/4-channel-advanced-cctv-camera-kit.png",
       "images": [
         "attached_assets/products/4-channel-advanced-cctv-camera-kit.png"
@@ -2491,7 +2418,7 @@
       "price": "4399.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0130-8_CHANNEL_ADVANCED_CCTV_CAMERA",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/8-channel-advanced-cctv-camera-kit.png",
       "images": [
         "attached_assets/products/8-channel-advanced-cctv-camera-kit.png"
@@ -2506,7 +2433,7 @@
       "price": "899.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0140-CENTURION_SMARTGUARD_WIRED_KEY",
-      "categoryId": "94f0c227-27e1-49b6-877a-28960097c86a",
+      "categoryId": "d403d6fb-44d5-4652-849a-e81e31a05b27",
       "imageUrl": "attached_assets/products/centurion-smartguard-wired-keypad.jpg",
       "images": [
         "attached_assets/products/centurion-smartguard-wired-keypad.jpg"
@@ -2536,7 +2463,7 @@
       "price": "155.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0148-DTS_OCTO_5_BUTTON_REMOTE",
-      "categoryId": "4fdf00e5-23af-468a-96a1-ebf32b4d433f",
+      "categoryId": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "imageUrl": "attached_assets/products/dts-octo-5-button-remote.png",
       "images": [
         "attached_assets/products/dts-octo-5-button-remote.png"
@@ -2551,7 +2478,7 @@
       "price": "165.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0149-E_T_1_BUTTON_REMOTE_RELIABLE_C",
-      "categoryId": "4fdf00e5-23af-468a-96a1-ebf32b4d433f",
+      "categoryId": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "imageUrl": "attached_assets/products/e-t-1-button-remote-reliable-control-for-automated-systems.jpg",
       "images": [
         "attached_assets/products/e-t-1-button-remote-reliable-control-for-automated-systems.jpg"
@@ -2566,25 +2493,10 @@
       "price": "215.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0151-E_T_4_BUTTON_REMOTE",
-      "categoryId": "4fdf00e5-23af-468a-96a1-ebf32b4d433f",
+      "categoryId": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "imageUrl": "attached_assets/products/e-t-4-button-remote.jpg",
       "images": [
         "attached_assets/products/e-t-4-button-remote.jpg"
-      ],
-      "stock": 100,
-      "featured": false
-    },
-    {
-      "name": "Gate Motor Lithium Battery 12.8V 7Ah",
-      "slug": "12-8v-7ah-lithium-battery",
-      "description": "The 12.8V 7Ah Lithium Battery is a high-performance, long-lasting power solution designed for gate motors, alarm systems, UPS backup, and solar energy storage . Featuring advanced Lithium Iron Phosphate (LiFePO₄) technology , this battery delivers superior efficiency, faster charging, and a significantly longer lifespan compared to traditional lead-acid batteries. With a compact, lightweight, and maintenance-free design , the 12.8V 7Ah Lithium Battery offers higher energy density, deep discharge",
-      "price": "499.00",
-      "brand": "Alectra Solutions",
-      "sku": "ALEC-0166-12_8V_7AH_LITHIUM_BATTERY",
-      "categoryId": "c8616edc-a595-42a8-9c35-9cd2f138d47b",
-      "imageUrl": "attached_assets/products/12-8v-7ah-lithium-battery.jpg",
-      "images": [
-        "attached_assets/products/12-8v-7ah-lithium-battery.jpg"
       ],
       "stock": 100,
       "featured": false
@@ -2641,7 +2553,7 @@
       "price": "140.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0181-CABLE_DRUM_LEFT",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/cable-drum-left.png",
       "images": [
         "attached_assets/products/cable-drum-left.png"
@@ -2671,7 +2583,7 @@
       "price": "140.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0182-CABLE_DRUM_RIGHT",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/cable-drum-right.png",
       "images": [
         "attached_assets/products/cable-drum-right.png"
@@ -2716,7 +2628,7 @@
       "price": "4799.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0190-CENTURION_D3_SMART_SLIDING_GAT",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d3-smart-sliding-gate-motor.png",
       "images": [
         "attached_assets/products/centurion-d3-smart-sliding-gate-motor.png"
@@ -2731,7 +2643,7 @@
       "price": "8699.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0200-CENTURION_D6_SMART_FULL_KIT_AD",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d6-smart-full-kit-advanced-gate-automation-solution.png",
       "images": [
         "attached_assets/products/centurion-d6-smart-full-kit-advanced-gate-automation-solution.png"
@@ -2746,7 +2658,7 @@
       "price": "6799.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0201-CENTURION_D6_SMART_FULL_KIT_NO",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d6-smart-full-kit-no-anti-theft-bracket.png",
       "images": [
         "attached_assets/products/centurion-d6-smart-full-kit-no-anti-theft-bracket.png"
@@ -2761,7 +2673,7 @@
       "price": "580.00",
       "brand": "Alectra",
       "sku": "ALEC-0008-19KG_EXCHANGE",
-      "categoryId": "39011bcb-7a0c-4b29-9fe3-ecd3fa5c5ac1",
+      "categoryId": "e110c296-9deb-457b-9a4d-edfa9aa529e0",
       "imageUrl": "attached_assets/products/19kg-exchange.png",
       "images": [
         "attached_assets/products/19kg-exchange.png"
@@ -2791,7 +2703,7 @@
       "price": "1199.00",
       "brand": "Alectra",
       "sku": "ALEC-0009-48KG_EXCHANGE",
-      "categoryId": "39011bcb-7a0c-4b29-9fe3-ecd3fa5c5ac1",
+      "categoryId": "e110c296-9deb-457b-9a4d-edfa9aa529e0",
       "imageUrl": "attached_assets/products/48kg-exchange.png",
       "images": [
         "attached_assets/products/48kg-exchange.png"
@@ -2806,7 +2718,7 @@
       "price": "599.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0213-DC_UPS_12VDC_BATTERY_BACKUP",
-      "categoryId": "c8616edc-a595-42a8-9c35-9cd2f138d47b",
+      "categoryId": "4a2a1b8c-5003-4758-a893-9cfec30316b3",
       "imageUrl": "attached_assets/products/dc-ups-12vdc-battery-backup.jpg",
       "images": [
         "attached_assets/products/dc-ups-12vdc-battery-backup.jpg"
@@ -2836,7 +2748,7 @@
       "price": "59.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0215-DOUBLE_SIDE_BEARING_LEFT",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/double-side-bearing-left.png",
       "images": [
         "attached_assets/products/double-side-bearing-left.png"
@@ -2881,7 +2793,7 @@
       "price": "5399.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0221-DTS_ECO_GATE_MOTOR_KIT",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/dts-eco-gate-motor-kit.png",
       "images": [
         "attached_assets/products/dts-eco-gate-motor-kit.png"
@@ -2896,7 +2808,7 @@
       "price": "5399.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0222-DTS_EXPERT_GATE_MOTOR_FULL_KIT",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/dts-expert-gate-motor-full-kit.png",
       "images": [
         "attached_assets/products/dts-expert-gate-motor-full-kit.png"
@@ -2926,7 +2838,7 @@
       "price": "80.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0249-LIFTING_CABLES_TENSION",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/lifting-cables-tension.png",
       "images": [
         "attached_assets/products/lifting-cables-tension.png"
@@ -2971,7 +2883,7 @@
       "price": "420.00",
       "brand": "Hikvision",
       "sku": "ALEC-0091-HIKVISION_16_CHANNEL_CCTV_POWE",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/hikvision-16-channel-cctv-power-supply.png",
       "images": [
         "attached_assets/products/hikvision-16-channel-cctv-power-supply.png"
@@ -2986,7 +2898,7 @@
       "price": "299.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0073-NEMTEK_HT_CABLE_SLIMLINE_50M_B",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-ht-cable-slimline-50m-black.png",
       "images": [
         "attached_assets/products/nemtek-ht-cable-slimline-50m-black.png"
@@ -3001,7 +2913,7 @@
       "price": "110.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0251-LP_GAS_REGULATOR_FOR_3KG_5KG_A",
-      "categoryId": "39011bcb-7a0c-4b29-9fe3-ecd3fa5c5ac1",
+      "categoryId": "e110c296-9deb-457b-9a4d-edfa9aa529e0",
       "imageUrl": "attached_assets/products/lp-gas-regulator-for-3kg-5kg-and-7kg.png",
       "images": [
         "attached_assets/products/lp-gas-regulator-for-3kg-5kg-and-7kg.png"
@@ -3016,7 +2928,7 @@
       "price": "650.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0072-NEMTEK_HT_CABLE_SLIMLINE_100M_",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-ht-cable-slimline-100m-black-copy.png",
       "images": [
         "attached_assets/products/nemtek-ht-cable-slimline-100m-black-copy.png"
@@ -3031,7 +2943,7 @@
       "price": "34.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0255-NYLON_ROLLER_HEAVY_DUTY",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/nylon-roller-heavy-duty.png",
       "images": [
         "attached_assets/products/nylon-roller-heavy-duty.png"
@@ -3046,7 +2958,7 @@
       "price": "27.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0258-PULLEY_TRACK_MOUNT_FOR_GARAGE_",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/pulley-track-mount-for-garage-door.png",
       "images": [
         "attached_assets/products/pulley-track-mount-for-garage-door.png"
@@ -3121,7 +3033,7 @@
       "price": "40.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0267-TOP_ROLLER_BRACKET_LARGE",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/top-roller-bracket-large.png",
       "images": [
         "attached_assets/products/top-roller-bracket-large.png"
@@ -3136,7 +3048,7 @@
       "price": "55.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0268-TT_D_BOTTOM_BRACKET",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/tt-d-bottom-bracket.png",
       "images": [
         "attached_assets/products/tt-d-bottom-bracket.png"
@@ -3190,58 +3102,13 @@
       "featured": false
     },
     {
-      "name": "Centurion D5 Evo Sliding Gate Motor (Discontinued)",
-      "slug": "centurion-d5-evo-sliding-gate-motor",
-      "description": "Discontinued Centurion D5 Evo sliding gate motor model that provided reliable automation for residential gates up to 500kg. Superseded by the D5 Evo Smart model with enhanced features.",
-      "price": "5999.00",
-      "brand": "Centurion",
-      "sku": "ALEC-0022-CENTURION_D5_EVO_SLIDING_GATE_",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
-      "imageUrl": "attached_assets/products/centurion-d5-evo-sliding-gate-motor.png",
-      "images": [
-        "attached_assets/products/centurion-d5-evo-sliding-gate-motor.png"
-      ],
-      "stock": 0,
-      "featured": false
-    },
-    {
-      "name": "Dace Sprint 500 Gate Motor (Discontinued)",
-      "slug": "dace-sprint-500-gate-motor",
-      "description": "Discontinued Dace Sprint 500 sliding gate motor for gates up to 500kg. While no longer in production, service support may still be available.",
-      "price": "4199.00",
-      "brand": "Dace",
-      "sku": "ALEC-0050-DACE_SPRINT_500_GATE_MOTOR",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
-      "imageUrl": "attached_assets/products/dace-sprint-500-gate-motor.jpg",
-      "images": [
-        "attached_assets/products/dace-sprint-500-gate-motor.jpg"
-      ],
-      "stock": 0,
-      "featured": false
-    },
-    {
-      "name": "Digidoor Digi One Garage Door Motor (discontinued)",
-      "slug": "digidoor-digi-one-garage-door-motor",
-      "description": "Digidoor Digi One Garage Door Motor – Reliable and Efficient Garage Automation The Digidoor Digi One Garage Door Motor is designed for homeowners looking for a durable, efficient, and easy-to-use motor for their garage doors. Offering reliable performance and smooth operation, the Digi One is ideal for standard residential garage doors. With advanced safety features like automatic reversing and overload protection, it ensures secure and hassle-free operation. The motor is engineered for quiet pe",
-      "price": "0.00",
-      "brand": "My Store",
-      "sku": "ALEC-0031-DIGIDOOR_DIGI_ONE_GARAGE_DOOR_",
-      "categoryId": "b8edbd68-50b5-4c4e-b9e0-56bea081f8d5",
-      "imageUrl": "attached_assets/products/digidoor-digi-one-garage-door-motor.jpg",
-      "images": [
-        "attached_assets/products/digidoor-digi-one-garage-door-motor.jpg"
-      ],
-      "stock": 0,
-      "featured": false
-    },
-    {
       "name": "TT - D/Bottom Bracket-Right",
       "slug": "tt-d-bottom-bracket-right",
       "description": "Ensure smooth and balanced operation of your garage door system with the TT - D/Bottom Bracket-Right . This heavy-duty bracket is specifically designed for the right side of sectional garage doors , providing secure support for the bottom roller system . Crafted from high-strength steel , it is designed to handle heavy-duty use , ensuring durability and reliable performance over time. 🔹 Heavy-Duty Steel Construction – Made from high-strength steel for maximum durability and long-lasting perform",
       "price": "55.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0269-TT_D_BOTTOM_BRACKET_RIGHT",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/tt-d-bottom-bracket-right.png",
       "images": [
         "attached_assets/products/tt-d-bottom-bracket-right.png"
@@ -3256,7 +3123,7 @@
       "price": "9699.00",
       "brand": "Centurion",
       "sku": "ALEC-0027-CENTURION_D10_SMART_TURBO_GATE",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d10-smart-turbo-gate-motor.png",
       "images": [
         "attached_assets/products/centurion-d10-smart-turbo-gate-motor.png"
@@ -3301,7 +3168,7 @@
       "price": "57.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0183-CENTRE_BEARING_MIDDLE",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/centre-bearing-middle.png",
       "images": [
         "attached_assets/products/centre-bearing-middle.png"
@@ -3316,27 +3183,12 @@
       "price": "59.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0216-DOUBLE_SIDE_BEARING_RIGHT",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/double-side-bearing-right.png",
       "images": [
         "attached_assets/products/double-side-bearing-right.png"
       ],
       "stock": 100,
-      "featured": false
-    },
-    {
-      "name": "Centurion D5 Evo Anti-Theft Bracket(discontinued)",
-      "slug": "centurion-d5-d6-smart-anti-theft",
-      "description": "Centurion D5 Evo Anti-Theft Bracket - discontinued security accessory for D5 Evo gate motors. This bracket provided additional security by making motor removal more difficult.",
-      "price": "1350.00",
-      "brand": "Centurion",
-      "sku": "ALEC-0025-CENTURION_D5_D6_SMART_ANTI_THE",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
-      "imageUrl": "attached_assets/products/centurion-d5-d6-smart-anti-theft.jpg",
-      "images": [
-        "attached_assets/products/centurion-d5-d6-smart-anti-theft.jpg"
-      ],
-      "stock": 0,
       "featured": false
     },
     {
@@ -3346,7 +3198,7 @@
       "price": "1899.00",
       "brand": "Glosteel",
       "sku": "ALEC-0096-GLOSTEEL_GARAGE_DOOR_AFRICAN_C",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/glosteel-garage-door-african-cream.jpg",
       "images": [
         "attached_assets/products/glosteel-garage-door-african-cream.jpg"
@@ -3361,7 +3213,7 @@
       "price": "120.00",
       "brand": "JVA",
       "sku": "ALEC-0117-JVA_HIGH_VOLTAGE_FENCE_WARNING",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/jva-high-voltage-fence-warning-light-blue-led.png",
       "images": [
         "attached_assets/products/jva-high-voltage-fence-warning-light-blue-led.png"
@@ -3376,7 +3228,7 @@
       "price": "25.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0228-GARAGE_DOOR_STEEL_HINGE_NO_1",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/garage-door-steel-hinge-no-1.png",
       "images": [
         "attached_assets/products/garage-door-steel-hinge-no-1.png"
@@ -3421,7 +3273,7 @@
       "price": "3199.00",
       "brand": "Centurion",
       "sku": "ALEC-0047-CENTURION_T10_SDO4_MOTOR",
-      "categoryId": "b8edbd68-50b5-4c4e-b9e0-56bea081f8d5",
+      "categoryId": "9da5ba6b-1973-4969-a9d6-ee1631773f23",
       "imageUrl": "attached_assets/products/centurion-t10-sdo4-motor.png",
       "images": [
         "attached_assets/products/centurion-t10-sdo4-motor.png"
@@ -3436,27 +3288,12 @@
       "price": "3699.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0224-E_T_DC_BLUE_ADVANCED_PICO_MOTO",
-      "categoryId": "b8edbd68-50b5-4c4e-b9e0-56bea081f8d5",
+      "categoryId": "9da5ba6b-1973-4969-a9d6-ee1631773f23",
       "imageUrl": "attached_assets/products/e-t-dc-blue-advanced-pico-motor.jpg",
       "images": [
         "attached_assets/products/e-t-dc-blue-advanced-pico-motor.jpg"
       ],
       "stock": 100,
-      "featured": false
-    },
-    {
-      "name": "DigiDoor Digi IQ Smart Garage Door Motor (discontinued)",
-      "slug": "digidoor-digi-iq-smart-garage-door-motor",
-      "description": "DigiDoor Digi IQ Smart Garage Door Motor – Smart, Efficient, and Convenient Garage Automation The DigiDoor Digi IQ Smart Garage Door Motor is the ultimate solution for homeowners looking to upgrade their garage with modern automation. Featuring intelligent technology, this motor allows you to control your garage door from anywhere using your smartphone. With advanced features like remote operation, smart scheduling, and real-time notifications, the Digi IQ Motor makes accessing your garage more ",
-      "price": "0.00",
-      "brand": "My Store",
-      "sku": "ALEC-0030-DIGIDOOR_DIGI_IQ_SMART_GARAGE_",
-      "categoryId": "b8edbd68-50b5-4c4e-b9e0-56bea081f8d5",
-      "imageUrl": "attached_assets/products/digidoor-digi-iq-smart-garage-door-motor.jpg",
-      "images": [
-        "attached_assets/products/digidoor-digi-iq-smart-garage-door-motor.jpg"
-      ],
-      "stock": 0,
       "featured": false
     },
     {
@@ -3466,7 +3303,7 @@
       "price": "2399.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0033-ET_NICE_DC_BLUE_ASTUTE_3_2M_SE",
-      "categoryId": "b8edbd68-50b5-4c4e-b9e0-56bea081f8d5",
+      "categoryId": "9da5ba6b-1973-4969-a9d6-ee1631773f23",
       "imageUrl": "attached_assets/products/et-nice-dc-blue-astute-3-2m-sectional-garage-door-motor.png",
       "images": [
         "attached_assets/products/et-nice-dc-blue-astute-3-2m-sectional-garage-door-motor.png"
@@ -3496,7 +3333,7 @@
       "price": "85.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0044-8_WIRE_STRAIGHT_SQUARE_TUBE_BL",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/8-wire-straight-square-tube-black.png",
       "images": [
         "attached_assets/products/8-wire-straight-square-tube-black.png"
@@ -3511,7 +3348,7 @@
       "price": "65.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0059-TEK_SCREWS_12X38MM_100",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/tek-screws-12x38mm-100.png",
       "images": [
         "attached_assets/products/tek-screws-12x38mm-100.png"
@@ -3526,7 +3363,7 @@
       "price": "89.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0061-NAIL_IN_ANCHORS_6X60MM_100_PAC",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nail-in-anchors-6x60mm-100-pack.png",
       "images": [
         "attached_assets/products/nail-in-anchors-6x60mm-100-pack.png"
@@ -3541,7 +3378,7 @@
       "price": "150.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0063-NEMTEK_COACH_SCREWS_8X75MM_WIT",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-coach-screws-8x75mm-with-plugs-50-pack.png",
       "images": [
         "attached_assets/products/nemtek-coach-screws-8x75mm-with-plugs-50-pack.png"
@@ -3556,7 +3393,7 @@
       "price": "49.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0042-6_LINE_ROUND_BAR_BLACK",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/6-line-round-bar-black.png",
       "images": [
         "attached_assets/products/6-line-round-bar-black.png"
@@ -3571,7 +3408,7 @@
       "price": "2999.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0066-DTS_MEGASHOCK_5_JOULE_ELECTRIC",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/dts-megashock-5-joule-electric-fence-energizer.png",
       "images": [
         "attached_assets/products/dts-megashock-5-joule-electric-fence-energizer.png"
@@ -3586,7 +3423,7 @@
       "price": "4699.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0067-NEMTEK_STEALTH_M28S_DUAL_ZONE_",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-stealth-m28s-dual-zone-electric-fence-energizer-15-joule.png",
       "images": [
         "attached_assets/products/nemtek-stealth-m28s-dual-zone-electric-fence-energizer-15-joule.png"
@@ -3601,7 +3438,7 @@
       "price": "680.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0123-305M_CAT6_UTP_COPPER_COATED_ET",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/305m-cat6-utp-copper-coated-ethernet-cable.png",
       "images": [
         "attached_assets/products/305m-cat6-utp-copper-coated-ethernet-cable.png"
@@ -3616,7 +3453,7 @@
       "price": "40.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0124-BALUN_1_CHANNEL_UTP_PASSIVE_VI",
-      "categoryId": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "imageUrl": "attached_assets/products/balun-1-channel-utp-passive-video-transceiver-per-pair.png",
       "images": [
         "attached_assets/products/balun-1-channel-utp-passive-video-transceiver-per-pair.png"
@@ -3631,7 +3468,7 @@
       "price": "7.50",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0083-TENSIONER_COMPRESSION_SPRING_H",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/tensioner-compression-spring-hybrid-1-silver-5kg-nylon.jpg",
       "images": [
         "attached_assets/products/tensioner-compression-spring-hybrid-1-silver-5kg-nylon.jpg"
@@ -3646,7 +3483,7 @@
       "price": "8.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0093-NEMTEK_HYBRID_COMPRESSION_SPRI",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-hybrid-compression-spring-2-8kg-gold-black.png",
       "images": [
         "attached_assets/products/nemtek-hybrid-compression-spring-2-8kg-gold-black.png"
@@ -3661,7 +3498,7 @@
       "price": "951.00",
       "brand": "Centurion",
       "sku": "ALEC-0036-CENTURION_G_SPEAK_ULTRA_4_BUTT",
-      "categoryId": "94f0c227-27e1-49b6-877a-28960097c86a",
+      "categoryId": "d403d6fb-44d5-4652-849a-e81e31a05b27",
       "imageUrl": "attached_assets/products/centurion-g-speak-ultra-4-button.jpg",
       "images": [
         "attached_assets/products/centurion-g-speak-ultra-4-button.jpg"
@@ -3676,7 +3513,7 @@
       "price": "200.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0150-E_T_2_BUTTON_REMOTE",
-      "categoryId": "4fdf00e5-23af-468a-96a1-ebf32b4d433f",
+      "categoryId": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "imageUrl": "attached_assets/products/e-t-2-button-remote.jpg",
       "images": [
         "attached_assets/products/e-t-2-button-remote.jpg"
@@ -3691,7 +3528,7 @@
       "price": "250.00",
       "brand": "Alectra",
       "sku": "ALEC-0004-12V_7AH",
-      "categoryId": "c8616edc-a595-42a8-9c35-9cd2f138d47b",
+      "categoryId": "4a2a1b8c-5003-4758-a893-9cfec30316b3",
       "imageUrl": "attached_assets/products/12v-7ah.jpg",
       "images": [
         "attached_assets/products/12v-7ah.jpg"
@@ -3700,28 +3537,13 @@
       "featured": false
     },
     {
-      "name": "12V 8AH LITHIUM BATTERY",
-      "slug": "12v-7ah-lithium-battery",
-      "description": "Upgrade to next-generation power technology with this advanced 12V 8Ah Lithium Iron Phosphate (LiFePO4) battery, delivering superior performance and longevity compared to traditional lead-acid batteries. Featuring lightweight design (60% lighter than SLA equivalents), this lithium powerhouse provides 2000+ charge cycles—up to 4 times the lifespan of conventional batteries—making it the most cost-effective long-term solution for gate motors, solar systems, and security applications. Advanced Battery Management System (BMS) protects against overcharge, over-discharge, short circuit, and temperature extremes, ensuring safe, reliable operation in demanding South African conditions. Rapid charging capability (3-5 hours vs 8-12 hours for lead-acid) means faster recovery during frequent load shedding events. Zero maintenance required with flat discharge curve delivering consistent 12V power until fully depleted—no voltage sag like SLA batteries. Environmentally friendly with no toxic lead or acid. Compatible with Centurion gate motors, solar backup systems, portable equipment, and any 12V DC application. Operating range: -20°C to +60°C. Compact size, 10-year+ service life potential.",
-      "price": "550.00",
-      "brand": "Lithium",
-      "sku": "ALEC-0005-12V_7AH_LITHIUM_BATTERY",
-      "categoryId": "c8616edc-a595-42a8-9c35-9cd2f138d47b",
-      "imageUrl": "attached_assets/products/12v-7ah-lithium-battery.png",
-      "images": [
-        "attached_assets/products/12v-7ah-lithium-battery.png"
-      ],
-      "stock": 100,
-      "featured": true
-    },
-    {
       "name": "Centurion SmartGuard Air Wireless Keypad",
       "slug": "centurion-smartguard-air-wireless-keypad",
       "description": "The Centurion SmartGuard Air Wireless Keypad is a cutting-edge, high-security access control device designed for wireless operation, eliminating the need for complex wiring installations. Ideal for residential, commercial, and industrial applications , this advanced keypad provides a seamless entry solution for gate motors, doors, and security systems . Featuring wireless RF communication , the SmartGuard Air keypad pairs effortlessly with Centurion’s Nova rolling code receivers , ensuring a hig",
       "price": "999.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0139-CENTURION_SMARTGUARD_AIR_WIREL",
-      "categoryId": "94f0c227-27e1-49b6-877a-28960097c86a",
+      "categoryId": "d403d6fb-44d5-4652-849a-e81e31a05b27",
       "imageUrl": "attached_assets/products/centurion-smartguard-air-wireless-keypad.jpg",
       "images": [
         "attached_assets/products/centurion-smartguard-air-wireless-keypad.jpg"
@@ -3736,7 +3558,7 @@
       "price": "125.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0252-LP_GAS_REGULATOR_FOR_9KG_19KG_",
-      "categoryId": "39011bcb-7a0c-4b29-9fe3-ecd3fa5c5ac1",
+      "categoryId": "e110c296-9deb-457b-9a4d-edfa9aa529e0",
       "imageUrl": "attached_assets/products/lp-gas-regulator-for-9kg-19kg-48kg-cylinder.png",
       "images": [
         "attached_assets/products/lp-gas-regulator-for-9kg-19kg-48kg-cylinder.png"
@@ -3751,7 +3573,7 @@
       "price": "80.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0057-12V_15W_WHITE_SECURITY_SIREN",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/12v-15w-white-security-siren.png",
       "images": [
         "attached_assets/products/12v-15w-white-security-siren.png"
@@ -3766,7 +3588,7 @@
       "price": "98.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0173-4X2_30A_2P_WHITE_ISOLATOR",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/4x2-30a-2p-white-isolator.png",
       "images": [
         "attached_assets/products/4x2-30a-2p-white-isolator.png"
@@ -3781,7 +3603,7 @@
       "price": "210.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0074-NEMTEK_HT_CABLE_SLIMLINE_30M_B",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-ht-cable-slimline-30m-black.png",
       "images": [
         "attached_assets/products/nemtek-ht-cable-slimline-30m-black.png"
@@ -3796,10 +3618,25 @@
       "price": "32.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0088-NEMTEK_100MM_X_2_5MM_BLACK_CAB",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-100mm-x-2-5mm-black-cable-ties-pack-of-100.png",
       "images": [
         "attached_assets/products/nemtek-100mm-x-2-5mm-black-cable-ties-pack-of-100.png"
+      ],
+      "stock": 100,
+      "featured": false
+    },
+    {
+      "name": "Garage Door Steel Hinge No. 3",
+      "slug": "garage-door-steel-hinge-no-3",
+      "description": "Upgrade your garage door’s strength and stability with our Heavy-Duty Steel Hinge No. 3 , designed for seamless operation and long-lasting durability . This essential hinge connects the third and fourth panels of sectional garage doors, providing optimal support and smooth movement for both residential and commercial applications. 🔹 Heavy-Duty Steel Construction – Engineered for maximum strength, stability, and longevity . 🔹 Precision Fit for Hinge No. 3 Position – Designed specifically for pl",
+      "price": "25.00",
+      "brand": "Alectra Solutions",
+      "sku": "ALEC-0230-GARAGE_DOOR_STEEL_HINGE_NO_3",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
+      "imageUrl": "attached_assets/products/garage-door-steel-hinge-no-3.png",
+      "images": [
+        "attached_assets/products/garage-door-steel-hinge-no-3.png"
       ],
       "stock": 100,
       "featured": false
@@ -3811,7 +3648,7 @@
       "price": "1050.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0253-MAGLOCK_280KG_WEATHERPROOF_WIT",
-      "categoryId": "94f0c227-27e1-49b6-877a-28960097c86a",
+      "categoryId": "d403d6fb-44d5-4652-849a-e81e31a05b27",
       "imageUrl": "attached_assets/products/maglock-280kg-weatherproof-with-bracket.png",
       "images": [
         "attached_assets/products/maglock-280kg-weatherproof-with-bracket.png"
@@ -3826,7 +3663,7 @@
       "price": "80.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0250-LIFTING_CABLES_TORSION",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/lifting-cables-torsion.png",
       "images": [
         "attached_assets/products/lifting-cables-torsion.png"
@@ -3841,7 +3678,7 @@
       "price": "55.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0049-750MM_STAY_WITH_SLEEVES_AND_SC",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/750mm-stay-with-sleeves-and-screws.png",
       "images": [
         "attached_assets/products/750mm-stay-with-sleeves-and-screws.png"
@@ -3871,7 +3708,7 @@
       "price": "5499.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0195-CENTURION_D5_EVO_SMART_GATE_MO",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d5-evo-smart-gate-motor-2x-nova-4-button-remotes.png",
       "images": [
         "attached_assets/products/centurion-d5-evo-smart-gate-motor-2x-nova-4-button-remotes.png"
@@ -3886,7 +3723,7 @@
       "price": "1249.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0075-NEMTEK_BRAIDED_STAINLESS_STEEL",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-braided-stainless-steel-wire-304-1-2mm-800m-roll.png",
       "images": [
         "attached_assets/products/nemtek-braided-stainless-steel-wire-304-1-2mm-800m-roll.png"
@@ -3901,7 +3738,7 @@
       "price": "25.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0229-GARAGE_DOOR_STEEL_HINGE_NO_2",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/garage-door-steel-hinge-no-2.png",
       "images": [
         "attached_assets/products/garage-door-steel-hinge-no-2.png"
@@ -3916,7 +3753,7 @@
       "price": "280.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0082-NEMTEK_SLIDING_GATE_CONTACT_BR",
-      "categoryId": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "categoryId": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "imageUrl": "attached_assets/products/nemtek-sliding-gate-contact-bracket-heavy-duty-electric-fence-fitting.png",
       "images": [
         "attached_assets/products/nemtek-sliding-gate-contact-bracket-heavy-duty-electric-fence-fitting.png"
@@ -3940,28 +3777,13 @@
       "featured": false
     },
     {
-      "name": "Garage Door Steel Hinge No. 3",
-      "slug": "garage-door-steel-hinge-no-3",
-      "description": "Upgrade your garage door’s strength and stability with our Heavy-Duty Steel Hinge No. 3 , designed for seamless operation and long-lasting durability . This essential hinge connects the third and fourth panels of sectional garage doors, providing optimal support and smooth movement for both residential and commercial applications. 🔹 Heavy-Duty Steel Construction – Engineered for maximum strength, stability, and longevity . 🔹 Precision Fit for Hinge No. 3 Position – Designed specifically for pl",
-      "price": "25.00",
-      "brand": "Alectra Solutions",
-      "sku": "ALEC-0230-GARAGE_DOOR_STEEL_HINGE_NO_3",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
-      "imageUrl": "attached_assets/products/garage-door-steel-hinge-no-3.png",
-      "images": [
-        "attached_assets/products/garage-door-steel-hinge-no-3.png"
-      ],
-      "stock": 100,
-      "featured": false
-    },
-    {
       "name": "Garage Door Steel Hinge No. 4",
       "slug": "garage-door-steel-hinge-no-4",
       "description": "Ensure smooth operation and long-lasting durability for your sectional garage door with our Heavy-Duty Steel Hinge No. 4 . Designed to connect the fourth panel to the fifth panel , this high-strength hinge provides exceptional support, stability, and alignment , reducing wear and extending the lifespan of your garage door system. 🔹 Heavy-Duty Steel Construction – Built for maximum strength, durability, and performance . 🔹 Precision Fit for Hinge No. 4 Position – Specifically designed for secti",
       "price": "25.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0231-GARAGE_DOOR_STEEL_HINGE_NO_4",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/garage-door-steel-hinge-no-4.png",
       "images": [
         "attached_assets/products/garage-door-steel-hinge-no-4.png"
@@ -3976,7 +3798,7 @@
       "price": "29.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0233-GARAGE_DOOR_STEEL_HINGE_NO_6",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/garage-door-steel-hinge-no-6.png",
       "images": [
         "attached_assets/products/garage-door-steel-hinge-no-6.png"
@@ -3991,7 +3813,7 @@
       "price": "27.00",
       "brand": "Alectra Solutions",
       "sku": "ALEC-0232-GARAGE_DOOR_STEEL_HINGE_NO_5",
-      "categoryId": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "attached_assets/products/garage-door-steel-hinge-no-5.png",
       "images": [
         "attached_assets/products/garage-door-steel-hinge-no-5.png"
@@ -4021,7 +3843,7 @@
       "price": "204.00",
       "brand": "Centurion",
       "sku": "ALEC-0028-CENTURION_D10_SMART_BASE_PLATE",
-      "categoryId": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "imageUrl": "attached_assets/products/centurion-d10-smart-base-plate.jpg",
       "images": [
         "attached_assets/products/centurion-d10-smart-base-plate.jpg"
@@ -4073,67 +3895,245 @@
       ],
       "stock": 100,
       "featured": false
+    },
+    {
+      "name": "Zartek Wireless Intercom System",
+      "slug": "zartek-wireless-intercom-system",
+      "description": "Zartek wireless intercom for gate communication without wiring. Battery-powered system eliminates installation wiring requirements.",
+      "price": "2335.00",
+      "brand": "Zartek",
+      "sku": "ALEC-0075-ZARTEK_WIRELESS_INTERCOM_SYSTE",
+      "categoryId": "d403d6fb-44d5-4652-849a-e81e31a05b27",
+      "imageUrl": "attached_assets/products/zartek-wireless-intercom-system.jpg",
+      "images": [
+        "attached_assets/products/zartek-wireless-intercom-system.jpg"
+      ],
+      "stock": 0,
+      "featured": false
+    },
+    {
+      "name": "Duraslide Remotes",
+      "slug": "duraslide",
+      "description": "Duraslide Remotes – Reliable Gate Control Starting from Only R165 The Duraslide Remotes provide an affordable and secure solution for controlling your Duraslide gate motors. Starting from just R165 , these remotes are designed for smooth and efficient operation, offering secure access at the press of a button. Whether you need a single-button remote for quick access or a multi-button remote for controlling multiple gates, Duraslide remotes are durable and dependable for both residential and ligh",
+      "price": "165.00",
+      "brand": "My Store",
+      "sku": "ALEC-0223-DURASLIDE",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "imageUrl": "https://cdn.shopify.com/s/files/1/0653/9640/8365/files/Duraslide-Remotes.jpg?v=1732102129",
+      "images": [],
+      "stock": 0,
+      "featured": false
+    },
+    {
+      "name": "4K Solar CCTV Camera",
+      "slug": "4k-solar-powered-security-camera",
+      "description": "Experience ultimate wireless security with this cutting-edge 4K Solar Powered Security Camera featuring WiFi connectivity and advanced night vision technology. The 8-megapixel ultra-high-definition sensor delivers four times the clarity of 1080p, capturing license plates, faces, and fine details with exceptional precision. Solar panel technology with high-efficiency photovoltaic cells ensures 24/7 operation without electrical wiring or frequent battery charging—perfect for remote locations, farms, construction sites, and perimeter monitoring. Built-in rechargeable battery provides up to 30 days standby during extended overcast periods. Advanced infrared LEDs illuminate up to 10-15 meters for full-color or black-and-white night vision modes. WiFi connectivity (2.4GHz) enables real-time mobile monitoring from anywhere via smartphone app with instant motion detection alerts, two-way audio communication, and cloud or microSD storage options (supports up to 128GB). IP66 weatherproof rating protects against dust, rain, and temperature extremes. PIR motion sensor reduces false alarms, while 355° pan and 90° tilt provide comprehensive coverage. Ideal for off-grid security applications where traditional power and cabling are impractical.",
+      "price": "1099.00",
+      "brand": "Andowl",
+      "sku": "ALEC-0001-4K_SOLAR_POWERED_SECURITY_CAME",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
+      "imageUrl": "attached_assets/products/4k-solar-powered-security-camera.png",
+      "images": [
+        "attached_assets/products/4k-solar-powered-security-camera.png"
+      ],
+      "stock": 0,
+      "featured": false
+    },
+    {
+      "name": "Centurion D2 Sliding Gate Motor (discontinued)",
+      "slug": "centurion-d2-sliding-gate-motor",
+      "description": "Centurion D2 sliding gate motor - discontinued model that served as a reliable automation solution for residential sliding gates up to 400kg. While discontinued, replacement parts and service support may still be available.",
+      "price": "3999.00",
+      "brand": "Centurion",
+      "sku": "ALEC-0010-CENTURION_D2_SLIDING_GATE_MOTO",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "imageUrl": "attached_assets/products/centurion-d2-sliding-gate-motor.png",
+      "images": [
+        "attached_assets/products/centurion-d2-sliding-gate-motor.png"
+      ],
+      "stock": 0,
+      "featured": false
+    },
+    {
+      "name": "CENTURION D5 EVO FULL KIT(Discontinued)",
+      "slug": "centurion-d5-evo-full-kit",
+      "description": "Complete D5 EVO kit - discontinued model that included motor, rack, battery, and accessories for gates up to 500kg. While no longer in production, it remains a reliable system with available service support.",
+      "price": "8699.00",
+      "brand": "Centurion",
+      "sku": "ALEC-0023-CENTURION_D5_EVO_FULL_KIT",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "imageUrl": "attached_assets/products/centurion-d5-evo-full-kit.png",
+      "images": [
+        "attached_assets/products/centurion-d5-evo-full-kit.png"
+      ],
+      "stock": 0,
+      "featured": false
+    },
+    {
+      "name": "100×100×70 mm Waterproof PVC Electrical Junction Box",
+      "slug": "100-100-70-mm-waterproof-pvc-electrical-junction-box",
+      "description": "Protect your electrical connections from dust, rain, and impact with the 100×100×70 mm Waterproof Outdoor PVC Junction Box — the ideal weatherproof solution for installers working outdoors or in high-moisture areas. Perfect for: Outdoor lighting CCTV installations Solar setups Gate motors Pool pumps Garden electrics ✅ Key Features: 📏 Size : 100 mm × 100 mm × 70 mm — compact yet spacious for multiple wiring connections. 💧 IP65 Waterproof Rating : Fully sealed to protect from dust and strong wat",
+      "price": "36.00",
+      "brand": "Alectra Solutions",
+      "sku": "ALEC-0122-100_100_70_MM_WATERPROOF_PVC_E",
+      "categoryId": null,
+      "imageUrl": "attached_assets/products/100-100-70-mm-waterproof-pvc-electrical-junction-box.png",
+      "images": [
+        "attached_assets/products/100-100-70-mm-waterproof-pvc-electrical-junction-box.png"
+      ],
+      "stock": 0,
+      "featured": false
+    },
+    {
+      "name": "Gate Motor Lithium Battery 12.8V 7Ah",
+      "slug": "12-8v-7ah-lithium-battery",
+      "description": "The 12.8V 7Ah Lithium Battery is a high-performance, long-lasting power solution designed for gate motors, alarm systems, UPS backup, and solar energy storage . Featuring advanced Lithium Iron Phosphate (LiFePO₄) technology , this battery delivers superior efficiency, faster charging, and a significantly longer lifespan compared to traditional lead-acid batteries. With a compact, lightweight, and maintenance-free design , the 12.8V 7Ah Lithium Battery offers higher energy density, deep discharge",
+      "price": "499.00",
+      "brand": "Alectra Solutions",
+      "sku": "ALEC-0166-12_8V_7AH_LITHIUM_BATTERY",
+      "categoryId": "4a2a1b8c-5003-4758-a893-9cfec30316b3",
+      "imageUrl": "attached_assets/products/12-8v-7ah-lithium-battery.jpg",
+      "images": [
+        "attached_assets/products/12-8v-7ah-lithium-battery.jpg"
+      ],
+      "stock": 0,
+      "featured": false
+    },
+    {
+      "name": "Centurion D5 Evo Sliding Gate Motor (Discontinued)",
+      "slug": "centurion-d5-evo-sliding-gate-motor",
+      "description": "Discontinued Centurion D5 Evo sliding gate motor model that provided reliable automation for residential gates up to 500kg. Superseded by the D5 Evo Smart model with enhanced features.",
+      "price": "5999.00",
+      "brand": "Centurion",
+      "sku": "ALEC-0022-CENTURION_D5_EVO_SLIDING_GATE_",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "imageUrl": "attached_assets/products/centurion-d5-evo-sliding-gate-motor.png",
+      "images": [
+        "attached_assets/products/centurion-d5-evo-sliding-gate-motor.png"
+      ],
+      "stock": 0,
+      "featured": false
+    },
+    {
+      "name": "Dace Sprint 500 Gate Motor (Discontinued)",
+      "slug": "dace-sprint-500-gate-motor",
+      "description": "Discontinued Dace Sprint 500 sliding gate motor for gates up to 500kg. While no longer in production, service support may still be available.",
+      "price": "4199.00",
+      "brand": "Dace",
+      "sku": "ALEC-0050-DACE_SPRINT_500_GATE_MOTOR",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "imageUrl": "attached_assets/products/dace-sprint-500-gate-motor.jpg",
+      "images": [
+        "attached_assets/products/dace-sprint-500-gate-motor.jpg"
+      ],
+      "stock": 0,
+      "featured": false
+    },
+    {
+      "name": "Digidoor Digi One Garage Door Motor (discontinued)",
+      "slug": "digidoor-digi-one-garage-door-motor",
+      "description": "Digidoor Digi One Garage Door Motor – Reliable and Efficient Garage Automation The Digidoor Digi One Garage Door Motor is designed for homeowners looking for a durable, efficient, and easy-to-use motor for their garage doors. Offering reliable performance and smooth operation, the Digi One is ideal for standard residential garage doors. With advanced safety features like automatic reversing and overload protection, it ensures secure and hassle-free operation. The motor is engineered for quiet pe",
+      "price": "0.00",
+      "brand": "My Store",
+      "sku": "ALEC-0031-DIGIDOOR_DIGI_ONE_GARAGE_DOOR_",
+      "categoryId": "9da5ba6b-1973-4969-a9d6-ee1631773f23",
+      "imageUrl": "attached_assets/products/digidoor-digi-one-garage-door-motor.jpg",
+      "images": [
+        "attached_assets/products/digidoor-digi-one-garage-door-motor.jpg"
+      ],
+      "stock": 0,
+      "featured": false
+    },
+    {
+      "name": "DigiDoor Digi IQ Smart Garage Door Motor (discontinued)",
+      "slug": "digidoor-digi-iq-smart-garage-door-motor",
+      "description": "DigiDoor Digi IQ Smart Garage Door Motor – Smart, Efficient, and Convenient Garage Automation The DigiDoor Digi IQ Smart Garage Door Motor is the ultimate solution for homeowners looking to upgrade their garage with modern automation. Featuring intelligent technology, this motor allows you to control your garage door from anywhere using your smartphone. With advanced features like remote operation, smart scheduling, and real-time notifications, the Digi IQ Motor makes accessing your garage more ",
+      "price": "0.00",
+      "brand": "My Store",
+      "sku": "ALEC-0030-DIGIDOOR_DIGI_IQ_SMART_GARAGE_",
+      "categoryId": "9da5ba6b-1973-4969-a9d6-ee1631773f23",
+      "imageUrl": "attached_assets/products/digidoor-digi-iq-smart-garage-door-motor.jpg",
+      "images": [
+        "attached_assets/products/digidoor-digi-iq-smart-garage-door-motor.jpg"
+      ],
+      "stock": 0,
+      "featured": false
+    },
+    {
+      "name": "12V 8AH LITHIUM BATTERY",
+      "slug": "12v-7ah-lithium-battery",
+      "description": "Upgrade to next-generation power technology with this advanced 12V 8Ah Lithium Iron Phosphate (LiFePO4) battery, delivering superior performance and longevity compared to traditional lead-acid batteries. Featuring lightweight design (60% lighter than SLA equivalents), this lithium powerhouse provides 2000+ charge cycles—up to 4 times the lifespan of conventional batteries—making it the most cost-effective long-term solution for gate motors, solar systems, and security applications. Advanced Battery Management System (BMS) protects against overcharge, over-discharge, short circuit, and temperature extremes, ensuring safe, reliable operation in demanding South African conditions. Rapid charging capability (3-5 hours vs 8-12 hours for lead-acid) means faster recovery during frequent load shedding events. Zero maintenance required with flat discharge curve delivering consistent 12V power until fully depleted—no voltage sag like SLA batteries. Environmentally friendly with no toxic lead or acid. Compatible with Centurion gate motors, solar backup systems, portable equipment, and any 12V DC application. Operating range: -20°C to +60°C. Compact size, 10-year+ service life potential.",
+      "price": "550.00",
+      "brand": "Lithium",
+      "sku": "ALEC-0005-12V_7AH_LITHIUM_BATTERY",
+      "categoryId": "4a2a1b8c-5003-4758-a893-9cfec30316b3",
+      "imageUrl": "attached_assets/products/12v-7ah-lithium-battery.png",
+      "images": [
+        "attached_assets/products/12v-7ah-lithium-battery.png"
+      ],
+      "stock": 0,
+      "featured": true
     }
   ],
   "categories": [
     {
-      "id": "c5b1d2eb-0977-4af8-849b-10b99897fd27",
+      "id": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "name": "CCTV Systems",
       "slug": "cctv",
       "description": "Security cameras, DVRs, NVRs, and complete surveillance systems",
       "imageUrl": "/attached_assets/products/4k-solar-powered-security-camera.png"
     },
     {
-      "id": "c8616edc-a595-42a8-9c35-9cd2f138d47b",
+      "id": "4a2a1b8c-5003-4758-a893-9cfec30316b3",
       "name": "Batteries",
       "slug": "batteries",
       "description": "Backup power batteries for gate motors, alarms, and security systems",
       "imageUrl": "/attached_assets/products/12v-7ah-lithium-battery.png"
     },
     {
-      "id": "94f0c227-27e1-49b6-877a-28960097c86a",
+      "id": "d403d6fb-44d5-4652-849a-e81e31a05b27",
       "name": "Intercoms",
       "slug": "intercoms",
       "description": "Video and audio intercom systems for homes and businesses",
       "imageUrl": "/attached_assets/products/centurion-g-speak-ultra.jpg"
     },
     {
-      "id": "e25369ac-1877-44d4-ba94-9b43a3389c1f",
+      "id": "eb021d93-d355-4bb7-9674-84e6167a8253",
       "name": "Gate Motors",
       "slug": "gate-motors",
       "description": "Swing and sliding gate motors from top brands including Centurion, ET Nice, and Digidoor",
       "imageUrl": "/attached_assets/products/centurion-d10-smart-turbo-gate-motor.png"
     },
     {
-      "id": "39011bcb-7a0c-4b29-9fe3-ecd3fa5c5ac1",
+      "id": "e110c296-9deb-457b-9a4d-edfa9aa529e0",
       "name": "LP Gas",
       "slug": "lp-gas",
       "description": "LPG cylinders, regulators, and gas appliances",
       "imageUrl": "/attached_assets/products/19kg-exchange.png"
     },
     {
-      "id": "4fdf00e5-23af-468a-96a1-ebf32b4d433f",
+      "id": "1a090fb7-b823-49b8-9f15-39e948e32769",
       "name": "Remotes",
       "slug": "remotes",
       "description": "Gate and garage remote controls for all major brands",
       "imageUrl": "/attached_assets/products/centurion-nova-4-button-remote.png"
     },
     {
-      "id": "cf08a8b6-72c2-40ed-9c80-e800ee66d38c",
+      "id": "076c68c7-ebe5-4713-bf94-9a2875fde68d",
       "name": "Electric Fencing",
       "slug": "electric-fencing",
       "description": "Electric fence energizers, wire, brackets, and accessories",
       "imageUrl": "/attached_assets/products/8-line-30-meter-advanced-electric-fence-kit.png"
     },
     {
-      "id": "b8edbd68-50b5-4c4e-b9e0-56bea081f8d5",
+      "id": "9da5ba6b-1973-4969-a9d6-ee1631773f23",
       "name": "Garage Motors",
       "slug": "garage-motors",
       "description": "Garage door motors and automation systems",
       "imageUrl": "attached_assets/products/dc-blue-advance-sectional-garage-motor-extrusion.jpg"
     },
     {
-      "id": "3765909e-2c62-4b93-8e15-4b1a0f8025e6",
+      "id": "9a538922-574f-4579-a29a-c202d5fe4595",
       "name": "Garage Door Parts",
       "slug": "garage-door-parts",
       "description": "Garage doors and related components",
