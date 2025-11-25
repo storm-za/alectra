@@ -53,7 +53,7 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
                 <div className="relative h-full flex flex-col justify-end p-6">
                   {/* Product count badge */}
                   <div className="absolute top-4 right-4">
-                    <span className="inline-flex items-center px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs font-medium rounded-full">
+                    <span className="inline-flex items-center px-3 py-1.5 bg-orange-500 text-white text-xs font-bold rounded-full shadow-lg">
                       {category.productCount} {category.productCount === 1 ? 'Product' : 'Products'}
                     </span>
                   </div>
