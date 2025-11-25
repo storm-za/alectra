@@ -29,7 +29,7 @@ export default function Hero() {
                 Gate Motors, Remotes, Batteries, CCTV Systems & More. Delivered Nationwide with Expert Support.
               </p>
               
-              <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+              <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 mb-6">
                 <Button 
                   size="lg" 
                   className="text-base font-semibold px-6 md:px-8 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 border-0 rounded-full"
@@ -48,6 +48,13 @@ export default function Hero() {
                     Request Quote
                   </Button>
                 </Link>
+              </div>
+              
+              {/* Google Rating Badge */}
+              <div className="inline-flex items-center gap-2 bg-black/30 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm">
+                <span className="text-yellow-400">★★★★★</span>
+                <span className="font-medium">4.5 Google Rating</span>
+                <span className="text-white/60">· 49 Reviews</span>
               </div>
             </div>
           </div>
