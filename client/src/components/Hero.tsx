@@ -41,8 +41,7 @@ export default function Hero() {
                 <Link href="/quote">
                   <Button 
                     size="lg" 
-                    variant="outline"
-                    className="text-base font-semibold px-8 bg-black/30 backdrop-blur-sm border-2 border-white text-white hover:bg-black/40 rounded-full"
+                    className="text-base font-semibold px-8 bg-black/30 backdrop-blur-sm border-2 !border-white text-white hover:bg-black/40 rounded-full"
                     data-testid="button-request-quote"
                   >
                     Request Quote
@@ -90,8 +89,7 @@ export default function Hero() {
                 <Link href="/quote">
                   <Button 
                     size="lg" 
-                    variant="outline"
-                    className="text-base font-semibold px-6 md:px-8 bg-black/30 backdrop-blur-sm border-2 border-white text-white hover:bg-black/40 rounded-full"
+                    className="text-base font-semibold px-6 md:px-8 bg-black/30 backdrop-blur-sm border-2 !border-white text-white hover:bg-black/40 rounded-full"
                     data-testid="button-request-quote-mobile"
                   >
                     Request Quote
