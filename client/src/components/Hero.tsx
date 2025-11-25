@@ -62,26 +62,26 @@ export default function Hero() {
 
       {/* Mobile Hero - below md */}
       <div 
-        className="md:hidden relative min-h-[450px] bg-cover bg-center bg-no-repeat"
+        className="md:hidden relative min-h-[400px] bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${heroBackgroundMobile})` }}
       >
         <div className="absolute inset-0 flex items-center">
           <div className="max-w-7xl mx-auto px-4 w-full">
-            <div className="max-w-sm">
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4 leading-tight">
+            <div className="max-w-lg">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4 md:mb-5 leading-tight">
                 South Africa's Trusted{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400">
                   Security Store
                 </span>
               </h1>
-              <p className="text-base text-slate-200 mb-6 leading-relaxed">
-                Gate Motors, Remotes, Batteries, CCTV Systems & More. Delivered Nationwide.
+              <p className="text-base text-slate-200 mb-6 md:mb-8 leading-relaxed">
+                Gate Motors, Remotes, Batteries, CCTV Systems & More. Delivered Nationwide with Expert Support.
               </p>
               
-              <div className="flex flex-col sm:flex-row items-start gap-3 mb-5">
+              <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 mb-6">
                 <Button 
                   size="lg" 
-                  className="text-base font-semibold px-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 border-0 rounded-full"
+                  className="text-base font-semibold px-6 md:px-8 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 border-0 rounded-full"
                   onClick={scrollToCategories}
                   data-testid="button-shop-now-mobile"
                 >
@@ -91,7 +91,7 @@ export default function Hero() {
                   <Button 
                     size="lg" 
                     variant="outline"
-                    className="text-base font-semibold px-6 bg-black/20 backdrop-blur-sm border-2 border-white/40 text-white hover:bg-black/30 hover:border-white/60 rounded-full"
+                    className="text-base font-semibold px-6 md:px-8 bg-black/20 backdrop-blur-sm border-2 border-white/40 text-white hover:bg-black/30 hover:border-white/60 rounded-full"
                     data-testid="button-request-quote-mobile"
                   >
                     Request Quote
@@ -99,9 +99,10 @@ export default function Hero() {
                 </Link>
               </div>
               
-              <div className="inline-flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full text-white text-xs">
+              <div className="inline-flex items-center gap-2 bg-black/30 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm">
                 <span className="text-yellow-400">★★★★★</span>
-                <span className="font-medium">4.5 Rating</span>
+                <span className="font-medium">4.5 Google Rating</span>
+                <span className="text-white/60">· 49 Reviews</span>
               </div>
             </div>
           </div>
