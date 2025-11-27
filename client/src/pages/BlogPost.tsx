@@ -97,7 +97,7 @@ export default function BlogPostPage() {
             items={[
               { label: "Home", href: "/" },
               { label: "Blog", href: "/blogs" },
-              { label: post.title, href: `/blogs/${post.slug}` },
+              { label: post.title, href: `/blogs/about-alectra-solutions/${post.slug}` },
             ]}
           />
 

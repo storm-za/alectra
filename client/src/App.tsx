@@ -151,7 +151,7 @@ function Router() {
           <Route path="/blogs">
             <Blog />
           </Route>
-          <Route path="/blogs/:slug">
+          <Route path="/blogs/about-alectra-solutions/:slug">
             <BlogPost />
           </Route>
           <Route path="/admin/seed">

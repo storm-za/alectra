@@ -824,7 +824,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           : new Date(post.publishedAt).toISOString().split('T')[0];
         
         sitemap += '  <url>\n';
-        sitemap += `    <loc>${baseUrl}/blogs/${post.slug}</loc>\n`;
+        sitemap += `    <loc>${baseUrl}/blogs/about-alectra-solutions/${post.slug}</loc>\n`;
         sitemap += `    <lastmod>${postDate}</lastmod>\n`;
         sitemap += '  </url>\n';
       }
