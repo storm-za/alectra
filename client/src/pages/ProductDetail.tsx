@@ -32,7 +32,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, MessageSquare, Star, Truck, ShieldCheck, CreditCard, Lock, MapPin, BadgePercent } from "lucide-react";
+import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, MessageSquare, Star, Truck, ShieldCheck, CreditCard, Lock, MapPin, BadgePercent, Store } from "lucide-react";
 import { SiVisa, SiMastercard } from "react-icons/si";
 import { StarRating } from "@/components/StarRating";
 import { SEO, createProductStructuredData } from "@/components/SEO";
@@ -333,6 +333,12 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                         </AlertDescription>
                       </Alert>
                     )}
+                    <Alert className="border-blue-500/50 bg-blue-50 dark:bg-blue-950/20">
+                      <Store className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      <AlertDescription className="text-blue-900 dark:text-blue-100">
+                        <strong>Pickup Available:</strong> You can always collect LP Gas from our Wonderboom shop at Alectra Solutions, Wonderboom, Pretoria, 0182.
+                      </AlertDescription>
+                    </Alert>
                   </div>
                 ) : (
                   // Other products - Nationwide delivery
