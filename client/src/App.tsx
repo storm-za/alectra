@@ -124,7 +124,7 @@ function Router() {
           <Route path="/quote">
             <Quote />
           </Route>
-          <Route path="/trade-signup">
+          <Route path="/pages/trade-wholesale-registration">
             <TradeSignup />
           </Route>
           <Route path="/about">

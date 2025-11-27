@@ -17,7 +17,7 @@ export default function TradeBanner() {
             Join our exclusive trade program for special pricing on bulk orders. 
             Trusted by installers, electricians, and security professionals nationwide.
           </p>
-          <Link href="/trade-signup">
+          <Link href="/pages/trade-wholesale-registration">
             <Button 
               size="lg" 
               variant="outline"

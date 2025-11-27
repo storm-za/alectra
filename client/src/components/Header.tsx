@@ -73,7 +73,7 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
     { name: "Shop All", href: "/products" },
     ...(categories || []).map(cat => ({ name: cat.name, href: `/collections/${cat.slug}` })),
     { name: "Contact Us", href: "/contact" },
-    { name: "Trade Account", href: "/trade-signup" },
+    { name: "Trade Account", href: "/pages/trade-wholesale-registration" },
   ];
 
   return (
@@ -139,7 +139,7 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
             </Link>
 
             {/* Trade Account */}
-            <Link href="/trade-signup" className="px-3 py-2 rounded-md text-sm font-medium hover-elevate active-elevate-2" data-testid="link-trade-signup">
+            <Link href="/pages/trade-wholesale-registration" className="px-3 py-2 rounded-md text-sm font-medium hover-elevate active-elevate-2" data-testid="link-trade-signup">
               Trade Account
             </Link>
           </nav>
@@ -258,7 +258,7 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
 
                   {/* Trade Account */}
                   <Link 
-                    href="/trade-signup"
+                    href="/pages/trade-wholesale-registration"
                     className="px-3 py-2 rounded-md text-base font-medium hover-elevate active-elevate-2"
                     onClick={() => setMobileMenuOpen(false)}
                     data-testid="link-trade-signup-mobile"

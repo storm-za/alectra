@@ -55,7 +55,7 @@ export default function FAQ() {
                 <li>Wait for approval (usually within 24 hours)</li>
                 <li>Enjoy 15% off all orders</li>
               </ol>
-              <Link href="/trade-signup" className="text-primary hover:underline block mt-2">
+              <Link href="/pages/trade-wholesale-registration" className="text-primary hover:underline block mt-2">
                 Apply for trade pricing →
               </Link>
             </AccordionContent>

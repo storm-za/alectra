@@ -46,7 +46,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/trade-signup" className="hover:text-white transition-colors">
+                <Link href="/pages/trade-wholesale-registration" className="hover:text-white transition-colors">
                   Trade Program
                 </Link>
               </li>
