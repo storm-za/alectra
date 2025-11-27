@@ -361,6 +361,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Trade Signup (Public - emails owner directly)
+  app.post("/api/trade/signup", async (req, res) => {
+    try {
+      const { fullName, email, phone, companyName, businessAddress, idNumber, vatNumber, storeUrl, businessRegistrationNumber, preferences, message } = req.body;
+      
+      // Validate required fields
+      if (!fullName || !email || !phone || !idNumber) {
+        return res.status(400).json({ message: "Full name, email, phone, and ID number are required" });
+      }
+      
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Please provide a valid email address" });
+      }
+      
+      // ID number validation (13 digits)
+      if (!/^\d{13}$/.test(idNumber)) {
+        return res.status(400).json({ message: "ID number must be exactly 13 digits" });
+      }
+      
+      // Send email to owner
+      const emailService = new EmailService();
+      await emailService.sendTradeApplication({
+        fullName,
+        email,
+        phone,
+        companyName: companyName || undefined,
+        businessAddress: businessAddress || undefined,
+        idNumber,
+        vatNumber: vatNumber || undefined,
+        storeUrl: storeUrl || undefined,
+        businessRegistrationNumber: businessRegistrationNumber || undefined,
+        preferences: preferences || [],
+        message: message || undefined,
+      });
+      
+      console.log(`Trade application received from ${fullName} (${email})`);
+      
+      res.status(200).json({ 
+        message: "Application submitted successfully",
+        success: true 
+      });
+    } catch (error: any) {
+      console.error("Trade signup error:", error);
+      res.status(500).json({ message: "Failed to submit application. Please try again or contact us directly." });
+    }
+  });
+
   // Trade Applications (Protected)
   app.post("/api/trade/apply", requireAuth, async (req, res) => {
     try {

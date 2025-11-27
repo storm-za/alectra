@@ -1,5 +1,19 @@
 import nodemailer from "nodemailer";
 
+export interface TradeApplicationEmailData {
+  fullName: string;
+  email: string;
+  phone: string;
+  companyName?: string;
+  businessAddress?: string;
+  idNumber: string;
+  vatNumber?: string;
+  storeUrl?: string;
+  businessRegistrationNumber?: string;
+  preferences?: string[];
+  message?: string;
+}
+
 export interface OrderEmailData {
   orderId: string;
   reference: string;
@@ -73,6 +87,149 @@ export class EmailService {
       console.error("Failed to send internal notification email:", error);
       // Don't re-throw - customer email is more critical
     }
+  }
+
+  async sendTradeApplication(data: TradeApplicationEmailData): Promise<void> {
+    const emailHtml = this.generateTradeApplicationHtml(data);
+
+    try {
+      await this.transporter.sendMail({
+        from: `"Alectra Solutions" <${process.env.GMAIL_USER}>`,
+        to: process.env.GMAIL_USER,
+        subject: `New Trade Application - ${data.fullName}`,
+        html: emailHtml,
+        replyTo: data.email,
+      });
+      console.log(`Trade application email sent for ${data.fullName}`);
+    } catch (error) {
+      console.error("Failed to send trade application email:", error);
+      throw error;
+    }
+  }
+
+  private generateTradeApplicationHtml(data: TradeApplicationEmailData): string {
+    const preferencesHtml = data.preferences?.length 
+      ? data.preferences.map(p => `<span style="display: inline-block; background-color: #FF9800; color: white; padding: 4px 12px; border-radius: 20px; margin: 3px; font-size: 13px;">${p}</span>`).join('')
+      : '<span style="color: #6b7280;">None selected</span>';
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>New Trade Application</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 40px 20px;">
+              <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                <!-- Header -->
+                <tr>
+                  <td style="background: linear-gradient(135deg, #FF9800 0%, #FFEB3B 100%); padding: 40px 30px; text-align: center; border-radius: 8px 8px 0 0;">
+                    <h1 style="margin: 0; color: #000000; font-size: 28px; font-weight: bold;">New Trade Application</h1>
+                    <p style="margin: 8px 0 0 0; color: #1f2937; font-size: 14px;">Alectra Solutions Trade Program</p>
+                  </td>
+                </tr>
+
+                <!-- Content -->
+                <tr>
+                  <td style="padding: 30px;">
+                    <div style="background-color: #3b82f6; color: white; display: inline-block; padding: 12px 24px; border-radius: 6px; font-weight: 600; margin-bottom: 20px;">
+                      New Application Received
+                    </div>
+
+                    <!-- Personal Information -->
+                    <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                      <h3 style="margin: 0 0 15px 0; color: #1e40af; font-size: 16px;">Personal Information</h3>
+                      <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151; width: 160px;"><strong>Full Name:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;">${data.fullName}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>Email:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;"><a href="mailto:${data.email}" style="color: #2563eb;">${data.email}</a></td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>Phone:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;"><a href="tel:+27${data.phone}" style="color: #2563eb;">+27 ${data.phone}</a></td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>ID Number:</strong></td>
+                          <td style="padding: 6px 0; color: #111827; font-family: monospace;">${data.idNumber}</td>
+                        </tr>
+                      </table>
+                    </div>
+
+                    <!-- Business Information -->
+                    <div style="background-color: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                      <h3 style="margin: 0 0 15px 0; color: #166534; font-size: 16px;">Business Information</h3>
+                      <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151; width: 160px;"><strong>Company Name:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;">${data.companyName || '<span style="color: #9ca3af;">Not provided</span>'}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>Business Address:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;">${data.businessAddress || '<span style="color: #9ca3af;">Not provided</span>'}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>VAT Number:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;">${data.vatNumber || '<span style="color: #9ca3af;">Not VAT registered</span>'}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>Registration No:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;">${data.businessRegistrationNumber || '<span style="color: #9ca3af;">Not provided</span>'}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>Store URL:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;">${data.storeUrl ? `<a href="${data.storeUrl}" style="color: #2563eb;">${data.storeUrl}</a>` : '<span style="color: #9ca3af;">Not provided</span>'}</td>
+                        </tr>
+                      </table>
+                    </div>
+
+                    <!-- Preferences -->
+                    <div style="background-color: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                      <h3 style="margin: 0 0 15px 0; color: #92400e; font-size: 16px;">Product Preferences</h3>
+                      <div style="line-height: 2;">
+                        ${preferencesHtml}
+                      </div>
+                    </div>
+
+                    ${data.message ? `
+                    <!-- Message -->
+                    <div style="background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                      <h3 style="margin: 0 0 15px 0; color: #374151; font-size: 16px;">Message</h3>
+                      <p style="margin: 0; color: #111827; white-space: pre-wrap;">${data.message}</p>
+                    </div>
+                    ` : ''}
+
+                    <!-- Action -->
+                    <div style="text-align: center; margin-top: 25px;">
+                      <a href="mailto:${data.email}?subject=Re: Trade Application - Alectra Solutions" style="display: inline-block; background-color: #FF9800; color: white; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: 600;">
+                        Reply to ${data.fullName}
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td style="background-color: #1f2937; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
+                    <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                      Alectra Solutions Trade Application System | Received: ${new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
   }
 
   private generateOrderConfirmationHtml(data: OrderEmailData): string {

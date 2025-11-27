@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
+import { z } from "zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -15,65 +18,77 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { insertTradeApplicationSchema, type InsertTradeApplication } from "@shared/schema";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { CheckCircle, AlertCircle } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { apiRequest } from "@/lib/queryClient";
+import { CheckCircle, Briefcase, Phone } from "lucide-react";
+
+const preferenceOptions = [
+  "Gate Motors",
+  "Garage Motors",
+  "Garage Doors",
+  "Anti-Theft Brackets",
+  "Solar Panels",
+  "Batteries",
+  "Remotes",
+  "Locks",
+  "Lights",
+  "Hardware",
+  "Spares - PCB's etc.",
+  "Cameras",
+  "Alarm systems",
+  "Electrical equipment",
+  "Electric Fences",
+];
+
+const tradeSignupSchema = z.object({
+  fullName: z.string().min(2, "Full name is required"),
+  email: z.string().email("Valid email is required"),
+  phone: z.string().min(9, "Valid phone number is required"),
+  companyName: z.string().optional(),
+  businessAddress: z.string().optional(),
+  idNumber: z.string().min(13, "Valid 13-digit ID number is required").max(13, "ID number must be 13 digits"),
+  vatNumber: z.string().optional(),
+  storeUrl: z.string().optional(),
+  businessRegistrationNumber: z.string().optional(),
+  preferences: z.array(z.string()).optional(),
+  message: z.string().optional(),
+});
+
+type TradeSignupForm = z.infer<typeof tradeSignupSchema>;
 
 export default function TradeSignup() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const [submitted, setSubmitted] = useState(false);
 
-  // Check if user is authenticated
-  const { data: userData, isLoading: userLoading } = useQuery<{ user: any }>({
-    queryKey: ["/api/auth/me"],
-  });
-
-  // Check trade application status
-  const { data: tradeStatus, isLoading: statusLoading } = useQuery<{
-    hasApplication: boolean;
-    approved: boolean;
-    createdAt?: string;
-    approvedAt?: string;
-  }>({
-    queryKey: ["/api/trade/status"],
-    enabled: !!userData?.user,
-  });
-
-  const form = useForm<InsertTradeApplication>({
-    resolver: zodResolver(insertTradeApplicationSchema),
+  const form = useForm<TradeSignupForm>({
+    resolver: zodResolver(tradeSignupSchema),
     defaultValues: {
+      fullName: "",
+      email: "",
+      phone: "",
       companyName: "",
-      registrationNumber: "",
-      taxNumber: "",
-      businessType: "",
-      physicalAddress: "",
-      yearsInBusiness: 0 as number,
-      contactPerson: "",
-      contactPhone: "",
+      businessAddress: "",
+      idNumber: "",
+      vatNumber: "",
+      storeUrl: "",
+      businessRegistrationNumber: "",
+      preferences: [],
+      message: "",
     },
   });
 
-  const applyMutation = useMutation({
-    mutationFn: async (data: InsertTradeApplication) => {
-      const response = await apiRequest("POST", "/api/trade/apply", data);
+  const submitMutation = useMutation({
+    mutationFn: async (data: TradeSignupForm) => {
+      const response = await apiRequest("POST", "/api/trade/signup", data);
       return response;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/trade/status"] });
+      setSubmitted(true);
       toast({
-        title: "Application Submitted",
-        description: "Your trade application has been submitted successfully. We'll review it and get back to you soon.",
+        title: "Application Submitted!",
+        description: "We've received your trade application and will be in touch soon.",
       });
-      navigate("/");
     },
     onError: (error: any) => {
       toast({
@@ -84,67 +99,18 @@ export default function TradeSignup() {
     },
   });
 
-  if (userLoading || statusLoading) {
+  if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
-      </div>
-    );
-  }
-
-  if (!userData?.user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
-          <CardHeader>
-            <CardTitle>Authentication Required</CardTitle>
-            <CardDescription>
-              You need to be logged in to apply for trade pricing
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Please log in or create an account to apply for our trade pricing program.
-            </p>
-            <div className="flex gap-3">
-              <Button onClick={() => navigate("/login")} className="flex-1" data-testid="button-login">
-                Login
-              </Button>
-              <Button onClick={() => navigate("/register")} variant="outline" className="flex-1" data-testid="button-register">
-                Register
-              </Button>
+      <div className="min-h-screen bg-muted/30 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full text-center">
+          <CardContent className="pt-8 pb-8">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (tradeStatus?.hasApplication) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
-          <CardHeader>
-            <CardTitle>Application Status</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {tradeStatus.approved ? (
-              <Alert>
-                <CheckCircle className="h-4 w-4" />
-                <AlertTitle>Application Approved</AlertTitle>
-                <AlertDescription>
-                  Congratulations! Your trade application has been approved. You now receive 15% off all orders at checkout.
-                </AlertDescription>
-              </Alert>
-            ) : (
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Application Pending</AlertTitle>
-                <AlertDescription>
-                  Your trade application is currently under review. We'll notify you once it has been processed.
-                </AlertDescription>
-              </Alert>
-            )}
+            <h2 className="text-2xl font-bold mb-3">Application Received!</h2>
+            <p className="text-muted-foreground mb-6">
+              Thank you for applying for trade pricing. We'll review your application and get back to you within 1-2 business days.
+            </p>
             <Button onClick={() => navigate("/")} className="w-full" data-testid="button-back-home">
               Back to Home
             </Button>
@@ -156,30 +122,88 @@ export default function TradeSignup() {
 
   return (
     <div className="min-h-screen bg-muted/30 py-12">
-      <div className="max-w-3xl mx-auto px-4 md:px-8">
+      <div className="max-w-2xl mx-auto px-4 md:px-8">
         <div className="mb-8 text-center">
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Briefcase className="w-8 h-8 text-primary" />
+          </div>
           <h1 className="text-3xl font-bold mb-3">Trade Pricing Application</h1>
           <p className="text-lg text-muted-foreground">
-            Join our exclusive trade program for 15% discount on all orders
+            Join our exclusive trade program for special pricing on bulk orders
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Business Information</CardTitle>
+            <CardTitle>Apply for Trade Account</CardTitle>
             <CardDescription>
-              Please provide accurate information about your business. We verify all applications to ensure eligibility.
+              Fill in your details below and we'll review your application. Fields marked with * are required.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit((data) => applyMutation.mutate(data))} className="space-y-6">
+              <form onSubmit={form.handleSubmit((data) => submitMutation.mutate(data))} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="fullName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="John Smith" {...field} data-testid="input-full-name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email *</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="john@example.com" {...field} data-testid="input-email" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone *</FormLabel>
+                        <FormControl>
+                          <div className="flex">
+                            <div className="flex items-center px-3 bg-muted border border-r-0 rounded-l-md text-sm text-muted-foreground">
+                              <Phone className="w-4 h-4 mr-1" />
+                              +27
+                            </div>
+                            <Input 
+                              placeholder="71 234 5678" 
+                              className="rounded-l-none" 
+                              {...field} 
+                              data-testid="input-phone" 
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <FormField
                   control={form.control}
                   name="companyName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Company Name *</FormLabel>
+                      <FormLabel>Company Name (Trading as)</FormLabel>
                       <FormControl>
                         <Input placeholder="ABC Security Solutions" {...field} data-testid="input-company-name" />
                       </FormControl>
@@ -188,82 +212,69 @@ export default function TradeSignup() {
                   )}
                 />
 
+                <FormField
+                  control={form.control}
+                  name="businessAddress"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Business Address</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="123 Main Street, Pretoria, Gauteng, 0001" 
+                          className="min-h-20"
+                          {...field} 
+                          data-testid="input-business-address" 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="idNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ID Number *</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="8501015800088" 
+                          maxLength={13}
+                          {...field} 
+                          data-testid="input-id-number" 
+                        />
+                      </FormControl>
+                      <FormDescription>South African 13-digit ID number</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="registrationNumber"
+                    name="vatNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Company Registration Number</FormLabel>
+                        <FormLabel>VAT Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="4123456789" {...field} data-testid="input-vat-number" />
+                        </FormControl>
+                        <FormDescription>If VAT registered</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="businessRegistrationNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Registration Number</FormLabel>
                         <FormControl>
                           <Input placeholder="2023/123456/07" {...field} data-testid="input-registration-number" />
-                        </FormControl>
-                        <FormDescription>Optional</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="taxNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>VAT/Tax Number</FormLabel>
-                        <FormControl>
-                          <Input placeholder="4123456789" {...field} data-testid="input-tax-number" />
-                        </FormControl>
-                        <FormDescription>Optional</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="businessType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Business Type *</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger data-testid="select-business-type">
-                              <SelectValue placeholder="Select business type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Security Installer">Security Installer</SelectItem>
-                            <SelectItem value="Electrician">Electrician</SelectItem>
-                            <SelectItem value="Gate Motor Specialist">Gate Motor Specialist</SelectItem>
-                            <SelectItem value="CCTV Installer">CCTV Installer</SelectItem>
-                            <SelectItem value="Alarm Technician">Alarm Technician</SelectItem>
-                            <SelectItem value="Security Company">Security Company</SelectItem>
-                            <SelectItem value="Reseller">Reseller</SelectItem>
-                            <SelectItem value="Other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="yearsInBusiness"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Years in Business *</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number" 
-                            min="0" 
-                            placeholder="5" 
-                            {...field} 
-                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                            data-testid="input-years-in-business" 
-                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -273,62 +284,85 @@ export default function TradeSignup() {
 
                 <FormField
                   control={form.control}
-                  name="physicalAddress"
+                  name="storeUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Physical Business Address *</FormLabel>
+                      <FormLabel>Store URL</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          placeholder="123 Main Street, Johannesburg, Gauteng, 2000" 
-                          className="min-h-20"
-                          {...field} 
-                          data-testid="input-physical-address" 
-                        />
+                        <Input placeholder="https://yourstore.co.za" {...field} data-testid="input-store-url" />
                       </FormControl>
-                      <FormDescription>
-                        Full street address including city and postal code
-                      </FormDescription>
+                      <FormDescription>If available</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                <div className="border-t pt-6">
-                  <h3 className="font-semibold mb-4">Contact Person</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="contactPerson"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Full Name *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="John Smith" {...field} data-testid="input-contact-person" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                <FormField
+                  control={form.control}
+                  name="preferences"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Product Preferences</FormLabel>
+                      <FormDescription className="mb-3">
+                        Select the product categories you're interested in
+                      </FormDescription>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {preferenceOptions.map((option) => (
+                          <FormField
+                            key={option}
+                            control={form.control}
+                            name="preferences"
+                            render={({ field }) => (
+                              <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(option)}
+                                    onCheckedChange={(checked) => {
+                                      const current = field.value || [];
+                                      if (checked) {
+                                        field.onChange([...current, option]);
+                                      } else {
+                                        field.onChange(current.filter((v) => v !== option));
+                                      }
+                                    }}
+                                    data-testid={`checkbox-${option.toLowerCase().replace(/\s+/g, '-')}`}
+                                  />
+                                </FormControl>
+                                <FormLabel className="text-sm font-normal cursor-pointer">
+                                  {option}
+                                </FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                    <FormField
-                      control={form.control}
-                      name="contactPhone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Contact Phone *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="0123456789" {...field} data-testid="input-contact-phone" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="message"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Message</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Tell us about your business and how we can help..." 
+                          className="min-h-24"
+                          {...field} 
+                          data-testid="input-message" 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <div className="bg-muted/50 p-4 rounded-md">
                   <p className="text-sm text-muted-foreground">
-                    By submitting this application, you confirm that all information provided is accurate and that you are authorized to represent the business. We reserve the right to verify all details before approval.
+                    By submitting this application, you confirm that all information provided is accurate. We'll review your application and contact you within 1-2 business days.
                   </p>
                 </div>
 
@@ -336,10 +370,10 @@ export default function TradeSignup() {
                   type="submit" 
                   size="lg" 
                   className="w-full" 
-                  disabled={applyMutation.isPending}
+                  disabled={submitMutation.isPending}
                   data-testid="button-submit-application"
                 >
-                  {applyMutation.isPending ? "Submitting..." : "Submit Application"}
+                  {submitMutation.isPending ? "Submitting..." : "Submit Application"}
                 </Button>
               </form>
             </Form>
