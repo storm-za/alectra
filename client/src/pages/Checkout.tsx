@@ -260,7 +260,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   
   // Check if cart contains 48KG LP Gas product (special promotion: FREE delivery)
   const has48kgLPGas = cartItems.some(
-    (item) => item.product.id === 'a01d73ab-c728-4fba-ad61-244842c98a59'
+    (item) => item.product.id === '51891f80-9f0b-4817-9a2c-c5ff57f44905'
   );
   
   // Check if cart contains LP Gas products (Pretoria only, R50 delivery)

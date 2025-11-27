@@ -288,8 +288,8 @@ export class DatabaseStorage implements IStorage {
           .filter(p => p.deliveryFee !== null && p.deliveryFee !== undefined)
           .map(p => parseFloat(p.deliveryFee as string));
         
-        // Check if cart contains 48KG LP Gas (ID: a01d73ab-c728-4fba-ad61-244842c98a59)
-        const has48kgLPGas = fetchedProducts.some(p => p.id === 'a01d73ab-c728-4fba-ad61-244842c98a59');
+        // Check if cart contains 48KG LP Gas (ID: 51891f80-9f0b-4817-9a2c-c5ff57f44905)
+        const has48kgLPGas = fetchedProducts.some(p => p.id === '51891f80-9f0b-4817-9a2c-c5ff57f44905');
         
         // Check if cart contains LP Gas products (category ID: e110c296-9deb-457b-9a4d-edfa9aa529e0)
         const hasLPGas = fetchedProducts.some(p => p.categoryId === 'e110c296-9deb-457b-9a4d-edfa9aa529e0');
