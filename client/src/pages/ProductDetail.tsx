@@ -359,6 +359,13 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                     </div>
                   )}
                   
+                  {/* Divider with "Or" */}
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1 h-px bg-border" />
+                    <span className="text-sm font-medium text-muted-foreground">Or</span>
+                    <div className="flex-1 h-px bg-border" />
+                  </div>
+                  
                   {/* Pickup option - shown on all products */}
                   <Alert className="border-blue-500/50 bg-blue-50 dark:bg-blue-950/20">
                     <Store className="h-4 w-4 text-blue-600 dark:text-blue-400" />
