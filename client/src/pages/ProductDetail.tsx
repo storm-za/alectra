@@ -316,53 +316,71 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             {/* Delivery Information */}
             <Card className="mb-4">
               <CardContent className="p-4">
-                {product.categoryId === 'e110c296-9deb-457b-9a4d-edfa9aa529e0' ? (
-                  // LP Gas products - Pretoria only delivery
-                  <div className="space-y-4">
-                    <Alert className="border-primary/50 bg-primary/5">
-                      <MapPin className="h-4 w-4 text-primary" />
-                      <AlertDescription>
-                        <strong>Pretoria Delivery Only:</strong> LP Gas products are only delivered within Pretoria at a flat rate of R50. Nationwide delivery is not available for LP Gas.
-                      </AlertDescription>
-                    </Alert>
-                    {product.id === '51891f80-9f0b-4817-9a2c-c5ff57f44905' && (
-                      <Alert className="border-green-500/50 bg-green-50 dark:bg-green-950/20">
-                        <BadgePercent className="h-4 w-4 text-green-600 dark:text-green-400" />
-                        <AlertDescription className="text-green-900 dark:text-green-100">
-                          <strong>Special Offer:</strong> FREE DELIVERY on this 48KG LP Gas cylinder! Limited time promotion.
+                <div className="space-y-4">
+                  {product.categoryId === 'e110c296-9deb-457b-9a4d-edfa9aa529e0' ? (
+                    // LP Gas products - Pretoria only delivery
+                    <>
+                      <Alert className="border-primary/50 bg-primary/5">
+                        <MapPin className="h-4 w-4 text-primary" />
+                        <AlertDescription>
+                          <strong>Pretoria Delivery Only:</strong> LP Gas products are only delivered within Pretoria at a flat rate of R50. Nationwide delivery is not available for LP Gas.
                         </AlertDescription>
                       </Alert>
-                    )}
-                    <Alert className="border-blue-500/50 bg-blue-50 dark:bg-blue-950/20">
-                      <Store className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                      <AlertDescription className="text-blue-900 dark:text-blue-100">
-                        <strong>Pickup Available:</strong> You can always collect LP Gas from our Wonderboom shop at Alectra Solutions, Wonderboom, Pretoria, 0182.
-                      </AlertDescription>
-                    </Alert>
-                  </div>
-                ) : (
-                  // Other products - Nationwide delivery
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-start gap-3">
-                      <div className="bg-primary/10 p-2 rounded-md">
-                        <Truck className="h-5 w-5 text-primary" />
+                      {product.id === '51891f80-9f0b-4817-9a2c-c5ff57f44905' && (
+                        <Alert className="border-green-500/50 bg-green-50 dark:bg-green-950/20">
+                          <BadgePercent className="h-4 w-4 text-green-600 dark:text-green-400" />
+                          <AlertDescription className="text-green-900 dark:text-green-100">
+                            <strong>Special Offer:</strong> FREE DELIVERY on this 48KG LP Gas cylinder! Limited time promotion.
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                    </>
+                  ) : (
+                    // Other products - Nationwide delivery
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex items-start gap-3">
+                        <div className="bg-primary/10 p-2 rounded-md">
+                          <Truck className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm mb-1">Nationwide Delivery</h4>
+                          <p className="text-xs text-muted-foreground">We deliver to all areas across South Africa</p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-sm mb-1">Nationwide Delivery</h4>
-                        <p className="text-xs text-muted-foreground">We deliver to all areas across South Africa</p>
+                      <div className="flex items-start gap-3">
+                        <div className="bg-primary/10 p-2 rounded-md">
+                          <ShieldCheck className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm mb-1">Free Shipping on R2500+</h4>
+                          <p className="text-xs text-muted-foreground">Enjoy free delivery on orders over R2500</p>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-start gap-3">
-                      <div className="bg-primary/10 p-2 rounded-md">
-                        <ShieldCheck className="h-5 w-5 text-primary" />
+                  )}
+                  
+                  {/* Pickup option - shown on all products */}
+                  <Alert className="border-blue-500/50 bg-blue-50 dark:bg-blue-950/20">
+                    <Store className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    <AlertDescription className="text-blue-900 dark:text-blue-100">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <span>
+                          <strong>Pickup Available:</strong> Collect from our Wonderboom shop at Alectra Solutions, Wonderboom, Pretoria, 0182.
+                        </span>
+                        <a 
+                          href="https://maps.app.goo.gl/St2UUGxF41jjHXKa6" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline font-medium whitespace-nowrap"
+                          data-testid="link-get-directions"
+                        >
+                          <MapPin className="h-3 w-3" />
+                          Get directions
+                        </a>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-sm mb-1">Free Shipping on R2500+</h4>
-                        <p className="text-xs text-muted-foreground">Enjoy free delivery on orders over R2500</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                    </AlertDescription>
+                  </Alert>
+                </div>
               </CardContent>
             </Card>
 
