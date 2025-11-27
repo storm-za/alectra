@@ -151,7 +151,7 @@ function Router() {
           <Route path="/blogs">
             <Blog />
           </Route>
-          <Route path="/blogs/:category/:slug">
+          <Route path="/blogs/:slug">
             <BlogPost />
           </Route>
           <Route path="/admin/seed">

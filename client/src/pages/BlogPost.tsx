@@ -9,14 +9,12 @@ import { SEO } from "@/components/SEO";
 import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default function BlogPostPage() {
-  const params = useParams<{ category: string; slug: string }>();
-  const category = params.category || "";
+  const params = useParams<{ slug: string }>();
   const slug = params.slug || "";
-  const fullSlug = `${category}/${slug}`;
 
   const { data: post, isLoading } = useQuery<BlogPost>({
-    queryKey: [`/api/blog/${encodeURIComponent(fullSlug)}`],
-    enabled: !!category && !!slug,
+    queryKey: [`/api/blog/${encodeURIComponent(slug)}`],
+    enabled: !!slug,
   });
 
   const formatDate = (date: Date | string) => {
