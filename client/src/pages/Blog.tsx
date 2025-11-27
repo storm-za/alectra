@@ -41,7 +41,7 @@ export default function Blog() {
           <Breadcrumb
             items={[
               { label: "Home", href: "/" },
-              { label: "Blog", href: "/blog" },
+              { label: "Blog", href: "/blogs" },
             ]}
           />
 
@@ -70,7 +70,7 @@ export default function Blog() {
           ) : posts && posts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {posts.map((post) => (
-                <Link key={post.id} href={`/blog/${post.slug}`} data-testid={`link-blog-${post.slug}`}>
+                <Link key={post.id} href={`/blogs/${post.slug}`} data-testid={`link-blog-${post.slug}`}>
                   <Card className="h-full overflow-hidden hover-elevate active-elevate-2 cursor-pointer">
                     <div className="aspect-video overflow-hidden">
                       <img

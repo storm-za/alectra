@@ -148,10 +148,10 @@ function Router() {
           <Route path="/privacy">
             <Privacy />
           </Route>
-          <Route path="/blog">
+          <Route path="/blogs">
             <Blog />
           </Route>
-          <Route path="/blog/:slug">
+          <Route path="/blogs/:category/:slug">
             <BlogPost />
           </Route>
           <Route path="/admin/seed">

@@ -9,12 +9,14 @@ import { SEO } from "@/components/SEO";
 import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default function BlogPostPage() {
-  const params = useParams<{ slug: string }>();
+  const params = useParams<{ category: string; slug: string }>();
+  const category = params.category || "";
   const slug = params.slug || "";
+  const fullSlug = `${category}/${slug}`;
 
   const { data: post, isLoading } = useQuery<BlogPost>({
-    queryKey: [`/api/blog/${slug}`],
-    enabled: !!slug,
+    queryKey: [`/api/blog/${encodeURIComponent(fullSlug)}`],
+    enabled: !!category && !!slug,
   });
 
   const formatDate = (date: Date | string) => {
@@ -59,7 +61,7 @@ export default function BlogPostPage() {
           <p className="text-muted-foreground mb-8">
             The blog post you're looking for doesn't exist or has been removed.
           </p>
-          <Link href="/blog">
+          <Link href="/blogs">
             <Button data-testid="button-back-to-blog">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Blog
@@ -84,12 +86,12 @@ export default function BlogPostPage() {
           <Breadcrumb
             items={[
               { label: "Home", href: "/" },
-              { label: "Blog", href: "/blog" },
-              { label: post.title, href: `/blog/${post.slug}` },
+              { label: "Blog", href: "/blogs" },
+              { label: post.title, href: `/blogs/${post.slug}` },
             ]}
           />
 
-          <Link href="/blog">
+          <Link href="/blogs">
             <Button variant="ghost" className="mt-4 mb-8" data-testid="button-back-to-blog">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Blog
@@ -148,7 +150,7 @@ export default function BlogPostPage() {
           </article>
 
           <div className="mt-12 pt-8 border-t">
-            <Link href="/blog">
+            <Link href="/blogs">
               <Button data-testid="button-back-to-blog-bottom">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to All Articles

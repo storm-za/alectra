@@ -631,9 +631,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/blog/:slug", async (req, res) => {
+  app.get("/api/blog/:slug(*)", async (req, res) => {
     try {
-      const { slug } = req.params;
+      const slug = decodeURIComponent(req.params.slug);
       const post = await storage.getBlogPostBySlug(slug);
       
       if (!post) {
@@ -784,7 +784,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         '/privacy',
         '/trade-signup',
         '/quote',
-        '/blog',
+        '/blogs',
       ];
       
       let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
@@ -824,7 +824,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           : new Date(post.publishedAt).toISOString().split('T')[0];
         
         sitemap += '  <url>\n';
-        sitemap += `    <loc>${baseUrl}/blog/${post.slug}</loc>\n`;
+        sitemap += `    <loc>${baseUrl}/blogs/${post.slug}</loc>\n`;
         sitemap += `    <lastmod>${postDate}</lastmod>\n`;
         sitemap += '  </url>\n';
       }
