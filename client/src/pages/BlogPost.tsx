@@ -7,6 +7,13 @@ import { Calendar, Clock, ArrowLeft } from "lucide-react";
 import type { BlogPost } from "@shared/schema";
 import { SEO } from "@/components/SEO";
 import { Breadcrumb } from "@/components/Breadcrumb";
+import { marked } from "marked";
+import { useMemo } from "react";
+
+marked.setOptions({
+  breaks: true,
+  gfm: true,
+});
 
 export default function BlogPostPage() {
   const params = useParams<{ slug: string }>();
@@ -16,6 +23,11 @@ export default function BlogPostPage() {
     queryKey: [`/api/blog/${encodeURIComponent(slug)}`],
     enabled: !!slug,
   });
+
+  const parsedContent = useMemo(() => {
+    if (!post?.content) return "";
+    return marked.parse(post.content) as string;
+  }, [post?.content]);
 
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
@@ -135,8 +147,8 @@ export default function BlogPostPage() {
             </div>
 
             <div 
-              className="prose prose-lg max-w-none dark:prose-invert"
-              dangerouslySetInnerHTML={{ __html: post.content }}
+              className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-headings:text-foreground prose-h1:text-3xl prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3 prose-p:text-muted-foreground prose-p:leading-relaxed prose-strong:text-foreground prose-li:text-muted-foreground prose-table:border prose-th:bg-muted prose-th:p-3 prose-td:p-3 prose-td:border prose-a:text-primary prose-a:no-underline hover:prose-a:underline"
+              dangerouslySetInnerHTML={{ __html: parsedContent }}
               data-testid="text-blog-content"
             />
 
