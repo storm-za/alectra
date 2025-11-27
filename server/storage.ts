@@ -362,6 +362,25 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
   }
 
+  async getOrderItemsWithProducts(orderId: string): Promise<Array<OrderItem & { productName: string; productImage: string | null }>> {
+    const items = await db
+      .select({
+        id: orderItems.id,
+        orderId: orderItems.orderId,
+        productId: orderItems.productId,
+        quantity: orderItems.quantity,
+        priceAtPurchase: orderItems.priceAtPurchase,
+        lineSubtotal: orderItems.lineSubtotal,
+        productName: products.name,
+        productImage: products.imageUrl,
+      })
+      .from(orderItems)
+      .innerJoin(products, eq(orderItems.productId, products.id))
+      .where(eq(orderItems.orderId, orderId));
+    
+    return items;
+  }
+
   async updateOrderPaymentReference(orderId: string, paymentReference: string): Promise<void> {
     await db.update(orders)
       .set({ paymentReference })

@@ -567,7 +567,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           const order = await storage.getOrderById(orderId);
           if (order) {
-            const orderItemsData = await storage.getOrderItems(orderId);
+            const orderItemsData = await storage.getOrderItemsWithProducts(orderId);
             
             const emailService = new EmailService();
             await emailService.sendOrderConfirmation({
@@ -581,10 +581,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
               deliveryCity: order.deliveryCity || "",
               deliveryProvince: order.deliveryProvince || "",
               deliveryPostalCode: order.deliveryPostalCode || "",
-              items: orderItemsData.map((item: any) => ({
+              items: orderItemsData.map((item) => ({
                 productName: item.productName,
                 quantity: item.quantity,
-                price: item.price,
+                price: item.priceAtPurchase,
+                imageUrl: item.productImage || undefined,
               })),
               subtotal: order.subtotal,
               vat: order.vat,

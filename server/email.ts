@@ -15,6 +15,7 @@ export interface OrderEmailData {
     productName: string;
     quantity: number;
     price: string;
+    imageUrl?: string;
   }>;
   subtotal: string;
   vat: string;
@@ -236,14 +237,22 @@ export class EmailService {
       .map(
         (item) => `
         <tr>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${item.productName}</td>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">R${item.price}</td>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">R${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.productName}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb;" />` : '<div style="width: 60px; height: 60px; background-color: #f3f4f6; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 10px;">No image</div>'}
+              <span style="font-weight: 500;">${item.productName}</span>
+            </div>
+          </td>
+          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle;">${item.quantity}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; vertical-align: middle;">R${item.price}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; vertical-align: middle; font-weight: 600;">R${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
         </tr>
       `
       )
       .join("");
+
+    const deliveryMethodLabel = data.deliveryMethod === "pickup" ? "Store Pickup (Pretoria)" : "Delivery via The Courier Guy";
+    const hasDeliveryAddress = data.deliveryMethod !== "pickup" && data.deliveryAddress;
 
     return `
       <!DOCTYPE html>
@@ -257,12 +266,12 @@ export class EmailService {
         <table role="presentation" style="width: 100%; border-collapse: collapse;">
           <tr>
             <td style="padding: 40px 20px;">
-              <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+              <table role="presentation" style="max-width: 700px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
                 <!-- Header -->
                 <tr>
                   <td style="background: linear-gradient(135deg, #FF9800 0%, #FFEB3B 100%); padding: 40px 30px; text-align: center; border-radius: 8px 8px 0 0;">
-                    <h1 style="margin: 0; color: #000000; font-size: 28px; font-weight: bold;">New Order Received</h1>
-                    <p style="margin: 8px 0 0 0; color: #1f2937; font-size: 14px;">Alectra Solutions Internal Notification</p>
+                    <h1 style="margin: 0; color: #000000; font-size: 28px; font-weight: bold;">New Order Received!</h1>
+                    <p style="margin: 8px 0 0 0; color: #1f2937; font-size: 14px;">Alectra Solutions - Order Notification</p>
                   </td>
                 </tr>
 
@@ -270,43 +279,76 @@ export class EmailService {
                 <tr>
                   <td style="padding: 30px;">
                     <div style="background-color: #10b981; color: white; display: inline-block; padding: 12px 24px; border-radius: 6px; font-weight: 600; margin-bottom: 20px;">
-                      ✓ Payment Confirmed
+                      Payment Confirmed - R${data.total}
                     </div>
                     
                     <h2 style="margin: 0 0 20px 0; color: #111827; font-size: 24px;">Order #${data.reference}</h2>
                     
-                    <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f9fafb; border-radius: 6px; padding: 20px; margin-bottom: 20px;">
-                      <tr>
-                        <td style="padding: 8px 0;">
-                          <strong style="color: #374151;">Order ID:</strong> ${data.orderId}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 8px 0;">
-                          <strong style="color: #374151;">Customer Name:</strong> ${data.customerName}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 8px 0;">
-                          <strong style="color: #374151;">Customer Email:</strong> ${data.customerEmail}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 8px 0;">
-                          <strong style="color: #374151;">Delivery City:</strong> ${data.deliveryCity}, ${data.deliveryProvince}
-                        </td>
-                      </tr>
-                    </table>
+                    <!-- Customer Information -->
+                    <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                      <h3 style="margin: 0 0 15px 0; color: #1e40af; font-size: 16px;">Customer Information</h3>
+                      <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151; width: 140px;"><strong>Name:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;">${data.customerName}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>Email:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;"><a href="mailto:${data.customerEmail}" style="color: #2563eb;">${data.customerEmail}</a></td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>Phone:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;"><a href="tel:${data.customerPhone}" style="color: #2563eb;">${data.customerPhone}</a></td>
+                        </tr>
+                      </table>
+                    </div>
+
+                    <!-- Delivery Information -->
+                    <div style="background-color: ${data.deliveryMethod === 'pickup' ? '#fef3c7' : '#f0fdf4'}; border: 1px solid ${data.deliveryMethod === 'pickup' ? '#fcd34d' : '#86efac'}; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                      <h3 style="margin: 0 0 15px 0; color: ${data.deliveryMethod === 'pickup' ? '#92400e' : '#166534'}; font-size: 16px;">
+                        ${data.deliveryMethod === 'pickup' ? 'Store Pickup' : 'Delivery Address'}
+                      </h3>
+                      <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151; width: 140px;"><strong>Method:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;">${deliveryMethodLabel}</td>
+                        </tr>
+                        ${hasDeliveryAddress ? `
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>Address:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;">${data.deliveryAddress}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>City:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;">${data.deliveryCity}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>Province:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;">${data.deliveryProvince}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>Postal Code:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;">${data.deliveryPostalCode}</td>
+                        </tr>
+                        ` : `
+                        <tr>
+                          <td colspan="2" style="padding: 6px 0; color: #92400e;">
+                            Customer will collect from: <strong>Alectra Solutions, Pretoria</strong>
+                          </td>
+                        </tr>
+                        `}
+                      </table>
+                    </div>
 
                     <!-- Order items table -->
-                    <h3 style="margin: 0 0 15px 0; color: #111827; font-size: 18px;">Order Items</h3>
+                    <h3 style="margin: 0 0 15px 0; color: #111827; font-size: 18px;">Order Items (${data.items.length} ${data.items.length === 1 ? 'item' : 'items'})</h3>
                     <table role="presentation" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
                       <thead>
                         <tr style="background-color: #f3f4f6;">
                           <th style="padding: 12px; text-align: left; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb;">Product</th>
-                          <th style="padding: 12px; text-align: center; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb;">Qty</th>
-                          <th style="padding: 12px; text-align: right; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb;">Price</th>
-                          <th style="padding: 12px; text-align: right; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb;">Total</th>
+                          <th style="padding: 12px; text-align: center; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb; width: 60px;">Qty</th>
+                          <th style="padding: 12px; text-align: right; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb; width: 100px;">Price</th>
+                          <th style="padding: 12px; text-align: right; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb; width: 100px;">Total</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -315,34 +357,35 @@ export class EmailService {
                     </table>
 
                     <!-- Order totals -->
-                    <table role="presentation" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                    <table role="presentation" style="width: 100%; border-collapse: collapse; margin-bottom: 20px; background-color: #f9fafb; border-radius: 8px; padding: 15px;">
                       <tr>
-                        <td style="padding: 8px 0; text-align: right; color: #6b7280;">Subtotal:</td>
-                        <td style="padding: 8px 0; text-align: right; width: 120px; font-weight: 600;">R${data.subtotal}</td>
+                        <td style="padding: 8px 15px; text-align: right; color: #6b7280;">Subtotal:</td>
+                        <td style="padding: 8px 15px; text-align: right; width: 120px; font-weight: 600;">R${data.subtotal}</td>
                       </tr>
                       ${data.tradeDiscount ? `
                       <tr>
-                        <td style="padding: 8px 0; text-align: right; color: #10b981;">Trade Discount (15%):</td>
-                        <td style="padding: 8px 0; text-align: right; width: 120px; font-weight: 600; color: #10b981;">-R${data.tradeDiscount}</td>
+                        <td style="padding: 8px 15px; text-align: right; color: #10b981;">Trade Discount (15%):</td>
+                        <td style="padding: 8px 15px; text-align: right; width: 120px; font-weight: 600; color: #10b981;">-R${data.tradeDiscount}</td>
                       </tr>
                       ` : ''}
                       <tr>
-                        <td style="padding: 8px 0; text-align: right; color: #6b7280;">VAT (15%):</td>
-                        <td style="padding: 8px 0; text-align: right; width: 120px; font-weight: 600;">R${data.vat}</td>
+                        <td style="padding: 8px 15px; text-align: right; color: #6b7280;">VAT (15%):</td>
+                        <td style="padding: 8px 15px; text-align: right; width: 120px; font-weight: 600;">R${data.vat}</td>
                       </tr>
                       <tr>
-                        <td style="padding: 8px 0; text-align: right; color: #6b7280;">Shipping:</td>
-                        <td style="padding: 8px 0; text-align: right; width: 120px; font-weight: 600; ${parseFloat(data.shippingCost) === 0 ? 'color: #10b981;' : ''}">${parseFloat(data.shippingCost) === 0 ? 'FREE' : `R${data.shippingCost}`}</td>
+                        <td style="padding: 8px 15px; text-align: right; color: #6b7280;">Shipping:</td>
+                        <td style="padding: 8px 15px; text-align: right; width: 120px; font-weight: 600; ${parseFloat(data.shippingCost) === 0 ? 'color: #10b981;' : ''}">${parseFloat(data.shippingCost) === 0 ? 'FREE (Pickup)' : `R${data.shippingCost}`}</td>
                       </tr>
                       <tr style="border-top: 2px solid #e5e7eb;">
-                        <td style="padding: 12px 0; text-align: right; font-size: 18px; font-weight: bold; color: #111827;">Total Amount:</td>
-                        <td style="padding: 12px 0; text-align: right; width: 120px; font-size: 18px; font-weight: bold; color: #FF9800;">R${data.total}</td>
+                        <td style="padding: 15px; text-align: right; font-size: 20px; font-weight: bold; color: #111827;">TOTAL:</td>
+                        <td style="padding: 15px; text-align: right; width: 120px; font-size: 20px; font-weight: bold; color: #FF9800;">R${data.total}</td>
                       </tr>
                     </table>
 
+                    <!-- Action reminder -->
                     <div style="background-color: #fef3c7; padding: 15px; border-radius: 6px; border-left: 4px solid #f59e0b;">
                       <p style="margin: 0; color: #92400e; font-size: 14px;">
-                        <strong>⚠️ Security Note:</strong> Full customer contact details and delivery address are NOT included in this email for privacy protection. Access the order management system to view complete customer information.
+                        <strong>Action Required:</strong> ${data.deliveryMethod === 'pickup' ? 'Prepare order for customer collection.' : 'Arrange delivery via The Courier Guy.'}
                       </p>
                     </div>
                   </td>
@@ -350,9 +393,9 @@ export class EmailService {
 
                 <!-- Footer -->
                 <tr>
-                  <td style="background-color: #f9fafb; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
-                    <p style="margin: 0; color: #6b7280; font-size: 12px;">
-                      This is an automated internal notification from the Alectra Solutions order system.
+                  <td style="background-color: #1f2937; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
+                    <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                      Alectra Solutions Order System | Order placed: ${new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })}
                     </p>
                   </td>
                 </tr>
