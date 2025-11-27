@@ -274,9 +274,10 @@ export class DatabaseStorage implements IStorage {
       // Calculate shipping cost with priority hierarchy:
       // 1. If pickup is selected → R0
       // 2. If cart has products with custom delivery fees → use highest custom fee
-      // 3. Otherwise, if cart contains 48KG LP Gas → R0 (special promotion)
-      // 4. Otherwise, if order total ≥ R2500 → R0
-      // 5. Otherwise → R110 standard delivery fee
+      // 3. If cart contains 48KG LP Gas → R0 (special promotion)
+      // 4. If cart contains other LP Gas products → R50 (Pretoria only delivery)
+      // 5. If order total ≥ R2500 → R0
+      // 6. Otherwise → R110 standard delivery fee
       let shippingCost = 110;
       
       if (request.deliveryMethod === "pickup") {
@@ -290,9 +291,16 @@ export class DatabaseStorage implements IStorage {
         // Check if cart contains 48KG LP Gas (ID: a01d73ab-c728-4fba-ad61-244842c98a59)
         const has48kgLPGas = fetchedProducts.some(p => p.id === 'a01d73ab-c728-4fba-ad61-244842c98a59');
         
+        // Check if cart contains LP Gas products (category ID: e110c296-9deb-457b-9a4d-edfa9aa529e0)
+        const hasLPGas = fetchedProducts.some(p => p.categoryId === 'e110c296-9deb-457b-9a4d-edfa9aa529e0');
+        
         if (customDeliveryFees.length > 0) {
           shippingCost = Math.max(...customDeliveryFees);
-        } else if (has48kgLPGas || totalAfterDiscount >= 2500) {
+        } else if (has48kgLPGas) {
+          shippingCost = 0; // Special promotion: FREE delivery on 48kg LP Gas
+        } else if (hasLPGas) {
+          shippingCost = 50; // LP Gas products: R50 Pretoria delivery only
+        } else if (totalAfterDiscount >= 2500) {
           shippingCost = 0;
         }
       }

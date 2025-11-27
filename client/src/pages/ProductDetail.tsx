@@ -316,13 +316,13 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             {/* Delivery Information */}
             <Card className="mb-4">
               <CardContent className="p-4">
-                {product.categoryId === '39011bcb-7a0c-4b29-9fe3-ecd3fa5c5ac1' ? (
+                {product.categoryId === 'e110c296-9deb-457b-9a4d-edfa9aa529e0' ? (
                   // LP Gas products - Pretoria only delivery
                   <div className="space-y-4">
                     <Alert className="border-primary/50 bg-primary/5">
                       <MapPin className="h-4 w-4 text-primary" />
                       <AlertDescription>
-                        <strong>Important:</strong> This LP Gas product is only delivered within Pretoria. We do not offer nationwide delivery for LP Gas.
+                        <strong>Pretoria Delivery Only:</strong> LP Gas products are only delivered within Pretoria at a flat rate of R50. Nationwide delivery is not available for LP Gas.
                       </AlertDescription>
                     </Alert>
                     {product.id === 'a01d73ab-c728-4fba-ad61-244842c98a59' && (

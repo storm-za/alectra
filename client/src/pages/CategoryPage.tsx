@@ -150,11 +150,11 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
               </p>
               
               {/* LP Gas Pretoria-only delivery notice */}
-              {category?.slug === 'lp-gas' && (
+              {category?.slug === 'lp-gas-exchange' && (
                 <Alert className="mt-4 border-primary/50 bg-primary/5">
                   <MapPin className="h-4 w-4 text-primary" />
                   <AlertDescription>
-                    <strong>Important:</strong> LP Gas products are only delivered within Pretoria. We do not offer nationwide delivery for LP Gas.
+                    <strong>Pretoria Delivery Only:</strong> LP Gas products are only delivered within Pretoria at a flat rate of R50. Nationwide delivery is not available for LP Gas.
                   </AlertDescription>
                 </Alert>
               )}

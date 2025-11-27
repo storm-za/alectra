@@ -263,18 +263,29 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
     (item) => item.product.id === 'a01d73ab-c728-4fba-ad61-244842c98a59'
   );
   
+  // Check if cart contains LP Gas products (Pretoria only, R50 delivery)
+  // LP Gas category ID: e110c296-9deb-457b-9a4d-edfa9aa529e0
+  const hasLPGas = cartItems.some(
+    (item) => item.product.categoryId === 'e110c296-9deb-457b-9a4d-edfa9aa529e0'
+  );
+  
   // Calculate shipping cost priority:
   // 1. If pickup is selected, shipping is FREE
   // 2. If cart has products with custom delivery fees, use the highest custom fee
-  // 3. Otherwise, FREE if cart contains 48KG LP Gas (special promotion)
-  // 4. Otherwise, FREE if order total is R2500+
-  // 5. Otherwise, R110 standard delivery fee
+  // 3. If cart contains 48KG LP Gas, FREE delivery (special promotion)
+  // 4. If cart contains other LP Gas products, R50 (Pretoria only delivery)
+  // 5. FREE if order total is R2500+
+  // 6. Otherwise, R110 standard delivery fee
   let shippingCost = 110;
   if (deliveryMethod === "pickup") {
     shippingCost = 0;
   } else if (customDeliveryFees.length > 0) {
     shippingCost = Math.max(...customDeliveryFees);
-  } else if (has48kgLPGas || totalAfterDiscount >= 2500) {
+  } else if (has48kgLPGas) {
+    shippingCost = 0; // Special promotion: FREE delivery on 48kg LP Gas
+  } else if (hasLPGas) {
+    shippingCost = 50; // LP Gas products: R50 Pretoria delivery only
+  } else if (totalAfterDiscount >= 2500) {
     shippingCost = 0;
   }
   
