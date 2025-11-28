@@ -1099,30 +1099,147 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Seed reviews for products (mirroring dev database - 541 reviews)
-      const firstNames = ["Thabo", "Sipho", "Nomsa", "Lerato", "Andries", "Johan", "Susan", "Linda", "Patrick", "Mary", "David", "Sarah", "Michael", "Jennifer", "Peter", "Lisa"];
-      const lastNames = ["van der Merwe", "Botha", "Naidoo", "Mthembu", "Smith", "Williams", "Jones", "Dlamini", "Khumalo", "Nel", "Visser", "Steyn"];
-      const fiveStarComments = ["Excellent product! Works perfectly.", "Best product I've ever used. Highly recommend!", "Very happy with this purchase.", "Quality product, worth every cent!", "Exceeded my expectations.", "Fantastic! No issues at all.", null];
-      const fourStarComments = ["Good product, does the job well.", "Works great, just wish it was a bit cheaper.", "Happy with the purchase.", "Solid product.", null];
-      const threeStarComments = ["It's okay. Does the job but nothing special.", "Average product. Gets the work done.", "Works fine but had some installation issues.", null];
+      // Seed reviews for products - comprehensive unique reviews with product-type mentions
+      const reviewFirstNames = [
+        "Thabo", "Sipho", "Nomsa", "Lerato", "Andries", "Johan", "Susan", "Linda",
+        "Patrick", "Mary", "David", "Sarah", "Michael", "Jennifer", "Peter", "Lisa",
+        "Johannes", "Maria", "Pieter", "Anna", "Nkosi", "Zanele", "Trevor", "Michelle",
+        "Ruben", "Chantal", "Marco", "Nicole", "Ayanda", "Themba", "Precious", "Lucky",
+        "Willem", "Elsa", "Francois", "Annemarie", "Bongani", "Thandiwe", "Marius", "Cornelia",
+        "Kagiso", "Palesa", "Hendrik", "Marietjie", "Sibusiso", "Nokuthula", "Gerhard", "Antoinette"
+      ];
+      const reviewLastNames = [
+        "van der Merwe", "Botha", "Naidoo", "Mthembu", "Smith", "Williams", "Jones",
+        "Dlamini", "Khumalo", "Nel", "Visser", "Steyn", "van Zyl", "Pillay", "Chetty",
+        "Govender", "Mbatha", "Molefe", "Radebe", "Tshabalala", "du Plessis", "Fourie"
+      ];
       
-      const getRandomName = () => `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
-      const getRandomRating = () => {
-        const rand = Math.random();
-        if (rand < 0.50) return 5;
-        if (rand < 0.75) return 4;
-        if (rand < 0.90) return 3;
-        if (rand < 0.97) return 2;
-        return 1;
+      // Generic reviews (no product mention)
+      const fiveStarGeneric = [
+        "Absolutely brilliant! Couldn't be happier with this purchase.",
+        "Exceeded all my expectations. Top quality stuff.",
+        "This is exactly what I was looking for. Perfect!",
+        "Outstanding quality and great value for money.",
+        "Very impressed with the build quality.",
+        "Works flawlessly. Highly recommended!",
+        "Best purchase I've made this year.",
+        "Professional grade equipment at a fair price.",
+        "Arrived quickly and works perfectly.",
+        "No complaints whatsoever. Five stars deserved.",
+        "Really happy with this. Would buy again.",
+        "Exactly as described. Very pleased.",
+        "Great product and fast delivery from Alectra.",
+        "Quality is superb. Worth every rand.",
+        "Perfect condition and works great.",
+        "Fantastic quality, better than expected.",
+        "Very satisfied customer here!",
+        "Alectra delivered again. Great product.",
+        "Would definitely recommend to friends.",
+        "Top notch quality all round."
+      ];
+      const fourStarGeneric = [
+        "Good solid product. Does the job well.",
+        "Happy with this purchase. Works great.",
+        "Good quality for the price.",
+        "Works as expected. Would recommend.",
+        "Solid product. Minor things but overall good.",
+        "Good value. Doing its job nicely.",
+        "Pretty happy with this purchase.",
+        "Works well. Delivery was quick too.",
+        "Does what it says on the box.",
+        "Nice product. Good build quality."
+      ];
+      const threeStarGeneric = [
+        "It's okay. Gets the job done.",
+        "Average product but works fine.",
+        "Does what it needs to. Nothing special.",
+        "Fair enough for the price paid.",
+        "Acceptable quality. Works as expected."
+      ];
+      
+      // Category-specific reviews (mentions product type)
+      const categoryReviews: Record<string, { five: string[], four: string[], three: string[] }> = {
+        "electric-fencing": {
+          five: ["Best electric fence energizer I've ever used. The power output is consistent.", "This electric fencing equipment is top quality. My perimeter is now properly secured.", "Excellent energizer. Keeps the fence hot at all times.", "Quality electric fence components. Installation was straightforward.", "My electric fence has never worked better. Highly recommend this equipment."],
+          four: ["Good electric fence energizer. Doing its job well.", "Solid fencing equipment. The perimeter is now secure.", "Happy with this electric fence setup. Works reliably."],
+          three: ["Electric fence works okay. Does what it needs to.", "Average energizer but functional for basic needs."]
+        },
+        "gate-motors": {
+          five: ["This gate motor is incredibly powerful and smooth. Best investment for my property.", "Fantastic gate motor! Opens the gate quickly and quietly every time.", "Excellent gate motor. Even during load shedding, it works on battery backup.", "Top quality gate motor. Centurion really knows their stuff.", "Gate motor is powerful and reliable. No more manual gate opening!"],
+          four: ["Good gate motor. Opens the gate reliably every time.", "Solid motor for my sliding gate. Works well.", "Happy with this gate automation. Smooth operation."],
+          three: ["Gate motor works okay. Gets the job done.", "Average motor but functional for daily use."]
+        },
+        "cctv-cameras": {
+          five: ["Excellent CCTV camera! Crystal clear footage day and night.", "This security camera is fantastic. Night vision is incredibly clear.", "Amazing CCTV setup. Can see everything clearly on my phone.", "Top quality security camera. DVR recording works perfectly.", "The CCTV footage is so clear. Great for identifying faces and cars."],
+          four: ["Good quality CCTV camera. Clear pictures during the day.", "Solid surveillance camera. Night vision is decent.", "Happy with this security camera. Records well."],
+          three: ["Camera works okay. Picture quality is acceptable.", "Average CCTV but functional for basic monitoring."]
+        },
+        "garage-door-parts": {
+          five: ["Perfect replacement parts for my garage door. Fits exactly right.", "Excellent garage door hinges. Made the door operate smoothly again.", "Quality garage door components. My door works like new now.", "These parts fixed my noisy garage door completely.", "Perfect fit for my Glosteel door. Quality parts that last."],
+          four: ["Good garage door parts. Fit properly.", "Solid replacement components for my door.", "Happy with these garage door hinges."],
+          three: ["Parts work okay. Door is functional now.", "Average quality but does the job."]
+        },
+        "garage-motors": {
+          five: ["Brilliant garage motor! Opens my heavy sectional door with no struggle.", "This garage door motor is fantastic. Quiet and powerful.", "Excellent motor for my roll-up garage door. Works perfectly.", "Top quality garage motor. The remote range is excellent.", "Love this garage motor. Heavy door, no problem at all."],
+          four: ["Good garage motor. Opens the door reliably.", "Solid motor for my garage. Works well.", "Happy with this garage door opener."],
+          three: ["Garage motor works okay. Does the job.", "Average motor but functional daily."]
+        },
+        "remotes": {
+          five: ["Excellent remote! Works perfectly with my gate motor.", "This remote has great range. Can open the gate from my driveway entrance.", "Quality remote transmitter. Very responsive and reliable.", "Best replacement remote I've bought. Pairs easily with my system.", "Great Centurion remote. Works flawlessly every time."],
+          four: ["Good remote. Works well with my gate.", "Solid transmitter. Range is decent.", "Happy with this remote. Reliable operation."],
+          three: ["Remote works okay. Does what it should.", "Average but functional remote."]
+        },
+        "intercoms": {
+          five: ["Excellent intercom system! Crystal clear audio and video.", "This intercom is fantastic. Can see and speak to visitors clearly.", "Best intercom I've used. The G-Speak system is brilliant.", "Top quality keypad intercom. Access control is perfect now.", "Brilliant intercom system. Very happy with the clarity."],
+          four: ["Good intercom system. Clear audio.", "Solid intercom. Works reliably.", "Happy with this intercom setup."],
+          three: ["Intercom works okay. Basic but functional.", "Average system but does the job."]
+        },
+        "batteries": {
+          five: ["Excellent battery! Powers my gate motor perfectly during load shedding.", "This battery holds charge really well. Great backup power.", "Best backup battery I've bought. Lasts through multiple outages.", "Quality battery that actually delivers on its rating.", "Reliable battery backup. Essential for load shedding in SA."],
+          four: ["Good battery. Holds charge well.", "Solid backup power. Works reliably.", "Happy with this battery purchase."],
+          three: ["Battery works okay. Provides basic backup.", "Average but functional for load shedding."]
+        },
+        "lp-gas-exchange": {
+          five: ["Great gas cylinder! Exchange process was quick and easy.", "Excellent LP gas quality. Burns clean and lasts well.", "Quality gas cylinder at a fair price. Very happy.", "Great service for gas exchange. Cylinder was full and clean.", "Excellent LP gas. Perfect for my braai."],
+          four: ["Good gas cylinder. Exchange was simple.", "Solid LP gas quality. Works well.", "Happy with this gas exchange."],
+          three: ["Gas works okay. Standard quality.", "Average exchange experience."]
+        }
       };
-      const getCommentForRating = (rating: number) => {
-        if (rating === 5) return fiveStarComments[Math.floor(Math.random() * fiveStarComments.length)];
-        if (rating === 4) return fourStarComments[Math.floor(Math.random() * fourStarComments.length)];
-        return threeStarComments[Math.floor(Math.random() * threeStarComments.length)];
+      
+      const getRandomReviewName = () => `${reviewFirstNames[Math.floor(Math.random() * reviewFirstNames.length)]} ${reviewLastNames[Math.floor(Math.random() * reviewLastNames.length)]}`;
+      const getRandomReviewRating = () => {
+        const rand = Math.random();
+        if (rand < 0.55) return 5;  // 55% are 5-star
+        if (rand < 0.85) return 4;  // 30% are 4-star
+        return 3;  // 15% are 3-star (no 1-2 star reviews)
+      };
+      
+      const usedReviewComments = new Set<string>();
+      const getReviewComment = (rating: number, categorySlug: string | null, useProductSpecific: boolean): string | null => {
+        let pool: string[];
+        if (useProductSpecific && categorySlug && categoryReviews[categorySlug]) {
+          const catReviews = categoryReviews[categorySlug];
+          pool = rating === 5 ? catReviews.five : rating === 4 ? catReviews.four : catReviews.three;
+        } else {
+          pool = rating === 5 ? fiveStarGeneric : rating === 4 ? fourStarGeneric : threeStarGeneric;
+        }
+        const available = pool.filter(c => !usedReviewComments.has(c));
+        if (available.length === 0) {
+          const comment = pool[Math.floor(Math.random() * pool.length)];
+          usedReviewComments.add(comment);
+          return comment;
+        }
+        const comment = available[Math.floor(Math.random() * available.length)];
+        usedReviewComments.add(comment);
+        return comment;
       };
 
       // Check if reviews already exist
       const allProducts = await storage.getAllProducts();
+      const allCats = await storage.getAllCategories();
+      const catIdToSlug = new Map<string, string>();
+      allCats.forEach(c => catIdToSlug.set(c.id, c.slug));
+      
       let hasReviews = false;
       if (allProducts.length > 0) {
         const sampleReviews = await storage.getProductReviews(allProducts[0].id);
@@ -1132,16 +1249,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Seed reviews only if none exist
       if (!hasReviews && allProducts.length > 0) {
         for (const product of allProducts) {
-          const reviewCount = Math.floor(Math.random() * 3) + 1; // 1-3 reviews per product
+          const reviewCount = Math.floor(Math.random() * 4) + 1; // 1-4 reviews per product
+          const categorySlug = product.categoryId ? catIdToSlug.get(product.categoryId) || null : null;
+          
           for (let i = 0; i < reviewCount; i++) {
-            const rating = getRandomRating();
-            const comment = getCommentForRating(rating);
+            const rating = getRandomReviewRating();
+            const useProductSpecific = i < 2; // First 1-2 reviews mention product type
+            const comment = getReviewComment(rating, categorySlug, useProductSpecific);
             try {
               await storage.createProductReview({
                 productId: product.id,
                 rating,
                 comment: comment || undefined,
-                authorName: getRandomName()
+                authorName: getRandomReviewName()
               });
               reviewsCreated++;
             } catch (e) {
