@@ -671,6 +671,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Resend order notification to admin only (for testing email template)
+  app.post("/api/admin/resend-order-email/:orderId", async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const order = await storage.getOrderById(orderId);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      const orderItemsData = await storage.getOrderItemsWithProducts(orderId);
+      
+      const emailService = new EmailService();
+      await emailService.sendInternalNotificationOnly({
+        orderId: order.id,
+        reference: order.paymentReference || order.id.slice(0, 8).toUpperCase(),
+        deliveryMethod: order.deliveryMethod || "delivery",
+        customerName: order.customerName,
+        customerEmail: order.customerEmail,
+        customerPhone: order.customerPhone,
+        deliveryAddress: order.deliveryAddress || "",
+        deliveryCity: order.deliveryCity || "",
+        deliveryProvince: order.deliveryProvince || "",
+        deliveryPostalCode: order.deliveryPostalCode || "",
+        items: orderItemsData.map((item) => ({
+          productName: item.productName,
+          quantity: item.quantity,
+          price: item.priceAtPurchase,
+          imageUrl: item.productImage || undefined,
+        })),
+        subtotal: order.subtotal,
+        vat: order.vat,
+        shippingCost: order.shippingCost,
+        total: order.total,
+        tradeDiscount: order.tradeDiscount || undefined,
+      });
+
+      res.json({ 
+        success: true, 
+        message: `Test email sent to admin for order ${orderId}` 
+      });
+    } catch (error: any) {
+      console.error("Error resending order email:", error);
+      res.status(500).json({ message: error.message || "Failed to resend email" });
+    }
+  });
+
   // Blog routes
   app.get("/api/blog", async (req, res) => {
     try {

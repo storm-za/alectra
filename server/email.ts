@@ -38,6 +38,23 @@ export interface OrderEmailData {
   tradeDiscount?: string;
 }
 
+// Base URL for production - used for absolute image URLs in emails
+const PRODUCTION_BASE_URL = "https://alectra-solutions.replit.app";
+
+// Helper to convert relative image URLs to absolute URLs for emails
+function getAbsoluteImageUrl(imageUrl: string | undefined): string | undefined {
+  if (!imageUrl) return undefined;
+  
+  // Already an absolute URL (Shopify CDN, etc.)
+  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    return imageUrl;
+  }
+  
+  // Relative URL - prepend production base URL
+  const cleanPath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
+  return `${PRODUCTION_BASE_URL}${cleanPath}`;
+}
+
 export class EmailService {
   private transporter: nodemailer.Transporter;
 
@@ -86,6 +103,23 @@ export class EmailService {
     } catch (error) {
       console.error("Failed to send internal notification email:", error);
       // Don't re-throw - customer email is more critical
+    }
+  }
+
+  async sendInternalNotificationOnly(data: OrderEmailData): Promise<void> {
+    const internalEmailHtml = this.generateInternalNotificationHtml(data);
+
+    try {
+      await this.transporter.sendMail({
+        from: `"Alectra Solutions" <${process.env.GMAIL_USER}>`,
+        to: process.env.GMAIL_USER,
+        subject: `[TEST] Order Notification - #${data.reference}`,
+        html: internalEmailHtml,
+      });
+      console.log(`Internal test notification email sent to ${process.env.GMAIL_USER}`);
+    } catch (error) {
+      console.error("Failed to send internal test email:", error);
+      throw error;
     }
   }
 
@@ -392,19 +426,30 @@ export class EmailService {
   private generateInternalNotificationHtml(data: OrderEmailData): string {
     const itemsHtml = data.items
       .map(
-        (item) => `
+        (item) => {
+          const absoluteImageUrl = getAbsoluteImageUrl(item.imageUrl);
+          return `
         <tr>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.productName}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb;" />` : '<div style="width: 60px; height: 60px; background-color: #f3f4f6; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 10px;">No image</div>'}
-              <span style="font-weight: 500;">${item.productName}</span>
-            </div>
+          <td style="padding: 16px; border-bottom: 1px solid #e5e7eb;">
+            <table role="presentation" style="border-collapse: collapse;">
+              <tr>
+                <td style="vertical-align: top; padding-right: 16px;">
+                  ${absoluteImageUrl 
+                    ? `<img src="${absoluteImageUrl}" alt="${item.productName}" width="100" height="100" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #e5e7eb; display: block;" />` 
+                    : '<div style="width: 100px; height: 100px; background-color: #f3f4f6; border-radius: 8px; display: table-cell; vertical-align: middle; text-align: center; color: #9ca3af; font-size: 11px;">No image</div>'}
+                </td>
+                <td style="vertical-align: middle;">
+                  <span style="font-weight: 600; font-size: 15px; color: #111827;">${item.productName}</span>
+                </td>
+              </tr>
+            </table>
           </td>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle;">${item.quantity}</td>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; vertical-align: middle;">R${item.price}</td>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; vertical-align: middle; font-weight: 600;">R${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
+          <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle; font-size: 16px; font-weight: 500;">${item.quantity}</td>
+          <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; text-align: right; vertical-align: middle; font-size: 15px;">R${item.price}</td>
+          <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; text-align: right; vertical-align: middle; font-weight: 700; font-size: 15px; color: #111827;">R${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
         </tr>
-      `
+      `;
+        }
       )
       .join("");
 
