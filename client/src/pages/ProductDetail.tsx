@@ -323,9 +323,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                       className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
                     >
                       <span className="font-semibold">New Cylinder</span>
-                      <span className="text-sm text-muted-foreground">
-                        Brand new cylinder, filled and ready
-                      </span>
+                      <span className="text-sm text-muted-foreground">Cylinder, filled and ready</span>
                       <span className="text-lg font-bold text-primary">
                         R {lpGasPricing.new.toFixed(2)}
                       </span>
@@ -398,7 +396,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 <div className="space-y-4">
                   {product.categoryId === 'e110c296-9deb-457b-9a4d-edfa9aa529e0' ? (
                     // LP Gas products - Pretoria only delivery
-                    <>
+                    (<>
                       <Alert className="border-primary/50 bg-primary/5">
                         <MapPin className="h-4 w-4 text-primary" />
                         <AlertDescription>
@@ -413,10 +411,10 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                           </AlertDescription>
                         </Alert>
                       )}
-                    </>
+                    </>)
                   ) : (
                     // Other products - Nationwide delivery
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    (<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="flex items-start gap-3">
                         <div className="bg-primary/10 p-2 rounded-md">
                           <Truck className="h-5 w-5 text-primary" />
@@ -435,7 +433,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                           <p className="text-xs text-muted-foreground">Enjoy free delivery on orders over R2500</p>
                         </div>
                       </div>
-                    </div>
+                    </div>)
                   )}
                   
                   {/* Divider with "Or" */}
