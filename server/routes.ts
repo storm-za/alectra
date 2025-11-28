@@ -1042,6 +1042,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 images: p.images || [],
                 stock: p.stock || 100,
                 featured: p.featured || false,
+                discontinued: p.discontinued || false,
               });
               productsCreated++;
             } catch (e) {

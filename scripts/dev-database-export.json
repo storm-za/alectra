@@ -13,7 +13,8 @@
         "attached_assets/products/centurion-nova-4-button-remote.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D5 Evo Main Cover Replacement",
@@ -28,7 +29,8 @@
         "attached_assets/products/centurion-d5-evo-main-cover.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D5 Evo Smart Gate Motor (No remotes included)",
@@ -43,7 +45,8 @@
         "attached_assets/products/centurion-d5-evo-smart-gate-motor.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "DC Male Connector Cable",
@@ -58,7 +61,8 @@
         "attached_assets/products/dc-male-connector-cable.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion Nova 1 Button Remote",
@@ -73,7 +77,8 @@
         "attached_assets/products/centurion-nova-1-button-remote.png"
       ],
       "stock": 96,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Hilook 2MP Full ColorVu Dome Camera",
@@ -88,7 +93,8 @@
         "attached_assets/products/hilook-2mp-full-colour-vu-dome-camera.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Vector / Vantage Cable (per meter)",
@@ -103,7 +109,8 @@
         "attached_assets/products/vector-vantage-cable-per-meter.jpg"
       ],
       "stock": 99,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "E.T Nice Colour Video Intercom Gate Station",
@@ -118,7 +125,8 @@
         "attached_assets/products/e-t-nice-colour-video-intercom-gate-station.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Gemini 3 Button Gate/Garage Remote",
@@ -133,7 +141,8 @@
         "attached_assets/products/gemini-4-button-remote.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D3/D5 Evo Smart Anti-Theft Bracket",
@@ -148,7 +157,8 @@
         "attached_assets/products/centurion-d3-d5-evo-smart-anti-theft-bracket.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Wood/Hinge Screws (85 in a Pack)",
@@ -163,7 +173,8 @@
         "attached_assets/products/wood-hinge-screws-85-in-a-pack.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion Photon Smart Wireless Beams",
@@ -178,7 +189,8 @@
         "attached_assets/products/centurion-photon-smart-wireless-beams.jpg"
       ],
       "stock": 99,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Hikvision 4-Channel CCTV Power Supply",
@@ -193,7 +205,8 @@
         "attached_assets/products/hikvision-4-channel-cctv-power-supply.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D5/D6 Smart Anti-Theft Bracket",
@@ -208,7 +221,8 @@
         "attached_assets/products/centurion-d5-d6-smart-anti-theft-bracket.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "PVC Junction Box 2 Way 20mm",
@@ -223,7 +237,8 @@
         "attached_assets/products/pvc-junction-box-2-way-20mm.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Gate Mate Brushes – Mr Sweepy",
@@ -238,7 +253,8 @@
         "attached_assets/products/gate-mate-brushes-mr-sweepy.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "4x4 Single Socket Plug",
@@ -253,7 +269,8 @@
         "attached_assets/products/4x4-single-socket-plug.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "DC Blue Advance Sectional Garage Motor Kit + Extrusion",
@@ -268,7 +285,8 @@
         "attached_assets/products/dc-blue-advance-sectional-garage-motor-extrusion.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D10 Smart Sliding Gate Motor (No remotes included)",
@@ -283,7 +301,8 @@
         "attached_assets/products/centurion-d10-sliding-gate-motor.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D6 Smart Gate Motor (No remotes included)",
@@ -298,7 +317,8 @@
         "attached_assets/products/centurion-d6-smart-gate-motor.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Compression Spring 1 Silver 5kg Black - 50 Box",
@@ -313,7 +333,8 @@
         "attached_assets/products/nemtek-compression-spring-1-silver-5kg-black-50-box.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "16 Channel Advanced CCTV Camera Kit",
@@ -328,7 +349,8 @@
         "attached_assets/products/16-channel-advanced-cctv-camera-kit.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "DTS Expert Gate Motor + Battery",
@@ -343,7 +365,8 @@
         "attached_assets/products/dts-expert-gate-motor-battery.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Glosteel Garage Door Safari Brown",
@@ -358,7 +381,8 @@
         "attached_assets/products/glosteel-garage-door-safari-brown.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Gemini Power Supply 12V Solar Compatible",
@@ -373,7 +397,8 @@
         "attached_assets/products/gemini-power-supply-12v-solar-compatible.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "PVC Junction Box 3 Way 20mm",
@@ -388,7 +413,8 @@
         "attached_assets/products/pvc-junction-box-3-way-20mm.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D10 PCB v2",
@@ -403,7 +429,8 @@
         "attached_assets/products/centurion-d10-pcb-v2.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D3 Smart PCB 12v",
@@ -418,7 +445,8 @@
         "attached_assets/products/centurion-d3-smart-pcb-12v.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion Surge and Lightning Protector Filter Tube 10A kit for Gate Motor",
@@ -433,7 +461,8 @@
         "attached_assets/products/centurion-surge-and-lightning-protector.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "E.T Roll-up Advance Garage Door Motor Kit",
@@ -448,7 +477,8 @@
         "attached_assets/products/e-t-roll-up-advance-garage-door-motor-kit.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Gemini Sectional Garage Door Motor Kit",
@@ -463,7 +493,8 @@
         "attached_assets/products/gemini-sectional-garage-door-motor-kit.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion G-Ultra Gsm Smart Switch",
@@ -478,7 +509,8 @@
         "attached_assets/products/centurion-g-ultra-gsm-smart-switch.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion G-Speak Ultra Intercom",
@@ -493,7 +525,8 @@
         "attached_assets/products/centurion-g-speak-ultra.jpg"
       ],
       "stock": 98,
-      "featured": true
+      "featured": true,
+      "discontinued": false
     },
     {
       "name": "Gemini Steel Rack (2m)",
@@ -508,7 +541,8 @@
         "attached_assets/products/gemini-steel-rack-2m.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Glosteel Garage Door Charcoal Grey",
@@ -523,7 +557,8 @@
         "attached_assets/products/glosteel-garage-door.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "PCB Shaft Encoder",
@@ -538,7 +573,8 @@
         "attached_assets/products/pcb-shaft-encoder.jpg"
       ],
       "stock": 98,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "DTS 60mm Radius Gate Wheels V-Profile",
@@ -553,7 +589,8 @@
         "attached_assets/products/dts-60mm-radius-gate-wheels-v-profile.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Gemini HEX Coupling and Disc",
@@ -568,7 +605,8 @@
         "attached_assets/products/gemini-hex-coupling-and-disc.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion Vantage 400/500 Smart PCB",
@@ -583,7 +621,8 @@
         "attached_assets/products/centurion-vantage-400-500-smart-pcb.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "CENTURION RDO II ROLL-UP Complete Kit",
@@ -598,7 +637,8 @@
         "attached_assets/products/centurion-rdo-ii-roll-up-motor.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "CENTURION SDO4 T12 Smart Kit",
@@ -613,7 +653,8 @@
         "attached_assets/products/centurion-sdo4-t12-smart-kit.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "DC Blue Advance Sectional Garage Motor Only",
@@ -628,7 +669,8 @@
         "attached_assets/products/dc-blue-advance-garage-door-motor.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Spring Hook Large Tail 2mm 50 Pack",
@@ -643,7 +685,8 @@
         "attached_assets/products/nemtek-spring-hook-large-tail-2mm-50-pack.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Electric Fence Aluminium Ferrules – 6mm (100 Pack)",
@@ -658,7 +701,8 @@
         "attached_assets/products/nemtek-electric-fence-aluminium-ferrules-6mm-100-pack.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "JVA High Voltage Electric Fence Warning Light – Red LED",
@@ -673,7 +717,8 @@
         "attached_assets/products/jva-high-voltage-electric-fence-warning-light-red-led.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Electric Fence High Voltage Timed Warning Light – Blue",
@@ -688,7 +733,8 @@
         "attached_assets/products/nemtek-electric-fence-high-voltage-timed-warning-light-blue.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "8 Line – 30 Meter Advanced Electric Fence Kit",
@@ -703,7 +749,8 @@
         "attached_assets/products/8-line-30-meter-advanced-electric-fence-kit.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "6 Line – 20 Meter Advanced Electric Fence Kit",
@@ -718,7 +765,8 @@
         "attached_assets/products/6-line-20-meter-advanced-electric-fence-kit.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Stainless Steel Tension Springs With Limiters - 50 Pack",
@@ -733,7 +781,8 @@
         "attached_assets/products/stainless-steel-tension-springs-with-limiters-50-pack.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion Photon SMART Wireless Beams",
@@ -748,7 +797,8 @@
         "attached_assets/products/centurion-photon-smart-wireless-beams-1.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "In Line Earth Loop Stainless Steel 10 Pack",
@@ -763,7 +813,8 @@
         "attached_assets/products/in-line-earth-loop-stainless-steel-10-pack.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Hybrid Compression Spring 2 (8kg Gold) Black – 50 Pack",
@@ -778,7 +829,8 @@
         "attached_assets/products/nemtek-hybrid-compression-spring-2-8kg-gold-black-50-pack.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Wall Mount Loop Angle 304 Stainless Steel",
@@ -793,7 +845,8 @@
         "attached_assets/products/wall-mount-loop-angle-304-stainless-steel.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion i5 Infrared Safety Beams",
@@ -808,7 +861,8 @@
         "attached_assets/products/centurion-i5-infrared-safety-beams.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Copper Earth Spike 1.2m with Nut and Washer",
@@ -823,7 +877,8 @@
         "attached_assets/products/copper-earth-spike-1-2m-with-nut-and-washer.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "8 Line Round Bar Black",
@@ -838,7 +893,8 @@
         "attached_assets/products/8-line-round-bar-black.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Hilook 2MP Bullet Camera",
@@ -853,7 +909,8 @@
         "attached_assets/products/hilook-2mp-bullet-camera.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion Gate Motor Battery 12V 7AH CP4C2-28W",
@@ -868,7 +925,8 @@
         "attached_assets/products/centurion-12v-7-2ah-battery.jpg"
       ],
       "stock": 100,
-      "featured": true
+      "featured": true,
+      "discontinued": false
     },
     {
       "name": "8 Wire Angle Square Tube Black",
@@ -883,7 +941,8 @@
         "attached_assets/products/8-wire-angle-square-tube-black.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "DTS MS5 Energizer Weatherproof Box Only (Grey)",
@@ -898,7 +957,8 @@
         "attached_assets/products/dts-ms5-energizer-weatherproof-box-only-grey.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D3 Smart Gate Motor Kit",
@@ -913,7 +973,8 @@
         "attached_assets/products/centurion-d3-smart-motor-only.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "6 Wire Black Top Angle",
@@ -928,7 +989,8 @@
         "attached_assets/products/6-wire-flat-bar.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Custom amount",
@@ -941,7 +1003,8 @@
       "imageUrl": "",
       "images": [],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "DigiDoor Remotes",
@@ -954,7 +1017,8 @@
       "imageUrl": "https://cdn.shopify.com/s/files/1/0653/9640/8365/files/digidoor-remotes-icon.jpg?v=1732102124",
       "images": [],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "6 Line Angle Square Tube Black",
@@ -969,7 +1033,8 @@
         "attached_assets/products/6-line-angle-square-tube-black.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "8 Wire Top Angle Square Tube Black",
@@ -984,7 +1049,8 @@
         "attached_assets/products/8-wire-top-angle-square-tube-black.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "6 Line Straight Square Tube Black",
@@ -999,7 +1065,8 @@
         "attached_assets/products/6-line-straight-square-tube-black.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D3/D5 EVO Smart & D6 Smart Base Plate",
@@ -1014,7 +1081,8 @@
         "attached_assets/products/centurion-d3-d5-evo-smart-d6-smart-base-plate.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "12V 1.4Ah Battery",
@@ -1029,7 +1097,8 @@
         "attached_assets/products/12v-1-4ah-battery.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "24V 3.5AH Battery",
@@ -1044,7 +1113,8 @@
         "attached_assets/products/24v-3-5ah.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Eazylift Garage Door Remote 4 Button",
@@ -1059,7 +1129,8 @@
         "attached_assets/products/eazylift-garage-door-remote-4-button.jpg"
       ],
       "stock": 99,
-      "featured": true
+      "featured": true,
+      "discontinued": false
     },
     {
       "name": "Omega Bobbin with Clip",
@@ -1074,22 +1145,8 @@
         "attached_assets/products/omega-bobbin-with-clip.png"
       ],
       "stock": 100,
-      "featured": false
-    },
-    {
-      "name": "9KG LP Gas",
-      "slug": "9kg-exchange",
-      "description": "9kg LP Gas Exchange/Refill service for home and commercial use. Convenient gas bottle exchange for cooking, heating, and other household applications. Safe and reliable propane gas supply suitable for stoves, geysers, and space heaters.",
-      "price": "275.00",
-      "brand": "Alectra",
-      "sku": "ALEC-0007-9KG_EXCHANGE",
-      "categoryId": "e110c296-9deb-457b-9a4d-edfa9aa529e0",
-      "imageUrl": "attached_assets/products/9kg-exchange.png",
-      "images": [
-        "attached_assets/products/9kg-exchange.png"
-      ],
-      "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D3 Smart Gate Motor Full Kit No Anti-Theft Bracket",
@@ -1104,7 +1161,8 @@
         "attached_assets/products/centurion-d3-smart-full-kit-no-anti-theft-bracket.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Bobbin Round Bar Insulator",
@@ -1119,7 +1177,8 @@
         "attached_assets/products/bobbin-round-bar-insulator.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D10 Charger",
@@ -1134,7 +1193,8 @@
         "attached_assets/products/centurion-d10-charger.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D3 Smart Gate Motor (No remotes included)",
@@ -1149,7 +1209,8 @@
         "attached_assets/products/centurion-d3-smart-gate-motor.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "12V 2.4Ah Battery",
@@ -1164,7 +1225,8 @@
         "attached_assets/products/12v-2-4ah.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "E.T Nice 7\" Monitor Only",
@@ -1179,7 +1241,24 @@
         "attached_assets/products/e-t-nice-7-monitor-only.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "name": "9KG LP Gas",
+      "slug": "9kg-exchange",
+      "description": "9kg LP Gas Exchange/Refill service for home and commercial use. Convenient gas bottle exchange for cooking, heating, and other household applications. Safe and reliable propane gas supply suitable for stoves, geysers, and space heaters.",
+      "price": "280.00",
+      "brand": "Alectra",
+      "sku": "ALEC-0007-9KG_EXCHANGE",
+      "categoryId": "e110c296-9deb-457b-9a4d-edfa9aa529e0",
+      "imageUrl": "attached_assets/products/9kg-exchange.png",
+      "images": [
+        "attached_assets/products/9kg-exchange.png"
+      ],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D5 Evo Smart Gate Motor Full Kit",
@@ -1194,7 +1273,8 @@
         "attached_assets/products/centurion-d3-smart-full-kit-advanced-gate-automation-solution.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "12V Red Strobe Light",
@@ -1209,7 +1289,8 @@
         "attached_assets/products/12v-red-strobe-light.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D3 Smart Gate Motor Full Kit",
@@ -1224,7 +1305,8 @@
         "attached_assets/products/centurion-d3-smart-full-kit-advanced-gate-automation-solution-1.jpg"
       ],
       "stock": 100,
-      "featured": true
+      "featured": true,
+      "discontinued": false
     },
     {
       "name": "Centurion D5 Evo Smart Gate Motor Full Kit No Anti-Theft Bracket",
@@ -1239,7 +1321,8 @@
         "attached_assets/products/centurion-d5-evo-smart-full-kit-advanced-gate-automation-solution-copy.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D5 Evo Smart Gate Motor Kit",
@@ -1254,7 +1337,8 @@
         "attached_assets/products/centurion-d5-evo-smart-motor-only.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Bobbin Flat Bar Black 4.5mm",
@@ -1269,7 +1353,8 @@
         "attached_assets/products/bobbin-flat-bar-black-4-5mm.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Energizer Magnetic Tag with Holder",
@@ -1284,7 +1369,8 @@
         "attached_assets/products/nemtek-energizer-magnetic-tag-with-holder.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion Gate Motor Nylon Rack (2m)",
@@ -1299,7 +1385,8 @@
         "attached_assets/products/centurion-gate-motor-nylon-rack-2m.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion Vantage 400 Gate Motor",
@@ -1314,7 +1401,8 @@
         "attached_assets/products/centurion-vantage-400-gate-motor.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "CENTURION VANTAGE 500 GATE MOTOR",
@@ -1329,7 +1417,8 @@
         "attached_assets/products/centurion-vantage-500-gate-motor.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "12V 40W White Security Siren",
@@ -1344,7 +1433,8 @@
         "attached_assets/products/12v-40w-white-security-siren.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion Photon Wireless Beams",
@@ -1359,7 +1449,8 @@
         "attached_assets/products/centurion-photon-wireless-beams.jpg"
       ],
       "stock": 98,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion Nova 2 Button Remote",
@@ -1374,7 +1465,8 @@
         "attached_assets/products/centurion-nova-1-button-remote-copy.png"
       ],
       "stock": 97,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion G-Speak Ultra Upgrade Kit Intercom",
@@ -1389,7 +1481,8 @@
         "attached_assets/products/centurion-g-speak-ultra-upgrade-kit.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion POLOphone Intercom",
@@ -1404,7 +1497,8 @@
         "attached_assets/products/centurion-polophone.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Absolute 4 Button Remote",
@@ -1419,7 +1513,8 @@
         "attached_assets/products/absolute-4-button-remote.jpg"
       ],
       "stock": 95,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Gemini Slider 12V 7Ah Full Kit No Anti-Theft Bracket",
@@ -1434,7 +1529,8 @@
         "attached_assets/products/gemini-slider-12v-7ah-full-kit-complete-gate-automation-solution-copy.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "ET Nice Drive 1000 Gate Motor",
@@ -1449,7 +1545,8 @@
         "attached_assets/products/et-nice-drive-1000-gate-motor.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "ET Nice Drive 300 Gate Motor",
@@ -1464,7 +1561,8 @@
         "attached_assets/products/et-nice-drive-300-gate-motor.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "ET Nice Drive 500 Gate Motor",
@@ -1479,7 +1577,8 @@
         "attached_assets/products/et-nice-drive-500-gate-motor.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "ET Nice Drive 600 Gate Motor",
@@ -1494,7 +1593,8 @@
         "attached_assets/products/et-nice-drive-600-gate-motor.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "E.T DRIVE 500 GATE MOTOR KIT BUNDLE",
@@ -1509,7 +1609,8 @@
         "attached_assets/products/e-t-drive-500-gate-motor-kit.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Garador Elev8tor Garage Door Motor Kit + Extrusion",
@@ -1524,7 +1625,8 @@
         "attached_assets/products/garador-elev8tor-garage-door-motor.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "HiLook 8-Channel Turbo HD DVR",
@@ -1539,7 +1641,8 @@
         "attached_assets/products/hilook-8-channel-turbo-hd-dvr.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Elev8tor 4 Button Garage Door Remote",
@@ -1554,7 +1657,8 @@
         "attached_assets/products/elev8tor-4-button-garage-door-remote.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Gemini 1 Button Remote",
@@ -1569,7 +1673,8 @@
         "attached_assets/products/gemini-1-button-remote.jpg"
       ],
       "stock": 96,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Gemini 12V Gate Motor",
@@ -1584,7 +1689,8 @@
         "attached_assets/products/gemini-sel-gate-motor.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Hilook 2MP Dome Camera",
@@ -1599,7 +1705,8 @@
         "attached_assets/products/hilook-2mp-dome-camera.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Gemini Anti-Theft Bracket",
@@ -1614,7 +1721,8 @@
         "attached_assets/products/gemini-anti-theft-bracket.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Gemini Slider 12V 7Ah Full Kit",
@@ -1629,7 +1737,8 @@
         "attached_assets/products/gemini-slider-12v-7ah-full-kit-complete-gate-automation-solution.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Tek Screws 12x65mm – 100 Pack",
@@ -1644,7 +1753,8 @@
         "attached_assets/products/tek-screws-12x65mm-100-pack.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Hilook 2MP Hybrid Dual Light Camera",
@@ -1659,7 +1769,8 @@
         "attached_assets/products/hilook-2mp-hybrid-dual-light-camera.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Hilook 2MP Full Colour Vu Bullet Camera",
@@ -1674,7 +1785,8 @@
         "attached_assets/products/hilook-2mp-full-colour-vu-bullet-camera.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Sentry 3 Button c/hop 433 Nova Remote",
@@ -1689,7 +1801,8 @@
         "attached_assets/products/sentry-3-button-c-hop-433-nova-remote-copy.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Sentry 4 Button c/hop 433 Nova Remote",
@@ -1704,7 +1817,8 @@
         "attached_assets/products/sentry-4-button-c-hop-433-nova-remote.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Sentry 1 Button c/hop 433 Nova Remote",
@@ -1719,7 +1833,8 @@
         "attached_assets/products/sentry-1-button-c-hop-433-nova-remote.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Hilook 4 Channel Turbo HD DVR",
@@ -1734,7 +1849,8 @@
         "attached_assets/products/hilook-4-channel-turbo-hd-dvr.png"
       ],
       "stock": 100,
-      "featured": true
+      "featured": true,
+      "discontinued": false
     },
     {
       "name": "HiLook 4-Channel Turbo HD DVR with Built-in 320GB HDD",
@@ -1749,7 +1865,8 @@
         "attached_assets/products/hilook-4-channel-turbo-hd-dvr-with-built-in-320gb-hdd.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Kocom Intercom System",
@@ -1764,7 +1881,8 @@
         "attached_assets/products/kocom-intercom-system.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Sentry Safety Wireless Gate Beams",
@@ -1779,7 +1897,8 @@
         "attached_assets/products/sentry-safety-wireless-gate-beams.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Gate Motor Gel Battery 12V 8Ah",
@@ -1794,7 +1913,8 @@
         "attached_assets/products/12v-8ah-gel-battery.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "10A 9-Channel CCTV Power Supply with Metal Casing",
@@ -1809,7 +1929,8 @@
         "attached_assets/products/10a-9-channel-cctv-power-supply-with-metal-casing.png"
       ],
       "stock": 82,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Tek Screws 12x25mm – 100 Pack",
@@ -1824,7 +1945,8 @@
         "attached_assets/products/tek-screws-12x25mm-100-pack.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Andowl Q-S4MAX 8K WiFi Security Camera",
@@ -1839,7 +1961,8 @@
         "attached_assets/products/andowl-q-s4max-8k-wifi-security-camera.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Gemini Gate Motor Battery 12V 7.2Ah",
@@ -1854,7 +1977,8 @@
         "attached_assets/products/gemini-12v-7-2ah-battery.jpg"
       ],
       "stock": 100,
-      "featured": true
+      "featured": true,
+      "discontinued": false
     },
     {
       "name": "Andowl Solar Smart 4G Camera",
@@ -1869,7 +1993,8 @@
         "attached_assets/products/andowl-solar-smart-4g-camera-sim-card-powered-wireless-security.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "HiLook 16-Channel Turbo HD DVR with Built-in 1TB HDD",
@@ -1884,7 +2009,8 @@
         "attached_assets/products/hilook-16-channel-turbo-hd-dvr-with-built-in-1tb-hdd.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "HiLook 8-Channel Turbo HD DVR with Built-in 512GB HDD",
@@ -1899,7 +2025,8 @@
         "attached_assets/products/hilook-8-channel-turbo-hd-dvr-with-built-in-512gb-hdd.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Hikvision 8-Channel CCTV Power Supply",
@@ -1914,7 +2041,8 @@
         "attached_assets/products/hikvision-8-channel-cctv-power-supply.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Gemini PCB V.90",
@@ -1929,7 +2057,8 @@
         "attached_assets/products/gemini-pcb-v-90.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Alectra Solutions Electric Fence Warning Sign",
@@ -1944,7 +2073,8 @@
         "attached_assets/products/alectra-solutions-electric-fence-warning-sign.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Electric Fence Warning Sign",
@@ -1959,7 +2089,8 @@
         "attached_assets/products/nemtek-electric-fence-warning-sign.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "E.T Nice 7\" Monitor & Intercom Gate Station Full Kit",
@@ -1974,7 +2105,8 @@
         "attached_assets/products/e-t-nice-7-monitor-intercom-gate-station-full-kit.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nail In Anchors 8x80mm – 50 Pack",
@@ -1989,7 +2121,8 @@
         "attached_assets/products/nail-in-anchors-8x80mm-50-pack.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Merlin M18S Single Zone Electric Fence Energizer – 8 Joule",
@@ -2004,7 +2137,8 @@
         "attached_assets/products/nemtek-merlin-m18s-single-zone-electric-fence-energizer-8-joule.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Druid 15 LCD Electric Fence Energizer – 15 Joule",
@@ -2019,7 +2153,8 @@
         "attached_assets/products/druid-15-lcd-electric-fence-energizer-15-joule.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Wizord 4i Electric Fence Energizer – 4 Joule",
@@ -2034,7 +2169,8 @@
         "attached_assets/products/nemtek-wizord-4i-electric-fence-energizer-4-joule.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Original HT cable 100m black single core",
@@ -2049,7 +2185,8 @@
         "attached_assets/products/nemtek-original-ht-cable-100m-black-single-core.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D5 Evo Anti-Theft Bracket(discontinued)",
@@ -2064,7 +2201,8 @@
         "attached_assets/products/centurion-d5-d6-smart-anti-theft.jpg"
       ],
       "stock": 0,
-      "featured": false
+      "featured": false,
+      "discontinued": true
     },
     {
       "name": "Nemtek 1.2mm Galvanised Stranded Electric Fence Wire – 680m / 5kg Roll",
@@ -2079,7 +2217,8 @@
         "attached_assets/products/nemtek-1-2mm-galvanised-stranded-electric-fence-wire-680m-5kg-roll.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek 1.6mm Aluminium Stranded Electric Fence Wire – 500m Roll",
@@ -2094,7 +2233,8 @@
         "attached_assets/products/nemtek-1-6mm-aluminium-stranded-electric-fence-wire-500m-roll.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek 1.6mm Aluminium Stranded Electric Fence Wire – 1000m Roll",
@@ -2109,7 +2249,8 @@
         "attached_assets/products/nemtek-1-6mm-aluminium-stranded-electric-fence-wire-1000m-roll.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek 1.6mm Solid Aluminium Alloy Wire – 1000m",
@@ -2124,7 +2265,8 @@
         "attached_assets/products/nemtek-1-6mm-solid-aluminium-alloy-wire-1000m.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "JVA Basic Steel Gate Contact",
@@ -2139,7 +2281,8 @@
         "attached_assets/products/jva-basic-steel-gate-contact.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Electric Fencing Double Pole Lightning Diverter",
@@ -2154,7 +2297,8 @@
         "attached_assets/products/nemtek-electric-fencing-double-pole-lightning-diverter.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Tensioner Compression Spring Hybrid 1 Silver 5Kg Nylon 50 Pack",
@@ -2169,7 +2313,8 @@
         "attached_assets/products/tensioner-compression-spring-hybrid-1-silver-5kg-nylon-50-pack.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Sliding Gate Contact In-Line 3 Way",
@@ -2184,7 +2329,8 @@
         "attached_assets/products/nemtek-sliding-gate-contact-in-line-3-way.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek 200mm x 4.8mm Black Cable Ties – Pack of 100",
@@ -2199,7 +2345,8 @@
         "attached_assets/products/nemtek-200mm-x-4-8mm-black-cable-ties-pack-of-100.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek 6mm Electric Fence Line Clamp",
@@ -2214,7 +2361,8 @@
         "attached_assets/products/nemtek-6mm-electric-fence-line-clamp.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek 6mm Electric Fence Line Clamps – 50 Pack",
@@ -2229,7 +2377,8 @@
         "attached_assets/products/nemtek-6mm-electric-fence-line-clamps-50-pack.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek 2-Way Gate Contact",
@@ -2244,7 +2393,8 @@
         "attached_assets/products/nemtek-2-way-gate-contact.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Network Cable 1000cm CAT6",
@@ -2259,7 +2409,8 @@
         "attached_assets/products/network-cable-10m-cat6.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Compression Spring 1 Silver 5kg Black",
@@ -2274,7 +2425,8 @@
         "attached_assets/products/nemtek-compression-spring-1-silver-5kg-black.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "20A 18-Channel CCTV Power Supply with Metal Casing",
@@ -2289,7 +2441,8 @@
         "attached_assets/products/20a-18-channel-cctv-power-supply-with-metal-casing.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "12V 10A 9-Channel CCTV Battery Backup",
@@ -2304,7 +2457,8 @@
         "attached_assets/products/12v-10a-9-channel-cctv-battery-backup.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Andowl Q-A129 Solar WiFi Security Camera",
@@ -2319,7 +2473,8 @@
         "attached_assets/products/andowl-q-a129-solar-wifi-security-camera.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Stainless Steel Tension Spring With Limiter",
@@ -2334,7 +2489,8 @@
         "attached_assets/products/stainless-steel-tension-spring-with-limiter.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "DTS 60mm Radius Gate Wheels",
@@ -2349,7 +2505,8 @@
         "attached_assets/products/dts-60mm-radius-gate-wheels.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "BNC Connector Crimp Type for RG59 (2x in a pack)",
@@ -2364,7 +2521,8 @@
         "attached_assets/products/bnc-connector-crimp-type-for-rg59-2x-in-a-pack.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "RG59 CCTV Cable with Power Pair 100 m",
@@ -2379,7 +2537,8 @@
         "attached_assets/products/rg59-cctv-cable-with-power-pair-100-m.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "BNC Male Screw‑Type Connector",
@@ -2394,7 +2553,8 @@
         "attached_assets/products/bnc-male-screw-type-connector.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "4 Channel Advanced CCTV Camera Kit",
@@ -2409,7 +2569,8 @@
         "attached_assets/products/4-channel-advanced-cctv-camera-kit.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "8 Channel Advanced CCTV Camera Kit",
@@ -2424,7 +2585,8 @@
         "attached_assets/products/8-channel-advanced-cctv-camera-kit.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion SmartGuard Wired Keypad",
@@ -2439,7 +2601,8 @@
         "attached_assets/products/centurion-smartguard-wired-keypad.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "2x4 Weatherproof Electrical Box",
@@ -2454,7 +2617,8 @@
         "attached_assets/products/2x4-weatherproof-electrical-box.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "DTS Octo 5 Button Remote",
@@ -2469,7 +2633,8 @@
         "attached_assets/products/dts-octo-5-button-remote.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "E.T 1 Button Remote",
@@ -2484,7 +2649,8 @@
         "attached_assets/products/e-t-1-button-remote-reliable-control-for-automated-systems.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "E.T 4 Button Remote",
@@ -2499,7 +2665,8 @@
         "attached_assets/products/e-t-4-button-remote.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "85X85X50 Universal Weather Proof PVC Box",
@@ -2514,7 +2681,8 @@
         "attached_assets/products/85x85x50-universal-weather-proof-pvc-box.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "4x4 Double Socket Plug",
@@ -2529,7 +2697,8 @@
         "attached_assets/products/4x4-double-socket-plug.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "4x4 Double Socket Weatherproof Box",
@@ -2544,7 +2713,8 @@
         "attached_assets/products/4x4-double-socket-weatherproof-box.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Cable Drum – Left",
@@ -2559,7 +2729,8 @@
         "attached_assets/products/cable-drum-left.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Alphacell Janus Coupler Black Rubber",
@@ -2574,7 +2745,8 @@
         "attached_assets/products/alphacell-janus-coupler-black-rubber.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Cable Drum – Right",
@@ -2589,7 +2761,8 @@
         "attached_assets/products/cable-drum-right.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D5 Evo CP84 2A Charger",
@@ -2604,7 +2777,8 @@
         "attached_assets/products/centurion-d5-evo-cp84-2a-charger.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D5 EVO Gate Motor PCB",
@@ -2619,7 +2793,8 @@
         "attached_assets/products/centurion-d5-evo-pcb.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D3 Smart Sliding Gate Motor",
@@ -2634,7 +2809,8 @@
         "attached_assets/products/centurion-d3-smart-sliding-gate-motor.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D6 Smart Gate Motor Full Kit",
@@ -2649,7 +2825,8 @@
         "attached_assets/products/centurion-d6-smart-full-kit-advanced-gate-automation-solution.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D6 Smart Gate Motor Kit",
@@ -2664,7 +2841,8 @@
         "attached_assets/products/centurion-d6-smart-full-kit-no-anti-theft-bracket.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "19KG LP Gas",
@@ -2679,7 +2857,8 @@
         "attached_assets/products/19kg-exchange.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D6/D10 Smart PCB 24V",
@@ -2694,7 +2873,8 @@
         "attached_assets/products/centurion-d6-d10-smart-pcb-24v.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "48KG LP Gas",
@@ -2709,7 +2889,8 @@
         "attached_assets/products/48kg-exchange.png"
       ],
       "stock": 99,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "DC UPS 12VDC Battery Backup",
@@ -2724,7 +2905,8 @@
         "attached_assets/products/dc-ups-12vdc-battery-backup.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion Photon Infrared Wireless Beams",
@@ -2739,7 +2921,8 @@
         "attached_assets/products/centurion-photon-infrared-wireless-beams.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Double Side Bearing – Left",
@@ -2754,7 +2937,8 @@
         "attached_assets/products/double-side-bearing-left.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Extension Box 100x50 Galvanized Steel",
@@ -2769,7 +2953,8 @@
         "attached_assets/products/extension-box-100x50-galvanized-steel.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "DTS 80mm Radius Gate Wheels",
@@ -2784,7 +2969,8 @@
         "attached_assets/products/dts-80mm-radius-gate-wheels.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "DTS ECO GATE MOTOR KIT BUNDLE",
@@ -2799,7 +2985,8 @@
         "attached_assets/products/dts-eco-gate-motor-kit.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "DTS EXPERT GATE MOTOR FULL KIT BUNDLE",
@@ -2814,7 +3001,8 @@
         "attached_assets/products/dts-expert-gate-motor-full-kit.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Gemini Infrared Wireless Beams",
@@ -2829,7 +3017,8 @@
         "attached_assets/products/gemini-infrared-wireless-beams.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Lifting Cables Tension",
@@ -2844,7 +3033,8 @@
         "attached_assets/products/lifting-cables-tension.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Multi Plug 7-Way Extension",
@@ -2859,7 +3049,8 @@
         "attached_assets/products/multi-plug-7-way-extension.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Pulley Spring Mount for Garage Doors",
@@ -2874,7 +3065,8 @@
         "attached_assets/products/pulley-spring-mount-for-garage-doors.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Hikvision 16-Channel CCTV Power Supply",
@@ -2889,7 +3081,8 @@
         "attached_assets/products/hikvision-16-channel-cctv-power-supply.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek HT Cable Slimline – 50m (Black)",
@@ -2904,7 +3097,8 @@
         "attached_assets/products/nemtek-ht-cable-slimline-50m-black.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "LP Gas Regulator for 3kg, 5kg, and 7kg Cylinder",
@@ -2919,7 +3113,8 @@
         "attached_assets/products/lp-gas-regulator-for-3kg-5kg-and-7kg.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek HT Cable Slimline – 100m (Black)",
@@ -2934,7 +3129,8 @@
         "attached_assets/products/nemtek-ht-cable-slimline-100m-black-copy.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nylon Roller Heavy Duty",
@@ -2949,7 +3145,8 @@
         "attached_assets/products/nylon-roller-heavy-duty.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Pulley Track Mount for Garage Door",
@@ -2964,7 +3161,8 @@
         "attached_assets/products/pulley-track-mount-for-garage-door.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "PVC Conduit Pipe 25mm x 4m",
@@ -2979,7 +3177,8 @@
         "attached_assets/products/pvc-conduit-pipe-25mm-x-4m.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "PVC Coupling 20mm",
@@ -2994,7 +3193,8 @@
         "attached_assets/products/pvc-coupling-20mm.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "PWM 10A Solar Charge Controller",
@@ -3009,7 +3209,8 @@
         "attached_assets/products/pwm-10a-solar-charge-controller.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Sentry Safety Wired Gate Beams",
@@ -3024,7 +3225,8 @@
         "attached_assets/products/sentry-safety-gate-beams.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Top Roller Bracket Large",
@@ -3039,7 +3241,8 @@
         "attached_assets/products/top-roller-bracket-large.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "TT - D/Bottom Bracket - Left",
@@ -3054,7 +3257,8 @@
         "attached_assets/products/tt-d-bottom-bracket.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "White Surfix Cable 2.5mm Round",
@@ -3069,7 +3273,8 @@
         "attached_assets/products/white-surfix-cable-2-5mm-round.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D5 CP80 PCB (Discontinued)",
@@ -3084,7 +3289,8 @@
         "attached_assets/products/centurion-d5-cp80-pcb.jpg"
       ],
       "stock": 0,
-      "featured": false
+      "featured": false,
+      "discontinued": true
     },
     {
       "name": "White Surfix Round Cable 1.5mm",
@@ -3099,7 +3305,8 @@
         "attached_assets/products/white-surfix-cable-1-5mm.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "TT - D/Bottom Bracket-Right",
@@ -3114,7 +3321,8 @@
         "attached_assets/products/tt-d-bottom-bracket-right.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D10 Smart Turbo Gate Motor (No remotes included)",
@@ -3129,7 +3337,8 @@
         "attached_assets/products/centurion-d10-smart-turbo-gate-motor.png"
       ],
       "stock": 100,
-      "featured": true
+      "featured": true,
+      "discontinued": false
     },
     {
       "name": "20mm PVC Side Entry Junction Box 1 Way",
@@ -3144,7 +3353,8 @@
         "attached_assets/products/pvc-side-entry-junction-box-1-way.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "3 Point Plug 16A",
@@ -3159,7 +3369,8 @@
         "attached_assets/products/3-point-plug-16a.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centre Bearing (Middle)",
@@ -3174,7 +3385,8 @@
         "attached_assets/products/centre-bearing-middle.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Double Side Bearing – Right",
@@ -3189,7 +3401,8 @@
         "attached_assets/products/double-side-bearing-right.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Glosteel Garage Door African Cream",
@@ -3204,7 +3417,8 @@
         "attached_assets/products/glosteel-garage-door-african-cream.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "JVA High Voltage Fence Warning Light – Blue LED",
@@ -3219,7 +3433,8 @@
         "attached_assets/products/jva-high-voltage-fence-warning-light-blue-led.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Garage Door Steel Hinge No. 1",
@@ -3234,7 +3449,8 @@
         "attached_assets/products/garage-door-steel-hinge-no-1.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Flat Twin and Earth Cable – 1.5mm",
@@ -3249,7 +3465,8 @@
         "attached_assets/products/flat-twin-and-earth-cable-1-5mm.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "PVC Conduit Pipe 20mm X 4m",
@@ -3264,7 +3481,8 @@
         "attached_assets/products/pvc-conduit-pipe-20mm-x-4m.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "CENTURION SDO4 T10 Smart Kit",
@@ -3279,7 +3497,8 @@
         "attached_assets/products/centurion-t10-sdo4-motor.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "E.T DC BLUE ADVANCED PICO MOTOR BUNDLE",
@@ -3294,7 +3513,8 @@
         "attached_assets/products/e-t-dc-blue-advanced-pico-motor.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "ET Nice DC Blue Astute 3.2m Sectional Garage Door Motor",
@@ -3309,7 +3529,8 @@
         "attached_assets/products/et-nice-dc-blue-astute-3-2m-sectional-garage-door-motor.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Gemini Gemlink Smart Device",
@@ -3324,7 +3545,8 @@
         "attached_assets/products/gemini-gemlink-smart-device.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "8 Wire Straight Square Tube Black",
@@ -3339,7 +3561,8 @@
         "attached_assets/products/8-wire-straight-square-tube-black.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Tek Screws 12x38mm – 100",
@@ -3354,7 +3577,8 @@
         "attached_assets/products/tek-screws-12x38mm-100.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nail In Anchors 6x40mm – 100 Pack",
@@ -3369,7 +3593,8 @@
         "attached_assets/products/nail-in-anchors-6x60mm-100-pack.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Coach Screws 8x75mm with Plugs – 50 Pack",
@@ -3384,7 +3609,8 @@
         "attached_assets/products/nemtek-coach-screws-8x75mm-with-plugs-50-pack.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "6 Line Round Bar Black",
@@ -3399,7 +3625,8 @@
         "attached_assets/products/6-line-round-bar-black.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "DTS Megashock 5 Joule Electric Fence Energizer",
@@ -3414,7 +3641,8 @@
         "attached_assets/products/dts-megashock-5-joule-electric-fence-energizer.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Stealth M28S Dual Zone Electric Fence Energizer – 15 Joule",
@@ -3429,7 +3657,8 @@
         "attached_assets/products/nemtek-stealth-m28s-dual-zone-electric-fence-energizer-15-joule.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "305m CAT6 UTP Copper-Coated Ethernet Cable",
@@ -3444,7 +3673,8 @@
         "attached_assets/products/305m-cat6-utp-copper-coated-ethernet-cable.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Balun 1 Channel UTP Passive Video Transceiver per Pair",
@@ -3459,7 +3689,8 @@
         "attached_assets/products/balun-1-channel-utp-passive-video-transceiver-per-pair.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Tensioner Compression Spring Hybrid 1 Silver 5Kg Nylon",
@@ -3474,7 +3705,8 @@
         "attached_assets/products/tensioner-compression-spring-hybrid-1-silver-5kg-nylon.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Hybrid Compression Spring 2 (8kg Gold) Black",
@@ -3489,7 +3721,8 @@
         "attached_assets/products/nemtek-hybrid-compression-spring-2-8kg-gold-black.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion G-Speak Ultra 4-button Intercom",
@@ -3504,7 +3737,8 @@
         "attached_assets/products/centurion-g-speak-ultra-4-button.jpg"
       ],
       "stock": 99,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "E.T 2 Button Remote",
@@ -3519,7 +3753,8 @@
         "attached_assets/products/e-t-2-button-remote.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "12V 7AH Battery",
@@ -3534,7 +3769,8 @@
         "attached_assets/products/12v-7ah.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion SmartGuard Air Wireless Keypad",
@@ -3549,7 +3785,8 @@
         "attached_assets/products/centurion-smartguard-air-wireless-keypad.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "LP Gas Regulator for 9kg, 19kg, 48kg Cylinder",
@@ -3564,7 +3801,8 @@
         "attached_assets/products/lp-gas-regulator-for-9kg-19kg-48kg-cylinder.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "12V 15W White Security Siren",
@@ -3579,7 +3817,8 @@
         "attached_assets/products/12v-15w-white-security-siren.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "4X2 30A 2P White Isolator",
@@ -3594,7 +3833,8 @@
         "attached_assets/products/4x2-30a-2p-white-isolator.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek HT Cable Slimline – 30m (Black)",
@@ -3609,7 +3849,8 @@
         "attached_assets/products/nemtek-ht-cable-slimline-30m-black.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek 100mm x 2.5mm Black Cable Ties – Pack of 100",
@@ -3624,7 +3865,8 @@
         "attached_assets/products/nemtek-100mm-x-2-5mm-black-cable-ties-pack-of-100.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Garage Door Steel Hinge No. 3",
@@ -3639,7 +3881,8 @@
         "attached_assets/products/garage-door-steel-hinge-no-3.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Maglock 280kg Weatherproof with Bracket",
@@ -3654,7 +3897,8 @@
         "attached_assets/products/maglock-280kg-weatherproof-with-bracket.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Lifting Cables Torsion",
@@ -3669,7 +3913,8 @@
         "attached_assets/products/lifting-cables-torsion.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "750mm Stay with Sleeves and Screws",
@@ -3684,7 +3929,8 @@
         "attached_assets/products/750mm-stay-with-sleeves-and-screws.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Gemini PCB V.90 + Gemlink Smart Device",
@@ -3699,7 +3945,8 @@
         "attached_assets/products/gemini-pcb-v-90-gemlink-smart-device.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D5 Evo Smart Gate Motor And Remotes",
@@ -3714,7 +3961,8 @@
         "attached_assets/products/centurion-d5-evo-smart-gate-motor-2x-nova-4-button-remotes.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Braided Stainless Steel Wire 304 – 1.2mm (800m Roll)",
@@ -3729,7 +3977,8 @@
         "attached_assets/products/nemtek-braided-stainless-steel-wire-304-1-2mm-800m-roll.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Garage Door Steel Hinge No. 2",
@@ -3744,7 +3993,8 @@
         "attached_assets/products/garage-door-steel-hinge-no-2.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Nemtek Sliding Gate Contact Bracket – Heavy-Duty Electric Fence Fitting",
@@ -3759,7 +4009,8 @@
         "attached_assets/products/nemtek-sliding-gate-contact-bracket-heavy-duty-electric-fence-fitting.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "4x4 PVC Extension Box",
@@ -3774,7 +4025,8 @@
         "attached_assets/products/4x4-pvc-extension-box.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Garage Door Steel Hinge No. 4",
@@ -3789,7 +4041,8 @@
         "attached_assets/products/garage-door-steel-hinge-no-4.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Garage Door Steel Hinge No. 6",
@@ -3804,7 +4057,8 @@
         "attached_assets/products/garage-door-steel-hinge-no-6.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Garage Door Steel Hinge No. 5",
@@ -3819,7 +4073,8 @@
         "attached_assets/products/garage-door-steel-hinge-no-5.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion Gate Motor Door and Key",
@@ -3834,7 +4089,8 @@
         "attached_assets/products/centurion-gate-motor-door-and-key.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D10 Smart Base Plate",
@@ -3849,7 +4105,8 @@
         "attached_assets/products/centurion-d10-smart-base-plate.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D5 Evo Smart PCB 12v",
@@ -3864,7 +4121,8 @@
         "attached_assets/products/centurion-d5-evo-smart-pcb-12v.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "DTS 80mm Radius Gate Wheels V-Profile",
@@ -3879,7 +4137,8 @@
         "attached_assets/products/dts-80mm-radius-gate-wheels-v-profile.png"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Centurion D6/D10 Smart Charger 24V",
@@ -3894,7 +4153,8 @@
         "attached_assets/products/centurion-d6-d10-smart-charger-24v.jpg"
       ],
       "stock": 100,
-      "featured": false
+      "featured": false,
+      "discontinued": false
     },
     {
       "name": "Zartek Wireless Intercom System",
@@ -3909,7 +4169,8 @@
         "attached_assets/products/zartek-wireless-intercom-system.jpg"
       ],
       "stock": 0,
-      "featured": false
+      "featured": false,
+      "discontinued": true
     },
     {
       "name": "Duraslide Remotes",
@@ -3922,7 +4183,8 @@
       "imageUrl": "https://cdn.shopify.com/s/files/1/0653/9640/8365/files/Duraslide-Remotes.jpg?v=1732102129",
       "images": [],
       "stock": 0,
-      "featured": false
+      "featured": false,
+      "discontinued": true
     },
     {
       "name": "4K Solar CCTV Camera",
@@ -3937,7 +4199,8 @@
         "attached_assets/products/4k-solar-powered-security-camera.png"
       ],
       "stock": 0,
-      "featured": false
+      "featured": false,
+      "discontinued": true
     },
     {
       "name": "Centurion D2 Sliding Gate Motor (discontinued)",
@@ -3952,7 +4215,8 @@
         "attached_assets/products/centurion-d2-sliding-gate-motor.png"
       ],
       "stock": 0,
-      "featured": false
+      "featured": false,
+      "discontinued": true
     },
     {
       "name": "CENTURION D5 EVO FULL KIT(Discontinued)",
@@ -3967,7 +4231,8 @@
         "attached_assets/products/centurion-d5-evo-full-kit.png"
       ],
       "stock": 0,
-      "featured": false
+      "featured": false,
+      "discontinued": true
     },
     {
       "name": "100×100×70 mm Waterproof PVC Electrical Junction Box",
@@ -3982,7 +4247,8 @@
         "attached_assets/products/100-100-70-mm-waterproof-pvc-electrical-junction-box.png"
       ],
       "stock": 0,
-      "featured": false
+      "featured": false,
+      "discontinued": true
     },
     {
       "name": "Gate Motor Lithium Battery 12.8V 7Ah",
@@ -3997,7 +4263,8 @@
         "attached_assets/products/12-8v-7ah-lithium-battery.jpg"
       ],
       "stock": 0,
-      "featured": false
+      "featured": false,
+      "discontinued": true
     },
     {
       "name": "Centurion D5 Evo Sliding Gate Motor (Discontinued)",
@@ -4012,7 +4279,8 @@
         "attached_assets/products/centurion-d5-evo-sliding-gate-motor.png"
       ],
       "stock": 0,
-      "featured": false
+      "featured": false,
+      "discontinued": true
     },
     {
       "name": "Dace Sprint 500 Gate Motor (Discontinued)",
@@ -4027,7 +4295,8 @@
         "attached_assets/products/dace-sprint-500-gate-motor.jpg"
       ],
       "stock": 0,
-      "featured": false
+      "featured": false,
+      "discontinued": true
     },
     {
       "name": "Digidoor Digi One Garage Door Motor (discontinued)",
@@ -4042,7 +4311,8 @@
         "attached_assets/products/digidoor-digi-one-garage-door-motor.jpg"
       ],
       "stock": 0,
-      "featured": false
+      "featured": false,
+      "discontinued": true
     },
     {
       "name": "DigiDoor Digi IQ Smart Garage Door Motor (discontinued)",
@@ -4057,7 +4327,8 @@
         "attached_assets/products/digidoor-digi-iq-smart-garage-door-motor.jpg"
       ],
       "stock": 0,
-      "featured": false
+      "featured": false,
+      "discontinued": true
     },
     {
       "name": "12V 8AH LITHIUM BATTERY",
@@ -4072,7 +4343,8 @@
         "attached_assets/products/12v-7ah-lithium-battery.png"
       ],
       "stock": 0,
-      "featured": true
+      "featured": true,
+      "discontinued": true
     }
   ],
   "categories": [

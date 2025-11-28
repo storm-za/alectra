@@ -47,6 +47,7 @@ async function exportDevDatabase() {
         images: p.images || [], // Use database gallery
         stock: p.stock,
         featured: p.featured,
+        discontinued: (p as any).discontinued || false,
       };
     }),
     categories: allCategories.map(c => ({
