@@ -4,14 +4,14 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Minus, Plus, X } from "lucide-react";
 import { Link } from "wouter";
-import type { CartItem, LpGasVariant } from "@shared/schema";
+import type { CartItem, ProductVariant } from "@shared/schema";
 
 interface CartDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   items: CartItem[];
-  onUpdateQuantity: (productId: string, quantity: number, variant?: LpGasVariant) => void;
-  onRemoveItem: (productId: string, variant?: LpGasVariant) => void;
+  onUpdateQuantity: (productId: string, quantity: number, variant?: ProductVariant) => void;
+  onRemoveItem: (productId: string, variant?: ProductVariant) => void;
 }
 
 // Helper to get unique key for cart item

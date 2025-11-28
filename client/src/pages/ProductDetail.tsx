@@ -39,16 +39,16 @@ import { SEO, createProductStructuredData } from "@/components/SEO";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertProductReviewSchema, LP_GAS_PRICING, LP_GAS_CYLINDER_IDS } from "@shared/schema";
+import { insertProductReviewSchema, LP_GAS_PRICING, LP_GAS_CYLINDER_IDS, GLOSTEEL_PRICING, GLOSTEEL_DOOR_IDS } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import type { Product, ProductReview, InsertProductReview, LpGasVariant } from "@shared/schema";
+import type { Product, ProductReview, InsertProductReview, LpGasVariant, GarageDoorSize, ProductVariant } from "@shared/schema";
 import { z } from "zod";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
 interface ProductDetailProps {
-  onAddToCart: (product: Product, quantity: number, variant?: LpGasVariant, variantPrice?: string) => void;
+  onAddToCart: (product: Product, quantity: number, variant?: ProductVariant, variantPrice?: string) => void;
 }
 
 // Form schema for review submission
@@ -63,6 +63,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const [selectedRating, setSelectedRating] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<LpGasVariant>('exchange');
+  const [selectedDoorSize, setSelectedDoorSize] = useState<GarageDoorSize>('2450mm');
   const { toast } = useToast();
 
   const { data: product, isLoading } = useQuery<Product>({
@@ -158,16 +159,23 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const isLpGasCylinder = LP_GAS_CYLINDER_IDS.includes(product.id);
   const lpGasPricing = isLpGasCylinder ? LP_GAS_PRICING[product.id] : null;
   
-  // Calculate display price based on variant for LP Gas cylinders
+  // Check if this is a Glosteel garage door with size pricing
+  const isGlosteelDoor = GLOSTEEL_DOOR_IDS.includes(product.id);
+  const glosteelPricing = isGlosteelDoor ? GLOSTEEL_PRICING[product.id] : null;
+  
+  // Calculate display price based on variant for LP Gas cylinders or Glosteel doors
   const getDisplayPrice = () => {
     if (lpGasPricing) {
       return lpGasPricing[selectedVariant].toFixed(2);
+    }
+    if (glosteelPricing) {
+      return glosteelPricing[selectedDoorSize].toFixed(2);
     }
     return parseFloat(product.price).toFixed(2);
   };
   
   const displayPrice = getDisplayPrice();
-  const priceValue = lpGasPricing ? lpGasPricing[selectedVariant] : parseFloat(product.price);
+  const priceValue = lpGasPricing ? lpGasPricing[selectedVariant] : (glosteelPricing ? glosteelPricing[selectedDoorSize] : parseFloat(product.price));
   const isDiscontinued = (product as any).discontinued === true || priceValue === 0;
   const isLowStock = product.stock > 0 && product.stock <= 5 && !isDiscontinued;
   const isOutOfStock = product.stock === 0 || isDiscontinued;
@@ -333,6 +341,59 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
               </div>
             )}
 
+            {/* Glosteel Garage Door Size Selector */}
+            {isGlosteelDoor && glosteelPricing && (
+              <div className="mb-6">
+                <h3 className="text-sm font-medium mb-3">Select Door Size:</h3>
+                <RadioGroup
+                  value={selectedDoorSize}
+                  onValueChange={(value) => setSelectedDoorSize(value as GarageDoorSize)}
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                >
+                  <div className="relative">
+                    <RadioGroupItem
+                      value="2450mm"
+                      id="size-2450mm"
+                      className="peer sr-only"
+                      data-testid="radio-size-2450mm"
+                    />
+                    <Label
+                      htmlFor="size-2450mm"
+                      className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
+                    >
+                      <span className="font-semibold">2450mm Width</span>
+                      <span className="text-sm text-muted-foreground">
+                        Standard single garage door size
+                      </span>
+                      <span className="text-lg font-bold text-primary">
+                        R {glosteelPricing['2450mm'].toFixed(2)}
+                      </span>
+                    </Label>
+                  </div>
+                  <div className="relative">
+                    <RadioGroupItem
+                      value="2550mm"
+                      id="size-2550mm"
+                      className="peer sr-only"
+                      data-testid="radio-size-2550mm"
+                    />
+                    <Label
+                      htmlFor="size-2550mm"
+                      className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
+                    >
+                      <span className="font-semibold">2550mm Width</span>
+                      <span className="text-sm text-muted-foreground">
+                        Wider single garage door size
+                      </span>
+                      <span className="text-lg font-bold text-primary">
+                        R {glosteelPricing['2550mm'].toFixed(2)}
+                      </span>
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            )}
+
             <div className="mb-8">
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-bold" data-testid="text-product-price">
@@ -342,6 +403,11 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 {isLpGasCylinder && (
                   <Badge variant="secondary" className="ml-2">
                     {selectedVariant === 'exchange' ? 'Exchange' : 'New Cylinder'}
+                  </Badge>
+                )}
+                {isGlosteelDoor && (
+                  <Badge variant="secondary" className="ml-2">
+                    {selectedDoorSize}
                   </Badge>
                 )}
               </div>
@@ -379,6 +445,8 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 onClick={() => {
                   if (isLpGasCylinder && lpGasPricing) {
                     onAddToCart(product, quantity, selectedVariant, displayPrice);
+                  } else if (isGlosteelDoor && glosteelPricing) {
+                    onAddToCart(product, quantity, selectedDoorSize, displayPrice);
                   } else {
                     onAddToCart(product, quantity);
                   }

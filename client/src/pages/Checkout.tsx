@@ -27,7 +27,7 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import type { CartItem, UserAddress, PaystackInitializeResponse, PaystackVerifyResponse, LpGasVariant } from "@shared/schema";
+import type { CartItem, UserAddress, PaystackInitializeResponse, PaystackVerifyResponse } from "@shared/schema";
 import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 

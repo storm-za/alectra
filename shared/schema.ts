@@ -283,11 +283,13 @@ export type BlogPost = typeof blogPosts.$inferSelect;
 export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
 
 export type LpGasVariant = 'exchange' | 'new';
+export type GarageDoorSize = '2450mm' | '2550mm';
+export type ProductVariant = LpGasVariant | GarageDoorSize;
 
 export type CartItem = {
   product: Product;
   quantity: number;
-  variant?: LpGasVariant;
+  variant?: ProductVariant;
   variantPrice?: string;
 };
 
@@ -300,11 +302,20 @@ export const LP_GAS_PRICING: Record<string, { exchange: number; new: number }> =
 
 export const LP_GAS_CYLINDER_IDS = Object.keys(LP_GAS_PRICING);
 
+// Glosteel Garage Door size pricing configuration
+export const GLOSTEEL_PRICING: Record<string, { '2450mm': number; '2550mm': number }> = {
+  '9a5b69aa-7d98-4563-84a1-f5ea3068866f': { '2450mm': 1899, '2550mm': 2299 },  // African Cream
+  '8ba7234a-099a-49aa-b30f-623b314bc9c2': { '2450mm': 1899, '2550mm': 2299 },  // Charcoal Grey
+  '4bc37862-e715-4d3a-b374-f88e15a7fdcd': { '2450mm': 1899, '2550mm': 2299 },  // Safari Brown
+};
+
+export const GLOSTEEL_DOOR_IDS = Object.keys(GLOSTEEL_PRICING);
+
 export const createOrderRequestSchema = insertOrderSchema.extend({
   items: z.array(z.object({
     productId: z.string(),
     quantity: z.number().int().positive(),
-    variant: z.enum(['exchange', 'new']).optional(),
+    variant: z.string().optional(),
     variantPrice: z.string().optional(),
   })).min(1),
 });

@@ -31,7 +31,7 @@ import BlogPost from "@/pages/BlogPost";
 import AdminSeed from "@/pages/AdminSeed";
 import NotFound from "@/pages/not-found";
 import { useToast } from "@/hooks/use-toast";
-import type { Product, CartItem, LpGasVariant } from "@shared/schema";
+import type { Product, CartItem, ProductVariant } from "@shared/schema";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -53,9 +53,9 @@ function Router() {
   const [cartOpen, setCartOpen] = useState(false);
   const { toast } = useToast();
 
-  const addToCart = (product: Product, quantity: number = 1, variant?: LpGasVariant, variantPrice?: string) => {
+  const addToCart = (product: Product, quantity: number = 1, variant?: ProductVariant, variantPrice?: string) => {
     setCartItems((items) => {
-      // For LP Gas variants, match by product ID AND variant type
+      // For products with variants (LP Gas, Glosteel doors), match by product ID AND variant type
       const existingItem = items.find((item) => 
         item.product.id === product.id && item.variant === variant
       );
@@ -79,7 +79,7 @@ function Router() {
     setCartOpen(true);
   };
 
-  const updateQuantity = (productId: string, quantity: number, variant?: LpGasVariant) => {
+  const updateQuantity = (productId: string, quantity: number, variant?: ProductVariant) => {
     setCartItems((items) =>
       items.map((item) =>
         item.product.id === productId && item.variant === variant 
@@ -89,7 +89,7 @@ function Router() {
     );
   };
 
-  const removeItem = (productId: string, variant?: LpGasVariant) => {
+  const removeItem = (productId: string, variant?: ProductVariant) => {
     setCartItems((items) => items.filter((item) => 
       !(item.product.id === productId && item.variant === variant)
     ));
