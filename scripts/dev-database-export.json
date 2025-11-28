@@ -4398,18 +4398,18 @@
       "imageUrl": "attached_assets/products/nylon-roller-heavy-duty.png"
     },
     {
-      "id": "e110c296-9deb-457b-9a4d-edfa9aa529e0",
-      "name": "LP Gas",
-      "slug": "lp-gas-exchange",
-      "description": "LPG cylinders, regulators, and gas appliances",
-      "imageUrl": "/attached_assets/products/19kg-exchange.png"
-    },
-    {
       "id": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "name": "CCTV Systems",
       "slug": "cctv-cameras",
       "description": "Security cameras, DVRs, NVRs, and complete surveillance systems",
       "imageUrl": "/attached_assets/products/4k-solar-powered-security-camera.png"
+    },
+    {
+      "id": "e110c296-9deb-457b-9a4d-edfa9aa529e0",
+      "name": "LP Gas",
+      "slug": "lp-gas-exchange",
+      "description": "LPG cylinders, regulators, and gas appliances",
+      "imageUrl": "/attached_assets/products/19kg-exchange.png"
     }
   ],
   "blogs": [
