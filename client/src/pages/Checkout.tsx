@@ -27,8 +27,9 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import type { CartItem, UserAddress, PaystackInitializeResponse, PaystackVerifyResponse } from "@shared/schema";
+import type { CartItem, UserAddress, PaystackInitializeResponse, PaystackVerifyResponse, LpGasVariant } from "@shared/schema";
 import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const checkoutSchema = z.object({
   deliveryMethod: z.enum(["delivery", "pickup"]),
@@ -123,6 +124,8 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
         items: cartItems.map((item) => ({
           productId: item.product.id,
           quantity: item.quantity,
+          variant: item.variant,
+          variantPrice: item.variantPrice,
         })),
       };
 
@@ -241,8 +244,13 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
     );
   }
 
+  // Helper to get item price (variant price or regular price)
+  const getItemPrice = (item: CartItem) => {
+    return item.variantPrice ? parseFloat(item.variantPrice) : parseFloat(item.product.price);
+  };
+  
   const totalVatInclusive = cartItems.reduce((sum, item) => {
-    return sum + parseFloat(item.product.price) * item.quantity;
+    return sum + getItemPrice(item) * item.quantity;
   }, 0);
   
   // Apply 15% trade discount to VAT-inclusive total if approved
@@ -598,12 +606,13 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
               </CardHeader>
               <CardContent className="space-y-4 p-6">
                 {cartItems.map((item) => {
-                  const displayPrice = parseFloat(item.product.price).toFixed(2);
-                  const lineTotal = (parseFloat(item.product.price) * item.quantity).toFixed(2);
+                  const itemPrice = getItemPrice(item);
+                  const lineTotal = (itemPrice * item.quantity).toFixed(2);
                   const imageUrl = item.product.imageUrl.startsWith('/') ? item.product.imageUrl : `/${item.product.imageUrl}`;
+                  const itemKey = item.variant ? `${item.product.id}-${item.variant}` : item.product.id;
 
                   return (
-                    <div key={item.product.id} className="flex gap-3">
+                    <div key={itemKey} className="flex gap-3">
                       <img
                         src={imageUrl}
                         alt={item.product.name}
@@ -611,7 +620,14 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium line-clamp-1">{item.product.name}</p>
-                        <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                          {item.variant && (
+                            <Badge variant="secondary" className="text-xs">
+                              {item.variant === 'exchange' ? 'Exchange' : 'New'}
+                            </Badge>
+                          )}
+                        </div>
                         <p className="text-sm font-semibold">R {lineTotal}</p>
                       </div>
                     </div>

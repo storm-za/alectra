@@ -282,15 +282,30 @@ export type InsertTradeApplication = z.infer<typeof insertTradeApplicationSchema
 export type BlogPost = typeof blogPosts.$inferSelect;
 export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
 
+export type LpGasVariant = 'exchange' | 'new';
+
 export type CartItem = {
   product: Product;
   quantity: number;
+  variant?: LpGasVariant;
+  variantPrice?: string;
 };
+
+// LP Gas pricing configuration
+export const LP_GAS_PRICING: Record<string, { exchange: number; new: number }> = {
+  'c2b268a1-714c-4460-aff3-d5f9906d98bd': { exchange: 280, new: 995 },    // 9kg
+  '7c0ef3c4-7181-4d35-8145-562bc2434f11': { exchange: 580, new: 1820 },   // 19kg
+  '51891f80-9f0b-4817-9a2c-c5ff57f44905': { exchange: 1199, new: 3700 },  // 48kg
+};
+
+export const LP_GAS_CYLINDER_IDS = Object.keys(LP_GAS_PRICING);
 
 export const createOrderRequestSchema = insertOrderSchema.extend({
   items: z.array(z.object({
     productId: z.string(),
     quantity: z.number().int().positive(),
+    variant: z.enum(['exchange', 'new']).optional(),
+    variantPrice: z.string().optional(),
   })).min(1),
 });
 

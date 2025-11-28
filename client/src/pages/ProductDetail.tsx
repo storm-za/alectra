@@ -39,14 +39,16 @@ import { SEO, createProductStructuredData } from "@/components/SEO";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertProductReviewSchema } from "@shared/schema";
+import { insertProductReviewSchema, LP_GAS_PRICING, LP_GAS_CYLINDER_IDS } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import type { Product, ProductReview, InsertProductReview } from "@shared/schema";
+import type { Product, ProductReview, InsertProductReview, LpGasVariant } from "@shared/schema";
 import { z } from "zod";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 interface ProductDetailProps {
-  onAddToCart: (product: Product, quantity: number) => void;
+  onAddToCart: (product: Product, quantity: number, variant?: LpGasVariant, variantPrice?: string) => void;
 }
 
 // Form schema for review submission
@@ -60,6 +62,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const [selectedRating, setSelectedRating] = useState(0);
+  const [selectedVariant, setSelectedVariant] = useState<LpGasVariant>('exchange');
   const { toast } = useToast();
 
   const { data: product, isLoading } = useQuery<Product>({
@@ -151,8 +154,20 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     );
   }
 
-  const displayPrice = parseFloat(product.price).toFixed(2);
-  const priceValue = parseFloat(product.price);
+  // Check if this is an LP Gas cylinder with variant pricing
+  const isLpGasCylinder = LP_GAS_CYLINDER_IDS.includes(product.id);
+  const lpGasPricing = isLpGasCylinder ? LP_GAS_PRICING[product.id] : null;
+  
+  // Calculate display price based on variant for LP Gas cylinders
+  const getDisplayPrice = () => {
+    if (lpGasPricing) {
+      return lpGasPricing[selectedVariant].toFixed(2);
+    }
+    return parseFloat(product.price).toFixed(2);
+  };
+  
+  const displayPrice = getDisplayPrice();
+  const priceValue = lpGasPricing ? lpGasPricing[selectedVariant] : parseFloat(product.price);
   const isDiscontinued = (product as any).discontinued === true || priceValue === 0;
   const isLowStock = product.stock > 0 && product.stock <= 5 && !isDiscontinued;
   const isOutOfStock = product.stock === 0 || isDiscontinued;
@@ -267,12 +282,70 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
               )}
             </div>
 
+            {/* LP Gas Variant Selector */}
+            {isLpGasCylinder && lpGasPricing && (
+              <div className="mb-6">
+                <h3 className="text-sm font-medium mb-3">Select Option:</h3>
+                <RadioGroup
+                  value={selectedVariant}
+                  onValueChange={(value) => setSelectedVariant(value as LpGasVariant)}
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                >
+                  <div className="relative">
+                    <RadioGroupItem
+                      value="exchange"
+                      id="variant-exchange"
+                      className="peer sr-only"
+                      data-testid="radio-variant-exchange"
+                    />
+                    <Label
+                      htmlFor="variant-exchange"
+                      className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
+                    >
+                      <span className="font-semibold">Exchange</span>
+                      <span className="text-sm text-muted-foreground">
+                        Bring your empty cylinder, get a full one
+                      </span>
+                      <span className="text-lg font-bold text-primary">
+                        R {lpGasPricing.exchange.toFixed(2)}
+                      </span>
+                    </Label>
+                  </div>
+                  <div className="relative">
+                    <RadioGroupItem
+                      value="new"
+                      id="variant-new"
+                      className="peer sr-only"
+                      data-testid="radio-variant-new"
+                    />
+                    <Label
+                      htmlFor="variant-new"
+                      className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
+                    >
+                      <span className="font-semibold">New Cylinder</span>
+                      <span className="text-sm text-muted-foreground">
+                        Brand new cylinder, filled and ready
+                      </span>
+                      <span className="text-lg font-bold text-primary">
+                        R {lpGasPricing.new.toFixed(2)}
+                      </span>
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            )}
+
             <div className="mb-8">
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-bold" data-testid="text-product-price">
                   R {displayPrice}
                 </span>
                 <span className="text-sm text-muted-foreground">VAT inc.</span>
+                {isLpGasCylinder && (
+                  <Badge variant="secondary" className="ml-2">
+                    {selectedVariant === 'exchange' ? 'Exchange' : 'New Cylinder'}
+                  </Badge>
+                )}
               </div>
             </div>
 
@@ -305,7 +378,13 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 size="lg"
                 className="flex-1"
                 disabled={isOutOfStock}
-                onClick={() => onAddToCart(product, quantity)}
+                onClick={() => {
+                  if (isLpGasCylinder && lpGasPricing) {
+                    onAddToCart(product, quantity, selectedVariant, displayPrice);
+                  } else {
+                    onAddToCart(product, quantity);
+                  }
+                }}
                 data-testid="button-add-to-cart"
               >
                 <ShoppingCart className="h-5 w-5 mr-2" />

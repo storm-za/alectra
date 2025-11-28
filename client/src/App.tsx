@@ -31,7 +31,7 @@ import BlogPost from "@/pages/BlogPost";
 import AdminSeed from "@/pages/AdminSeed";
 import NotFound from "@/pages/not-found";
 import { useToast } from "@/hooks/use-toast";
-import type { Product, CartItem } from "@shared/schema";
+import type { Product, CartItem, LpGasVariant } from "@shared/schema";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -43,39 +43,56 @@ function ScrollToTop() {
   return null;
 }
 
+// Helper to create a unique cart item key (productId + variant for LP Gas)
+const getCartItemKey = (item: CartItem) => {
+  return item.variant ? `${item.product.id}-${item.variant}` : item.product.id;
+};
+
 function Router() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const { toast } = useToast();
 
-  const addToCart = (product: Product, quantity: number = 1) => {
+  const addToCart = (product: Product, quantity: number = 1, variant?: LpGasVariant, variantPrice?: string) => {
     setCartItems((items) => {
-      const existingItem = items.find((item) => item.product.id === product.id);
+      // For LP Gas variants, match by product ID AND variant type
+      const existingItem = items.find((item) => 
+        item.product.id === product.id && item.variant === variant
+      );
       
       if (existingItem) {
         return items.map((item) =>
-          item.product.id === product.id
+          item.product.id === product.id && item.variant === variant
             ? { ...item, quantity: Math.min(item.quantity + quantity, product.stock) }
             : item
         );
       }
       
-      return [...items, { product, quantity: Math.min(quantity, product.stock) }];
+      return [...items, { 
+        product, 
+        quantity: Math.min(quantity, product.stock),
+        variant,
+        variantPrice
+      }];
     });
 
     setCartOpen(true);
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = (productId: string, quantity: number, variant?: LpGasVariant) => {
     setCartItems((items) =>
       items.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
+        item.product.id === productId && item.variant === variant 
+          ? { ...item, quantity } 
+          : item
       )
     );
   };
 
-  const removeItem = (productId: string) => {
-    setCartItems((items) => items.filter((item) => item.product.id !== productId));
+  const removeItem = (productId: string, variant?: LpGasVariant) => {
+    setCartItems((items) => items.filter((item) => 
+      !(item.product.id === productId && item.variant === variant)
+    ));
   };
 
   const clearCart = () => {

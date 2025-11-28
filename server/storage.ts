@@ -241,14 +241,16 @@ export class DatabaseStorage implements IStorage {
           throw new Error(`Insufficient stock for product: ${product.name}. Available: ${product.stock}, requested: ${item.quantity}`);
         }
 
-        const price = parseFloat(product.price);
+        // Use variant price if provided (for LP Gas Exchange/New options), otherwise use product price
+        const priceString = item.variantPrice || product.price;
+        const price = parseFloat(priceString);
         const lineTotal = price * item.quantity;
         totalVatInclusive += lineTotal;
 
         itemsToCreate.push({
           productId: product.id,
           quantity: item.quantity,
-          priceAtPurchase: product.price,
+          priceAtPurchase: priceString,
           lineSubtotal: lineTotal.toFixed(2),
         });
       }
