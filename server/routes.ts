@@ -1115,55 +1115,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
         "Govender", "Mbatha", "Molefe", "Radebe", "Tshabalala", "du Plessis", "Fourie"
       ];
       
-      // Subtype detection keywords
-      const subtypeKeywords: Record<string, string[]> = {
-        "energizer": ["energizer", "energiser", "joule", "megashock", "merlin"],
-        "strobe-light": ["strobe", "strobe light", "warning light", "flash", "flasher"],
-        "siren": ["siren", "hooter", "alarm"],
-        "warning-sign": ["warning sign", "sign", "danger"],
-        "fence-cable": ["cable", "ht cable", "slimline"],
-        "fence-wire": ["wire", "braided", "stainless steel wire"],
-        "fence-spring": ["spring", "tension spring"],
-        "fence-beam": ["beam", "infrared", "ir beam"],
-        "fence-bracket": ["bracket", "wall bracket", "corner bracket"],
-        "fence-insulator": ["insulator", "strain insulator"],
-        "fence-kit": ["kit", "fence kit", "electric fence kit"],
-        "gate-motor": ["d5", "d10", "d3", "gate motor", "sliding gate", "swing gate", "evo"],
-        "motor-bracket": ["anti-theft bracket", "motor bracket", "mounting bracket"],
-        "motor-cover": ["motor cover", "cover"],
-        "motor-cable": ["motor cable", "power cable", "core cable"],
-        "motor-rack": ["rack", "steel rack", "nylon rack"],
-        "motor-base": ["base plate", "base", "mounting plate"],
-        "camera": ["camera", "bullet", "dome", "turret", "hilook", "hikvision"],
-        "dvr": ["dvr", "nvr", "recorder", "channel"],
-        "camera-cable": ["rg59", "coax", "cat6", "cat5", "siamese"],
-        "power-supply": ["power supply", "psu", "12v power", "cctv power"],
-        "bnc-connector": ["bnc", "connector", "crimp"],
-        "junction-box": ["junction box", "junction", "weatherproof box"],
-        "balun": ["balun", "video balun"],
-        "door-hinge": ["hinge", "hinges"],
-        "door-roller": ["roller", "rollers", "wheel"],
-        "door-cable": ["garage cable", "lift cable"],
-        "door-bearing": ["bearing", "bearings"],
-        "door-bracket": ["garage bracket", "end bracket"],
-        "glosteel-door": ["glosteel", "sectional door"],
-        "garage-motor": ["garage motor", "sectional motor", "roll up motor", "tilt motor", "matic", "miro"],
-        "remote": ["remote", "transmitter", "nova", "tx", "sentry", "gemini"],
-        "intercom": ["intercom", "g-speak", "gspeak", "smartguard", "kocom", "zartek"],
-        "keypad": ["keypad", "keypad intercom"],
-        "maglock": ["maglock", "magnetic lock", "mag lock"],
-        "battery": ["battery", "12v", "24v", "gel", "lithium", "ah"],
-        "gas-cylinder": ["gas", "cylinder", "kg", "lp gas"]
+      // TWO-PASS WEIGHTED SUBTYPE DETECTION
+      const categorySubtypes: Record<string, string[]> = {
+        "electric-fencing": ["energizer", "strobe-light", "siren", "warning-sign", "fence-cable", "fence-wire", "fence-spring", "fence-beam", "fence-bracket", "fence-insulator", "fence-kit"],
+        "gate-motors": ["gate-motor", "motor-bracket", "motor-cover", "motor-cable", "motor-rack", "motor-base"],
+        "cctv-cameras": ["camera", "dvr", "camera-cable", "power-supply", "bnc-connector", "junction-box", "balun"],
+        "garage-door-parts": ["door-hinge", "door-roller", "door-cable", "door-bearing", "door-bracket", "glosteel-door"],
+        "garage-motors": ["garage-motor"],
+        "remotes": ["remote"],
+        "intercoms": ["intercom", "keypad", "maglock"],
+        "batteries": ["battery"],
+        "lp-gas-exchange": ["gas-cylinder"],
       };
       
-      const detectSubtype = (productName: string): string => {
+      // Weighted keywords: primary identifiers get high weights (50+), generic terms get low weights
+      type WK = { k: string, w: number };
+      const subtypeKeywordRules: Record<string, WK[]> = {
+        "energizer": [{ k: "energizer", w: 50 }, { k: "energiser", w: 50 }, { k: "joule", w: 40 }, { k: "megashock", w: 50 }, { k: "merlin m", w: 40 }, { k: "druid", w: 40 }],
+        "strobe-light": [{ k: "strobe light", w: 50 }, { k: "strobe", w: 40 }, { k: "warning light", w: 40 }, { k: "flasher", w: 30 }],
+        "siren": [{ k: "siren", w: 50 }, { k: "hooter", w: 40 }],
+        "warning-sign": [{ k: "warning sign", w: 50 }, { k: "danger sign", w: 50 }],
+        "fence-cable": [{ k: "ht cable", w: 40 }, { k: "slimline cable", w: 40 }, { k: "fence cable", w: 50 }],
+        "fence-wire": [{ k: "fence wire", w: 50 }, { k: "stainless steel wire", w: 40 }, { k: "braided wire", w: 40 }],
+        "fence-spring": [{ k: "compression spring", w: 50 }, { k: "tension spring", w: 50 }, { k: "spring", w: 30 }],
+        "fence-beam": [{ k: "wireless beam", w: 50 }, { k: "infrared beam", w: 50 }, { k: "photon beam", w: 50 }, { k: "beam", w: 25 }],
+        "fence-bracket": [{ k: "fence bracket", w: 50 }, { k: "wall bracket", w: 40 }, { k: "corner bracket", w: 40 }],
+        "fence-insulator": [{ k: "strain insulator", w: 50 }, { k: "insulator", w: 40 }],
+        "fence-kit": [{ k: "electric fence kit", w: 50 }, { k: "fence kit", w: 45 }],
+        "gate-motor": [{ k: "sliding gate motor", w: 60 }, { k: "swing gate motor", w: 60 }, { k: "gate motor", w: 55 }, { k: "d5 evo", w: 50 }, { k: "d10 turbo", w: 50 }, { k: "d3 evo", w: 50 }, { k: "centurion d5", w: 50 }, { k: "centurion d10", w: 50 }, { k: "et drive", w: 45 }],
+        "motor-bracket": [{ k: "anti-theft bracket", w: 50 }, { k: "motor bracket", w: 50 }],
+        "motor-cover": [{ k: "motor cover", w: 50 }, { k: "d5 cover", w: 45 }, { k: "d10 cover", w: 45 }],
+        "motor-cable": [{ k: "motor cable", w: 50 }, { k: "core cable", w: 35 }],
+        "motor-rack": [{ k: "steel rack", w: 45 }, { k: "nylon rack", w: 45 }, { k: "gate rack", w: 50 }],
+        "motor-base": [{ k: "base plate", w: 45 }, { k: "motor base", w: 50 }],
+        // CCTV: HIGH weights for primary identifiers (dvr, camera, power supply), LOW for channel specs
+        "dvr": [{ k: "turbo hd dvr", w: 60 }, { k: "channel dvr", w: 55 }, { k: "channel nvr", w: 55 }, { k: "dvr", w: 50 }, { k: "nvr", w: 50 }, { k: "recorder", w: 40 }],
+        "camera": [{ k: "bullet camera", w: 55 }, { k: "dome camera", w: 55 }, { k: "turret camera", w: 55 }, { k: "cctv camera", w: 50 }, { k: "camera", w: 40 }, { k: "hilook", w: 35 }, { k: "hikvision", w: 30 }],
+        "power-supply": [{ k: "cctv power supply", w: 60 }, { k: "power supply", w: 55 }, { k: "channel power", w: 10 }],
+        "camera-cable": [{ k: "rg59 cable", w: 50 }, { k: "coax cable", w: 45 }, { k: "siamese cable", w: 50 }, { k: "rg59", w: 35 }],
+        "bnc-connector": [{ k: "bnc connector", w: 50 }, { k: "bnc crimp", w: 45 }, { k: "bnc", w: 35 }],
+        "junction-box": [{ k: "junction box", w: 50 }, { k: "camera box", w: 45 }],
+        "balun": [{ k: "video balun", w: 50 }, { k: "balun", w: 45 }],
+        "door-hinge": [{ k: "garage hinge", w: 50 }, { k: "door hinge", w: 45 }, { k: "hinge", w: 30 }],
+        "door-roller": [{ k: "garage roller", w: 50 }, { k: "door roller", w: 45 }, { k: "roller", w: 30 }],
+        "door-cable": [{ k: "garage cable", w: 50 }, { k: "lift cable", w: 45 }],
+        "door-bearing": [{ k: "door bearing", w: 50 }, { k: "bearing", w: 30 }],
+        "door-bracket": [{ k: "garage bracket", w: 50 }, { k: "end bracket", w: 45 }],
+        "glosteel-door": [{ k: "glosteel door", w: 55 }, { k: "glosteel", w: 50 }, { k: "sectional door", w: 45 }],
+        "garage-motor": [{ k: "garage motor", w: 55 }, { k: "garage door motor", w: 60 }, { k: "sectional motor", w: 50 }, { k: "roll-up motor", w: 50 }, { k: "gemini matic", w: 45 }],
+        "remote": [{ k: "gate remote", w: 50 }, { k: "remote transmitter", w: 50 }, { k: "remote", w: 35 }, { k: "nova", w: 30 }, { k: "tx4", w: 40 }, { k: "sentry remote", w: 50 }],
+        "intercom": [{ k: "video intercom", w: 55 }, { k: "intercom", w: 50 }, { k: "g-speak", w: 45 }, { k: "gspeak", w: 45 }, { k: "smartguard", w: 45 }, { k: "kocom", w: 45 }, { k: "zartek", w: 45 }],
+        "keypad": [{ k: "wireless keypad", w: 50 }, { k: "keypad", w: 45 }],
+        "maglock": [{ k: "magnetic lock", w: 50 }, { k: "maglock", w: 50 }],
+        "battery": [{ k: "gel battery", w: 50 }, { k: "lithium battery", w: 50 }, { k: "backup battery", w: 50 }, { k: "battery", w: 40 }, { k: "7ah", w: 30 }, { k: "12ah", w: 30 }, { k: "18ah", w: 30 }],
+        "gas-cylinder": [{ k: "gas cylinder", w: 50 }, { k: "lp gas", w: 50 }, { k: "9kg gas", w: 45 }, { k: "19kg gas", w: 45 }, { k: "48kg gas", w: 45 }],
+      };
+      
+      // Minimum score threshold - products must score above this to be classified
+      const MIN_SCORE = 30;
+      
+      const detectSubtype = (productName: string, categorySlug: string | null = null): string => {
         const nameLower = productName.toLowerCase();
-        for (const [subtype, keywords] of Object.entries(subtypeKeywords)) {
-          for (const keyword of keywords) {
-            if (nameLower.includes(keyword.toLowerCase())) return subtype;
+        const validSubtypes = categorySlug && categorySubtypes[categorySlug] 
+          ? categorySubtypes[categorySlug] 
+          : Object.keys(subtypeKeywordRules);
+        
+        let bestSubtype = "generic";
+        let bestScore = 0;
+        
+        for (const subtype of validSubtypes) {
+          const weighted = subtypeKeywordRules[subtype] || [];
+          let score = 0;
+          for (const { k, w } of weighted) {
+            const kw = k.toLowerCase();
+            let matches = false;
+            if (kw.length <= 5 && !kw.includes(' ')) {
+              matches = new RegExp(`\\b${kw}\\b`, 'i').test(nameLower);
+            } else {
+              matches = nameLower.includes(kw);
+            }
+            if (matches) score += w;
+          }
+          // Only accept scores above threshold
+          if (score > bestScore && score >= MIN_SCORE) {
+            bestScore = score;
+            bestSubtype = subtype;
           }
         }
-        return "generic";
+        return bestSubtype;
       };
       
       // Subtype-specific reviews
@@ -1247,6 +1286,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Check if reviews already exist
       const allProducts = await storage.getAllProducts();
+      const allCats = await storage.getAllCategories();
+      const catIdToSlug = new Map<string, string>();
+      allCats.forEach(c => catIdToSlug.set(c.id, c.slug));
       
       let hasReviews = false;
       if (allProducts.length > 0) {
@@ -1258,7 +1300,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!hasReviews && allProducts.length > 0) {
         for (const product of allProducts) {
           const reviewCount = Math.floor(Math.random() * 4) + 1;
-          const subtype = detectSubtype(product.name);
+          const categorySlug = product.categoryId ? catIdToSlug.get(product.categoryId) || null : null;
+          const subtype = detectSubtype(product.name, categorySlug);
           
           for (let i = 0; i < reviewCount; i++) {
             const rating = getRandomReviewRating();

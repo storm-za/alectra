@@ -55,73 +55,248 @@ type ProductSubtype =
   // Generic
   | "generic";
 
-// Keywords to detect product subtypes from product name
-const subtypeKeywords: Record<ProductSubtype, string[]> = {
+// =============================================================================
+// TWO-PASS SUBTYPE DETECTION WITH SCORING
+// Pass 1: Use category to constrain possible subtypes
+// Pass 2: Score all matching keywords and pick highest score
+// =============================================================================
+
+// Category to valid subtypes mapping
+const categorySubtypes: Record<string, ProductSubtype[]> = {
+  "electric-fencing": ["energizer", "strobe-light", "siren", "warning-sign", "fence-cable", "fence-wire", "fence-spring", "fence-beam", "fence-bracket", "fence-insulator", "fence-kit"],
+  "gate-motors": ["gate-motor", "motor-bracket", "motor-cover", "motor-cable", "motor-rack", "motor-base"],
+  "cctv-cameras": ["camera", "dvr", "camera-cable", "power-supply", "bnc-connector", "junction-box", "balun"],
+  "garage-door-parts": ["door-hinge", "door-roller", "door-cable", "door-bearing", "door-bracket", "glosteel-door"],
+  "garage-motors": ["garage-motor"],
+  "remotes": ["remote"],
+  "intercoms": ["intercom", "keypad", "maglock"],
+  "batteries": ["battery"],
+  "lp-gas-exchange": ["gas-cylinder"],
+};
+
+// Weighted keyword rules: { keyword, weight } 
+// Primary keywords (like "dvr", "camera") get high weights to outrank generic matches
+// Generic keywords (like "channel") get low weights
+type WeightedKeyword = { keyword: string, weight: number };
+const subtypeKeywordRules: Record<ProductSubtype, WeightedKeyword[]> = {
   // Electric Fencing
-  "energizer": ["energizer", "energiser", "joule", "megashock", "merlin"],
-  "strobe-light": ["strobe", "strobe light", "warning light", "flash", "flasher"],
-  "siren": ["siren", "hooter", "alarm"],
-  "warning-sign": ["warning sign", "sign", "danger"],
-  "fence-cable": ["cable", "ht cable", "slimline"],
-  "fence-wire": ["wire", "braided", "stainless steel wire"],
-  "fence-spring": ["spring", "tension spring"],
-  "fence-beam": ["beam", "infrared", "ir beam"],
-  "fence-bracket": ["bracket", "wall bracket", "corner bracket"],
-  "fence-insulator": ["insulator", "strain insulator"],
-  "fence-kit": ["kit", "fence kit", "electric fence kit"],
-  // Gate Motors
-  "gate-motor": ["d5", "d10", "d3", "gate motor", "sliding gate", "swing gate", "evo"],
-  "motor-bracket": ["anti-theft bracket", "motor bracket", "mounting bracket"],
-  "motor-cover": ["motor cover", "cover"],
-  "motor-cable": ["motor cable", "power cable", "core cable"],
-  "motor-rack": ["rack", "steel rack", "nylon rack"],
-  "motor-base": ["base plate", "base", "mounting plate"],
-  // CCTV
-  "camera": ["camera", "bullet", "dome", "turret", "hilook", "hikvision"],
-  "dvr": ["dvr", "nvr", "recorder", "channel"],
-  "camera-cable": ["rg59", "coax", "cat6", "cat5", "siamese"],
-  "power-supply": ["power supply", "psu", "12v power", "cctv power"],
-  "bnc-connector": ["bnc", "connector", "crimp"],
-  "junction-box": ["junction box", "junction", "weatherproof box"],
-  "balun": ["balun", "video balun"],
+  "energizer": [
+    { keyword: "energizer", weight: 50 }, { keyword: "energiser", weight: 50 },
+    { keyword: "joule", weight: 40 }, { keyword: "megashock", weight: 50 },
+    { keyword: "merlin m", weight: 40 }, { keyword: "druid", weight: 40 }
+  ],
+  "strobe-light": [
+    { keyword: "strobe light", weight: 50 }, { keyword: "strobe", weight: 40 },
+    { keyword: "warning light", weight: 40 }, { keyword: "flasher", weight: 30 }
+  ],
+  "siren": [
+    { keyword: "siren", weight: 50 }, { keyword: "hooter", weight: 40 }
+  ],
+  "warning-sign": [
+    { keyword: "warning sign", weight: 50 }, { keyword: "danger sign", weight: 50 },
+    { keyword: "fence sign", weight: 40 }
+  ],
+  "fence-cable": [
+    { keyword: "ht cable", weight: 40 }, { keyword: "slimline cable", weight: 40 },
+    { keyword: "fence cable", weight: 50 }, { keyword: "underground cable", weight: 40 }
+  ],
+  "fence-wire": [
+    { keyword: "fence wire", weight: 50 }, { keyword: "stainless steel wire", weight: 40 },
+    { keyword: "braided wire", weight: 40 }, { keyword: "aluminium wire", weight: 40 }
+  ],
+  "fence-spring": [
+    { keyword: "compression spring", weight: 50 }, { keyword: "tension spring", weight: 50 },
+    { keyword: "spring", weight: 30 }
+  ],
+  "fence-beam": [
+    { keyword: "wireless beam", weight: 50 }, { keyword: "infrared beam", weight: 50 },
+    { keyword: "photon beam", weight: 50 }, { keyword: "beam", weight: 25 }
+  ],
+  "fence-bracket": [
+    { keyword: "fence bracket", weight: 50 }, { keyword: "wall bracket", weight: 40 },
+    { keyword: "corner bracket", weight: 40 }, { keyword: "straining bracket", weight: 40 }
+  ],
+  "fence-insulator": [
+    { keyword: "strain insulator", weight: 50 }, { keyword: "insulator", weight: 40 }
+  ],
+  "fence-kit": [
+    { keyword: "electric fence kit", weight: 50 }, { keyword: "fence kit", weight: 45 },
+    { keyword: "line kit", weight: 30 }
+  ],
+  // Gate Motors  
+  "gate-motor": [
+    { keyword: "sliding gate motor", weight: 60 }, { keyword: "swing gate motor", weight: 60 },
+    { keyword: "gate motor", weight: 55 }, { keyword: "d5 evo", weight: 50 },
+    { keyword: "d10 turbo", weight: 50 }, { keyword: "d3 evo", weight: 50 },
+    { keyword: "centurion d5", weight: 50 }, { keyword: "centurion d10", weight: 50 },
+    { keyword: "et drive", weight: 45 }
+  ],
+  "motor-bracket": [
+    { keyword: "anti-theft bracket", weight: 50 }, { keyword: "motor bracket", weight: 50 },
+    { keyword: "anti theft bracket", weight: 50 }
+  ],
+  "motor-cover": [
+    { keyword: "motor cover", weight: 50 }, { keyword: "d5 cover", weight: 45 },
+    { keyword: "d10 cover", weight: 45 }
+  ],
+  "motor-cable": [
+    { keyword: "motor cable", weight: 50 }, { keyword: "core cable", weight: 35 }
+  ],
+  "motor-rack": [
+    { keyword: "steel rack", weight: 45 }, { keyword: "nylon rack", weight: 45 },
+    { keyword: "gate rack", weight: 50 }
+  ],
+  "motor-base": [
+    { keyword: "base plate", weight: 45 }, { keyword: "motor base", weight: 50 },
+    { keyword: "mounting plate", weight: 40 }
+  ],
+  // CCTV - HIGH weights for primary identifiers, LOW for channel numbers
+  "dvr": [
+    { keyword: "turbo hd dvr", weight: 60 }, { keyword: "channel dvr", weight: 55 },
+    { keyword: "channel nvr", weight: 55 }, { keyword: "dvr", weight: 50 },
+    { keyword: "nvr", weight: 50 }, { keyword: "recorder", weight: 40 }
+  ],
+  "camera": [
+    { keyword: "bullet camera", weight: 55 }, { keyword: "dome camera", weight: 55 },
+    { keyword: "turret camera", weight: 55 }, { keyword: "cctv camera", weight: 50 },
+    { keyword: "camera", weight: 40 }, { keyword: "hilook", weight: 35 },
+    { keyword: "hikvision", weight: 30 }
+  ],
+  "power-supply": [
+    { keyword: "cctv power supply", weight: 60 }, { keyword: "power supply", weight: 55 },
+    { keyword: "channel power", weight: 10 } // LOW weight - channel is just a spec
+  ],
+  "camera-cable": [
+    { keyword: "rg59 cable", weight: 50 }, { keyword: "coax cable", weight: 45 },
+    { keyword: "siamese cable", weight: 50 }, { keyword: "cat6 cable", weight: 45 },
+    { keyword: "rg59", weight: 35 }
+  ],
+  "bnc-connector": [
+    { keyword: "bnc connector", weight: 50 }, { keyword: "bnc crimp", weight: 45 },
+    { keyword: "bnc", weight: 35 }
+  ],
+  "junction-box": [
+    { keyword: "junction box", weight: 50 }, { keyword: "camera box", weight: 45 }
+  ],
+  "balun": [
+    { keyword: "video balun", weight: 50 }, { keyword: "balun", weight: 45 }
+  ],
   // Garage Door Parts
-  "door-hinge": ["hinge", "hinges"],
-  "door-roller": ["roller", "rollers", "wheel"],
-  "door-cable": ["garage cable", "lift cable"],
-  "door-bearing": ["bearing", "bearings"],
-  "door-bracket": ["garage bracket", "end bracket"],
-  "glosteel-door": ["glosteel", "sectional door"],
+  "door-hinge": [
+    { keyword: "garage hinge", weight: 50 }, { keyword: "door hinge", weight: 45 },
+    { keyword: "hinge", weight: 30 }
+  ],
+  "door-roller": [
+    { keyword: "garage roller", weight: 50 }, { keyword: "door roller", weight: 45 },
+    { keyword: "roller", weight: 30 }
+  ],
+  "door-cable": [
+    { keyword: "garage cable", weight: 50 }, { keyword: "lift cable", weight: 45 }
+  ],
+  "door-bearing": [
+    { keyword: "door bearing", weight: 50 }, { keyword: "bearing", weight: 30 }
+  ],
+  "door-bracket": [
+    { keyword: "garage bracket", weight: 50 }, { keyword: "end bracket", weight: 45 }
+  ],
+  "glosteel-door": [
+    { keyword: "glosteel door", weight: 55 }, { keyword: "glosteel", weight: 50 },
+    { keyword: "sectional door", weight: 45 }
+  ],
   // Garage Motors
-  "garage-motor": ["garage motor", "sectional motor", "roll up motor", "tilt motor", "matic", "miro"],
+  "garage-motor": [
+    { keyword: "garage motor", weight: 55 }, { keyword: "garage door motor", weight: 60 },
+    { keyword: "sectional motor", weight: 50 }, { keyword: "roll-up motor", weight: 50 },
+    { keyword: "gemini matic", weight: 45 }, { keyword: "centurion rado", weight: 45 }
+  ],
   // Remotes
-  "remote": ["remote", "transmitter", "nova", "tx", "sentry", "gemini"],
+  "remote": [
+    { keyword: "gate remote", weight: 50 }, { keyword: "remote transmitter", weight: 50 },
+    { keyword: "remote", weight: 35 }, { keyword: "nova", weight: 30 },
+    { keyword: "tx4", weight: 40 }, { keyword: "sentry remote", weight: 50 }
+  ],
   // Intercoms
-  "intercom": ["intercom", "g-speak", "gspeak", "smartguard", "kocom", "zartek"],
-  "keypad": ["keypad", "keypad intercom"],
-  "maglock": ["maglock", "magnetic lock", "mag lock"],
+  "intercom": [
+    { keyword: "video intercom", weight: 55 }, { keyword: "intercom", weight: 50 },
+    { keyword: "g-speak", weight: 45 }, { keyword: "gspeak", weight: 45 },
+    { keyword: "smartguard", weight: 45 }, { keyword: "kocom", weight: 45 },
+    { keyword: "zartek", weight: 45 }
+  ],
+  "keypad": [
+    { keyword: "wireless keypad", weight: 50 }, { keyword: "keypad", weight: 45 }
+  ],
+  "maglock": [
+    { keyword: "magnetic lock", weight: 50 }, { keyword: "maglock", weight: 50 },
+    { keyword: "mag lock", weight: 50 }
+  ],
   // Batteries
-  "battery": ["battery", "12v", "24v", "gel", "lithium", "ah"],
+  "battery": [
+    { keyword: "gel battery", weight: 50 }, { keyword: "lithium battery", weight: 50 },
+    { keyword: "backup battery", weight: 50 }, { keyword: "battery", weight: 40 },
+    { keyword: "7ah", weight: 30 }, { keyword: "12ah", weight: 30 }, { keyword: "18ah", weight: 30 }
+  ],
   // LP Gas
-  "gas-cylinder": ["gas", "cylinder", "kg", "lp gas"],
-  // Generic fallback
+  "gas-cylinder": [
+    { keyword: "gas cylinder", weight: 50 }, { keyword: "lp gas", weight: 50 },
+    { keyword: "9kg gas", weight: 45 }, { keyword: "19kg gas", weight: 45 },
+    { keyword: "48kg gas", weight: 45 }
+  ],
+  // Generic has no keywords
   "generic": []
 };
 
-// Detect product subtype from name
+// Minimum score threshold - products must score above this to be classified
+// Low-scoring products fall back to generic reviews
+const MIN_SCORE_THRESHOLD = 30;
+
+// Detect product subtype using two-pass weighted scoring system
 function detectProductSubtype(productName: string, categorySlug: string | null): ProductSubtype {
   const nameLower = productName.toLowerCase();
   
-  // Check each subtype's keywords
-  for (const [subtype, keywords] of Object.entries(subtypeKeywords)) {
-    if (subtype === "generic") continue;
-    for (const keyword of keywords) {
-      if (nameLower.includes(keyword.toLowerCase())) {
-        return subtype as ProductSubtype;
+  // Get valid subtypes for this category (or all if no category)
+  let validSubtypes: ProductSubtype[];
+  if (categorySlug && categorySubtypes[categorySlug]) {
+    validSubtypes = categorySubtypes[categorySlug];
+  } else {
+    // For uncategorized products, all subtypes are valid
+    validSubtypes = Object.keys(subtypeKeywordRules).filter(s => s !== "generic") as ProductSubtype[];
+  }
+  
+  // Score each valid subtype based on weighted keyword matches
+  let bestSubtype: ProductSubtype = "generic";
+  let bestScore = 0;
+  
+  for (const subtype of validSubtypes) {
+    const weightedKeywords = subtypeKeywordRules[subtype] || [];
+    let subtypeScore = 0;
+    
+    for (const { keyword, weight } of weightedKeywords) {
+      const keywordLower = keyword.toLowerCase();
+      
+      // Check if keyword matches (with word boundary for short words)
+      let matches = false;
+      if (keywordLower.length <= 5 && !keywordLower.includes(' ')) {
+        // Short single word - use word boundary
+        const regex = new RegExp(`\\b${keywordLower}\\b`, 'i');
+        matches = regex.test(nameLower);
+      } else {
+        matches = nameLower.includes(keywordLower);
       }
+      
+      if (matches) {
+        // Use explicit weight for scoring
+        subtypeScore += weight;
+      }
+    }
+    
+    // Pick subtype with highest score above threshold
+    if (subtypeScore > bestScore && subtypeScore >= MIN_SCORE_THRESHOLD) {
+      bestScore = subtypeScore;
+      bestSubtype = subtype;
     }
   }
   
-  return "generic";
+  return bestSubtype;
 }
 
 // =============================================================================
