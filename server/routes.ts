@@ -1099,7 +1099,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Seed reviews for products - comprehensive unique reviews with product-type mentions
+      // Seed reviews for products with SUBTYPE DETECTION
+      // This ensures reviews mention the correct product type (e.g., strobe lights get strobe reviews)
       const reviewFirstNames = [
         "Thabo", "Sipho", "Nomsa", "Lerato", "Andries", "Johan", "Susan", "Linda",
         "Patrick", "Mary", "David", "Sarah", "Michael", "Jennifer", "Peter", "Lisa",
@@ -1114,114 +1115,124 @@ export async function registerRoutes(app: Express): Promise<Server> {
         "Govender", "Mbatha", "Molefe", "Radebe", "Tshabalala", "du Plessis", "Fourie"
       ];
       
-      // Generic reviews (no product mention)
-      const fiveStarGeneric = [
-        "Absolutely brilliant! Couldn't be happier with this purchase.",
-        "Exceeded all my expectations. Top quality stuff.",
-        "This is exactly what I was looking for. Perfect!",
-        "Outstanding quality and great value for money.",
-        "Very impressed with the build quality.",
-        "Works flawlessly. Highly recommended!",
-        "Best purchase I've made this year.",
-        "Professional grade equipment at a fair price.",
-        "Arrived quickly and works perfectly.",
-        "No complaints whatsoever. Five stars deserved.",
-        "Really happy with this. Would buy again.",
-        "Exactly as described. Very pleased.",
-        "Great product and fast delivery from Alectra.",
-        "Quality is superb. Worth every rand.",
-        "Perfect condition and works great.",
-        "Fantastic quality, better than expected.",
-        "Very satisfied customer here!",
-        "Alectra delivered again. Great product.",
-        "Would definitely recommend to friends.",
-        "Top notch quality all round."
-      ];
-      const fourStarGeneric = [
-        "Good solid product. Does the job well.",
-        "Happy with this purchase. Works great.",
-        "Good quality for the price.",
-        "Works as expected. Would recommend.",
-        "Solid product. Minor things but overall good.",
-        "Good value. Doing its job nicely.",
-        "Pretty happy with this purchase.",
-        "Works well. Delivery was quick too.",
-        "Does what it says on the box.",
-        "Nice product. Good build quality."
-      ];
-      const threeStarGeneric = [
-        "It's okay. Gets the job done.",
-        "Average product but works fine.",
-        "Does what it needs to. Nothing special.",
-        "Fair enough for the price paid.",
-        "Acceptable quality. Works as expected."
-      ];
+      // Subtype detection keywords
+      const subtypeKeywords: Record<string, string[]> = {
+        "energizer": ["energizer", "energiser", "joule", "megashock", "merlin"],
+        "strobe-light": ["strobe", "strobe light", "warning light", "flash", "flasher"],
+        "siren": ["siren", "hooter", "alarm"],
+        "warning-sign": ["warning sign", "sign", "danger"],
+        "fence-cable": ["cable", "ht cable", "slimline"],
+        "fence-wire": ["wire", "braided", "stainless steel wire"],
+        "fence-spring": ["spring", "tension spring"],
+        "fence-beam": ["beam", "infrared", "ir beam"],
+        "fence-bracket": ["bracket", "wall bracket", "corner bracket"],
+        "fence-insulator": ["insulator", "strain insulator"],
+        "fence-kit": ["kit", "fence kit", "electric fence kit"],
+        "gate-motor": ["d5", "d10", "d3", "gate motor", "sliding gate", "swing gate", "evo"],
+        "motor-bracket": ["anti-theft bracket", "motor bracket", "mounting bracket"],
+        "motor-cover": ["motor cover", "cover"],
+        "motor-cable": ["motor cable", "power cable", "core cable"],
+        "motor-rack": ["rack", "steel rack", "nylon rack"],
+        "motor-base": ["base plate", "base", "mounting plate"],
+        "camera": ["camera", "bullet", "dome", "turret", "hilook", "hikvision"],
+        "dvr": ["dvr", "nvr", "recorder", "channel"],
+        "camera-cable": ["rg59", "coax", "cat6", "cat5", "siamese"],
+        "power-supply": ["power supply", "psu", "12v power", "cctv power"],
+        "bnc-connector": ["bnc", "connector", "crimp"],
+        "junction-box": ["junction box", "junction", "weatherproof box"],
+        "balun": ["balun", "video balun"],
+        "door-hinge": ["hinge", "hinges"],
+        "door-roller": ["roller", "rollers", "wheel"],
+        "door-cable": ["garage cable", "lift cable"],
+        "door-bearing": ["bearing", "bearings"],
+        "door-bracket": ["garage bracket", "end bracket"],
+        "glosteel-door": ["glosteel", "sectional door"],
+        "garage-motor": ["garage motor", "sectional motor", "roll up motor", "tilt motor", "matic", "miro"],
+        "remote": ["remote", "transmitter", "nova", "tx", "sentry", "gemini"],
+        "intercom": ["intercom", "g-speak", "gspeak", "smartguard", "kocom", "zartek"],
+        "keypad": ["keypad", "keypad intercom"],
+        "maglock": ["maglock", "magnetic lock", "mag lock"],
+        "battery": ["battery", "12v", "24v", "gel", "lithium", "ah"],
+        "gas-cylinder": ["gas", "cylinder", "kg", "lp gas"]
+      };
       
-      // Category-specific reviews (mentions product type)
-      const categoryReviews: Record<string, { five: string[], four: string[], three: string[] }> = {
-        "electric-fencing": {
-          five: ["Best electric fence energizer I've ever used. The power output is consistent.", "This electric fencing equipment is top quality. My perimeter is now properly secured.", "Excellent energizer. Keeps the fence hot at all times.", "Quality electric fence components. Installation was straightforward.", "My electric fence has never worked better. Highly recommend this equipment."],
-          four: ["Good electric fence energizer. Doing its job well.", "Solid fencing equipment. The perimeter is now secure.", "Happy with this electric fence setup. Works reliably."],
-          three: ["Electric fence works okay. Does what it needs to.", "Average energizer but functional for basic needs."]
-        },
-        "gate-motors": {
-          five: ["This gate motor is incredibly powerful and smooth. Best investment for my property.", "Fantastic gate motor! Opens the gate quickly and quietly every time.", "Excellent gate motor. Even during load shedding, it works on battery backup.", "Top quality gate motor. Centurion really knows their stuff.", "Gate motor is powerful and reliable. No more manual gate opening!"],
-          four: ["Good gate motor. Opens the gate reliably every time.", "Solid motor for my sliding gate. Works well.", "Happy with this gate automation. Smooth operation."],
-          three: ["Gate motor works okay. Gets the job done.", "Average motor but functional for daily use."]
-        },
-        "cctv-cameras": {
-          five: ["Excellent CCTV camera! Crystal clear footage day and night.", "This security camera is fantastic. Night vision is incredibly clear.", "Amazing CCTV setup. Can see everything clearly on my phone.", "Top quality security camera. DVR recording works perfectly.", "The CCTV footage is so clear. Great for identifying faces and cars."],
-          four: ["Good quality CCTV camera. Clear pictures during the day.", "Solid surveillance camera. Night vision is decent.", "Happy with this security camera. Records well."],
-          three: ["Camera works okay. Picture quality is acceptable.", "Average CCTV but functional for basic monitoring."]
-        },
-        "garage-door-parts": {
-          five: ["Perfect replacement parts for my garage door. Fits exactly right.", "Excellent garage door hinges. Made the door operate smoothly again.", "Quality garage door components. My door works like new now.", "These parts fixed my noisy garage door completely.", "Perfect fit for my Glosteel door. Quality parts that last."],
-          four: ["Good garage door parts. Fit properly.", "Solid replacement components for my door.", "Happy with these garage door hinges."],
-          three: ["Parts work okay. Door is functional now.", "Average quality but does the job."]
-        },
-        "garage-motors": {
-          five: ["Brilliant garage motor! Opens my heavy sectional door with no struggle.", "This garage door motor is fantastic. Quiet and powerful.", "Excellent motor for my roll-up garage door. Works perfectly.", "Top quality garage motor. The remote range is excellent.", "Love this garage motor. Heavy door, no problem at all."],
-          four: ["Good garage motor. Opens the door reliably.", "Solid motor for my garage. Works well.", "Happy with this garage door opener."],
-          three: ["Garage motor works okay. Does the job.", "Average motor but functional daily."]
-        },
-        "remotes": {
-          five: ["Excellent remote! Works perfectly with my gate motor.", "This remote has great range. Can open the gate from my driveway entrance.", "Quality remote transmitter. Very responsive and reliable.", "Best replacement remote I've bought. Pairs easily with my system.", "Great Centurion remote. Works flawlessly every time."],
-          four: ["Good remote. Works well with my gate.", "Solid transmitter. Range is decent.", "Happy with this remote. Reliable operation."],
-          three: ["Remote works okay. Does what it should.", "Average but functional remote."]
-        },
-        "intercoms": {
-          five: ["Excellent intercom system! Crystal clear audio and video.", "This intercom is fantastic. Can see and speak to visitors clearly.", "Best intercom I've used. The G-Speak system is brilliant.", "Top quality keypad intercom. Access control is perfect now.", "Brilliant intercom system. Very happy with the clarity."],
-          four: ["Good intercom system. Clear audio.", "Solid intercom. Works reliably.", "Happy with this intercom setup."],
-          three: ["Intercom works okay. Basic but functional.", "Average system but does the job."]
-        },
-        "batteries": {
-          five: ["Excellent battery! Powers my gate motor perfectly during load shedding.", "This battery holds charge really well. Great backup power.", "Best backup battery I've bought. Lasts through multiple outages.", "Quality battery that actually delivers on its rating.", "Reliable battery backup. Essential for load shedding in SA."],
-          four: ["Good battery. Holds charge well.", "Solid backup power. Works reliably.", "Happy with this battery purchase."],
-          three: ["Battery works okay. Provides basic backup.", "Average but functional for load shedding."]
-        },
-        "lp-gas-exchange": {
-          five: ["Great gas cylinder! Exchange process was quick and easy.", "Excellent LP gas quality. Burns clean and lasts well.", "Quality gas cylinder at a fair price. Very happy.", "Great service for gas exchange. Cylinder was full and clean.", "Excellent LP gas. Perfect for my braai."],
-          four: ["Good gas cylinder. Exchange was simple.", "Solid LP gas quality. Works well.", "Happy with this gas exchange."],
-          three: ["Gas works okay. Standard quality.", "Average exchange experience."]
+      const detectSubtype = (productName: string): string => {
+        const nameLower = productName.toLowerCase();
+        for (const [subtype, keywords] of Object.entries(subtypeKeywords)) {
+          for (const keyword of keywords) {
+            if (nameLower.includes(keyword.toLowerCase())) return subtype;
+          }
         }
+        return "generic";
+      };
+      
+      // Subtype-specific reviews
+      const subtypeReviews: Record<string, { five: string[], four: string[], three: string[] }> = {
+        "energizer": { five: ["Best electric fence energizer I've ever used. The power output is consistent.", "Excellent energizer. Keeps the fence hot at all times.", "Powerful energizer that handles my entire property.", "This energizer packs serious punch.", "Outstanding energizer performance. Worth every rand."], four: ["Good electric fence energizer. Doing its job well.", "Solid energizer. The perimeter is now secure.", "Happy with this energizer. Works reliably."], three: ["Energizer works okay. Does what it needs to.", "Average energizer but functional for basic needs."] },
+        "strobe-light": { five: ["Brilliant strobe light! Very bright and visible from far away.", "This warning light is excellent. Flashes brightly and clearly.", "Great strobe light for my security system.", "The strobe light is super bright. Perfect deterrent."], four: ["Good strobe light. Nice and bright.", "Solid warning light for the price."], three: ["Strobe works okay. Brightness is acceptable."] },
+        "siren": { five: ["This fence siren scared off intruders on day one. Brilliant!", "Excellent siren. Extremely loud when triggered.", "Great alarm siren. The whole neighborhood can hear it."], four: ["Good fence siren. Nice and loud when triggered.", "Solid siren for the price."], three: ["Siren works okay. Loud enough for basic needs."] },
+        "warning-sign": { five: ["Great warning sign. Clear and visible. Professional look.", "Excellent quality warning sign. Durable material."], four: ["Good warning signs. Clear and visible."], three: ["Signs are okay. Standard quality."] },
+        "fence-cable": { five: ["Quality electric fence cable. No corrosion even after heavy rains.", "Excellent HT cable. Proper insulation and good quality.", "Great fence cable. Easy to install and works well."], four: ["Good fence cable. Works as expected.", "Solid cable for the price."], three: ["Cable works okay. Standard quality."] },
+        "fence-wire": { five: ["Excellent electric fence wire. Strong and easy to work with.", "Quality stainless steel wire. Will last for years on my fence.", "Great fence wire. My installer was impressed with the quality."], four: ["Good quality fence wire. Does the job.", "Happy with this wire. Holds tension well."], three: ["Wire works okay. Standard quality."] },
+        "fence-spring": { five: ["Great fence spring tension. Keeps everything tight and secure.", "Excellent spring quality. Made tensioning the fence easy.", "Perfect springs for my electric fence. Very strong."], four: ["Good fence spring. Keeps tension properly."], three: ["Spring works okay. Does the job."] },
+        "fence-beam": { five: ["Best fence beams I've used. Detection is spot on every time.", "Excellent infrared beams. Never miss any movement."], four: ["Good fence beams. Detects movement reliably."], three: ["Beams work okay. Basic detection."] },
+        "fence-bracket": { five: ["Excellent fence bracket. Sturdy and well made.", "Great quality brackets. Made installation much easier."], four: ["Good quality fence brackets. Sturdy construction."], three: ["Brackets work okay. Standard quality."] },
+        "fence-insulator": { five: ["Excellent fence insulators. Holding up well in all weather.", "Great quality insulators. No leakage whatsoever."], four: ["Good insulators. Work as expected."], three: ["Insulators work okay. Basic quality."] },
+        "fence-kit": { five: ["Top notch electric fencing kit. Everything I needed in one box.", "Excellent fence kit. Complete solution for my property.", "Great kit. All quality components included."], four: ["Good fence kit. Has most things needed."], three: ["Kit is okay. Some items could be better quality."] },
+        "gate-motor": { five: ["This gate motor is incredibly powerful and smooth. Best investment!", "Fantastic gate motor! Opens the gate quickly and quietly every time.", "Excellent gate motor. Even during load shedding, it works on battery.", "Top quality gate motor. Centurion really knows their stuff.", "Gate motor is powerful and reliable. No more manual gate opening!", "This D5 Evo is brilliant. Gate opens in seconds every time."], four: ["Good gate motor. Opens the gate reliably every time.", "Solid motor for my sliding gate. Works well.", "Happy with this gate motor. Smooth operation."], three: ["Gate motor works okay. Gets the job done.", "Average motor but functional for daily use."] },
+        "motor-bracket": { five: ["Excellent motor bracket. Keeps everything aligned properly.", "The anti-theft bracket is solid. Extra security for my motor."], four: ["Good motor bracket. Fits well and works."], three: ["Bracket works okay. Standard quality."] },
+        "motor-cover": { five: ["Great gate motor cover. Protects the unit from weather.", "Excellent cover. Keeps dust and rain out perfectly."], four: ["Good gate motor cover. Keeps dust out."], three: ["Cover works okay. Basic protection."] },
+        "motor-cable": { five: ["Quality gate motor cable. Proper gauge for the installation.", "Excellent power cable. Well insulated and durable."], four: ["Good gate motor cable. Works well."], three: ["Cable works okay. Standard quality."] },
+        "motor-rack": { five: ["Motor rack is perfect fit. Gate runs smoothly now.", "Excellent steel rack. Very durable and precise."], four: ["Good motor rack. Gate runs smoothly."], three: ["Rack works okay. Does the job."] },
+        "motor-base": { five: ["Great motor base plate. Made installation so much easier.", "Excellent base plate. Very sturdy and level."], four: ["Good motor base plate. Installation was easy."], three: ["Base plate works okay. Basic quality."] },
+        "camera": { five: ["Excellent CCTV camera! Crystal clear footage day and night.", "This security camera is fantastic. Night vision is incredibly clear.", "Best camera I've owned. The image quality is outstanding.", "The CCTV footage is so clear. Great for identifying faces and cars.", "HiLook cameras are excellent. Professional quality surveillance."], four: ["Good quality CCTV camera. Clear pictures during the day.", "Solid surveillance camera. Night vision is decent.", "Happy with this security camera. Records well."], three: ["Camera works okay. Picture quality is acceptable.", "Average camera but functional for basic monitoring."] },
+        "dvr": { five: ["This DVR is brilliant. Easy to set up and playback footage.", "Excellent recorder. Handles all my cameras perfectly.", "Great DVR. Remote viewing works flawlessly."], four: ["Good DVR. Recording works well.", "Solid DVR for home use."], three: ["DVR works okay. Basic functionality."] },
+        "camera-cable": { five: ["Best camera cable I've used. Signal is crystal clear.", "Quality cable for my camera system. Works great."], four: ["Good camera cable. Picture quality is good."], three: ["Cable works okay. Standard quality."] },
+        "power-supply": { five: ["Great CCTV power supply. Runs all my cameras without issues.", "Excellent power supply. Stable and reliable."], four: ["Good camera power supply. Works reliably."], three: ["Power supply works okay. Basic quality."] },
+        "bnc-connector": { five: ["Excellent BNC connectors. Solid connection every time.", "Great quality connectors. Easy to crimp."], four: ["Good BNC connectors for the price."], three: ["Connectors work okay. Standard quality."] },
+        "junction-box": { five: ["The camera junction box is weatherproof. Perfect for outdoors.", "Excellent junction box. Keeps connections dry and safe."], four: ["Good junction box. Keeps connections dry."], three: ["Junction box works okay. Basic protection."] },
+        "balun": { five: ["Great video balun set. Makes installation much easier.", "Excellent baluns. Signal quality is perfect."], four: ["Good baluns. Work as expected."], three: ["Baluns work okay. Standard quality."] },
+        "door-hinge": { five: ["Excellent garage door hinges. Made the door operate smoothly.", "Great hinges. My garage door works like new now."], four: ["Good garage door hinges. Fit properly."], three: ["Hinges work okay. Standard quality."] },
+        "door-roller": { five: ["Great garage door rollers. Much better than originals.", "Excellent rollers. Door glides smoothly now."], four: ["Good quality rollers for the garage door."], three: ["Rollers work okay. Door is functional now."] },
+        "door-cable": { five: ["Garage door cable is strong and reliable. Good replacement.", "Excellent lift cable. Very durable."], four: ["Good garage door cable. Works well."], three: ["Cable works okay. Does the job."] },
+        "door-bearing": { five: ["Good garage door bearings. Smooth operation restored.", "Excellent bearings. No more squeaking."], four: ["Good bearings. Door works smoothly."], three: ["Bearings work okay. Standard quality."] },
+        "door-bracket": { five: ["Excellent garage bracket. Very sturdy and well made."], four: ["Good garage brackets. Work well."], three: ["Brackets work okay. Basic quality."] },
+        "glosteel-door": { five: ["Perfect Glosteel door. Quality parts that last.", "Excellent Glosteel sectional door. Looks great and works perfectly."], four: ["Good Glosteel door. Works well."], three: ["Door is okay. Standard quality."] },
+        "garage-motor": { five: ["Brilliant garage motor! Opens my heavy sectional door with no struggle.", "This garage door motor is fantastic. Quiet and powerful.", "Excellent motor for my roll-up garage door. Works perfectly.", "Top quality garage motor. The remote range is excellent.", "Love this garage motor. Heavy door, no problem at all."], four: ["Good garage motor. Opens the door reliably.", "Solid motor for my garage. Works well.", "Happy with this garage door opener."], three: ["Garage motor works okay. Does the job.", "Average motor but functional daily."] },
+        "remote": { five: ["Excellent remote! Works perfectly with my gate motor.", "This remote has great range. Can open the gate from far away.", "Quality remote transmitter. Very responsive and reliable.", "Best replacement remote I've bought. Pairs easily.", "Great Centurion remote. Works flawlessly every time."], four: ["Good remote. Works well with my gate.", "Solid transmitter. Range is decent.", "Happy with this remote. Reliable operation."], three: ["Remote works okay. Does what it should.", "Average but functional remote."] },
+        "intercom": { five: ["Excellent intercom system! Crystal clear audio and video.", "This intercom is fantastic. Can see and speak to visitors clearly.", "Best intercom I've used. The G-Speak system is brilliant.", "Brilliant intercom system. Very happy with the clarity."], four: ["Good intercom system. Clear audio.", "Solid intercom. Works reliably.", "Happy with this intercom setup."], three: ["Intercom works okay. Basic but functional.", "Average system but does the job."] },
+        "keypad": { five: ["Top quality keypad intercom. Access control is perfect now.", "Excellent keypad. Easy to program codes."], four: ["Good keypad intercom. Functions well."], three: ["Keypad works okay. Basic functionality."] },
+        "maglock": { five: ["Excellent maglock. Very strong and secure.", "Great magnetic lock. Holds the gate firmly."], four: ["Good maglock. Works reliably."], three: ["Maglock works okay. Basic quality."] },
+        "battery": { five: ["Excellent battery! Powers my gate motor perfectly during load shedding.", "This battery holds charge really well. Great backup power.", "Best backup battery I've bought. Lasts through multiple outages.", "Reliable battery backup. Essential for load shedding in SA."], four: ["Good battery. Holds charge well.", "Solid backup power. Works reliably.", "Happy with this battery purchase."], three: ["Battery works okay. Provides basic backup.", "Average but functional for load shedding."] },
+        "gas-cylinder": { five: ["Great gas cylinder! Exchange process was quick and easy.", "Excellent LP gas quality. Burns clean and lasts well.", "Quality gas cylinder at a fair price. Very happy.", "Excellent LP gas. Perfect for my braai."], four: ["Good gas cylinder. Exchange was simple.", "Solid LP gas quality. Works well."], three: ["Gas works okay. Standard quality.", "Average exchange experience."] }
+      };
+      
+      // Generic reviews (no product mention - safe for any product)
+      const genericReviews = {
+        five: ["Absolutely brilliant! Couldn't be happier with this purchase.", "Exceeded all my expectations. Top quality stuff.", "This is exactly what I was looking for. Perfect!", "Outstanding quality and great value for money.", "Very impressed with the build quality.", "Works flawlessly. Highly recommended!", "Best purchase I've made this year.", "Professional grade equipment at a fair price.", "Arrived quickly and works perfectly.", "No complaints whatsoever. Five stars deserved.", "Really happy with this. Would buy again.", "Exactly as described. Very pleased.", "Great product and fast delivery from Alectra.", "Quality is superb. Worth every rand.", "Perfect condition and works great.", "Fantastic quality, better than expected.", "Very satisfied customer here!", "Alectra delivered again. Great product.", "Would definitely recommend to friends.", "Top notch quality all round.", "Brilliant. Just brilliant.", "Money well spent on this one.", "Works great in all conditions.", "Very reliable. Haven't had any issues."],
+        four: ["Good solid product. Does the job well.", "Happy with this purchase. Works great.", "Good quality for the price.", "Works as expected. Would recommend.", "Solid product. Minor things but overall good.", "Good value. Doing its job nicely.", "Pretty happy with this purchase.", "Works well. Delivery was quick too.", "Does what it says on the box.", "Nice product. Good build quality.", "Satisfied with this. Works properly.", "Good purchase. Would buy from Alectra again.", "Quality is good. No major issues.", "Works fine. Happy overall."],
+        three: ["It's okay. Gets the job done.", "Average product but works fine.", "Does what it needs to. Nothing special.", "Fair enough for the price paid.", "Acceptable quality. Works as expected.", "Decent product. Room for improvement.", "It works. That's the main thing."]
       };
       
       const getRandomReviewName = () => `${reviewFirstNames[Math.floor(Math.random() * reviewFirstNames.length)]} ${reviewLastNames[Math.floor(Math.random() * reviewLastNames.length)]}`;
       const getRandomReviewRating = () => {
         const rand = Math.random();
-        if (rand < 0.55) return 5;  // 55% are 5-star
-        if (rand < 0.85) return 4;  // 30% are 4-star
-        return 3;  // 15% are 3-star (no 1-2 star reviews)
+        if (rand < 0.55) return 5;
+        if (rand < 0.85) return 4;
+        return 3;
       };
       
       const usedReviewComments = new Set<string>();
-      const getReviewComment = (rating: number, categorySlug: string | null, useProductSpecific: boolean): string | null => {
+      const getReviewComment = (rating: number, subtype: string, useSubtypeSpecific: boolean): string | null => {
         let pool: string[];
-        if (useProductSpecific && categorySlug && categoryReviews[categorySlug]) {
-          const catReviews = categoryReviews[categorySlug];
-          pool = rating === 5 ? catReviews.five : rating === 4 ? catReviews.four : catReviews.three;
+        if (useSubtypeSpecific && subtype !== "generic" && subtypeReviews[subtype]) {
+          const subtypePool = subtypeReviews[subtype];
+          pool = rating === 5 ? subtypePool.five : rating === 4 ? subtypePool.four : subtypePool.three;
+          if (!pool || pool.length === 0) {
+            pool = rating === 5 ? genericReviews.five : rating === 4 ? genericReviews.four : genericReviews.three;
+          }
         } else {
-          pool = rating === 5 ? fiveStarGeneric : rating === 4 ? fourStarGeneric : threeStarGeneric;
+          pool = rating === 5 ? genericReviews.five : rating === 4 ? genericReviews.four : genericReviews.three;
         }
         const available = pool.filter(c => !usedReviewComments.has(c));
         if (available.length === 0) {
@@ -1236,9 +1247,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Check if reviews already exist
       const allProducts = await storage.getAllProducts();
-      const allCats = await storage.getAllCategories();
-      const catIdToSlug = new Map<string, string>();
-      allCats.forEach(c => catIdToSlug.set(c.id, c.slug));
       
       let hasReviews = false;
       if (allProducts.length > 0) {
@@ -1246,16 +1254,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         hasReviews = sampleReviews.length > 0;
       }
       
-      // Seed reviews only if none exist
+      // Seed reviews only if none exist - NOW WITH SUBTYPE DETECTION
       if (!hasReviews && allProducts.length > 0) {
         for (const product of allProducts) {
-          const reviewCount = Math.floor(Math.random() * 4) + 1; // 1-4 reviews per product
-          const categorySlug = product.categoryId ? catIdToSlug.get(product.categoryId) || null : null;
+          const reviewCount = Math.floor(Math.random() * 4) + 1;
+          const subtype = detectSubtype(product.name);
           
           for (let i = 0; i < reviewCount; i++) {
             const rating = getRandomReviewRating();
-            const useProductSpecific = i < 2; // First 1-2 reviews mention product type
-            const comment = getReviewComment(rating, categorySlug, useProductSpecific);
+            const useSubtypeSpecific = i === 0 && subtype !== "generic";
+            const comment = getReviewComment(rating, subtype, useSubtypeSpecific);
             try {
               await storage.createProductReview({
                 productId: product.id,
