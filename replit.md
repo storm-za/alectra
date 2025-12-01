@@ -79,8 +79,8 @@ Partners with Centurion, ET Nice, Digidoor, Gemini, DTS, Hansa, Nemtek, IDS, Sen
 **Solution**: Automated dev database export system that captures exact product-category mappings.
 
 **Files**:
-- `scripts/export-dev-database.ts` - Exports dev database to JSON
-- `scripts/dev-database-export.json` - Complete snapshot (272 products, 9 categories, 20 blog posts)
+- `scripts/export-dev-database.ts` - Exports dev database to JSON (products, categories, blogs, reviews)
+- `scripts/dev-database-export.json` - Complete snapshot (272 products, 9 categories, 20 blog posts, 675 reviews)
 - `scripts/seed-all-blog-posts.ts` - Seeds all 18 SEO blog posts to database
 - `server/routes.ts` - `/api/admin/seed-production` endpoint reads export file
 
@@ -105,13 +105,13 @@ Partners with Centurion, ET Nice, Digidoor, Gemini, DTS, Hansa, Nemtek, IDS, Sen
 - ✅ Includes all 58 uncategorized products
 - ✅ No request size limits (reads from filesystem, not HTTP POST)
 - ✅ Idempotent: safe to run multiple times
-- ✅ Automatically seeds 500+ reviews across all products
+- ✅ **Imports exact reviews from development** (675 reviews with identical author names, ratings, comments, and timestamps)
 
 **Production Seeding Endpoint**: `POST /api/admin/seed-production`
 - Reads `scripts/dev-database-export.json` from filesystem
 - Creates categories first (slug → ID mapping)
 - Maps products to categories via slug lookup
-- Generates reviews with South African names
+- **Imports exact reviews** via product slug mapping (not random generation)
 - Seeds blog posts
 
 ## Product Catalog
