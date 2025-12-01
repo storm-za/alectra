@@ -1,7 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { createOrderRequestSchema, registerSchema, loginSchema, insertUserAddressSchema, insertProductReviewSchema, insertTradeApplicationSchema } from "@shared/schema";
+import { db } from "./db";
+import { createOrderRequestSchema, registerSchema, loginSchema, insertUserAddressSchema, insertProductReviewSchema, insertTradeApplicationSchema, productReviews } from "@shared/schema";
 import { hashPassword, verifyPassword, requireAuth } from "./auth";
 import { EmailService } from "./email";
 
@@ -1290,14 +1291,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const catIdToSlug = new Map<string, string>();
       allCats.forEach(c => catIdToSlug.set(c.id, c.slug));
       
+      // Build product slug to ID mapping for importing exact reviews
+      const productSlugToId = new Map<string, string>();
+      allProducts.forEach(p => productSlugToId.set(p.slug, p.id));
+      
       let hasReviews = false;
       if (allProducts.length > 0) {
         const sampleReviews = await storage.getProductReviews(allProducts[0].id);
         hasReviews = sampleReviews.length > 0;
       }
       
-      // Seed reviews only if none exist - NOW WITH SUBTYPE DETECTION
-      if (!hasReviews && allProducts.length > 0) {
+      // Seed reviews using EXACT data from dev database export (not random generation)
+      if (!hasReviews && allProducts.length > 0 && devData?.reviews?.length > 0) {
+        // Use the exact reviews exported from development database
+        // Insert directly with createdAt to maintain identical timestamps
+        for (const review of devData.reviews) {
+          const productId = productSlugToId.get(review.productSlug);
+          if (productId) {
+            try {
+              await db.insert(productReviews).values({
+                productId,
+                rating: review.rating,
+                comment: review.comment,
+                authorName: review.authorName,
+                createdAt: review.createdAt ? new Date(review.createdAt) : new Date()
+              });
+              reviewsCreated++;
+            } catch (e) {
+              // Skip if error
+            }
+          }
+        }
+      } else if (!hasReviews && allProducts.length > 0) {
+        // Fallback: generate reviews if no export data available
         for (const product of allProducts) {
           const reviewCount = Math.floor(Math.random() * 4) + 1;
           const categorySlug = product.categoryId ? catIdToSlug.get(product.categoryId) || null : null;
