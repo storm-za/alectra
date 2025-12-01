@@ -1,5 +1,5 @@
 import { db } from "../server/db";
-import { products, categories, blogPosts } from "@shared/schema";
+import { products, categories, blogPosts, productReviews } from "@shared/schema";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -9,6 +9,7 @@ async function exportDevDatabase() {
   const allProducts = await db.select().from(products);
   const allCategories = await db.select().from(categories);
   const allBlogs = await db.select().from(blogPosts);
+  const allReviews = await db.select().from(productReviews);
 
   // Load original scraped data to get remote image URLs
   const scrapedDataPath = path.join(process.cwd(), "scripts", "product-data.json");
@@ -67,6 +68,17 @@ async function exportDevDatabase() {
       tags: b.tags,
       metaDescription: b.metaDescription,
     })),
+    reviews: allReviews.map(r => {
+      // Find the product slug for this review so we can map by slug in production
+      const product = allProducts.find(p => p.id === r.productId);
+      return {
+        productSlug: product?.slug || null,
+        authorName: r.authorName,
+        rating: r.rating,
+        comment: r.comment,
+        createdAt: r.createdAt,
+      };
+    }).filter(r => r.productSlug !== null),
   };
 
   const outputPath = path.join(process.cwd(), "scripts", "dev-database-export.json");
@@ -80,6 +92,7 @@ async function exportDevDatabase() {
   console.log(`   - ${localImages} with local paths (will fallback to DB)`);
   console.log(`✅ Exported ${allCategories.length} categories`);
   console.log(`✅ Exported ${allBlogs.length} blog posts`);
+  console.log(`✅ Exported ${allReviews.length} reviews`);
   console.log(`📁 Saved to: ${outputPath}`);
 }
 
