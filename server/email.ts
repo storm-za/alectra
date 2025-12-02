@@ -25,6 +25,8 @@ export interface OrderEmailData {
   deliveryCity: string;
   deliveryProvince: string;
   deliveryPostalCode: string;
+  isGift?: boolean;
+  giftMessage?: string;
   items: Array<{
     productName: string;
     quantity: number;
@@ -382,6 +384,30 @@ export class EmailService {
                         <td style="padding: 12px 0; text-align: right; width: 120px; font-size: 18px; font-weight: bold; color: #FF9800;">R${data.total}</td>
                       </tr>
                     </table>
+
+                    ${data.isGift ? `
+                    <!-- Christmas Gift Notice -->
+                    <div style="margin-top: 25px; background: linear-gradient(135deg, #dc2626 0%, #16a34a 100%); border-radius: 8px; padding: 3px;">
+                      <div style="background-color: #fef2f2; border-radius: 6px; padding: 20px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                          <span style="font-size: 24px; margin-right: 10px;">🎄</span>
+                          <h3 style="margin: 0; color: #dc2626; font-size: 18px; font-weight: bold;">Christmas Gift Order</h3>
+                          <span style="font-size: 24px; margin-left: 10px;">🎁</span>
+                        </div>
+                        <p style="margin: 0 0 10px 0; color: #374151; font-size: 14px;">
+                          ${data.deliveryMethod === "pickup" 
+                            ? "Your order will be prepared in a beautiful gift bag, ready for pickup!" 
+                            : "Your order will be wrapped in festive Christmas packaging!"}
+                        </p>
+                        ${data.giftMessage ? `
+                        <div style="margin-top: 15px; padding: 15px; background-color: white; border-radius: 6px; border-left: 4px solid #dc2626;">
+                          <p style="margin: 0 0 5px 0; color: #6b7280; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Your Gift Message:</p>
+                          <p style="margin: 0; color: #111827; font-size: 14px; font-style: italic;">"${data.giftMessage}"</p>
+                        </div>
+                        ` : ''}
+                      </div>
+                    </div>
+                    ` : ''}
                   </td>
                 </tr>
 
@@ -583,6 +609,37 @@ export class EmailService {
                         <td style="padding: 15px; text-align: right; width: 120px; font-size: 20px; font-weight: bold; color: #FF9800;">R${data.total}</td>
                       </tr>
                     </table>
+
+                    ${data.isGift ? `
+                    <!-- Christmas Gift Alert - IMPORTANT for packaging -->
+                    <div style="margin-bottom: 20px; background: linear-gradient(135deg, #dc2626 0%, #16a34a 100%); border-radius: 8px; padding: 4px;">
+                      <div style="background-color: #fef2f2; border-radius: 6px; padding: 20px;">
+                        <div style="margin-bottom: 15px; text-align: center;">
+                          <span style="font-size: 32px;">🎄</span>
+                          <span style="font-size: 32px;">🎁</span>
+                          <span style="font-size: 32px;">🎅</span>
+                        </div>
+                        <h3 style="margin: 0 0 10px 0; color: #dc2626; font-size: 20px; font-weight: bold; text-align: center; text-transform: uppercase;">
+                          ⚠️ CHRISTMAS GIFT ORDER ⚠️
+                        </h3>
+                        <p style="margin: 0 0 15px 0; color: #374151; font-size: 16px; text-align: center; font-weight: 600;">
+                          ${data.deliveryMethod === "pickup" 
+                            ? "📦 Please prepare this order in a GIFT BAG for customer pickup!" 
+                            : "🎁 Please GIFT WRAP this order in Christmas packaging before shipping!"}
+                        </p>
+                        ${data.giftMessage ? `
+                        <div style="margin-top: 15px; padding: 15px; background-color: white; border-radius: 6px; border: 2px solid #dc2626;">
+                          <p style="margin: 0 0 8px 0; color: #dc2626; font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Include This Gift Message Card:</p>
+                          <p style="margin: 0; color: #111827; font-size: 16px; font-style: italic; padding: 10px; background-color: #fef2f2; border-radius: 4px;">"${data.giftMessage}"</p>
+                        </div>
+                        ` : `
+                        <p style="margin: 0; color: #6b7280; font-size: 14px; text-align: center; font-style: italic;">
+                          No gift message provided - include a generic "Merry Christmas" card
+                        </p>
+                        `}
+                      </div>
+                    </div>
+                    ` : ''}
 
                     <!-- Action reminder -->
                     <div style="background-color: #fef3c7; padding: 15px; border-radius: 6px; border-left: 4px solid #f59e0b;">

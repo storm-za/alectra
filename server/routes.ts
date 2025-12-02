@@ -631,6 +631,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               deliveryCity: order.deliveryCity || "",
               deliveryProvince: order.deliveryProvince || "",
               deliveryPostalCode: order.deliveryPostalCode || "",
+              isGift: order.isGift || false,
+              giftMessage: order.giftMessage || undefined,
               items: orderItemsData.map((item) => ({
                 productName: item.productName,
                 quantity: item.quantity,
