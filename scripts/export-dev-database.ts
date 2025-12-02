@@ -36,7 +36,9 @@ async function exportDevDatabase() {
     products: allProducts.map(p => {
       // Prefer local images over remote Shopify URLs for independence
       // Local images are bundled with the app, no dependency on external CDN
+      // IMPORTANT: Include id to preserve variant matching (LP Gas, Glosteel doors)
       return {
+        id: p.id, // CRITICAL: Preserve IDs for variant pricing lookup
         name: p.name,
         slug: p.slug,
         description: p.description,

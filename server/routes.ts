@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { db } from "./db";
-import { createOrderRequestSchema, registerSchema, loginSchema, insertUserAddressSchema, insertProductReviewSchema, insertTradeApplicationSchema, productReviews } from "@shared/schema";
+import { createOrderRequestSchema, registerSchema, loginSchema, insertUserAddressSchema, insertProductReviewSchema, insertTradeApplicationSchema, productReviews, products, categories } from "@shared/schema";
 import { hashPassword, verifyPassword, requireAuth } from "./auth";
 import { EmailService } from "./email";
 
@@ -1061,7 +1061,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
 
-        // Create products with proper category mapping
+        // Create products with proper category mapping - PRESERVE ORIGINAL IDs
+        // This is critical for variant pricing (LP Gas, Glosteel doors)
         if (existingProducts.length === 0 && devData.products) {
           // Build reverse lookup: oldCategoryId -> categorySlug
           const oldCategoryIdToSlug = new Map<string, string>();
@@ -1080,7 +1081,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 }
               }
 
-              await storage.createProduct({
+              // Use direct DB insert to preserve original product IDs
+              // This ensures LP Gas and Glosteel variant pricing works correctly
+              const productData: any = {
                 name: p.name,
                 slug: p.slug,
                 description: p.description,
@@ -1093,7 +1096,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 stock: p.stock || 100,
                 featured: p.featured || false,
                 discontinued: p.discontinued || false,
-              });
+              };
+              
+              // If product has original ID, preserve it for variant matching
+              if (p.id) {
+                productData.id = p.id;
+              }
+              
+              await db.insert(products).values(productData);
               productsCreated++;
             } catch (e) {
               // Skip duplicates
