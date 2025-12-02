@@ -55,6 +55,8 @@ export const orders = pgTable("orders", {
   deliveryCity: text("delivery_city"),
   deliveryProvince: text("delivery_province"),
   deliveryPostalCode: text("delivery_postal_code"),
+  isGift: boolean("is_gift").notNull().default(false),
+  giftMessage: text("gift_message"),
   subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
   vat: decimal("vat", { precision: 10, scale: 2 }).notNull(),
   tradeDiscount: decimal("trade_discount", { precision: 10, scale: 2 }),
@@ -211,6 +213,8 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
   deliveryCity: z.string().optional().nullable(),
   deliveryProvince: z.string().optional().nullable(),
   deliveryPostalCode: z.string().optional().nullable(),
+  isGift: z.boolean().default(false),
+  giftMessage: z.string().optional().nullable(),
 });
 
 export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
