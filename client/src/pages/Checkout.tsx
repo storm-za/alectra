@@ -28,7 +28,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { CartItem, UserAddress, PaystackInitializeResponse, PaystackVerifyResponse } from "@shared/schema";
-import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard } from "lucide-react";
+import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Gift, Snowflake, Star } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 
 const checkoutSchema = z.object({
@@ -40,6 +41,8 @@ const checkoutSchema = z.object({
   deliveryCity: z.string().optional(),
   deliveryProvince: z.string().optional(),
   deliveryPostalCode: z.string().optional(),
+  isGift: z.boolean().default(false),
+  giftMessage: z.string().optional(),
 }).refine((data) => {
   if (data.deliveryMethod === "delivery") {
     return !!(data.deliveryAddress && data.deliveryCity && data.deliveryProvince && data.deliveryPostalCode);
@@ -91,6 +94,8 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       deliveryCity: "",
       deliveryProvince: "",
       deliveryPostalCode: "",
+      isGift: false,
+      giftMessage: "",
     },
     values: user?.user ? {
       deliveryMethod: "delivery",
@@ -101,10 +106,13 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       deliveryCity: "",
       deliveryProvince: "",
       deliveryPostalCode: "",
+      isGift: false,
+      giftMessage: "",
     } : undefined,
   });
 
   const deliveryMethod = form.watch("deliveryMethod");
+  const isGift = form.watch("isGift");
 
   const handleAddressSelect = (addressId: string) => {
     setSelectedAddressId(addressId);
@@ -531,6 +539,96 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                         </div>
                       </>
                     )}
+
+                    {/* Christmas Gift Section - Festive styling to stand apart */}
+                    <div className="relative mt-8 mb-6">
+                      <div className="absolute inset-0 bg-gradient-to-r from-red-600 via-red-500 to-green-600 rounded-xl opacity-10" />
+                      <div className="relative border-2 border-red-200 dark:border-red-900 rounded-xl overflow-hidden">
+                        <div className="bg-gradient-to-r from-red-700 via-red-600 to-green-700 px-4 py-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="bg-white/20 p-2 rounded-full">
+                                <Gift className="h-5 w-5 text-white" />
+                              </div>
+                              <div className="text-white">
+                                <h3 className="font-bold text-lg flex items-center gap-2">
+                                  Christmas Gift
+                                  <Star className="h-4 w-4 text-yellow-300 fill-yellow-300" />
+                                </h3>
+                                <p className="text-sm text-white/80">Make it extra special this festive season!</p>
+                              </div>
+                            </div>
+                            <div className="absolute top-3 right-12 opacity-20">
+                              <Snowflake className="h-8 w-8 text-white animate-pulse" />
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-gradient-to-b from-red-50 to-white dark:from-red-950/30 dark:to-background p-5">
+                          <FormField
+                            control={form.control}
+                            name="isGift"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-start space-x-4 space-y-0">
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    data-testid="switch-is-gift"
+                                    className="data-[state=checked]:bg-red-600"
+                                  />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                  <FormLabel className="text-base font-semibold cursor-pointer">
+                                    This order is a Christmas gift
+                                  </FormLabel>
+                                  <p className="text-sm text-muted-foreground">
+                                    {deliveryMethod === "delivery" 
+                                      ? "We'll wrap your order in beautiful Christmas packaging for that special surprise!"
+                                      : "We'll include a lovely gift bag with your pickup order!"}
+                                  </p>
+                                </div>
+                              </FormItem>
+                            )}
+                          />
+                          
+                          {isGift && (
+                            <div className="mt-5 animate-in slide-in-from-top-2 duration-300">
+                              <FormField
+                                control={form.control}
+                                name="giftMessage"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                                      <Gift className="h-4 w-4 text-red-600" />
+                                      Personal Gift Message
+                                      <Badge variant="outline" className="text-xs font-normal bg-white/50">Optional</Badge>
+                                    </FormLabel>
+                                    <FormControl>
+                                      <Textarea 
+                                        placeholder="Write a heartfelt message for the lucky recipient... (e.g., 'Merry Christmas! Enjoy your new gate motor! Love, Santa')"
+                                        {...field}
+                                        data-testid="textarea-gift-message"
+                                        className="min-h-[100px] bg-white dark:bg-background border-red-200 dark:border-red-900 focus:border-red-400 resize-none"
+                                      />
+                                    </FormControl>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      We'll include a beautiful card with your message
+                                    </p>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          )}
+                          
+                          <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+                            <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+                            <span>Free gift wrapping included with every order this Christmas season</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
                     {/* Trust Signals */}
                     <div className="bg-muted/50 rounded-lg p-4 space-y-3" data-testid="trust-signals">
