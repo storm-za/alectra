@@ -37,6 +37,7 @@ import { SiVisa, SiMastercard } from "react-icons/si";
 import { StarRating } from "@/components/StarRating";
 import { SEO, createProductStructuredData } from "@/components/SEO";
 import { Breadcrumb } from "@/components/Breadcrumb";
+import { HappyCustomersGallery } from "@/components/HappyCustomersGallery";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductReviewSchema, LP_GAS_PRICING, LP_GAS_CYLINDER_IDS, GLOSTEEL_PRICING, GLOSTEEL_DOOR_IDS } from "@shared/schema";
@@ -840,6 +841,9 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 )}
               </TabsContent>
             </Tabs>
+            
+            {/* Happy Customers Gallery */}
+            <HappyCustomersGallery />
           </div>
         </div>
       </div>
