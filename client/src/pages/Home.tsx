@@ -71,7 +71,7 @@ export default function Home({ onAddToCart }: HomeProps) {
             </div>
             
             <div className="flex flex-col items-center gap-3">
-              <Link href="/products">
+              <Link href="/collections/all">
                 <Button 
                   size="lg" 
                   className="bg-white text-red-700 hover:bg-white/90 font-semibold px-8 py-6 text-lg shadow-lg"
