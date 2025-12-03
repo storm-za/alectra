@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +7,12 @@ import { CheckCircle2, Package, Truck, Mail, Phone } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { apiRequest } from "@/lib/queryClient";
 import type { PaystackVerifyResponse } from "@shared/schema";
+
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
 
 export default function OrderSuccess() {
   const [, navigate] = useLocation();
@@ -23,6 +30,18 @@ export default function OrderSuccess() {
     enabled: !!reference,
     retry: false,
   });
+
+  // Track Google Ads conversion when payment is successful
+  useEffect(() => {
+    if (paymentData?.status === "success" && paymentData.data?.amount && window.gtag) {
+      window.gtag('event', 'conversion', {
+        'send_to': 'AW-16880658158/WiiqCKOTia4aEO7NqfE-',
+        'value': paymentData.data.amount,
+        'currency': 'ZAR',
+        'transaction_id': orderId || reference || ''
+      });
+    }
+  }, [paymentData, orderId, reference]);
 
   if (isLoading) {
     return (
