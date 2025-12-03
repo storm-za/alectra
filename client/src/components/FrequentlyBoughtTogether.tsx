@@ -75,7 +75,9 @@ export function FrequentlyBoughtTogether({ currentProductId, categorySlug }: Fre
         className="w-full"
       >
         <CarouselContent className="-ml-2 md:-ml-4">
-          {filteredProducts.map((product) => (
+          {filteredProducts.map((product) => {
+            const imageUrl = product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`;
+            return (
             <CarouselItem
               key={product.id}
               className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4"
@@ -86,7 +88,7 @@ export function FrequentlyBoughtTogether({ currentProductId, categorySlug }: Fre
                   <CardContent className="p-0">
                     <div className="aspect-square overflow-hidden bg-muted">
                       <img
-                        src={product.imageUrl}
+                        src={imageUrl}
                         alt={product.name}
                         className="w-full h-full object-contain p-2"
                         loading="lazy"
@@ -107,7 +109,8 @@ export function FrequentlyBoughtTogether({ currentProductId, categorySlug }: Fre
                 </Card>
               </Link>
             </CarouselItem>
-          ))}
+            );
+          })}
         </CarouselContent>
         {filteredProducts.length > 4 && (
           <>
