@@ -590,35 +590,6 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                             )}
                           />
                           
-                          {isGift && (
-                            <div className="mt-5 animate-in slide-in-from-top-2 duration-300">
-                              <FormField
-                                control={form.control}
-                                name="giftMessage"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="flex items-center gap-2 text-sm font-medium">
-                                      <Gift className="h-4 w-4 text-red-600" />
-                                      Personal Gift Message
-                                      <Badge variant="outline" className="text-xs font-normal bg-white/50">Optional</Badge>
-                                    </FormLabel>
-                                    <FormControl>
-                                      <Textarea 
-                                        placeholder="Write a heartfelt message for the lucky recipient... (e.g., 'Merry Christmas! Enjoy your new gate motor! Love, Santa')"
-                                        {...field}
-                                        data-testid="textarea-gift-message"
-                                        className="min-h-[100px] bg-white dark:bg-background border-red-200 dark:border-red-900 focus:border-red-400 resize-none"
-                                      />
-                                    </FormControl>
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                      We'll include a beautiful card with your message
-                                    </p>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                          )}
                         </div>
                       </div>
                     </div>
