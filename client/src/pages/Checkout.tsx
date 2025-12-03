@@ -621,11 +621,6 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                               />
                             </div>
                           )}
-                          
-                          <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-                            <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
-                            <span>Free gift wrapping included with every order this Christmas season</span>
-                          </div>
                         </div>
                       </div>
                     </div>
