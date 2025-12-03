@@ -38,6 +38,9 @@ import { StarRating } from "@/components/StarRating";
 import { SEO, createProductStructuredData } from "@/components/SEO";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { HappyCustomersGallery } from "@/components/HappyCustomersGallery";
+import { FrequentlyBoughtTogether } from "@/components/FrequentlyBoughtTogether";
+import { WhyShopWithUs } from "@/components/WhyShopWithUs";
+import { TradeAccountBenefits } from "@/components/TradeAccountBenefits";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductReviewSchema, LP_GAS_PRICING, LP_GAS_CYLINDER_IDS, GLOSTEEL_PRICING, GLOSTEEL_DOOR_IDS } from "@shared/schema";
@@ -842,8 +845,20 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
               </TabsContent>
             </Tabs>
             
+            {/* Frequently Bought Together */}
+            <FrequentlyBoughtTogether 
+              currentProductId={product.id} 
+              categorySlug={category?.slug || null} 
+            />
+            
             {/* Happy Customers Gallery */}
             <HappyCustomersGallery />
+            
+            {/* Why Shop With Us */}
+            <WhyShopWithUs />
+            
+            {/* Trade Account Benefits */}
+            <TradeAccountBenefits />
           </div>
         </div>
       </div>
