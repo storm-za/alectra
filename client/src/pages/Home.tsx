@@ -30,7 +30,6 @@ export default function Home({ onAddToCart }: HomeProps) {
         structuredData={organizationData}
       />
       <Hero />
-      
       {/* Christmas Gift Section */}
       <section className="relative overflow-hidden bg-gradient-to-r from-red-700 via-red-600 to-green-700">
         <div className="absolute inset-0 opacity-10">
@@ -59,7 +58,7 @@ export default function Home({ onAddToCart }: HomeProps) {
               </div>
               <div className="text-white">
                 <h2 className="text-2xl md:text-3xl font-bold mb-2 flex items-center gap-2">
-                  <span>Christmas Gift Service</span>
+                  <span>Christmas Time!</span>
                   <Star className="h-5 w-5 text-yellow-300 fill-yellow-300" />
                 </h2>
                 <p className="text-lg text-white/90 max-w-lg">
@@ -86,7 +85,6 @@ export default function Home({ onAddToCart }: HomeProps) {
           </div>
         </div>
       </section>
-      
       {/* Delivery Information Banner */}
       <section className="bg-card border-y">
         <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
@@ -121,11 +119,9 @@ export default function Home({ onAddToCart }: HomeProps) {
           </div>
         </div>
       </section>
-      
       <CategoryGrid 
         categories={categoriesLoading ? [] : categories || []} 
       />
-
       <TrustedBrands />
       <WhyChoose />
       <TradeBanner />
