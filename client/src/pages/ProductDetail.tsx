@@ -844,22 +844,25 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 )}
               </TabsContent>
             </Tabs>
-            
-            {/* Frequently Bought Together */}
-            <FrequentlyBoughtTogether 
-              currentProductId={product.id} 
-              categorySlug={category?.slug || null} 
-            />
-            
-            {/* Happy Customers Gallery */}
-            <HappyCustomersGallery />
-            
-            {/* Why Shop With Us */}
-            <WhyShopWithUs />
-            
-            {/* Trade Account Benefits */}
-            <TradeAccountBenefits />
           </div>
+        </div>
+        
+        {/* Full-width sections below the product grid */}
+        <div className="mt-12">
+          {/* Frequently Bought Together */}
+          <FrequentlyBoughtTogether 
+            currentProductId={product.id} 
+            categorySlug={category?.slug || null} 
+          />
+          
+          {/* Happy Customers Gallery */}
+          <HappyCustomersGallery />
+          
+          {/* Why Shop With Us */}
+          <WhyShopWithUs />
+          
+          {/* Trade Account Benefits */}
+          <TradeAccountBenefits />
         </div>
       </div>
     </div>
