@@ -49,7 +49,7 @@ export function TradeAccountBenefits() {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-3 md:flex-col lg:flex-row">
-            <Link href="/register?type=installer">
+            <Link href="/trade-application">
               <Button size="lg" data-testid="button-register-trade">
                 Register Trade Account
               </Button>
