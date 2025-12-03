@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { BadgePercent, Users, Zap, FileCheck } from "lucide-react";
+import { BadgePercent, Users, Zap } from "lucide-react";
 
 const benefits = [
   {
@@ -10,10 +10,6 @@ const benefits = [
   {
     icon: Zap,
     text: "Priority order processing",
-  },
-  {
-    icon: FileCheck,
-    text: "Tax invoices for all orders",
   },
   {
     icon: Users,
