@@ -82,7 +82,6 @@ export default function Home({ onAddToCart }: HomeProps) {
                   Shop Christmas Gifts
                 </Button>
               </Link>
-              <p className="text-white/80 text-sm">Free gift wrapping on all orders</p>
             </div>
           </div>
         </div>
