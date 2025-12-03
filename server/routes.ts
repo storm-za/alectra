@@ -986,10 +986,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Skip products with no valid price
         if (isNaN(price) || price <= 0) continue;
         
-        // Get full image URL
-        const imageUrl = product.imageUrl?.startsWith('http') 
-          ? product.imageUrl 
-          : `${baseUrl}${product.imageUrl?.startsWith('/') ? '' : '/'}${product.imageUrl}`;
+        // Skip products with missing or invalid images
+        if (!product.imageUrl || product.imageUrl.trim() === '') continue;
+        
+        // Get full image URL - must be absolute URL for Google
+        let imageUrl: string;
+        if (product.imageUrl.startsWith('http')) {
+          imageUrl = product.imageUrl;
+        } else {
+          // Convert local paths to absolute URLs
+          const cleanPath = product.imageUrl.startsWith('/') ? product.imageUrl : '/' + product.imageUrl;
+          imageUrl = `${baseUrl}${cleanPath}`;
+        }
+        
+        // Validate image URL has proper extension
+        const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+        const hasValidExtension = validExtensions.some(ext => imageUrl.toLowerCase().includes(ext));
+        if (!hasValidExtension) continue;
         
         // Get category name for product type
         const categoryName = product.categoryId ? categoryMap.get(product.categoryId) || 'Security Equipment' : 'Security Equipment';
@@ -1005,6 +1018,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         feed += `      <g:image_link>${escapeXml(imageUrl)}</g:image_link>\n`;
         feed += `      <g:price>${price.toFixed(2)} ZAR</g:price>\n`;
         feed += `      <g:availability>${product.stock > 0 ? 'in stock' : 'out of stock'}</g:availability>\n`;
+        feed += `      <g:quantity>${product.stock}</g:quantity>\n`;
         feed += `      <g:condition>new</g:condition>\n`;
         feed += `      <g:brand>${escapeXml(product.brand)}</g:brand>\n`;
         
