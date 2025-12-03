@@ -173,3 +173,55 @@ Products include:
 - Add automated tests to assert category counts plus uncategorized totals match alectra.co.za
 - Consider exposing an explicit "Uncategorized" filter in the UI for visibility into the 43 uncategorized items
 - Monitor analytics to ensure uncategorized products remain discoverable at historical rates
+
+## Google Merchant Center Integration
+
+### Google Shopping Product Feed
+
+The site generates a dynamic Google Shopping product feed for integration with Google Merchant Center.
+
+**Feed URL**: `https://alectra.co.za/feeds/google-shopping.xml`
+
+**Feed Specifications**:
+- Format: RSS 2.0 with Google Shopping namespace (`xmlns:g="http://base.google.com/ns/1.0"`)
+- Auto-generated from live database
+- Excludes discontinued products and out-of-stock items
+- Updates every hour (cached)
+
+**Included Product Attributes**:
+- `g:id` - Product SKU (unique identifier)
+- `g:title` - Product name
+- `g:description` - Product description (HTML stripped, max 5000 chars)
+- `g:link` - Product page URL
+- `g:image_link` - Primary product image
+- `g:additional_image_link` - Up to 10 additional images
+- `g:price` - Price in ZAR (VAT inclusive)
+- `g:availability` - "in stock" or "out of stock"
+- `g:condition` - "new"
+- `g:brand` - Product brand
+- `g:mpn` - Manufacturer Part Number (uses SKU)
+- `g:product_type` - Category name
+- `g:google_product_category` - "Hardware > Security Systems & Automation"
+- `g:shipping` - Standard delivery via The Courier Guy (R150)
+- `g:tax` - 15% VAT for South Africa
+- `g:identifier_exists` - true
+
+**Setup Instructions**:
+1. Go to [Google Merchant Center](https://merchants.google.com)
+2. Create a Merchant Center account if not already done
+3. Navigate to **Products** → **Feeds** → **Add primary feed**
+4. Select **Scheduled fetch** as the feed type
+5. Enter the feed URL: `https://alectra.co.za/feeds/google-shopping.xml`
+6. Set fetch frequency to daily
+7. Complete verification and submit for review
+
+**URL Structure**:
+- Main products page: `/collections/all`
+- Individual product pages: `/products/:slug`
+- Category pages: `/collections/:category-slug`
+
+**SEO Features**:
+- Product pages include Schema.org Product structured data
+- Aggregate ratings and review counts included in structured data
+- Open Graph and Twitter Card meta tags for social sharing
+- Canonical URLs for all product pages

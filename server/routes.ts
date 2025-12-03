@@ -843,9 +843,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
       sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
       
-      // Products listing page
+      // Products listing page (collections/all)
       sitemap += '  <url>\n';
-      sitemap += `    <loc>${baseUrl}/products</loc>\n`;
+      sitemap += `    <loc>${baseUrl}/collections/all</loc>\n`;
       sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
       sitemap += '  </url>\n';
       
@@ -936,6 +936,122 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.send(sitemap);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
+    }
+  });
+
+  // GOOGLE MERCHANT CENTER PRODUCT FEED
+  // This feed can be submitted to Google Merchant Center for Google Shopping
+  // Feed URL: https://alectra.co.za/feeds/google-shopping.xml
+  app.get("/feeds/google-shopping.xml", async (req, res) => {
+    try {
+      const products = await storage.getAllProducts();
+      const categories = await storage.getAllCategories();
+      const baseUrl = 'https://alectra.co.za';
+      
+      // Create category lookup for category names
+      const categoryMap = new Map(categories.map(c => [c.id, c.name]));
+      
+      // Helper to escape XML special characters
+      const escapeXml = (str: string) => {
+        if (!str) return '';
+        return str
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&apos;')
+          .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ''); // Remove control characters
+      };
+      
+      // Helper to truncate description to 5000 chars (Google limit)
+      const truncateDescription = (desc: string, maxLength = 5000) => {
+        if (!desc) return '';
+        const cleaned = desc.replace(/<[^>]*>/g, '').trim(); // Strip HTML
+        return cleaned.length > maxLength ? cleaned.substring(0, maxLength - 3) + '...' : cleaned;
+      };
+      
+      let feed = '<?xml version="1.0" encoding="UTF-8"?>\n';
+      feed += '<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">\n';
+      feed += '  <channel>\n';
+      feed += '    <title>Alectra Solutions - Security &amp; Automation Products</title>\n';
+      feed += `    <link>${baseUrl}</link>\n`;
+      feed += '    <description>South Africa\'s trusted supplier of gate motors, CCTV, electric fencing, and security automation products.</description>\n';
+      
+      for (const product of products) {
+        // Skip discontinued products and out of stock items
+        if (product.discontinued) continue;
+        if (product.stock === 0) continue;
+        
+        const price = parseFloat(product.price);
+        // Skip products with no valid price
+        if (isNaN(price) || price <= 0) continue;
+        
+        // Get full image URL
+        const imageUrl = product.imageUrl?.startsWith('http') 
+          ? product.imageUrl 
+          : `${baseUrl}${product.imageUrl?.startsWith('/') ? '' : '/'}${product.imageUrl}`;
+        
+        // Get category name for product type
+        const categoryName = product.categoryId ? categoryMap.get(product.categoryId) || 'Security Equipment' : 'Security Equipment';
+        
+        // Build product entry
+        feed += '    <item>\n';
+        
+        // Required attributes
+        feed += `      <g:id>${escapeXml(product.sku)}</g:id>\n`;
+        feed += `      <g:title>${escapeXml(product.name)}</g:title>\n`;
+        feed += `      <g:description>${escapeXml(truncateDescription(product.description))}</g:description>\n`;
+        feed += `      <g:link>${baseUrl}/products/${product.slug}</g:link>\n`;
+        feed += `      <g:image_link>${escapeXml(imageUrl)}</g:image_link>\n`;
+        feed += `      <g:price>${price.toFixed(2)} ZAR</g:price>\n`;
+        feed += `      <g:availability>${product.stock > 0 ? 'in stock' : 'out of stock'}</g:availability>\n`;
+        feed += `      <g:condition>new</g:condition>\n`;
+        feed += `      <g:brand>${escapeXml(product.brand)}</g:brand>\n`;
+        
+        // Additional recommended attributes
+        feed += `      <g:mpn>${escapeXml(product.sku)}</g:mpn>\n`;
+        feed += `      <g:product_type>${escapeXml(categoryName)}</g:product_type>\n`;
+        feed += `      <g:google_product_category>Hardware > Security Systems &amp; Automation</g:google_product_category>\n`;
+        
+        // Additional images (up to 10 additional)
+        if (product.images && product.images.length > 0) {
+          const additionalImages = product.images.slice(0, 10);
+          for (const img of additionalImages) {
+            const additionalImageUrl = img.startsWith('http') 
+              ? img 
+              : `${baseUrl}${img.startsWith('/') ? '' : '/'}${img}`;
+            feed += `      <g:additional_image_link>${escapeXml(additionalImageUrl)}</g:additional_image_link>\n`;
+          }
+        }
+        
+        // Shipping info for South Africa
+        feed += '      <g:shipping>\n';
+        feed += '        <g:country>ZA</g:country>\n';
+        feed += '        <g:service>The Courier Guy</g:service>\n';
+        feed += '        <g:price>150.00 ZAR</g:price>\n';
+        feed += '      </g:shipping>\n';
+        
+        // Tax info (VAT inclusive pricing in South Africa)
+        feed += '      <g:tax>\n';
+        feed += '        <g:country>ZA</g:country>\n';
+        feed += '        <g:rate>15</g:rate>\n';
+        feed += '        <g:tax_ship>no</g:tax_ship>\n';
+        feed += '      </g:tax>\n';
+        
+        // Identifier exists (since we have SKU/MPN)
+        feed += '      <g:identifier_exists>true</g:identifier_exists>\n';
+        
+        feed += '    </item>\n';
+      }
+      
+      feed += '  </channel>\n';
+      feed += '</rss>';
+      
+      res.header('Content-Type', 'application/xml; charset=utf-8');
+      res.header('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+      res.send(feed);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error generating Google Shopping feed: " + error.message });
     }
   });
 

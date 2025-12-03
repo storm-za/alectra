@@ -7,6 +7,10 @@ Allow: /
 # Sitemaps
 Sitemap: https://alectra.co.za/sitemap.xml
 
+# Google Merchant Center Product Feed
+# Submit this URL to Google Merchant Center for Google Shopping listings
+# https://alectra.co.za/feeds/google-shopping.xml
+
 # Disallow admin and checkout pages from crawling
 Disallow: /checkout
 Disallow: /account
