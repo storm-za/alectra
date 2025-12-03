@@ -583,9 +583,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                                     This order is a Christmas gift
                                   </FormLabel>
                                   <p className="text-sm text-muted-foreground">
-                                    {deliveryMethod === "delivery" 
-                                      ? "We'll wrap your order in beautiful Christmas packaging for that special surprise!"
-                                      : "We'll include a lovely gift bag with your pickup order!"}
+                                    When selected we'll include a beautiful gift bag for your products, on us!
                                   </p>
                                 </div>
                               </FormItem>
