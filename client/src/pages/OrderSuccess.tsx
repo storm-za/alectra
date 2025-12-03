@@ -47,7 +47,7 @@ export default function OrderSuccess() {
               {paymentData?.message || "We couldn't verify your payment. Please contact our support team with your order reference."}
             </p>
             <div className="flex flex-col gap-2">
-              <Button onClick={() => navigate("/products")} className="w-full" data-testid="button-continue-shopping">
+              <Button onClick={() => navigate("/collections/all")} className="w-full" data-testid="button-continue-shopping">
                 Continue Shopping
               </Button>
               <Button onClick={() => navigate("/account")} variant="outline" className="w-full" data-testid="button-view-orders">
@@ -156,7 +156,7 @@ export default function OrderSuccess() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
-              <Button onClick={() => navigate("/products")} className="flex-1" variant="outline" data-testid="button-continue-shopping">
+              <Button onClick={() => navigate("/collections/all")} className="flex-1" variant="outline" data-testid="button-continue-shopping">
                 Continue Shopping
               </Button>
               <Button onClick={() => navigate("/account")} className="flex-1" data-testid="button-view-orders">

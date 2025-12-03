@@ -246,7 +246,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2">Your cart is empty</h1>
           <p className="text-muted-foreground mb-4">Add some products to checkout</p>
-          <Button onClick={() => navigate("/products")} data-testid="button-browse-products">Browse Products</Button>
+          <Button onClick={() => navigate("/collections/all")} data-testid="button-browse-products">Browse Products</Button>
         </div>
       </div>
     );

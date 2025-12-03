@@ -70,7 +70,7 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
   });
 
   const navigation = [
-    { name: "Shop All", href: "/products" },
+    { name: "Shop All", href: "/collections/all" },
     ...(categories || []).map(cat => ({ name: cat.name, href: `/collections/${cat.slug}` })),
     { name: "Contact Us", href: "/contact" },
     { name: "Trade Account", href: "/pages/trade-wholesale-registration" },
@@ -118,7 +118,7 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56">
                 <DropdownMenuItem asChild>
-                  <Link href="/products" className="cursor-pointer" data-testid="link-shop-all">
+                  <Link href="/collections/all" className="cursor-pointer" data-testid="link-shop-all">
                     Shop All Products
                   </Link>
                 </DropdownMenuItem>
@@ -225,7 +225,7 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
                     </CollapsibleTrigger>
                     <CollapsibleContent className="flex flex-col pl-4 mt-1">
                       <Link 
-                        href="/products"
+                        href="/collections/all"
                         className="px-3 py-2 rounded-md text-sm hover-elevate active-elevate-2"
                         onClick={() => setMobileMenuOpen(false)}
                         data-testid="link-shop-all-mobile"

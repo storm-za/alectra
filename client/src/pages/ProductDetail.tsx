@@ -147,7 +147,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2">Product not found</h1>
-          <Link href="/products">
+          <Link href="/collections/all">
             <a className="text-primary hover:underline">Browse all products</a>
           </Link>
         </div>
@@ -222,7 +222,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             { label: "Home", href: "/" },
             ...(category
               ? [{ label: category.name, href: `/collections/${category.slug}` }]
-              : [{ label: "All Products", href: "/products" }]),
+              : [{ label: "All Products", href: "/collections/all" }]),
             { label: product.name, href: `/products/${product.slug}` },
           ]}
         />

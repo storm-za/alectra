@@ -111,7 +111,7 @@ function Router() {
           <Route path="/">
             <Home onAddToCart={addToCart} />
           </Route>
-          <Route path="/products">
+          <Route path="/collections/all">
             <Products onAddToCart={addToCart} />
           </Route>
           <Route path="/category/:slug">

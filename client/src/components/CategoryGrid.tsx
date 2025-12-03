@@ -74,7 +74,7 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
         
         {/* View all products link */}
         <div className="text-center mt-10">
-          <Link href="/products">
+          <Link href="/collections/all">
             <span className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all cursor-pointer">
               View All Products
               <ArrowRight className="h-5 w-5" />
