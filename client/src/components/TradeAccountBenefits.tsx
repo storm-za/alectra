@@ -5,7 +5,7 @@ import { BadgePercent, Users, Zap, FileCheck } from "lucide-react";
 const benefits = [
   {
     icon: BadgePercent,
-    text: "15% discount on all products",
+    text: "Discount on all products",
   },
   {
     icon: Zap,
