@@ -63,9 +63,9 @@ export default function Home({ onAddToCart }: HomeProps) {
                   <Star className="h-5 w-5 text-yellow-300 fill-yellow-300" />
                 </h2>
                 <p className="text-lg text-white/90 max-w-lg">
-                  Make it special! Choose the gift option at checkout and we'll wrap your order in festive Christmas packaging. 
+                  Make it special! Choose the gift option at checkout and we'll include a free beautiful gift bag for your products.
                   <span className="block mt-1 text-white/80">
-                    Delivery orders come gift-wrapped. Pickup orders include a beautiful gift bag!
+                    Also be sure to look out for Christmas deals!
                   </span>
                 </p>
               </div>
