@@ -412,9 +412,7 @@ export class EmailService {
                           <span style="font-size: 24px; margin-left: 10px;">🎁</span>
                         </div>
                         <p style="margin: 0 0 10px 0; color: #374151; font-size: 14px;">
-                          ${data.deliveryMethod === "pickup" 
-                            ? "Your order will be prepared in a beautiful gift bag, ready for pickup!" 
-                            : "Your order will be wrapped in festive Christmas packaging!"}
+                          Your order will be prepared in a beautiful Christmas gift bag!
                         </p>
                         ${data.giftMessage ? `
                         <div style="margin-top: 15px; padding: 15px; background-color: white; border-radius: 6px; border-left: 4px solid #dc2626;">
@@ -627,8 +625,8 @@ export class EmailService {
                       </tr>
                     </table>
 
+                    <!-- Christmas Gift Bag Status - ALWAYS SHOWN -->
                     ${data.isGift ? `
-                    <!-- Christmas Gift Alert - IMPORTANT for packaging -->
                     <div style="margin-bottom: 20px; background: linear-gradient(135deg, #dc2626 0%, #16a34a 100%); border-radius: 8px; padding: 4px;">
                       <div style="background-color: #fef2f2; border-radius: 6px; padding: 20px;">
                         <div style="margin-bottom: 15px; text-align: center;">
@@ -637,12 +635,10 @@ export class EmailService {
                           <span style="font-size: 32px;">🎅</span>
                         </div>
                         <h3 style="margin: 0 0 10px 0; color: #dc2626; font-size: 20px; font-weight: bold; text-align: center; text-transform: uppercase;">
-                          ⚠️ CHRISTMAS GIFT ORDER ⚠️
+                          ⚠️ CHRISTMAS GIFT BAG - YES ⚠️
                         </h3>
                         <p style="margin: 0 0 15px 0; color: #374151; font-size: 16px; text-align: center; font-weight: 600;">
-                          ${data.deliveryMethod === "pickup" 
-                            ? "📦 Please prepare this order in a GIFT BAG for customer pickup!" 
-                            : "🎁 Please GIFT WRAP this order in Christmas packaging before shipping!"}
+                          📦 Please prepare this order in a GIFT BAG!
                         </p>
                         ${data.giftMessage ? `
                         <div style="margin-top: 15px; padding: 15px; background-color: white; border-radius: 6px; border: 2px solid #dc2626;">
@@ -656,7 +652,13 @@ export class EmailService {
                         `}
                       </div>
                     </div>
-                    ` : ''}
+                    ` : `
+                    <div style="margin-bottom: 20px; background-color: #f3f4f6; border-radius: 8px; padding: 15px; border: 1px solid #e5e7eb;">
+                      <p style="margin: 0; color: #6b7280; font-size: 14px; text-align: center;">
+                        <strong style="color: #374151;">Christmas Gift Bag:</strong> <span style="color: #6b7280;">No</span> - Standard packaging
+                      </p>
+                    </div>
+                    `}
 
                     <!-- Action reminder -->
                     <div style="background-color: #fef3c7; padding: 15px; border-radius: 6px; border-left: 4px solid #f59e0b;">
