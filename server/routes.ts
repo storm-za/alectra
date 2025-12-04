@@ -411,6 +411,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Quote Request (Public - emails owner directly)
+  app.post("/api/quote", async (req, res) => {
+    try {
+      const { name, email, phone, company, category, message } = req.body;
+      
+      // Validate required fields
+      if (!name || !email || !phone || !category || !message) {
+        return res.status(400).json({ message: "Name, email, phone, category, and message are required" });
+      }
+      
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Please provide a valid email address" });
+      }
+      
+      // Send email to owner
+      const emailService = new EmailService();
+      await emailService.sendQuoteRequest({
+        name,
+        email,
+        phone,
+        company: company || undefined,
+        category,
+        message,
+      });
+      
+      console.log(`Quote request received from ${name} (${email}) for ${category}`);
+      
+      res.status(200).json({ 
+        message: "Quote request submitted successfully",
+        success: true 
+      });
+    } catch (error: any) {
+      console.error("Quote request error:", error);
+      res.status(500).json({ message: "Failed to submit quote request. Please try again or contact us directly." });
+    }
+  });
+
   // Trade Applications (Protected)
   app.post("/api/trade/apply", requireAuth, async (req, res) => {
     try {

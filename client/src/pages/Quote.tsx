@@ -50,15 +50,33 @@ export default function Quote() {
   });
 
   const onSubmit = async (data: QuoteFormData) => {
-    // In a real implementation, this would send to your backend
-    console.log("Quote request:", data);
-    
-    toast({
-      title: "Quote Request Received!",
-      description: "We'll get back to you within 24 hours with a detailed quote.",
-    });
+    try {
+      const response = await fetch("/api/quote", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to submit quote request");
+      }
+      
+      toast({
+        title: "Quote Request Received!",
+        description: "We'll get back to you within 24 hours with a detailed quote.",
+      });
 
-    form.reset();
+      form.reset();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to submit quote request. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

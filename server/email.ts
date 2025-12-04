@@ -14,6 +14,15 @@ export interface TradeApplicationEmailData {
   message?: string;
 }
 
+export interface QuoteRequestEmailData {
+  name: string;
+  email: string;
+  phone: string;
+  company?: string;
+  category: string;
+  message: string;
+}
+
 export interface OrderEmailData {
   orderId: string;
   reference: string;
@@ -142,6 +151,123 @@ export class EmailService {
       console.error("Failed to send trade application email:", error);
       throw error;
     }
+  }
+
+  async sendQuoteRequest(data: QuoteRequestEmailData): Promise<void> {
+    const emailHtml = this.generateQuoteRequestHtml(data);
+
+    try {
+      await this.transporter.sendMail({
+        from: `"Alectra Solutions" <${process.env.GMAIL_USER}>`,
+        to: process.env.GMAIL_USER,
+        subject: `Quote Request - ${data.name} (${data.category})`,
+        html: emailHtml,
+        replyTo: data.email,
+      });
+      console.log(`Quote request email sent for ${data.name}`);
+    } catch (error) {
+      console.error("Failed to send quote request email:", error);
+      throw error;
+    }
+  }
+
+  private generateQuoteRequestHtml(data: QuoteRequestEmailData): string {
+    const categoryLabels: Record<string, string> = {
+      'gate-motors': 'Gate Motors',
+      'batteries': 'Batteries',
+      'cctv': 'CCTV Systems',
+      'remotes': 'Remotes',
+      'intercoms': 'Intercoms',
+      'electric-fencing': 'Electric Fencing',
+      'lp-gas': 'LP Gas',
+      'other': 'Other / Multiple Items',
+    };
+    
+    const categoryLabel = categoryLabels[data.category] || data.category;
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>New Quote Request</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 40px 20px;">
+              <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                <!-- Header -->
+                <tr>
+                  <td style="background: linear-gradient(135deg, #FF9800 0%, #FFEB3B 100%); padding: 40px 30px; text-align: center; border-radius: 8px 8px 0 0;">
+                    <h1 style="margin: 0; color: #000000; font-size: 28px; font-weight: bold;">New Quote Request</h1>
+                    <p style="margin: 8px 0 0 0; color: #1f2937; font-size: 14px;">Alectra Solutions</p>
+                  </td>
+                </tr>
+
+                <!-- Content -->
+                <tr>
+                  <td style="padding: 30px;">
+                    <div style="background-color: #10b981; color: white; display: inline-block; padding: 12px 24px; border-radius: 6px; font-weight: 600; margin-bottom: 20px;">
+                      ${categoryLabel}
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                      <h3 style="margin: 0 0 15px 0; color: #1e40af; font-size: 16px;">Contact Information</h3>
+                      <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151; width: 120px;"><strong>Name:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;">${data.name}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>Email:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;"><a href="mailto:${data.email}" style="color: #2563eb;">${data.email}</a></td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>Phone:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;"><a href="tel:${data.phone}" style="color: #2563eb;">${data.phone}</a></td>
+                        </tr>
+                        ${data.company ? `
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>Company:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;">${data.company}</td>
+                        </tr>
+                        ` : ''}
+                      </table>
+                    </div>
+
+                    <!-- Project Details -->
+                    <div style="background-color: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                      <h3 style="margin: 0 0 15px 0; color: #166534; font-size: 16px;">Project Details</h3>
+                      <p style="margin: 0; color: #111827; white-space: pre-wrap; line-height: 1.6;">${data.message}</p>
+                    </div>
+
+                    <!-- Action reminder -->
+                    <div style="background-color: #fef3c7; padding: 15px; border-radius: 6px; border-left: 4px solid #f59e0b;">
+                      <p style="margin: 0; color: #92400e; font-size: 14px;">
+                        <strong>Action Required:</strong> Respond to this quote request within 24 hours.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td style="background-color: #1f2937; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
+                    <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                      Alectra Solutions Quote System | Received: ${new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
   }
 
   private generateTradeApplicationHtml(data: TradeApplicationEmailData): string {
