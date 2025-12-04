@@ -597,20 +597,38 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="description" className="mt-4">
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                  {isDescriptionExpanded || product.description.length <= 200
-                    ? product.description
-                    : `${product.description.slice(0, 200)}...`}
-                  {product.description.length > 200 && (
-                    <button
-                      onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-                      className="ml-2 text-primary hover:underline font-medium"
-                      data-testid="button-read-more"
-                    >
-                      {isDescriptionExpanded ? "Read less" : "read more..."}
-                    </button>
-                  )}
-                </p>
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  {product.description.split('\n').map((paragraph, index) => {
+                    const trimmed = paragraph.trim();
+                    if (!trimmed) return null;
+                    
+                    // Check if it's a heading-like line (ends with colon and is short)
+                    if (trimmed.endsWith(':') && trimmed.length < 80) {
+                      return (
+                        <h4 key={index} className="text-base font-semibold text-foreground mt-4 mb-2 first:mt-0">
+                          {trimmed}
+                        </h4>
+                      );
+                    }
+                    
+                    // Check if it starts with a bullet point emoji or dash
+                    if (trimmed.match(/^[🔹✅📏💧⚡🔌🛡️📡🎥🧰⚙️🌩📻📍🔒•\-–—]/)) {
+                      return (
+                        <p key={index} className="text-sm text-muted-foreground pl-2 py-0.5 flex items-start gap-2">
+                          <span className="shrink-0">{trimmed.charAt(0)}</span>
+                          <span>{trimmed.slice(1).trim()}</span>
+                        </p>
+                      );
+                    }
+                    
+                    // Regular paragraph
+                    return (
+                      <p key={index} className="text-sm text-muted-foreground mb-3 last:mb-0">
+                        {trimmed}
+                      </p>
+                    );
+                  })}
+                </div>
               </TabsContent>
               <TabsContent value="reviews" className="mt-4">
                 {reviews.length === 0 ? (
