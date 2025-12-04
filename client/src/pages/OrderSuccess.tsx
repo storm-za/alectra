@@ -234,7 +234,7 @@ export default function OrderSuccess({ onClearCart }: OrderSuccessProps) {
                 </li>
                 <li className="flex gap-2">
                   <span className="text-primary">•</span>
-                  <span>Track your order status in your account dashboard</span>
+                  <span>Track your order status via the link we'll send you.</span>
                 </li>
                 <li className="flex gap-2">
                   <span className="text-primary">•</span>
