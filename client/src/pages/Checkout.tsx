@@ -656,8 +656,6 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                             <div className="flex items-center gap-2 flex-wrap">
                               <SiVisa className="h-6 w-auto text-[#1434CB]" />
                               <SiMastercard className="h-6 w-auto text-[#FF5F00]" />
-                              <SiApplepay className="h-6 w-auto text-foreground" />
-                              <SiGooglepay className="h-6 w-auto text-foreground" />
                             </div>
                             <p className="text-xs text-muted-foreground">
                               Secure popup checkout
