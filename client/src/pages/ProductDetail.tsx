@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useRoute, Link } from "wouter";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -68,6 +68,8 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const [selectedRating, setSelectedRating] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<LpGasVariant>('exchange');
   const [selectedDoorSize, setSelectedDoorSize] = useState<GarageDoorSize>('2450mm');
+  const [showStickyAddToCart, setShowStickyAddToCart] = useState(false);
+  const addToCartButtonRef = useRef<HTMLButtonElement>(null);
   const { toast } = useToast();
 
   const { data: product, isLoading } = useQuery<Product>({
@@ -127,6 +129,30 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const onSubmitReview = (data: z.infer<typeof reviewFormSchema>) => {
     createReviewMutation.mutate(data);
   };
+
+  // Intersection Observer for sticky Add to Cart button on mobile
+  useEffect(() => {
+    const button = addToCartButtonRef.current;
+    if (!button) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Show sticky bar when the original button is not visible
+        setShowStickyAddToCart(!entry.isIntersecting);
+      },
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0,
+      }
+    );
+
+    observer.observe(button);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [product]);
 
   if (isLoading) {
     return (
@@ -443,6 +469,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
               </div>
 
               <Button
+                ref={addToCartButtonRef}
                 size="lg"
                 className="flex-1"
                 disabled={isOutOfStock}
@@ -867,6 +894,38 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
           <TradeAccountBenefits />
         </div>
       </div>
+
+      {/* Sticky Add to Cart Bar - Mobile Only */}
+      {showStickyAddToCart && !isOutOfStock && (
+        <div 
+          className="fixed bottom-0 left-0 right-0 md:hidden z-40 bg-background/95 backdrop-blur-sm border-t shadow-lg animate-in slide-in-from-bottom-4 duration-300"
+          data-testid="sticky-add-to-cart-bar"
+        >
+          <div className="flex items-center gap-3 px-4 py-3 pr-24">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold truncate">{product.name}</p>
+              <p className="text-lg font-bold text-primary">R {displayPrice}</p>
+            </div>
+            <Button
+              size="lg"
+              className="shrink-0"
+              onClick={() => {
+                if (isLpGasCylinder && lpGasPricing) {
+                  onAddToCart(product, quantity, selectedVariant, displayPrice);
+                } else if (isGlosteelDoor && glosteelPricing) {
+                  onAddToCart(product, quantity, selectedDoorSize, displayPrice);
+                } else {
+                  onAddToCart(product, quantity);
+                }
+              }}
+              data-testid="button-sticky-add-to-cart"
+            >
+              <ShoppingCart className="h-5 w-5 mr-2" />
+              Add to Cart
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
