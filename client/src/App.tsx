@@ -127,7 +127,7 @@ function Router() {
             <Checkout cartItems={cartItems} onClearCart={clearCart} />
           </Route>
           <Route path="/order-success">
-            <OrderSuccess />
+            <OrderSuccess onClearCart={clearCart} />
           </Route>
           <Route path="/login">
             <Login />

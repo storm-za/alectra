@@ -28,7 +28,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { CartItem, UserAddress, PaystackInitializeResponse, PaystackVerifyResponse } from "@shared/schema";
-import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Gift, Snowflake, Star } from "lucide-react";
+import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Gift, Snowflake, Star, Wallet } from "lucide-react";
+import { SiVisa, SiMastercard, SiApplepay, SiGooglepay } from "react-icons/si";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 
@@ -60,10 +63,13 @@ interface CheckoutProps {
   onClearCart: () => void;
 }
 
+type PaymentMethod = "paystack" | "yoco";
+
 export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paystack");
 
   const { data: user } = useQuery<{ user: any | null }>({
     queryKey: ["/api/auth/me"],
@@ -144,85 +150,107 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       try {
         const order = orderResult.order;
 
-        // Initialize payment via backend (required for 3D Secure)
-        const initResponse = await apiRequest("POST", "/api/payment/initialize", {
-          orderId: order.id,
-        });
-        const initData = await initResponse.json();
-
-        if (!initData.accessCode) {
-          toast({
-            title: "Payment Error",
-            description: "Failed to initialize payment. Please try again.",
-            variant: "destructive",
+        if (paymentMethod === "yoco") {
+          // Yoco payment flow - redirect based
+          const initResponse = await apiRequest("POST", "/api/payment/yoco/initialize", {
+            orderId: order.id,
           });
-          return;
-        }
+          const initData = await initResponse.json();
 
-        // Use Paystack Popup with newTransaction (this properly fires onSuccess callback)
-        const PaystackPop = (window as any).PaystackPop;
-        if (!PaystackPop) {
-          toast({
-            title: "Payment Error",
-            description: "Payment system not loaded. Please refresh and try again.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
-        if (!publicKey) {
-          toast({
-            title: "Configuration Error",
-            description: "Payment system not configured. Please contact support.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        const popup = new PaystackPop();
-        popup.newTransaction({
-          key: publicKey,
-          email: order.customerEmail,
-          amount: Math.round(parseFloat(order.total as any) * 100), // Paystack expects kobo (cents)
-          currency: "ZAR",
-          reference: initData.reference,
-          onSuccess: (paystackResponse: any) => {
-            // Verify payment on backend
-            apiRequest("GET", `/api/payment/verify/${paystackResponse.reference}`)
-              .then(verifyRes => verifyRes.json())
-              .then((verifyData: PaystackVerifyResponse) => {
-                if (verifyData.status === "success" && verifyData.data) {
-                  toast({
-                    title: "Payment Successful!",
-                    description: "Your order has been confirmed and paid.",
-                  });
-                  onClearCart();
-                  navigate(`/order-success?reference=${paystackResponse.reference}&orderId=${verifyData.data.orderId}`);
-                } else {
-                  toast({
-                    title: "Payment Failed",
-                    description: verifyData.message || "Payment verification failed. Please contact support.",
-                    variant: "destructive",
-                  });
-                }
-              })
-              .catch((error: any) => {
-                toast({
-                  title: "Verification Error",
-                  description: error.message || "Failed to verify payment",
-                  variant: "destructive",
-                });
-              });
-          },
-          onCancel: () => {
+          if (!initData.redirectUrl) {
             toast({
-              title: "Payment Cancelled",
-              description: "You closed the payment window. Your order is saved and pending payment.",
+              title: "Payment Error",
+              description: "Failed to initialize Yoco payment. Please try again.",
               variant: "destructive",
             });
-          },
-        });
+            return;
+          }
+
+          // Store orderId in sessionStorage so we can clear cart on success page
+          sessionStorage.setItem('pendingYocoOrderId', order.id);
+          
+          // Redirect to Yoco checkout page (cart will be cleared on success)
+          window.location.href = initData.redirectUrl;
+        } else {
+          // Paystack payment flow - popup based
+          const initResponse = await apiRequest("POST", "/api/payment/initialize", {
+            orderId: order.id,
+          });
+          const initData = await initResponse.json();
+
+          if (!initData.accessCode) {
+            toast({
+              title: "Payment Error",
+              description: "Failed to initialize payment. Please try again.",
+              variant: "destructive",
+            });
+            return;
+          }
+
+          // Use Paystack Popup with newTransaction
+          const PaystackPop = (window as any).PaystackPop;
+          if (!PaystackPop) {
+            toast({
+              title: "Payment Error",
+              description: "Payment system not loaded. Please refresh and try again.",
+              variant: "destructive",
+            });
+            return;
+          }
+
+          const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
+          if (!publicKey) {
+            toast({
+              title: "Configuration Error",
+              description: "Payment system not configured. Please contact support.",
+              variant: "destructive",
+            });
+            return;
+          }
+
+          const popup = new PaystackPop();
+          popup.newTransaction({
+            key: publicKey,
+            email: order.customerEmail,
+            amount: Math.round(parseFloat(order.total as any) * 100),
+            currency: "ZAR",
+            reference: initData.reference,
+            onSuccess: (paystackResponse: any) => {
+              apiRequest("GET", `/api/payment/verify/${paystackResponse.reference}`)
+                .then(verifyRes => verifyRes.json())
+                .then((verifyData: PaystackVerifyResponse) => {
+                  if (verifyData.status === "success" && verifyData.data) {
+                    toast({
+                      title: "Payment Successful!",
+                      description: "Your order has been confirmed and paid.",
+                    });
+                    onClearCart();
+                    navigate(`/order-success?reference=${paystackResponse.reference}&orderId=${verifyData.data.orderId}`);
+                  } else {
+                    toast({
+                      title: "Payment Failed",
+                      description: verifyData.message || "Payment verification failed. Please contact support.",
+                      variant: "destructive",
+                    });
+                  }
+                })
+                .catch((error: any) => {
+                  toast({
+                    title: "Verification Error",
+                    description: error.message || "Failed to verify payment",
+                    variant: "destructive",
+                  });
+                });
+            },
+            onCancel: () => {
+              toast({
+                title: "Payment Cancelled",
+                description: "You closed the payment window. Your order is saved and pending payment.",
+                variant: "destructive",
+              });
+            },
+          });
+        }
       } catch (error: any) {
         toast({
           title: "Payment Error",
@@ -594,6 +622,82 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       </div>
                     </div>
 
+                    {/* Payment Method Selection */}
+                    <div className="space-y-4" data-testid="payment-method-selection">
+                      <div className="flex items-center gap-2">
+                        <Wallet className="h-5 w-5 text-primary" />
+                        <h3 className="font-semibold">Choose Payment Method</h3>
+                      </div>
+                      
+                      <RadioGroup
+                        value={paymentMethod}
+                        onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                      >
+                        <div className="relative">
+                          <RadioGroupItem
+                            value="paystack"
+                            id="payment-paystack"
+                            className="peer sr-only"
+                            data-testid="radio-payment-paystack"
+                          />
+                          <Label
+                            htmlFor="payment-paystack"
+                            className="flex flex-col gap-3 rounded-lg border-2 border-muted bg-card p-4 hover:bg-accent/50 peer-data-[state=checked]:border-primary cursor-pointer transition-all"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-semibold">Paystack</span>
+                              <div className="h-4 w-4 rounded-full border-2 border-muted peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary flex items-center justify-center">
+                                {paymentMethod === "paystack" && (
+                                  <div className="h-2 w-2 rounded-full bg-primary" />
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <SiVisa className="h-6 w-auto text-[#1434CB]" />
+                              <SiMastercard className="h-6 w-auto text-[#FF5F00]" />
+                              <SiApplepay className="h-6 w-auto text-foreground" />
+                              <SiGooglepay className="h-6 w-auto text-foreground" />
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              Secure popup checkout
+                            </p>
+                          </Label>
+                        </div>
+                        
+                        <div className="relative">
+                          <RadioGroupItem
+                            value="yoco"
+                            id="payment-yoco"
+                            className="peer sr-only"
+                            data-testid="radio-payment-yoco"
+                          />
+                          <Label
+                            htmlFor="payment-yoco"
+                            className="flex flex-col gap-3 rounded-lg border-2 border-muted bg-card p-4 hover:bg-accent/50 peer-data-[state=checked]:border-primary cursor-pointer transition-all"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-semibold">Yoco</span>
+                              <div className="h-4 w-4 rounded-full border-2 border-muted peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary flex items-center justify-center">
+                                {paymentMethod === "yoco" && (
+                                  <div className="h-2 w-2 rounded-full bg-primary" />
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <SiVisa className="h-6 w-auto text-[#1434CB]" />
+                              <SiMastercard className="h-6 w-auto text-[#FF5F00]" />
+                              <SiApplepay className="h-6 w-auto text-foreground" />
+                              <SiGooglepay className="h-6 w-auto text-foreground" />
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              Redirect to secure checkout
+                            </p>
+                          </Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+
                     {/* Trust Signals */}
                     <div className="bg-muted/50 rounded-lg p-4 space-y-3" data-testid="trust-signals">
                       <div className="flex items-center gap-3" data-testid="trust-secure-payment">
@@ -601,13 +705,6 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                         <div>
                           <p className="text-sm font-medium">Secure Payment</p>
                           <p className="text-xs text-muted-foreground">256-bit SSL encryption protects your data</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3" data-testid="trust-paystack">
-                        <CreditCard className="h-5 w-5 text-primary flex-shrink-0" />
-                        <div>
-                          <p className="text-sm font-medium">Powered by Paystack</p>
-                          <p className="text-xs text-muted-foreground">Safe and trusted payment processing</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3" data-testid="trust-delivery">

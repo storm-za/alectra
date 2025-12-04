@@ -490,6 +490,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get order by ID (for Yoco payment verification)
+  app.get("/api/orders/:orderId", async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const order = await storage.getOrderById(orderId);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      res.json({
+        id: order.id,
+        paymentReference: order.paymentReference,
+        paymentStatus: order.paymentStatus,
+        total: order.total,
+        customerEmail: order.customerEmail,
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Payment routes
   app.post("/api/payment/initialize", async (req, res) => {
     try {
@@ -671,6 +693,189 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Payment verification error:", error);
       res.status(500).json({ message: error.message || "Failed to verify payment" });
+    }
+  });
+
+  // Yoco Payment Routes
+  app.post("/api/payment/yoco/initialize", async (req, res) => {
+    try {
+      const yocoKey = process.env.YOCO_SECRET_KEY;
+      
+      if (!yocoKey) {
+        return res.status(500).json({ message: "Yoco payment system not configured. Please contact support." });
+      }
+
+      const { orderId } = req.body;
+      
+      if (!orderId) {
+        return res.status(400).json({ message: "Order ID is required" });
+      }
+
+      const order = await storage.getOrderById(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Create Yoco checkout
+      const yocoData = {
+        amount: Math.round(parseFloat(order.total as any) * 100), // Yoco expects amount in cents
+        currency: "ZAR",
+        successUrl: `${req.protocol}://${req.get('host')}/order-success?orderId=${order.id}&provider=yoco`,
+        cancelUrl: `${req.protocol}://${req.get('host')}/checkout`,
+        failureUrl: `${req.protocol}://${req.get('host')}/checkout?error=payment_failed`,
+        metadata: {
+          orderId: order.id,
+          customerName: order.customerName,
+          customerEmail: order.customerEmail,
+          customerPhone: order.customerPhone,
+        },
+      };
+
+      console.log("Initializing Yoco payment - Full request:", JSON.stringify(yocoData, null, 2));
+
+      const yocoResponse = await fetch("https://payments.yoco.com/api/checkouts", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${yocoKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(yocoData),
+      });
+
+      const responseData = await yocoResponse.json();
+      console.log("Yoco initialize response - Full:", JSON.stringify(responseData, null, 2));
+
+      if (!yocoResponse.ok) {
+        return res.status(500).json({ 
+          message: "Failed to initialize Yoco payment",
+          error: responseData.message || responseData.displayMessage
+        });
+      }
+
+      // Update order with Yoco checkout ID as reference
+      await storage.updateOrderPaymentReference(orderId, responseData.id);
+
+      res.json({
+        checkoutId: responseData.id,
+        redirectUrl: responseData.redirectUrl,
+        status: responseData.status,
+      });
+    } catch (error: any) {
+      console.error("Yoco payment initialization error:", error);
+      res.status(500).json({ message: error.message || "Failed to initialize Yoco payment" });
+    }
+  });
+
+  app.get("/api/payment/yoco/verify/:checkoutId", async (req, res) => {
+    try {
+      const yocoKey = process.env.YOCO_SECRET_KEY;
+      
+      if (!yocoKey) {
+        return res.status(500).json({ message: "Yoco payment system not configured. Please contact support." });
+      }
+
+      const { checkoutId } = req.params;
+
+      if (!checkoutId) {
+        return res.status(400).json({ message: "Checkout ID is required" });
+      }
+
+      console.log(`Verifying Yoco checkout: ${checkoutId}`);
+
+      // Get checkout status from Yoco
+      const yocoResponse = await fetch(
+        `https://payments.yoco.com/api/checkouts/${checkoutId}`,
+        {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${yocoKey}`,
+          },
+        }
+      );
+
+      const responseData = await yocoResponse.json();
+      console.log("Yoco verify response - Full:", JSON.stringify(responseData, null, 2));
+
+      if (!yocoResponse.ok) {
+        return res.status(500).json({ 
+          message: "Failed to verify Yoco payment",
+          error: responseData.message 
+        });
+      }
+
+      // Log checkout details
+      console.log("Yoco checkout verification details:", {
+        status: responseData.status,
+        amount: responseData.amount,
+        currency: responseData.currency,
+        paymentId: responseData.paymentId,
+      });
+
+      // Check if payment was successful
+      if (responseData.status === "completed" && responseData.paymentId) {
+        // Update order payment status
+        const orderId = responseData.metadata?.orderId;
+        if (orderId) {
+          await storage.updateOrderPaymentStatus(orderId, "paid", checkoutId);
+
+          // Send confirmation emails
+          try {
+            const order = await storage.getOrderById(orderId);
+            if (order) {
+              const orderItemsData = await storage.getOrderItemsWithProducts(orderId);
+              
+              const emailService = new EmailService();
+              await emailService.sendOrderConfirmation({
+                orderId: order.id,
+                reference: checkoutId,
+                deliveryMethod: order.deliveryMethod || "delivery",
+                customerName: order.customerName,
+                customerEmail: order.customerEmail,
+                customerPhone: order.customerPhone,
+                deliveryAddress: order.deliveryAddress || "",
+                deliveryCity: order.deliveryCity || "",
+                deliveryProvince: order.deliveryProvince || "",
+                deliveryPostalCode: order.deliveryPostalCode || "",
+                isGift: order.isGift || false,
+                giftMessage: order.giftMessage || undefined,
+                items: orderItemsData.map((item) => ({
+                  productName: item.productName,
+                  quantity: item.quantity,
+                  price: item.priceAtPurchase,
+                  imageUrl: item.productImage || undefined,
+                })),
+                subtotal: order.subtotal,
+                vat: order.vat,
+                shippingCost: order.shippingCost,
+                total: order.total,
+                tradeDiscount: order.tradeDiscount || undefined,
+              });
+              console.log(`Yoco order confirmation emails sent for order ${orderId}`);
+            }
+          } catch (emailError) {
+            console.error("Error sending Yoco confirmation email:", emailError);
+          }
+        }
+
+        res.json({
+          status: "success",
+          message: "Payment verified successfully",
+          data: {
+            orderId: orderId,
+            amount: responseData.amount / 100,
+            checkoutId: checkoutId,
+            paymentId: responseData.paymentId,
+          },
+        });
+      } else {
+        res.json({
+          status: responseData.status,
+          message: responseData.status === "created" ? "Payment pending" : "Payment not successful",
+        });
+      }
+    } catch (error: any) {
+      console.error("Yoco payment verification error:", error);
+      res.status(500).json({ message: error.message || "Failed to verify Yoco payment" });
     }
   });
 

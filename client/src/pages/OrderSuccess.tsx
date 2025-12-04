@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,34 +14,86 @@ declare global {
   }
 }
 
-export default function OrderSuccess() {
+interface OrderSuccessProps {
+  onClearCart?: () => void;
+}
+
+export default function OrderSuccess({ onClearCart }: OrderSuccessProps) {
   const [, navigate] = useLocation();
   const searchParams = new URLSearchParams(window.location.search);
   const reference = searchParams.get("reference");
   const orderId = searchParams.get("orderId");
+  const provider = searchParams.get("provider");
+  const cartClearedRef = useRef(false);
 
-  const { data: paymentData, isLoading } = useQuery<PaystackVerifyResponse>({
+  // For Yoco, we need to get the checkout ID from the order
+  const { data: orderData } = useQuery<{ paymentReference: string; total: string } | null>({
+    queryKey: ["/api/orders", orderId, "payment-ref"],
+    queryFn: async () => {
+      if (!orderId || provider !== "yoco") return null;
+      const res = await apiRequest("GET", `/api/orders/${orderId}`);
+      const data = await res.json();
+      return { paymentReference: data.paymentReference, total: data.total };
+    },
+    enabled: !!orderId && provider === "yoco",
+    retry: false,
+  });
+
+  // Paystack verification (popup flow)
+  const { data: paystackData, isLoading: isPaystackLoading } = useQuery<PaystackVerifyResponse>({
     queryKey: ["/api/payment/verify", reference],
     queryFn: async () => {
       if (!reference) throw new Error("No payment reference provided");
       const res = await apiRequest("GET", `/api/payment/verify/${reference}`);
       return await res.json();
     },
-    enabled: !!reference,
+    enabled: !!reference && provider !== "yoco",
     retry: false,
   });
 
+  // Yoco verification (redirect flow)
+  const { data: yocoData, isLoading: isYocoLoading } = useQuery<PaystackVerifyResponse>({
+    queryKey: ["/api/payment/yoco/verify", orderData?.paymentReference],
+    queryFn: async () => {
+      if (!orderData?.paymentReference) throw new Error("No checkout ID found");
+      const res = await apiRequest("GET", `/api/payment/yoco/verify/${orderData.paymentReference}`);
+      return await res.json();
+    },
+    enabled: !!orderData?.paymentReference && provider === "yoco",
+    retry: false,
+  });
+
+  // Use the appropriate payment data based on provider
+  const paymentData = provider === "yoco" ? yocoData : paystackData;
+  const isLoading = provider === "yoco" ? (isYocoLoading || !orderData) : isPaystackLoading;
+  
+  // Get amount for display - Yoco may need to fall back to order total
+  const displayAmount = paymentData?.data?.amount || (orderData?.total ? parseFloat(orderData.total) : 0);
+
+  // Clear cart for Yoco after successful payment verification
+  useEffect(() => {
+    if (provider === "yoco" && paymentData?.status === "success" && !cartClearedRef.current) {
+      cartClearedRef.current = true;
+      // Clear pending order from sessionStorage
+      sessionStorage.removeItem('pendingYocoOrderId');
+      // Clear the cart if callback provided
+      if (onClearCart) {
+        onClearCart();
+      }
+    }
+  }, [provider, paymentData, onClearCart]);
+
   // Track Google Ads conversion when payment is successful
   useEffect(() => {
-    if (paymentData?.status === "success" && paymentData.data?.amount && window.gtag) {
+    if (paymentData?.status === "success" && displayAmount > 0 && window.gtag) {
       window.gtag('event', 'conversion', {
         'send_to': 'AW-16880658158/WiiqCKOTia4aEO7NqfE-',
-        'value': paymentData.data.amount,
+        'value': displayAmount,
         'currency': 'ZAR',
         'transaction_id': orderId || reference || ''
       });
     }
-  }, [paymentData, orderId, reference]);
+  }, [paymentData, displayAmount, orderId, reference]);
 
   if (isLoading) {
     return (
@@ -112,7 +164,7 @@ export default function OrderSuccess() {
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Amount Paid</span>
                 <span className="font-bold text-lg text-primary" data-testid="text-amount-paid">
-                  R {paymentData.data?.amount?.toFixed(2) || "0.00"}
+                  R {displayAmount.toFixed(2)}
                 </span>
               </div>
             </div>

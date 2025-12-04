@@ -33,7 +33,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, MessageSquare, Star, Truck, ShieldCheck, CreditCard, Lock, MapPin, BadgePercent, Store } from "lucide-react";
-import { SiVisa, SiMastercard } from "react-icons/si";
+import { SiVisa, SiMastercard, SiApplepay, SiGooglepay } from "react-icons/si";
 import { StarRating } from "@/components/StarRating";
 import { SEO, createProductStructuredData } from "@/components/SEO";
 import { Breadcrumb } from "@/components/Breadcrumb";
@@ -552,8 +552,10 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                     <div className="flex items-center gap-3">
                       <SiVisa className="h-8 w-auto text-[#1434CB]" />
                       <SiMastercard className="h-8 w-auto text-[#FF5F00]" />
+                      <SiApplepay className="h-8 w-auto text-foreground" />
+                      <SiGooglepay className="h-8 w-auto text-foreground" />
                     </div>
-                    <span className="text-xs text-muted-foreground">Powered by Paystack</span>
+                    <span className="text-xs text-muted-foreground">Paystack & Yoco</span>
                   </div>
                 </div>
               </CardContent>
