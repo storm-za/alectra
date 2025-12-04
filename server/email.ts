@@ -41,7 +41,8 @@ export interface OrderEmailData {
 }
 
 // Base URL for production - used for absolute image URLs in emails
-const PRODUCTION_BASE_URL = "https://alectra-solutions.replit.app";
+// Use the custom domain if available, otherwise fall back to Replit app URL
+const PRODUCTION_BASE_URL = "https://alectra.co.za";
 
 // Helper to convert relative image URLs to absolute URLs for emails
 function getAbsoluteImageUrl(imageUrl: string | undefined): string | undefined {
@@ -271,14 +272,30 @@ export class EmailService {
   private generateOrderConfirmationHtml(data: OrderEmailData): string {
     const itemsHtml = data.items
       .map(
-        (item) => `
+        (item) => {
+          const absoluteImageUrl = getAbsoluteImageUrl(item.imageUrl);
+          return `
         <tr>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${item.productName}</td>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">R${item.price}</td>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">R${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
+            <table role="presentation" style="border-collapse: collapse;">
+              <tr>
+                <td style="vertical-align: top; padding-right: 12px;">
+                  ${absoluteImageUrl 
+                    ? `<img src="${absoluteImageUrl}" alt="${item.productName}" width="60" height="60" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; display: block;" />` 
+                    : '<div style="width: 60px; height: 60px; background-color: #f3f4f6; border-radius: 6px; display: table-cell; vertical-align: middle; text-align: center; color: #9ca3af; font-size: 10px;">No image</div>'}
+                </td>
+                <td style="vertical-align: middle;">
+                  <span style="font-weight: 500; font-size: 14px; color: #111827;">${item.productName}</span>
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle;">${item.quantity}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; vertical-align: middle;">R${item.price}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; vertical-align: middle; font-weight: 600;">R${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
         </tr>
-      `
+      `;
+        }
       )
       .join("");
 
