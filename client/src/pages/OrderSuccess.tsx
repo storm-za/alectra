@@ -24,20 +24,31 @@ export default function OrderSuccess({ onClearCart }: OrderSuccessProps) {
   const reference = searchParams.get("reference");
   const orderId = searchParams.get("orderId");
   const provider = searchParams.get("provider");
+  // Yoco may add 'id' parameter when redirecting back
+  const yocoCheckoutId = searchParams.get("id");
   const cartClearedRef = useRef(false);
 
-  // For Yoco, we need to get the checkout ID from the order
-  const { data: orderData } = useQuery<{ paymentReference: string; total: string } | null>({
+  // Log URL parameters for debugging
+  console.log("OrderSuccess URL params:", { reference, orderId, provider, yocoCheckoutId });
+
+  // For Yoco, we can use the checkout ID from URL (if Yoco provides it) or fetch from order
+  const { data: orderData, error: orderError } = useQuery<{ paymentReference: string; total: string } | null>({
     queryKey: ["/api/orders", orderId, "payment-ref"],
     queryFn: async () => {
       if (!orderId || provider !== "yoco") return null;
+      console.log("Fetching order data for Yoco verification:", orderId);
       const res = await apiRequest("GET", `/api/orders/${orderId}`);
       const data = await res.json();
+      console.log("Order data received:", data);
       return { paymentReference: data.paymentReference, total: data.total };
     },
-    enabled: !!orderId && provider === "yoco",
-    retry: false,
+    enabled: !!orderId && provider === "yoco" && !yocoCheckoutId,
+    retry: 3,
+    retryDelay: 1000,
   });
+
+  // Use Yoco checkout ID from URL if available, otherwise use from order
+  const effectiveYocoCheckoutId = yocoCheckoutId || orderData?.paymentReference;
 
   // Paystack verification (popup flow)
   const { data: paystackData, isLoading: isPaystackLoading } = useQuery<PaystackVerifyResponse>({
@@ -52,20 +63,26 @@ export default function OrderSuccess({ onClearCart }: OrderSuccessProps) {
   });
 
   // Yoco verification (redirect flow)
-  const { data: yocoData, isLoading: isYocoLoading } = useQuery<PaystackVerifyResponse>({
-    queryKey: ["/api/payment/yoco/verify", orderData?.paymentReference],
+  const { data: yocoData, isLoading: isYocoLoading, error: yocoError } = useQuery<PaystackVerifyResponse>({
+    queryKey: ["/api/payment/yoco/verify", effectiveYocoCheckoutId],
     queryFn: async () => {
-      if (!orderData?.paymentReference) throw new Error("No checkout ID found");
-      const res = await apiRequest("GET", `/api/payment/yoco/verify/${orderData.paymentReference}`);
-      return await res.json();
+      if (!effectiveYocoCheckoutId) throw new Error("No checkout ID found");
+      console.log("Verifying Yoco payment with checkout ID:", effectiveYocoCheckoutId);
+      const res = await apiRequest("GET", `/api/payment/yoco/verify/${effectiveYocoCheckoutId}`);
+      const data = await res.json();
+      console.log("Yoco verification response:", data);
+      return data;
     },
-    enabled: !!orderData?.paymentReference && provider === "yoco",
-    retry: false,
+    enabled: !!effectiveYocoCheckoutId && provider === "yoco",
+    retry: 3,
+    retryDelay: 1000,
   });
 
   // Use the appropriate payment data based on provider
   const paymentData = provider === "yoco" ? yocoData : paystackData;
-  const isLoading = provider === "yoco" ? (isYocoLoading || !orderData) : isPaystackLoading;
+  const isLoading = provider === "yoco" 
+    ? (isYocoLoading || (!effectiveYocoCheckoutId && !orderError)) 
+    : isPaystackLoading;
   
   // Get amount for display - Yoco may need to fall back to order total
   const displayAmount = paymentData?.data?.amount || (orderData?.total ? parseFloat(orderData.total) : 0);

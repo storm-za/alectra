@@ -716,13 +716,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Order not found" });
       }
 
-      // Create Yoco checkout
+      // Create Yoco checkout - always use HTTPS for Replit/production
+      const protocol = process.env.NODE_ENV === 'development' && !req.get('host')?.includes('replit') ? 'http' : 'https';
+      const baseUrl = `${protocol}://${req.get('host')}`;
+      
       const yocoData = {
         amount: Math.round(parseFloat(order.total as any) * 100), // Yoco expects amount in cents
         currency: "ZAR",
-        successUrl: `${req.protocol}://${req.get('host')}/order-success?orderId=${order.id}&provider=yoco`,
-        cancelUrl: `${req.protocol}://${req.get('host')}/checkout`,
-        failureUrl: `${req.protocol}://${req.get('host')}/checkout?error=payment_failed`,
+        successUrl: `${baseUrl}/order-success?orderId=${order.id}&provider=yoco`,
+        cancelUrl: `${baseUrl}/checkout`,
+        failureUrl: `${baseUrl}/checkout?error=payment_failed`,
         metadata: {
           orderId: order.id,
           customerName: order.customerName,
