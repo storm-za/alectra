@@ -670,47 +670,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Check if payment was successful
       if (paymentData.status === "success") {
-        // Update order payment status
         const orderId = paymentData.metadata.orderId;
+        
+        // Check if order was already paid (prevent duplicate emails on page refresh)
+        const existingOrder = await storage.getOrderById(orderId);
+        const wasAlreadyPaid = existingOrder?.paymentStatus === "paid";
+        
+        // Update order payment status
         await storage.updateOrderPaymentStatus(orderId, "paid", reference);
 
-        // Send confirmation emails
-        try {
-          const order = await storage.getOrderById(orderId);
-          if (order) {
-            const orderItemsData = await storage.getOrderItemsWithProducts(orderId);
-            
-            const emailService = new EmailService();
-            await emailService.sendOrderConfirmation({
-              orderId: order.id,
-              reference: reference,
-              deliveryMethod: order.deliveryMethod || "delivery",
-              customerName: order.customerName,
-              customerEmail: order.customerEmail,
-              customerPhone: order.customerPhone,
-              deliveryAddress: order.deliveryAddress || "",
-              deliveryCity: order.deliveryCity || "",
-              deliveryProvince: order.deliveryProvince || "",
-              deliveryPostalCode: order.deliveryPostalCode || "",
-              isGift: order.isGift || false,
-              giftMessage: order.giftMessage || undefined,
-              items: orderItemsData.map((item) => ({
-                productName: item.productName,
-                quantity: item.quantity,
-                price: item.priceAtPurchase,
-                imageUrl: item.productImage || undefined,
-              })),
-              subtotal: order.subtotal,
-              vat: order.vat,
-              shippingCost: order.shippingCost,
-              total: order.total,
-              tradeDiscount: order.tradeDiscount || undefined,
-            });
-            console.log(`Order confirmation emails sent for order ${orderId}`);
+        // Only send confirmation emails if order wasn't already paid
+        if (!wasAlreadyPaid) {
+          try {
+            const order = await storage.getOrderById(orderId);
+            if (order) {
+              const orderItemsData = await storage.getOrderItemsWithProducts(orderId);
+              
+              const emailService = new EmailService();
+              await emailService.sendOrderConfirmation({
+                orderId: order.id,
+                reference: reference,
+                deliveryMethod: order.deliveryMethod || "delivery",
+                customerName: order.customerName,
+                customerEmail: order.customerEmail,
+                customerPhone: order.customerPhone,
+                deliveryAddress: order.deliveryAddress || "",
+                deliveryCity: order.deliveryCity || "",
+                deliveryProvince: order.deliveryProvince || "",
+                deliveryPostalCode: order.deliveryPostalCode || "",
+                isGift: order.isGift || false,
+                giftMessage: order.giftMessage || undefined,
+                items: orderItemsData.map((item) => ({
+                  productName: item.productName,
+                  quantity: item.quantity,
+                  price: item.priceAtPurchase,
+                  imageUrl: item.productImage || undefined,
+                })),
+                subtotal: order.subtotal,
+                vat: order.vat,
+                shippingCost: order.shippingCost,
+                total: order.total,
+                tradeDiscount: order.tradeDiscount || undefined,
+              });
+              console.log(`Order confirmation emails sent for order ${orderId}`);
+            }
+          } catch (emailError) {
+            console.error("Error sending confirmation email:", emailError);
+            // Don't fail the payment verification if email fails
           }
-        } catch (emailError) {
-          console.error("Error sending confirmation email:", emailError);
-          // Don't fail the payment verification if email fails
+        } else {
+          console.log(`Order ${orderId} already paid - skipping duplicate email`);
         }
 
         res.json({
@@ -855,47 +864,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Check if payment was successful
       if (responseData.status === "completed" && responseData.paymentId) {
-        // Update order payment status
         const orderId = responseData.metadata?.orderId;
         if (orderId) {
+          // Check if order was already paid (prevent duplicate emails on page refresh)
+          const existingOrder = await storage.getOrderById(orderId);
+          const wasAlreadyPaid = existingOrder?.paymentStatus === "paid";
+          
+          // Update order payment status
           await storage.updateOrderPaymentStatus(orderId, "paid", checkoutId);
 
-          // Send confirmation emails
-          try {
-            const order = await storage.getOrderById(orderId);
-            if (order) {
-              const orderItemsData = await storage.getOrderItemsWithProducts(orderId);
-              
-              const emailService = new EmailService();
-              await emailService.sendOrderConfirmation({
-                orderId: order.id,
-                reference: checkoutId,
-                deliveryMethod: order.deliveryMethod || "delivery",
-                customerName: order.customerName,
-                customerEmail: order.customerEmail,
-                customerPhone: order.customerPhone,
-                deliveryAddress: order.deliveryAddress || "",
-                deliveryCity: order.deliveryCity || "",
-                deliveryProvince: order.deliveryProvince || "",
-                deliveryPostalCode: order.deliveryPostalCode || "",
-                isGift: order.isGift || false,
-                giftMessage: order.giftMessage || undefined,
-                items: orderItemsData.map((item) => ({
-                  productName: item.productName,
-                  quantity: item.quantity,
-                  price: item.priceAtPurchase,
-                  imageUrl: item.productImage || undefined,
-                })),
-                subtotal: order.subtotal,
-                vat: order.vat,
-                shippingCost: order.shippingCost,
-                total: order.total,
-                tradeDiscount: order.tradeDiscount || undefined,
-              });
-              console.log(`Yoco order confirmation emails sent for order ${orderId}`);
+          // Only send confirmation emails if order wasn't already paid
+          if (!wasAlreadyPaid) {
+            try {
+              const order = await storage.getOrderById(orderId);
+              if (order) {
+                const orderItemsData = await storage.getOrderItemsWithProducts(orderId);
+                
+                const emailService = new EmailService();
+                await emailService.sendOrderConfirmation({
+                  orderId: order.id,
+                  reference: checkoutId,
+                  deliveryMethod: order.deliveryMethod || "delivery",
+                  customerName: order.customerName,
+                  customerEmail: order.customerEmail,
+                  customerPhone: order.customerPhone,
+                  deliveryAddress: order.deliveryAddress || "",
+                  deliveryCity: order.deliveryCity || "",
+                  deliveryProvince: order.deliveryProvince || "",
+                  deliveryPostalCode: order.deliveryPostalCode || "",
+                  isGift: order.isGift || false,
+                  giftMessage: order.giftMessage || undefined,
+                  items: orderItemsData.map((item) => ({
+                    productName: item.productName,
+                    quantity: item.quantity,
+                    price: item.priceAtPurchase,
+                    imageUrl: item.productImage || undefined,
+                  })),
+                  subtotal: order.subtotal,
+                  vat: order.vat,
+                  shippingCost: order.shippingCost,
+                  total: order.total,
+                  tradeDiscount: order.tradeDiscount || undefined,
+                });
+                console.log(`Yoco order confirmation emails sent for order ${orderId}`);
+              }
+            } catch (emailError) {
+              console.error("Error sending Yoco confirmation email:", emailError);
             }
-          } catch (emailError) {
-            console.error("Error sending Yoco confirmation email:", emailError);
+          } else {
+            console.log(`Order ${orderId} already paid - skipping duplicate Yoco email`);
           }
         }
 
