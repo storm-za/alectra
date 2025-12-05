@@ -1788,25 +1788,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       ];
 
-      // Seed blog posts (from dev data or defaults)
-      if (existingBlogs.length === 0) {
-        const postsToSeed = devData?.blogs || blogPosts;
-        for (const post of postsToSeed) {
-          try {
-            await storage.createBlogPost({
-              title: post.title,
-              slug: post.slug,
-              excerpt: post.excerpt,
-              content: post.content,
-              author: post.author || "Alectra Solutions",
-              imageUrl: post.imageUrl,
-              tags: post.tags || [],
-              metaDescription: post.metaDescription
-            });
-            blogPostsCreated++;
-          } catch (e) {
-            // Skip if already exists
-          }
+      // Seed blog posts (from dev data or defaults) - only seed missing posts
+      const existingBlogSlugs = new Set(existingBlogs.map(b => b.slug));
+      const postsToSeed = devData?.blogs || blogPosts;
+      const missingPosts = postsToSeed.filter((post: any) => !existingBlogSlugs.has(post.slug));
+      
+      for (const post of missingPosts) {
+        try {
+          await storage.createBlogPost({
+            title: post.title,
+            slug: post.slug,
+            excerpt: post.excerpt,
+            content: post.content,
+            author: post.author || "Alectra Solutions",
+            imageUrl: post.imageUrl,
+            tags: post.tags || [],
+            metaDescription: post.metaDescription
+          });
+          blogPostsCreated++;
+        } catch (e) {
+          // Skip if already exists
         }
       }
 
