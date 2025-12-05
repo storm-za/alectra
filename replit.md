@@ -80,8 +80,8 @@ Partners with Centurion, ET Nice, Digidoor, Gemini, DTS, Hansa, Nemtek, IDS, Sen
 
 **Files**:
 - `scripts/export-dev-database.ts` - Exports dev database to JSON (products, categories, blogs, reviews)
-- `scripts/dev-database-export.json` - Complete snapshot (272 products, 9 categories, 20 blog posts, 675 reviews)
-- `scripts/seed-all-blog-posts.ts` - Seeds all 18 SEO blog posts to database
+- `scripts/dev-database-export.json` - Complete snapshot (274 products, 9 categories, 41 blog posts, 677 reviews)
+- `scripts/seed-all-blog-posts.ts` - Seeds all 41 SEO blog posts to database
 - `server/routes.ts` - `/api/admin/seed-production` endpoint reads export file
 
 **Deployment Workflow**:
