@@ -297,6 +297,19 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const subtotal = totalAfterDiscount / 1.15;
   const vat = subtotal * 0.15;
   
+  // Glosteel garage door slugs - very heavy items requiring R1900 shipping per door
+  const GLOSTEEL_SLUGS = [
+    'glosteel-garage-door-safari-brown',
+    'glosteel-garage-door',
+    'glosteel-garage-door-african-cream'
+  ];
+  
+  // Calculate Glosteel shipping: R1900 per door × quantity
+  const glosteelItems = cartItems.filter(item => GLOSTEEL_SLUGS.includes(item.product.slug));
+  const glosteelQuantity = glosteelItems.reduce((sum, item) => sum + item.quantity, 0);
+  const glosteelShipping = glosteelQuantity * 1900;
+  const hasGlosteelDoors = glosteelQuantity > 0;
+  
   // Check if cart contains products with custom delivery fees (e.g., heavy items like Glosteel garage doors)
   const customDeliveryFees = cartItems
     .filter((item) => item.product.deliveryFee !== null && item.product.deliveryFee !== undefined)
@@ -315,14 +328,17 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   
   // Calculate shipping cost priority:
   // 1. If pickup is selected, shipping is FREE
-  // 2. If cart has products with custom delivery fees, use the highest custom fee
-  // 3. If cart contains 48KG LP Gas, FREE delivery (special promotion)
-  // 4. If cart contains other LP Gas products, R50 (Pretoria only delivery)
-  // 5. FREE if order total is R2500+
-  // 6. Otherwise, R110 standard delivery fee
+  // 2. If cart has Glosteel garage doors, R1900 per door (very heavy items)
+  // 3. If cart has products with custom delivery fees, use the highest custom fee
+  // 4. If cart contains 48KG LP Gas, FREE delivery (special promotion)
+  // 5. If cart contains other LP Gas products, R50 (Pretoria only delivery)
+  // 6. FREE if order total is R2500+
+  // 7. Otherwise, R110 standard delivery fee
   let shippingCost = 110;
   if (deliveryMethod === "pickup") {
     shippingCost = 0;
+  } else if (hasGlosteelDoors) {
+    shippingCost = glosteelShipping; // R1900 per garage door
   } else if (customDeliveryFees.length > 0) {
     shippingCost = Math.max(...customDeliveryFees);
   } else if (has48kgLPGas) {
@@ -818,11 +834,20 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                     </div>
                   )}
                   {deliveryMethod === "delivery" && (
-                    <div className="flex justify-between text-sm">
-                      <span>Shipping</span>
-                      <span data-testid="text-summary-shipping" className={shippingCost === 0 ? "text-primary font-medium" : ""}>
-                        {shippingCost === 0 ? "FREE" : `R ${shippingCost.toFixed(2)}`}
-                      </span>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span>Shipping</span>
+                        <span data-testid="text-summary-shipping" className={shippingCost === 0 ? "text-primary font-medium" : ""}>
+                          {shippingCost === 0 ? "FREE" : `R ${shippingCost.toFixed(2)}`}
+                        </span>
+                      </div>
+                      {hasGlosteelDoors && (
+                        <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
+                          <span className="font-medium text-foreground">R1,900 (Very Heavy Item)</span>
+                          <br />
+                          Glosteel Garage Door × {glosteelQuantity} = R{glosteelShipping.toLocaleString()}
+                        </div>
+                      )}
                     </div>
                   )}
                   <Separator />
