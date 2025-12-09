@@ -759,10 +759,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                           Processing Order...
                         </span>
                       ) : (
-                        <span className="flex items-center gap-2">
-                          <Lock className="h-4 w-4" />
-                          Pay Now
-                        </span>
+                        "Pay Now"
                       )}
                     </Button>
                   </form>
