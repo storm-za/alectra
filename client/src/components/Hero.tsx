@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, Truck, Wrench, Headset } from "lucide-react";
 import { Link } from "wouter";
-import heroBackgroundDesktop from "@assets/hero-background.png";
-import heroBackgroundMobile from "@assets/hero-background-mobile.png";
+import heroBackgroundDesktop from "@assets/optimized/hero-background-desktop.webp";
+import heroBackgroundMobile from "@assets/optimized/hero-background-mobile.webp";
 
 export default function Hero() {
   const scrollToCategories = () => {

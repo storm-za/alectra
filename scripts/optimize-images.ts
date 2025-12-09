@@ -43,6 +43,22 @@ const imagesToOptimize: ImageOptimization[] = [
     output: 'attached_assets/optimized/garage-door-parts-category.webp',
     width: 800
   },
+  // Additional categories
+  {
+    input: 'attached_assets/products/12v-8ah-gel-battery.jpg',
+    output: 'attached_assets/optimized/batteries-category.webp',
+    width: 800
+  },
+  {
+    input: 'attached_assets/products/gemini-sectional-garage-door-motor-kit.jpg',
+    output: 'attached_assets/optimized/garage-motors-category.webp',
+    width: 800
+  },
+  {
+    input: 'attached_assets/products/centurion-g-speak-ultra.jpg',
+    output: 'attached_assets/optimized/intercoms-category.webp',
+    width: 800
+  },
   // Hero background - mobile version, keep reasonable size
   {
     input: 'attached_assets/hero-background-mobile.png',

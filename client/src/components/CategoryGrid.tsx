@@ -3,11 +3,36 @@ import { ArrowRight, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
 import type { Category } from "@shared/schema";
 
+import electricFencingImg from "@assets/optimized/electric-fencing-category.webp";
+import remotesImg from "@assets/optimized/remotes-category.webp";
+import cctvImg from "@assets/optimized/cctv-category.webp";
+import gateMotorsImg from "@assets/optimized/gate-motors-category.webp";
+import lpGasImg from "@assets/optimized/lp-gas-category.webp";
+import garageDoorsImg from "@assets/optimized/garage-door-parts-category.webp";
+import batteriesImg from "@assets/optimized/batteries-category.webp";
+import garageMotorsImg from "@assets/optimized/garage-motors-category.webp";
+import intercomsImg from "@assets/optimized/intercoms-category.webp";
+
+const optimizedCategoryImages: Record<string, string> = {
+  'electric-fencing': electricFencingImg,
+  'remotes': remotesImg,
+  'cctv-cameras': cctvImg,
+  'gate-motors': gateMotorsImg,
+  'lp-gas-exchange': lpGasImg,
+  'garage-door-parts': garageDoorsImg,
+  'batteries': batteriesImg,
+  'garage-motors': garageMotorsImg,
+  'intercoms': intercomsImg,
+};
+
 interface CategoryGridProps {
   categories: Category[];
 }
 
 export default function CategoryGrid({ categories }: CategoryGridProps) {
+  const getCategoryImage = (category: Category): string | null => {
+    return optimizedCategoryImages[category.slug] || category.imageUrl;
+  };
   return (
     <section id="categories" className="py-16 md:py-24 bg-gradient-to-b from-background to-muted/30">
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
@@ -33,9 +58,9 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
               <Card className="group relative overflow-hidden h-56 md:h-64 cursor-pointer border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 {/* Background image */}
                 <div className="absolute inset-0">
-                  {category.imageUrl && (
+                  {getCategoryImage(category) && (
                     <img 
-                      src={category.imageUrl} 
+                      src={getCategoryImage(category)!} 
                       alt={category.name}
                       loading="lazy"
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
