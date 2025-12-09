@@ -817,12 +817,8 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span>Subtotal (excl. VAT)</span>
-                    <span data-testid="text-summary-subtotal">R {subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>VAT (15%)</span>
-                    <span data-testid="text-summary-vat">R {vat.toFixed(2)}</span>
+                    <span>Subtotal</span>
+                    <span data-testid="text-summary-subtotal">R {totalAfterDiscount.toFixed(2)}</span>
                   </div>
                   {tradeStatus?.approved && tradeDiscount > 0 && (
                     <div className="flex justify-between text-sm text-primary font-medium">
