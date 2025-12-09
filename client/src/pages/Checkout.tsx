@@ -749,7 +749,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                     <Button 
                       type="submit" 
                       size="lg" 
-                      className="w-full h-12 text-base font-semibold" 
+                      className="w-full h-14 text-base font-bold tracking-wide shadow-lg" 
                       disabled={createOrderMutation.isPending} 
                       data-testid="button-place-order"
                     >
@@ -761,7 +761,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       ) : (
                         <span className="flex items-center gap-2">
                           <Lock className="h-4 w-4" />
-                          Proceed to Secure Payment
+                          Pay Now
                         </span>
                       )}
                     </Button>
