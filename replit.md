@@ -51,6 +51,29 @@ Preferred communication style: Simple, everyday language.
 - **Vite**: Build tool and development server.
 - **Replit plugins**: For Replit environment enhancements.
 - **TSX**: TypeScript execution for development.
+- **Sharp**: Image processing for WebP optimization.
+
+### Image Optimization
+
+**Purpose**: Improve PageSpeed Performance by converting large PNG/JPG images to optimized WebP format.
+
+**Files**:
+- `scripts/optimize-images.ts` - Converts source images to optimized WebP
+- `attached_assets/optimized/` - Output directory for optimized images
+
+**Optimized Assets** (96% average size reduction):
+- Hero backgrounds: `hero-background-desktop.webp`, `hero-background-mobile.webp`
+- Logo: `logo.webp`
+- Category images: `{category-slug}-category.webp` (9 total)
+
+**How to Add New Optimized Images**:
+1. Add entry to `imagesToOptimize` array in `scripts/optimize-images.ts`
+2. Run: `npx tsx scripts/optimize-images.ts`
+3. Import in component: `import img from "@assets/optimized/filename.webp"`
+
+**Frontend Integration**:
+- `Hero.tsx` - Uses desktop/mobile WebP backgrounds
+- `CategoryGrid.tsx` - Maps category slugs to optimized images with fallback to database URL
 
 ### UI Component Libraries
 - **Radix UI**: Accessible, unstyled UI primitives.
