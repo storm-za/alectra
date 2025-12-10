@@ -53,10 +53,10 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Shop */}
+          {/* Shop - All Categories */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Shop</h3>
-            <ul className="space-y-3">
+            <h3 className="text-white font-semibold mb-4">Shop by Category</h3>
+            <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/collections/all" className="hover:text-white transition-colors">
                   All Products
@@ -68,13 +68,43 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/collections/batteries" className="hover:text-white transition-colors">
-                  Batteries
+                <Link href="/collections/garage-motors" className="hover:text-white transition-colors">
+                  Garage Motors
+                </Link>
+              </li>
+              <li>
+                <Link href="/collections/garage-door-parts" className="hover:text-white transition-colors">
+                  Garage Door Parts
+                </Link>
+              </li>
+              <li>
+                <Link href="/collections/electric-fencing" className="hover:text-white transition-colors">
+                  Electric Fencing
                 </Link>
               </li>
               <li>
                 <Link href="/collections/cctv-cameras" className="hover:text-white transition-colors">
                   CCTV Systems
+                </Link>
+              </li>
+              <li>
+                <Link href="/collections/intercoms" className="hover:text-white transition-colors">
+                  Intercoms
+                </Link>
+              </li>
+              <li>
+                <Link href="/collections/remotes" className="hover:text-white transition-colors">
+                  Remotes
+                </Link>
+              </li>
+              <li>
+                <Link href="/collections/batteries" className="hover:text-white transition-colors">
+                  Batteries
+                </Link>
+              </li>
+              <li>
+                <Link href="/collections/lp-gas-exchange" className="hover:text-white transition-colors">
+                  LP Gas
                 </Link>
               </li>
             </ul>

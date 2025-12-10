@@ -24,7 +24,8 @@ interface ProductsResponse {
 }
 
 export function FrequentlyBoughtTogether({ currentProductId, categorySlug }: FrequentlyBoughtTogetherProps) {
-  const { data, isLoading } = useQuery<ProductsResponse>({
+  // Fetch related products from same category
+  const { data: categoryData, isLoading: categoryLoading } = useQuery<ProductsResponse>({
     queryKey: ['/api/products', 'related', categorySlug],
     queryFn: async () => {
       const response = await fetch(`/api/products?categorySlug=${categorySlug}&limit=8`);
@@ -34,15 +35,27 @@ export function FrequentlyBoughtTogether({ currentProductId, categorySlug }: Fre
     enabled: !!categorySlug,
   });
   
-  const relatedProducts = data?.products || [];
+  // Fallback: fetch featured products if no category
+  const { data: featuredData, isLoading: featuredLoading } = useQuery<ProductsResponse>({
+    queryKey: ['/api/products', 'featured', 'fallback'],
+    queryFn: async () => {
+      const response = await fetch(`/api/products?featured=true&limit=8`);
+      if (!response.ok) throw new Error('Failed to fetch featured products');
+      return response.json();
+    },
+    enabled: !categorySlug,
+  });
+  
+  const isLoading = categorySlug ? categoryLoading : featuredLoading;
+  const relatedProducts = categorySlug ? (categoryData?.products || []) : (featuredData?.products || []);
 
   // Filter out current product and limit to 6 items
   const filteredProducts = relatedProducts
     .filter(p => p.id !== currentProductId)
     .slice(0, 6);
 
-  // Don't render if no category or no related products
-  if (!categorySlug || (!isLoading && filteredProducts.length === 0)) {
+  // Don't render if no related products found at all
+  if (!isLoading && filteredProducts.length === 0) {
     return null;
   }
 

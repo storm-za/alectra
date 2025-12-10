@@ -27,7 +27,30 @@ export function SEO({
   const [location] = useLocation();
   const canonicalUrl = `https://${PRODUCTION_DOMAIN}${location}`;
   const siteName = "Alectra Solutions";
-  const fullTitle = title.includes(siteName) ? title : `${title} | ${siteName}`;
+  
+  // Normalize title format: remove existing site name variations and append with consistent separator
+  const normalizeTitle = (rawTitle: string): string => {
+    // Remove existing site name with various separators (e.g., "Page - Alectra Solutions" or "Page | Alectra Solutions")
+    const cleanTitle = rawTitle
+      .replace(/\s*[-|]\s*Alectra Solutions\s*$/i, '')
+      .replace(/^Alectra Solutions\s*[-|]\s*/i, '')
+      .trim();
+    
+    // Only skip suffix if the clean title IS the site name (homepage) or explicitly includes full site name
+    const isHomepageOrBrandingTitle = cleanTitle.toLowerCase() === 'alectra solutions' || 
+      cleanTitle.toLowerCase().includes('alectra solutions');
+    
+    return isHomepageOrBrandingTitle 
+      ? cleanTitle
+      : `${cleanTitle} | ${siteName}`;
+  };
+  
+  const fullTitle = normalizeTitle(title);
+  
+  // Truncate description to 155 characters max for SEO compliance
+  const truncatedDescription = description.length > 155 
+    ? description.substring(0, 152) + "..."
+    : description;
 
   useEffect(() => {
     // Update document title
@@ -46,11 +69,11 @@ export function SEO({
     };
 
     // Standard meta tags
-    updateMeta("description", description);
+    updateMeta("description", truncatedDescription);
 
     // Open Graph tags
     updateMeta("og:title", fullTitle, true);
-    updateMeta("og:description", description, true);
+    updateMeta("og:description", truncatedDescription, true);
     updateMeta("og:type", type, true);
     updateMeta("og:url", canonicalUrl, true);
     updateMeta("og:site_name", siteName, true);
@@ -60,7 +83,7 @@ export function SEO({
     // Twitter Card tags
     updateMeta("twitter:card", "summary_large_image");
     updateMeta("twitter:title", fullTitle);
-    updateMeta("twitter:description", description);
+    updateMeta("twitter:description", truncatedDescription);
     updateMeta("twitter:image", image.startsWith("http") ? image : `https://${PRODUCTION_DOMAIN}${image}`);
 
     // Product-specific Open Graph tags
@@ -92,7 +115,7 @@ export function SEO({
       }
       script.textContent = JSON.stringify(structuredData);
     }
-  }, [fullTitle, description, image, type, price, currency, availability, canonicalUrl, structuredData]);
+  }, [fullTitle, truncatedDescription, image, type, price, currency, availability, canonicalUrl, structuredData]);
 
   return null;
 }

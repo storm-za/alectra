@@ -128,7 +128,7 @@ export default function OrderSuccess({ onClearCart }: OrderSuccessProps) {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="max-w-md w-full mx-4">
           <CardHeader>
-            <CardTitle className="text-destructive">Payment Verification Failed</CardTitle>
+            <h1 className="text-lg font-semibold text-destructive" data-testid="text-payment-failed-title">Payment Verification Failed</h1>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
@@ -156,7 +156,7 @@ export default function OrderSuccess({ onClearCart }: OrderSuccessProps) {
             <div className="mx-auto mb-4 bg-primary/10 w-20 h-20 rounded-full flex items-center justify-center">
               <CheckCircle2 className="h-12 w-12 text-primary" />
             </div>
-            <CardTitle className="text-3xl font-bold mb-2">Payment Successful!</CardTitle>
+            <h1 className="text-3xl font-bold mb-2" data-testid="text-order-success-title">Payment Successful!</h1>
             <p className="text-muted-foreground">
               Thank you for your order. Your payment has been confirmed.
             </p>
