@@ -29,6 +29,7 @@ import Privacy from "@/pages/Privacy";
 import Blog from "@/pages/Blog";
 import BlogPost from "@/pages/BlogPost";
 import AdminSeed from "@/pages/AdminSeed";
+import Admin from "@/pages/Admin";
 import NotFound from "@/pages/not-found";
 import { useToast } from "@/hooks/use-toast";
 import type { Product, CartItem, ProductVariant } from "@shared/schema";
@@ -38,6 +39,21 @@ function ScrollToTop() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // Track page visit (don't track admin pages)
+    if (!location.startsWith('/admin')) {
+      fetch('/api/track-visit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          path: location,
+          referrer: document.referrer || null
+        }),
+        credentials: 'include'
+      }).catch(() => {
+        // Silently fail - analytics shouldn't interrupt user experience
+      });
+    }
   }, [location]);
 
   return null;
@@ -170,6 +186,9 @@ function Router() {
           </Route>
           <Route path="/blogs/about-alectra-solutions/:slug">
             <BlogPost />
+          </Route>
+          <Route path="/admin">
+            <Admin />
           </Route>
           <Route path="/admin/seed">
             <AdminSeed />

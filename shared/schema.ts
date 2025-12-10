@@ -127,6 +127,19 @@ export const blogPosts = pgTable("blog_posts", {
   updatedAt: timestamp("updated_at"),
 });
 
+export const sessionVisits = pgTable("session_visits", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  sessionId: text("session_id").notNull(),
+  path: text("path").notNull(),
+  userAgent: text("user_agent"),
+  ipAddress: text("ip_address"),
+  referrer: text("referrer"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type SessionVisit = typeof sessionVisits.$inferSelect;
+export type InsertSessionVisit = typeof sessionVisits.$inferInsert;
+
 export const usersRelations = relations(users, ({ many }) => ({
   orders: many(orders),
   addresses: many(userAddresses),

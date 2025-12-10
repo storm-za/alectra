@@ -39,6 +39,40 @@ Preferred communication style: Simple, everyday language.
 **Security Features**: Bcrypt hashing, server-side session storage, HttpOnly cookies with SameSite protection, 30-day session lifetime, duplicate email prevention, guest checkout support.
 **User Roles**: `customer` (default), `installer`, `admin`.
 
+### Admin Dashboard Security
+
+**Access**: Password-protected admin dashboard at `/admin` and `/admin/seed`.
+
+**Environment Variables** (required for admin access):
+- `ADMIN_PASSWORD_HASH` (recommended): Bcrypt hash of the admin password. Generate with:
+  ```bash
+  node -e "const bcrypt = require('bcrypt'); bcrypt.hash('YOUR_PASSWORD', 12).then(h => console.log(h));"
+  ```
+- `ADMIN_PASSWORD` (fallback): Plain-text password. Only for development - not recommended for production.
+
+**Security Features**:
+- Bcrypt password verification (when using ADMIN_PASSWORD_HASH)
+- Timing-safe comparison (when using plain-text fallback)
+- Rate limiting: 5 attempts per minute, 15-minute lockout after exceeding
+- IP-based rate limit tracking using socket remote address
+- Protected endpoints: All `/api/admin/*` routes require authentication
+- Session-based admin state with automatic 401 handling on frontend
+
+**Proxy Configuration** (for rate limiting behind reverse proxy):
+- Set `TRUST_PROXY=1` environment variable only when behind a sanitizing reverse proxy
+- Without this, rate limiting uses socket remote address directly
+- With this, rate limiting uses req.ip which trusts the first proxy hop
+
+**Admin Endpoints**:
+- `POST /api/admin/login` - Authenticate admin
+- `POST /api/admin/logout` - End admin session
+- `GET /api/admin/check` - Check admin status
+- `GET /api/admin/stats` - Traffic/visit statistics
+- `GET /api/admin/stats/range` - Date range statistics
+- `GET /api/admin/orders-summary` - Orders overview
+- `POST /api/admin/seed-production` - Seed production database
+- `POST /api/admin/clear-production` - Clear production database
+
 ## External Dependencies
 
 ### Payment Processing

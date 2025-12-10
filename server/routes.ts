@@ -2,9 +2,11 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { db } from "./db";
-import { createOrderRequestSchema, registerSchema, loginSchema, insertUserAddressSchema, insertProductReviewSchema, insertTradeApplicationSchema, productReviews, products, categories } from "@shared/schema";
+import { createOrderRequestSchema, registerSchema, loginSchema, insertUserAddressSchema, insertProductReviewSchema, insertTradeApplicationSchema, productReviews, products, categories, orders } from "@shared/schema";
+import { desc } from "drizzle-orm";
 import { hashPassword, verifyPassword, requireAuth } from "./auth";
 import { EmailService } from "./email";
+import bcrypt from "bcrypt";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
@@ -111,6 +113,309 @@ export async function registerRoutes(app: Express): Promise<Server> {
           phone: user.phone,
           role: user.role,
         }
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Admin Authentication Routes
+  // Use bcrypt hash for admin password - store pre-hashed value in env var
+  const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD; // Fallback for development only
+  const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+  
+  if (!ADMIN_PASSWORD_HASH && !ADMIN_PASSWORD) {
+    console.warn("WARNING: Neither ADMIN_PASSWORD_HASH nor ADMIN_PASSWORD environment variable set. Admin panel will be inaccessible.");
+  } else if (!ADMIN_PASSWORD_HASH && ADMIN_PASSWORD && IS_PRODUCTION) {
+    console.error("SECURITY ERROR: Plain-text ADMIN_PASSWORD is not allowed in production. Set ADMIN_PASSWORD_HASH with a bcrypt hash.");
+  } else if (!ADMIN_PASSWORD_HASH && ADMIN_PASSWORD) {
+    console.warn("WARNING: Using plain-text ADMIN_PASSWORD. For production, set ADMIN_PASSWORD_HASH with a bcrypt hash instead.");
+  }
+
+  // Simple rate limiting for admin login (in-memory)
+  const loginAttempts = new Map<string, { count: number; lastAttempt: number; lockedUntil: number }>();
+  const MAX_LOGIN_ATTEMPTS = 5;
+  const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
+  const ATTEMPT_WINDOW = 60 * 1000; // 1 minute
+
+  // Get reliable client identifier for rate limiting
+  // Uses req.ip when trust proxy is configured, otherwise falls back to socket IP
+  // Configure app.set('trust proxy', true) in production behind a proxy
+  const getClientIdentifier = (req: any): string => {
+    // req.ip respects Express 'trust proxy' setting and extracts real client IP
+    // In development (no proxy), falls back to socket.remoteAddress
+    if (req.ip && req.ip !== '::1' && req.ip !== '127.0.0.1') {
+      return req.ip;
+    }
+    // Fallback to socket address for direct connections
+    return req.socket?.remoteAddress || 'unknown';
+  };
+
+  const checkRateLimit = (ip: string): { allowed: boolean; retryAfter?: number } => {
+    const now = Date.now();
+    const attempt = loginAttempts.get(ip);
+    
+    if (!attempt) {
+      return { allowed: true };
+    }
+    
+    // Check if locked out
+    if (attempt.lockedUntil > now) {
+      return { allowed: false, retryAfter: Math.ceil((attempt.lockedUntil - now) / 1000) };
+    }
+    
+    // Reset if outside the window
+    if (now - attempt.lastAttempt > ATTEMPT_WINDOW) {
+      loginAttempts.delete(ip);
+      return { allowed: true };
+    }
+    
+    return { allowed: attempt.count < MAX_LOGIN_ATTEMPTS };
+  };
+
+  const recordLoginAttempt = (ip: string, success: boolean): void => {
+    const now = Date.now();
+    const attempt = loginAttempts.get(ip) || { count: 0, lastAttempt: now, lockedUntil: 0 };
+    
+    if (success) {
+      loginAttempts.delete(ip);
+      return;
+    }
+    
+    attempt.count++;
+    attempt.lastAttempt = now;
+    
+    if (attempt.count >= MAX_LOGIN_ATTEMPTS) {
+      attempt.lockedUntil = now + LOCKOUT_DURATION;
+    }
+    
+    loginAttempts.set(ip, attempt);
+  };
+
+  const requireAdminAuth = (req: any, res: any, next: any) => {
+    if (!(req.session as any).isAdmin) {
+      return res.status(401).json({ message: "Admin authentication required" });
+    }
+    next();
+  };
+
+  // Verify admin password - uses bcrypt hash if available, falls back to plain text only in development
+  const verifyAdminPassword = async (password: string): Promise<boolean> => {
+    if (ADMIN_PASSWORD_HASH) {
+      // Use bcrypt hash comparison (secure)
+      return bcrypt.compare(password, ADMIN_PASSWORD_HASH);
+    } else if (ADMIN_PASSWORD && !IS_PRODUCTION) {
+      // Fallback to plain text comparison only in development
+      const crypto = await import('crypto');
+      try {
+        return crypto.timingSafeEqual(
+          Buffer.from(password, 'utf8'),
+          Buffer.from(ADMIN_PASSWORD, 'utf8')
+        );
+      } catch {
+        // Lengths don't match
+        return false;
+      }
+    }
+    // In production without ADMIN_PASSWORD_HASH, deny all access
+    return false;
+  };
+
+  app.post("/api/admin/login", async (req, res) => {
+    try {
+      const clientId = getClientIdentifier(req);
+      
+      // Check rate limit
+      const rateCheck = checkRateLimit(clientId);
+      if (!rateCheck.allowed) {
+        return res.status(429).json({ 
+          message: `Too many login attempts. Try again in ${rateCheck.retryAfter} seconds.`,
+          retryAfter: rateCheck.retryAfter
+        });
+      }
+      
+      const { password } = req.body;
+      
+      if (!password || typeof password !== 'string') {
+        return res.status(400).json({ message: "Password is required" });
+      }
+      
+      if (!ADMIN_PASSWORD_HASH && !ADMIN_PASSWORD) {
+        return res.status(503).json({ message: "Admin panel is not configured" });
+      }
+      
+      // Require bcrypt hash in production
+      if (IS_PRODUCTION && !ADMIN_PASSWORD_HASH) {
+        return res.status(503).json({ message: "Admin panel requires secure configuration in production" });
+      }
+      
+      // Verify password using bcrypt if hash available, otherwise plain text
+      const isValid = await verifyAdminPassword(password);
+      
+      if (isValid) {
+        recordLoginAttempt(clientId, true);
+        (req.session as any).isAdmin = true;
+        res.json({ success: true, message: "Admin login successful" });
+      } else {
+        recordLoginAttempt(clientId, false);
+        res.status(401).json({ success: false, message: "Invalid password" });
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/logout", (req, res) => {
+    (req.session as any).isAdmin = false;
+    res.json({ success: true, message: "Admin logged out" });
+  });
+
+  app.get("/api/admin/check", (req, res) => {
+    res.json({ isAdmin: !!(req.session as any).isAdmin });
+  });
+
+  // Rate limiting for visit tracking to prevent abuse
+  const visitTrackingLimits = new Map<string, { count: number; windowStart: number }>();
+  const VISIT_RATE_LIMIT = 30; // 30 requests per minute per session
+  const VISIT_RATE_WINDOW = 60 * 1000; // 1 minute
+
+  // Session visit tracking endpoint with validation and rate limiting
+  app.post("/api/track-visit", async (req, res) => {
+    try {
+      const sessionId = req.sessionID || req.session.id || 'anonymous';
+      const now = Date.now();
+      
+      // Rate limiting per session
+      const limit = visitTrackingLimits.get(sessionId);
+      if (limit) {
+        if (now - limit.windowStart > VISIT_RATE_WINDOW) {
+          // Reset window
+          visitTrackingLimits.set(sessionId, { count: 1, windowStart: now });
+        } else if (limit.count >= VISIT_RATE_LIMIT) {
+          // Rate limited - silently reject
+          return res.json({ success: false });
+        } else {
+          limit.count++;
+        }
+      } else {
+        visitTrackingLimits.set(sessionId, { count: 1, windowStart: now });
+      }
+      
+      // Clean up old entries periodically (every 100 requests)
+      if (Math.random() < 0.01) {
+        const cutoff = now - VISIT_RATE_WINDOW * 2;
+        for (const [key, val] of visitTrackingLimits.entries()) {
+          if (val.windowStart < cutoff) {
+            visitTrackingLimits.delete(key);
+          }
+        }
+      }
+      
+      const { path, referrer } = req.body;
+      
+      // Basic validation - path must be a string and start with /
+      if (typeof path !== 'string' || !path.startsWith('/')) {
+        return res.json({ success: false, message: 'Invalid path' });
+      }
+      
+      // Limit path length to prevent log flooding
+      const sanitizedPath = path.slice(0, 200);
+      const sanitizedReferrer = typeof referrer === 'string' ? referrer.slice(0, 500) : null;
+      
+      const userAgent = (req.headers['user-agent'] || '').slice(0, 500);
+      const ipAddress = req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || '';
+      
+      await storage.logSessionVisit({
+        sessionId,
+        path: sanitizedPath,
+        userAgent,
+        ipAddress: ipAddress.split(',')[0]?.trim().slice(0, 50) || '',
+        referrer: sanitizedReferrer
+      });
+      
+      res.json({ success: true });
+    } catch (error: any) {
+      // Silently fail for analytics - don't interrupt user experience
+      res.json({ success: false });
+    }
+  });
+
+  // Admin stats endpoints (protected)
+  app.get("/api/admin/stats", requireAdminAuth, async (req, res) => {
+    try {
+      const dateStr = req.query.date as string;
+      const date = dateStr ? new Date(dateStr) : new Date();
+      
+      const stats = await storage.getVisitStats(date);
+      res.json(stats);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/stats/range", requireAdminAuth, async (req, res) => {
+    try {
+      const startDateStr = req.query.startDate as string;
+      const endDateStr = req.query.endDate as string;
+      
+      if (!startDateStr || !endDateStr) {
+        return res.status(400).json({ message: "startDate and endDate are required" });
+      }
+      
+      const startDate = new Date(startDateStr);
+      const endDate = new Date(endDateStr);
+      endDate.setHours(23, 59, 59, 999);
+      
+      const visits = await storage.getSessionVisitsForDateRange(startDate, endDate);
+      
+      // Group by date
+      const dailyStats: Record<string, { visits: number; sessions: Set<string> }> = {};
+      visits.forEach(visit => {
+        const dateKey = visit.createdAt.toISOString().split('T')[0];
+        if (!dailyStats[dateKey]) {
+          dailyStats[dateKey] = { visits: 0, sessions: new Set() };
+        }
+        dailyStats[dateKey].visits++;
+        dailyStats[dateKey].sessions.add(visit.sessionId);
+      });
+      
+      const formattedStats = Object.entries(dailyStats).map(([date, data]) => ({
+        date,
+        totalVisits: data.visits,
+        uniqueSessions: data.sessions.size
+      })).sort((a, b) => a.date.localeCompare(b.date));
+      
+      res.json(formattedStats);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/orders-summary", requireAdminAuth, async (req, res) => {
+    try {
+      // Get all orders for summary stats
+      const allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt));
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const todayOrders = allOrders.filter(o => new Date(o.createdAt) >= today);
+      const paidOrders = allOrders.filter(o => o.paymentStatus === 'paid');
+      const pendingOrders = allOrders.filter(o => o.paymentStatus === 'pending');
+      
+      const totalRevenue = paidOrders.reduce((sum, o) => sum + parseFloat(o.total), 0);
+      const todayRevenue = todayOrders.filter(o => o.paymentStatus === 'paid')
+        .reduce((sum, o) => sum + parseFloat(o.total), 0);
+      
+      res.json({
+        totalOrders: allOrders.length,
+        todayOrders: todayOrders.length,
+        paidOrders: paidOrders.length,
+        pendingOrders: pendingOrders.length,
+        totalRevenue,
+        todayRevenue,
+        recentOrders: allOrders.slice(0, 10)
       });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -1334,7 +1639,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // CLEAR PRODUCTION DATABASE - Deletes all products, categories, reviews
-  app.post("/api/admin/clear-production", async (req, res) => {
+  app.post("/api/admin/clear-production", requireAdminAuth, async (req, res) => {
     try {
       const { sql } = await import("drizzle-orm");
       const { db } = await import("../server/db");
@@ -1398,7 +1703,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ADMIN SEEDING ENDPOINT - Seeds from dev database export
   // Visit /api/admin/seed-production on your published site
-  app.post("/api/admin/seed-production", async (req, res) => {
+  app.post("/api/admin/seed-production", requireAdminAuth, async (req, res) => {
     try {
       let categoriesCreated = 0;
       let productsCreated = 0;

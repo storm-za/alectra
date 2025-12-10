@@ -6,6 +6,14 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 
+// Enable trust proxy for correct client IP detection behind reverse proxy
+// Only enable if explicitly configured (TRUST_PROXY=1) to prevent IP spoofing
+// when not behind a sanitizing proxy
+if (process.env.TRUST_PROXY === '1' || process.env.TRUST_PROXY === 'true') {
+  app.set('trust proxy', 1); // Trust first proxy hop
+  console.log('Trust proxy enabled - ensure you are behind a sanitizing reverse proxy');
+}
+
 declare module 'http' {
   interface IncomingMessage {
     rawBody: unknown

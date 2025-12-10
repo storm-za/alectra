@@ -1,4 +1,4 @@
-import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, blogPosts, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type BlogPost, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type InsertBlogPost, type CreateOrderRequest } from "@shared/schema";
+import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, blogPosts, sessionVisits, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type BlogPost, type SessionVisit, type InsertSessionVisit, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type InsertBlogPost, type CreateOrderRequest } from "@shared/schema";
 import { db } from "./db";
 import { eq, sql, and, or, like, gte, lte, asc, desc, inArray } from "drizzle-orm";
 
@@ -55,6 +55,12 @@ export interface IStorage {
   getAllBlogPosts(): Promise<BlogPost[]>;
   getBlogPostBySlug(slug: string): Promise<BlogPost | undefined>;
   createBlogPost(post: InsertBlogPost): Promise<BlogPost>;
+
+  // Session Visits (Analytics)
+  logSessionVisit(visit: InsertSessionVisit): Promise<SessionVisit>;
+  getSessionVisitsForDate(date: Date): Promise<SessionVisit[]>;
+  getSessionVisitsForDateRange(startDate: Date, endDate: Date): Promise<SessionVisit[]>;
+  getVisitStats(date: Date): Promise<{ totalVisits: number; uniqueSessions: number; topPages: { path: string; count: number }[] }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -568,6 +574,66 @@ export class DatabaseStorage implements IStorage {
   async createBlogPost(post: InsertBlogPost): Promise<BlogPost> {
     const [blogPost] = await db.insert(blogPosts).values(post).returning();
     return blogPost;
+  }
+
+  // Session Visits (Analytics)
+  async logSessionVisit(visit: InsertSessionVisit): Promise<SessionVisit> {
+    const [sessionVisit] = await db.insert(sessionVisits).values(visit).returning();
+    return sessionVisit;
+  }
+
+  async getSessionVisitsForDate(date: Date): Promise<SessionVisit[]> {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    
+    return await db
+      .select()
+      .from(sessionVisits)
+      .where(and(
+        gte(sessionVisits.createdAt, startOfDay),
+        lte(sessionVisits.createdAt, endOfDay)
+      ))
+      .orderBy(desc(sessionVisits.createdAt));
+  }
+
+  async getSessionVisitsForDateRange(startDate: Date, endDate: Date): Promise<SessionVisit[]> {
+    return await db
+      .select()
+      .from(sessionVisits)
+      .where(and(
+        gte(sessionVisits.createdAt, startDate),
+        lte(sessionVisits.createdAt, endDate)
+      ))
+      .orderBy(desc(sessionVisits.createdAt));
+  }
+
+  async getVisitStats(date: Date): Promise<{ totalVisits: number; uniqueSessions: number; topPages: { path: string; count: number }[] }> {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    
+    const visits = await this.getSessionVisitsForDate(date);
+    
+    const uniqueSessions = new Set(visits.map(v => v.sessionId)).size;
+    
+    const pageCountMap = new Map<string, number>();
+    visits.forEach(v => {
+      pageCountMap.set(v.path, (pageCountMap.get(v.path) || 0) + 1);
+    });
+    
+    const topPages = Array.from(pageCountMap.entries())
+      .map(([path, count]) => ({ path, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+    
+    return {
+      totalVisits: visits.length,
+      uniqueSessions,
+      topPages
+    };
   }
 }
 
