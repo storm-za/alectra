@@ -91,9 +91,9 @@ app.use((req, res, next) => {
   });
 
   // SSR Meta Tag Injection Middleware
-  // Intercepts HTML responses and injects dynamic SEO meta tags
-  app.use(async (req: Request, res: Response, next: NextFunction) => {
-    // Skip API routes and static assets
+  // Intercepts HTML responses and injects dynamic SEO meta tags for crawlers
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    // Skip API routes and static assets completely - don't wrap res.end at all
     if (req.path.startsWith('/api') || 
         req.path.startsWith('/attached_assets') ||
         req.path.startsWith('/feeds') ||
@@ -101,42 +101,44 @@ app.use((req, res, next) => {
       return next();
     }
 
-    // Store original end method
     const originalEnd = res.end.bind(res);
-    let htmlBuffer: Buffer | null = null;
+    let processed = false;
 
-    // Override end to capture HTML
     res.end = function(chunk?: any, encodingOrCb?: BufferEncoding | (() => void), cb?: () => void): Response {
-      const encoding = typeof encodingOrCb === 'string' ? encodingOrCb : undefined;
-      const callback = typeof encodingOrCb === 'function' ? encodingOrCb : cb;
-
-      // Check if this is an HTML response
-      const contentType = res.getHeader('content-type');
-      if (contentType && String(contentType).includes('text/html') && chunk) {
-        htmlBuffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, encoding);
-        
-        // Process HTML async and send
-        (async () => {
-          try {
-            const html = htmlBuffer!.toString('utf-8');
-            const meta = await getMetaForPath(req.originalUrl || req.path);
-            const modifiedHtml = injectMetaTags(html, meta);
-            
-            // Update content-length header
-            res.setHeader('content-length', Buffer.byteLength(modifiedHtml, 'utf-8'));
-            originalEnd(modifiedHtml, 'utf-8', callback);
-          } catch (e) {
-            console.error('SSR meta injection error:', e);
-            // Fall back to original HTML on error
-            originalEnd(htmlBuffer, encoding || 'utf-8', callback);
-          }
-        })();
-        
+      // Prevent double processing
+      if (processed) {
         return res;
       }
+      
+      // Handle function overloads
+      const encoding = typeof encodingOrCb === 'string' ? encodingOrCb : 'utf-8';
+      const callback = typeof encodingOrCb === 'function' ? encodingOrCb : cb;
 
-      // Non-HTML responses pass through unchanged
-      return originalEnd(chunk, encoding as BufferEncoding, callback);
+      // Only intercept HTML responses with actual content
+      const contentType = res.getHeader('content-type');
+      const isHtml = contentType && String(contentType).includes('text/html');
+      
+      if (!isHtml || !chunk) {
+        // Non-HTML or empty: pass through unchanged with original arguments
+        return originalEnd(chunk, encodingOrCb as BufferEncoding, cb);
+      }
+
+      processed = true;
+      const htmlBuffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, encoding);
+      
+      getMetaForPath(req.originalUrl || req.path)
+        .then(meta => {
+          const html = htmlBuffer.toString('utf-8');
+          const modifiedHtml = injectMetaTags(html, meta);
+          res.setHeader('content-length', Buffer.byteLength(modifiedHtml, 'utf-8'));
+          originalEnd(modifiedHtml, 'utf-8', callback);
+        })
+        .catch(e => {
+          console.error('SSR meta injection error:', e);
+          originalEnd(htmlBuffer, encoding, callback);
+        });
+      
+      return res;
     } as typeof res.end;
 
     next();
