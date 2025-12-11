@@ -3,6 +3,7 @@ import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { getMetaForPath, injectMetaTags } from "./seo";
 
 const app = express();
 
@@ -87,6 +88,58 @@ app.use((req, res, next) => {
 
     res.status(status).json({ message });
     throw err;
+  });
+
+  // SSR Meta Tag Injection Middleware
+  // Intercepts HTML responses and injects dynamic SEO meta tags
+  app.use(async (req: Request, res: Response, next: NextFunction) => {
+    // Skip API routes and static assets
+    if (req.path.startsWith('/api') || 
+        req.path.startsWith('/attached_assets') ||
+        req.path.startsWith('/feeds') ||
+        req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|webp|map)$/)) {
+      return next();
+    }
+
+    // Store original end method
+    const originalEnd = res.end.bind(res);
+    let htmlBuffer: Buffer | null = null;
+
+    // Override end to capture HTML
+    res.end = function(chunk?: any, encodingOrCb?: BufferEncoding | (() => void), cb?: () => void): Response {
+      const encoding = typeof encodingOrCb === 'string' ? encodingOrCb : undefined;
+      const callback = typeof encodingOrCb === 'function' ? encodingOrCb : cb;
+
+      // Check if this is an HTML response
+      const contentType = res.getHeader('content-type');
+      if (contentType && String(contentType).includes('text/html') && chunk) {
+        htmlBuffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, encoding);
+        
+        // Process HTML async and send
+        (async () => {
+          try {
+            const html = htmlBuffer!.toString('utf-8');
+            const meta = await getMetaForPath(req.originalUrl || req.path);
+            const modifiedHtml = injectMetaTags(html, meta);
+            
+            // Update content-length header
+            res.setHeader('content-length', Buffer.byteLength(modifiedHtml, 'utf-8'));
+            originalEnd(modifiedHtml, 'utf-8', callback);
+          } catch (e) {
+            console.error('SSR meta injection error:', e);
+            // Fall back to original HTML on error
+            originalEnd(htmlBuffer, encoding || 'utf-8', callback);
+          }
+        })();
+        
+        return res;
+      }
+
+      // Non-HTML responses pass through unchanged
+      return originalEnd(chunk, encoding as BufferEncoding, callback);
+    } as typeof res.end;
+
+    next();
   });
 
   // importantly only setup vite in development and after
