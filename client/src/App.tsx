@@ -3,36 +3,46 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import Home from "@/pages/Home";
-import Products from "@/pages/Products";
-import ProductDetail from "@/pages/ProductDetail";
-import CategoryPage from "@/pages/CategoryPage";
-import Checkout from "@/pages/Checkout";
-import OrderSuccess from "@/pages/OrderSuccess";
-import Login from "@/pages/Login";
-import Register from "@/pages/Register";
-import Account from "@/pages/Account";
-import Quote from "@/pages/Quote";
-import TradeSignup from "@/pages/TradeSignup";
-import About from "@/pages/About";
-import Contact from "@/pages/Contact";
-import Stores from "@/pages/Stores";
-import FAQ from "@/pages/FAQ";
-import Shipping from "@/pages/Shipping";
-import Returns from "@/pages/Returns";
-import Privacy from "@/pages/Privacy";
-import Blog from "@/pages/Blog";
-import BlogPost from "@/pages/BlogPost";
-import AdminSeed from "@/pages/AdminSeed";
-import Admin from "@/pages/Admin";
-import NotFound from "@/pages/not-found";
 import { useToast } from "@/hooks/use-toast";
 import type { Product, CartItem, ProductVariant } from "@shared/schema";
+
+// Lazy load pages for code splitting - reduces initial bundle size
+const Home = lazy(() => import("@/pages/Home"));
+const Products = lazy(() => import("@/pages/Products"));
+const ProductDetail = lazy(() => import("@/pages/ProductDetail"));
+const CategoryPage = lazy(() => import("@/pages/CategoryPage"));
+const Checkout = lazy(() => import("@/pages/Checkout"));
+const OrderSuccess = lazy(() => import("@/pages/OrderSuccess"));
+const Login = lazy(() => import("@/pages/Login"));
+const Register = lazy(() => import("@/pages/Register"));
+const Account = lazy(() => import("@/pages/Account"));
+const Quote = lazy(() => import("@/pages/Quote"));
+const TradeSignup = lazy(() => import("@/pages/TradeSignup"));
+const About = lazy(() => import("@/pages/About"));
+const Contact = lazy(() => import("@/pages/Contact"));
+const Stores = lazy(() => import("@/pages/Stores"));
+const FAQ = lazy(() => import("@/pages/FAQ"));
+const Shipping = lazy(() => import("@/pages/Shipping"));
+const Returns = lazy(() => import("@/pages/Returns"));
+const Privacy = lazy(() => import("@/pages/Privacy"));
+const Blog = lazy(() => import("@/pages/Blog"));
+const BlogPost = lazy(() => import("@/pages/BlogPost"));
+const AdminSeed = lazy(() => import("@/pages/AdminSeed"));
+const Admin = lazy(() => import("@/pages/Admin"));
+const NotFound = lazy(() => import("@/pages/not-found"));
+
+function PageLoader() {
+  return (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>
+  );
+}
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -123,78 +133,80 @@ function Router() {
       <Header cartItemCount={cartItemCount} onCartClick={() => setCartOpen(true)} />
       
       <main className="flex-1">
-        <Switch>
-          <Route path="/">
-            <Home onAddToCart={addToCart} />
-          </Route>
-          <Route path="/collections/all">
-            <Products onAddToCart={addToCart} />
-          </Route>
-          <Route path="/category/:slug">
-            <CategoryPage onAddToCart={addToCart} />
-          </Route>
-          <Route path="/collections/:slug">
-            <CategoryPage onAddToCart={addToCart} />
-          </Route>
-          <Route path="/products/:slug">
-            <ProductDetail onAddToCart={addToCart} />
-          </Route>
-          <Route path="/checkout">
-            <Checkout cartItems={cartItems} onClearCart={clearCart} />
-          </Route>
-          <Route path="/order-success">
-            <OrderSuccess onClearCart={clearCart} />
-          </Route>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/register">
-            <Register />
-          </Route>
-          <Route path="/account">
-            <Account />
-          </Route>
-          <Route path="/quote">
-            <Quote />
-          </Route>
-          <Route path="/pages/trade-wholesale-registration">
-            <TradeSignup />
-          </Route>
-          <Route path="/about">
-            <About />
-          </Route>
-          <Route path="/contact">
-            <Contact />
-          </Route>
-          <Route path="/stores">
-            <Stores />
-          </Route>
-          <Route path="/faq">
-            <FAQ />
-          </Route>
-          <Route path="/shipping">
-            <Shipping />
-          </Route>
-          <Route path="/returns">
-            <Returns />
-          </Route>
-          <Route path="/privacy">
-            <Privacy />
-          </Route>
-          <Route path="/blogs">
-            <Blog />
-          </Route>
-          <Route path="/blogs/about-alectra-solutions/:slug">
-            <BlogPost />
-          </Route>
-          <Route path="/admin">
-            <Admin />
-          </Route>
-          <Route path="/admin/seed">
-            <AdminSeed />
-          </Route>
-          <Route component={NotFound} />
-        </Switch>
+        <Suspense fallback={<PageLoader />}>
+          <Switch>
+            <Route path="/">
+              <Home onAddToCart={addToCart} />
+            </Route>
+            <Route path="/collections/all">
+              <Products onAddToCart={addToCart} />
+            </Route>
+            <Route path="/category/:slug">
+              <CategoryPage onAddToCart={addToCart} />
+            </Route>
+            <Route path="/collections/:slug">
+              <CategoryPage onAddToCart={addToCart} />
+            </Route>
+            <Route path="/products/:slug">
+              <ProductDetail onAddToCart={addToCart} />
+            </Route>
+            <Route path="/checkout">
+              <Checkout cartItems={cartItems} onClearCart={clearCart} />
+            </Route>
+            <Route path="/order-success">
+              <OrderSuccess onClearCart={clearCart} />
+            </Route>
+            <Route path="/login">
+              <Login />
+            </Route>
+            <Route path="/register">
+              <Register />
+            </Route>
+            <Route path="/account">
+              <Account />
+            </Route>
+            <Route path="/quote">
+              <Quote />
+            </Route>
+            <Route path="/pages/trade-wholesale-registration">
+              <TradeSignup />
+            </Route>
+            <Route path="/about">
+              <About />
+            </Route>
+            <Route path="/contact">
+              <Contact />
+            </Route>
+            <Route path="/stores">
+              <Stores />
+            </Route>
+            <Route path="/faq">
+              <FAQ />
+            </Route>
+            <Route path="/shipping">
+              <Shipping />
+            </Route>
+            <Route path="/returns">
+              <Returns />
+            </Route>
+            <Route path="/privacy">
+              <Privacy />
+            </Route>
+            <Route path="/blogs">
+              <Blog />
+            </Route>
+            <Route path="/blogs/about-alectra-solutions/:slug">
+              <BlogPost />
+            </Route>
+            <Route path="/admin">
+              <Admin />
+            </Route>
+            <Route path="/admin/seed">
+              <AdminSeed />
+            </Route>
+            <Route component={NotFound} />
+          </Switch>
+        </Suspense>
       </main>
 
       <Footer />

@@ -2,20 +2,19 @@
 <html lang="en-ZA">
   <head>
     <meta charset="UTF-8" />
-    
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=GT-T5P8RL35"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'GT-T5P8RL35');
-    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     <link rel="icon" type="image/png" href="/attached_assets/alectra-logo-removebg-preview_1764271857150.png" />
+    
+    <!-- Preconnect to critical third-party origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style">
+    
+    <!-- Load Inter font with swap for better FCP -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <title>Alectra Solutions - Security & Automation Products South Africa</title>
     <meta name="description" content="Leading South African supplier of security and automation products. Gate motors, electric fencing, CCTV systems, remotes, batteries, and more. Shop Centurion, Nemtek, Hikvision, Gemini brands. Free delivery over R2500. Wonderboom, Hatfield & Menlyn stores.">
@@ -70,10 +69,21 @@
     }
     </script>
     
-    <script src="https://js.paystack.co/v2/inline.js"></script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Defer non-critical third-party scripts -->
+    <script defer src="https://js.paystack.co/v2/inline.js"></script>
+    
+    <!-- Google Analytics - deferred to not block rendering -->
+    <script defer src="https://www.googletagmanager.com/gtag/js?id=GT-T5P8RL35"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'GT-T5P8RL35');
+    </script>
   </body>
 </html>
