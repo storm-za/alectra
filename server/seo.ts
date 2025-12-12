@@ -137,8 +137,8 @@ export async function getMetaForPath(path: string): Promise<SEOMeta> {
     }
   }
 
-  // Blog pages: /blog/:slug
-  const blogMatch = cleanPath.match(/^\/blog\/(.+)$/);
+  // Blog pages: /blogs/about-alectra-solutions/:slug
+  const blogMatch = cleanPath.match(/^\/blogs\/about-alectra-solutions\/(.+)$/);
   if (blogMatch) {
     const slug = decodeURIComponent(blogMatch[1]);
     try {
@@ -155,16 +155,16 @@ export async function getMetaForPath(path: string): Promise<SEOMeta> {
           "description": description,
           "author": { "@type": "Organization", "name": SITE_NAME },
           "publisher": { "@type": "Organization", "name": SITE_NAME },
-          "url": `${BASE_URL}/blog/${encodeURIComponent(slug)}`
+          "url": `${BASE_URL}/blogs/about-alectra-solutions/${encodeURIComponent(slug)}`
         });
 
         return {
           title,
           description,
-          canonical: `${BASE_URL}/blog/${encodeURIComponent(slug)}`,
+          canonical: `${BASE_URL}/blogs/about-alectra-solutions/${encodeURIComponent(slug)}`,
           ogTitle: title,
           ogDescription: description,
-          ogUrl: `${BASE_URL}/blog/${encodeURIComponent(slug)}`,
+          ogUrl: `${BASE_URL}/blogs/about-alectra-solutions/${encodeURIComponent(slug)}`,
           ogImage: DEFAULT_IMAGE,
           ogType: "article",
           twitterTitle: title,
@@ -179,16 +179,16 @@ export async function getMetaForPath(path: string): Promise<SEOMeta> {
   }
 
   // Blog index
-  if (cleanPath === '/blog') {
+  if (cleanPath === '/blogs') {
     const title = `Security & Automation Blog | ${SITE_NAME}`;
     const description = "Expert guides, tips, and news about gate motors, electric fencing, CCTV systems, and home security. Learn from South Africa's trusted security specialists.";
     return {
       title,
       description,
-      canonical: `${BASE_URL}/blog`,
+      canonical: `${BASE_URL}/blogs`,
       ogTitle: title,
       ogDescription: description,
-      ogUrl: `${BASE_URL}/blog`,
+      ogUrl: `${BASE_URL}/blogs`,
       ogImage: DEFAULT_IMAGE,
       ogType: "website",
       twitterTitle: title,
