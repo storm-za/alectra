@@ -1,11 +1,26 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
+import compression from "compression";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { getMetaForPath, injectMetaTags } from "./seo";
 
 const app = express();
+
+// Enable GZIP/Brotli compression for all responses
+app.use(compression({
+  level: 6, // Balance between compression ratio and speed
+  threshold: 1024, // Only compress responses larger than 1KB
+  filter: (req, res) => {
+    // Don't compress if client doesn't accept it
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    // Use default filter (compresses text-based responses)
+    return compression.filter(req, res);
+  }
+}));
 
 // Enable trust proxy for correct client IP detection behind reverse proxy
 // Only enable if explicitly configured (TRUST_PROXY=1) to prevent IP spoofing

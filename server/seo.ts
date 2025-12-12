@@ -19,7 +19,7 @@ const SITE_NAME = "Alectra Solutions";
 const BASE_URL = "https://alectra.co.za";
 const DEFAULT_IMAGE = `${BASE_URL}/alectra-solutions-logo.png`;
 
-const DEFAULT_DESCRIPTION = "Leading South African supplier of security and automation products. Gate motors, electric fencing, CCTV systems, remotes, batteries, and more. Shop Centurion, Nemtek, Hikvision, Gemini brands. Free delivery over R2500.";
+const DEFAULT_DESCRIPTION = "South African supplier of gate motors, electric fencing, CCTV, batteries and remotes. Centurion, Nemtek, Hikvision brands. Free delivery over R2500.";
 
 function truncateDescription(text: string, maxLength: number = 155): string {
   if (text.length <= maxLength) return text;
@@ -275,9 +275,16 @@ export function injectMetaTags(html: string, meta: SEOMeta): string {
     `<meta name="description" content="${meta.description}">`
   );
 
-  // Add canonical link (insert after description meta tag)
+  // Replace or add canonical link
   const canonicalTag = `<link rel="canonical" href="${meta.canonical}">`;
-  if (!html.includes('rel="canonical"')) {
+  if (html.includes('rel="canonical"')) {
+    // Replace existing canonical
+    html = html.replace(
+      /<link rel="canonical" href="[^"]*">/,
+      canonicalTag
+    );
+  } else {
+    // Add canonical after description
     html = html.replace(
       /<meta name="description" content="[^"]*">/,
       `<meta name="description" content="${meta.description}">\n    ${canonicalTag}`
