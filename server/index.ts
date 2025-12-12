@@ -165,7 +165,31 @@ app.use((req, res, next) => {
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
-    serveStatic(app);
+    // Production: Custom static serving with SSR support
+    // We can't use serveStatic's sendFile because it bypasses res.end() wrapper
+    const path = await import("path");
+    const fs = await import("fs");
+    const distPath = path.default.resolve(import.meta.dirname, "public");
+    
+    if (!fs.existsSync(distPath)) {
+      throw new Error(`Could not find the build directory: ${distPath}`);
+    }
+    
+    // Serve static assets normally
+    app.use(express.static(distPath));
+    
+    // For HTML pages, read file and use res.end() to trigger SSR injection
+    app.use("*", async (_req, res) => {
+      try {
+        const indexPath = path.default.resolve(distPath, "index.html");
+        const html = await fs.promises.readFile(indexPath, "utf-8");
+        res.setHeader("Content-Type", "text/html");
+        res.end(html); // This triggers the SSR middleware
+      } catch (e) {
+        console.error("Error serving index.html:", e);
+        res.status(500).send("Internal Server Error");
+      }
+    });
   }
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
