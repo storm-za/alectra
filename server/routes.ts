@@ -1504,7 +1504,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         '/privacy',
         '/trade-signup',
         '/quote',
-        '/blogs',
+        '/blog',
       ];
       
       let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
@@ -1544,7 +1544,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           : new Date(post.publishedAt).toISOString().split('T')[0];
         
         sitemap += '  <url>\n';
-        sitemap += `    <loc>${baseUrl}/blogs/about-alectra-solutions/${post.slug}</loc>\n`;
+        sitemap += `    <loc>${baseUrl}/blog/${post.slug}</loc>\n`;
         sitemap += `    <lastmod>${postDate}</lastmod>\n`;
         sitemap += '  </url>\n';
       }
