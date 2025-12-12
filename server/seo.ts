@@ -336,3 +336,56 @@ export function injectMetaTags(html: string, meta: SEOMeta): string {
 
   return html;
 }
+
+// Generate hidden product links for category pages (SEO internal linking)
+export async function getProductLinksForCategory(path: string): Promise<string> {
+  const cleanPath = path.split('?')[0];
+  
+  // Check if this is a category page
+  const categoryMatch = cleanPath.match(/^\/collections\/([^\/]+)$/);
+  if (!categoryMatch) {
+    return '';
+  }
+  
+  const slug = categoryMatch[1];
+  
+  try {
+    let products;
+    
+    if (slug === 'all') {
+      // Get all products
+      products = await storage.getAllProducts();
+    } else {
+      // Get products for this category
+      products = await storage.getProductsByCategorySlug(slug);
+    }
+    
+    if (!products || products.length === 0) {
+      return '';
+    }
+    
+    // Generate hidden nav with product links
+    const productLinks = products.map(p => 
+      `<a href="/products/${p.slug}">${p.name}</a>`
+    ).join('\n      ');
+    
+    return `
+    <!-- SEO Product Links for Crawlers -->
+    <nav id="seo-product-nav" aria-label="Products" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+      ${productLinks}
+    </nav>`;
+  } catch (e) {
+    console.error('Error generating product links for SEO:', e);
+    return '';
+  }
+}
+
+// Inject product links into HTML
+export function injectProductLinks(html: string, productLinksHtml: string): string {
+  if (!productLinksHtml) {
+    return html;
+  }
+  
+  // Insert before </body>
+  return html.replace('</body>', `${productLinksHtml}\n  </body>`);
+}

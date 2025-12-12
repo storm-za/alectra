@@ -4,7 +4,7 @@ import connectPgSimple from "connect-pg-simple";
 import compression from "compression";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { getMetaForPath, injectMetaTags } from "./seo";
+import { getMetaForPath, injectMetaTags, getProductLinksForCategory, injectProductLinks } from "./seo";
 
 const app = express();
 
@@ -141,15 +141,21 @@ app.use((req, res, next) => {
       processed = true;
       const htmlBuffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, encoding);
       
-      getMetaForPath(req.originalUrl || req.path)
-        .then(meta => {
-          const html = htmlBuffer.toString('utf-8');
-          const modifiedHtml = injectMetaTags(html, meta);
-          res.setHeader('content-length', Buffer.byteLength(modifiedHtml, 'utf-8'));
-          originalEnd(modifiedHtml, 'utf-8', callback);
+      const requestPath = req.originalUrl || req.path;
+      
+      Promise.all([
+        getMetaForPath(requestPath),
+        getProductLinksForCategory(requestPath)
+      ])
+        .then(([meta, productLinksHtml]) => {
+          let html = htmlBuffer.toString('utf-8');
+          html = injectMetaTags(html, meta);
+          html = injectProductLinks(html, productLinksHtml);
+          res.setHeader('content-length', Buffer.byteLength(html, 'utf-8'));
+          originalEnd(html, 'utf-8', callback);
         })
         .catch(e => {
-          console.error('SSR meta injection error:', e);
+          console.error('SSR injection error:', e);
           originalEnd(htmlBuffer, encoding, callback);
         });
       
