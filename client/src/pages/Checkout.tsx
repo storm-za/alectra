@@ -27,7 +27,7 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import type { CartItem, UserAddress, PaystackInitializeResponse, PaystackVerifyResponse } from "@shared/schema";
+import { FREE_SHIPPING_PRODUCT_IDS, type CartItem, type UserAddress, type PaystackInitializeResponse, type PaystackVerifyResponse } from "@shared/schema";
 import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Gift, Snowflake, Star, Wallet } from "lucide-react";
 import { SiVisa, SiMastercard, SiApplepay, SiGooglepay } from "react-icons/si";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -326,21 +326,29 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
     (item) => item.product.categoryId === 'e110c296-9deb-457b-9a4d-edfa9aa529e0'
   );
   
+  // Check if cart contains products with FREE shipping promotion
+  const hasFreeShippingProduct = cartItems.some(
+    (item) => FREE_SHIPPING_PRODUCT_IDS.includes(item.product.id)
+  );
+  
   // Calculate shipping cost priority:
   // 1. If pickup is selected, shipping is FREE
-  // 2. If cart has Glosteel garage doors, R1900 per door (very heavy items)
+  // 2. If cart has Glosteel garage doors, R1900 per door (very heavy items - takes priority)
   // 3. If cart has products with custom delivery fees, use the highest custom fee
-  // 4. If cart contains 48KG LP Gas, FREE delivery (special promotion)
-  // 5. If cart contains other LP Gas products, R50 (Pretoria only delivery)
-  // 6. FREE if order total is R2500+
-  // 7. Otherwise, R110 standard delivery fee
+  // 4. If cart contains FREE shipping products, FREE delivery (promotion)
+  // 5. If cart contains 48KG LP Gas, FREE delivery (special promotion)
+  // 6. If cart contains other LP Gas products, R50 (Pretoria only delivery)
+  // 7. FREE if order total is R2500+
+  // 8. Otherwise, R110 standard delivery fee
   let shippingCost = 110;
   if (deliveryMethod === "pickup") {
     shippingCost = 0;
   } else if (hasGlosteelDoors) {
-    shippingCost = glosteelShipping; // R1900 per garage door
+    shippingCost = glosteelShipping; // R1900 per garage door - heavy items take priority
   } else if (customDeliveryFees.length > 0) {
     shippingCost = Math.max(...customDeliveryFees);
+  } else if (hasFreeShippingProduct) {
+    shippingCost = 0; // FREE shipping promotion for specific products
   } else if (has48kgLPGas) {
     shippingCost = 0; // Special promotion: FREE delivery on 48kg LP Gas
   } else if (hasLPGas) {

@@ -5,7 +5,7 @@ import { ShoppingCart } from "lucide-react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { StarRating } from "@/components/StarRating";
-import type { Product } from "@shared/schema";
+import { FREE_SHIPPING_PRODUCT_IDS, type Product } from "@shared/schema";
 
 interface ProductCardProps {
   product: Product;
@@ -18,6 +18,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   const isDiscontinued = (product as any).discontinued === true || priceValue === 0;
   const isLowStock = product.stock > 0 && product.stock <= 5 && !isDiscontinued;
   const isOutOfStock = product.stock === 0 || isDiscontinued;
+  const hasFreeShipping = FREE_SHIPPING_PRODUCT_IDS.includes(product.id);
 
   const imageUrl = product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`;
 
@@ -82,6 +83,11 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           </span>
           <span className="text-xs text-muted-foreground">VAT inc.</span>
         </div>
+        {hasFreeShipping && (
+          <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 w-fit" data-testid={`badge-free-shipping-${product.id}`}>
+            Free Shipping
+          </Badge>
+        )}
       </CardContent>
 
       <CardFooter className="p-2 sm:p-4 pt-0 flex flex-col gap-2">

@@ -328,6 +328,12 @@ export const GLOSTEEL_PRICING: Record<string, { '2450mm': number; '2550mm': numb
 
 export const GLOSTEEL_DOOR_IDS = Object.keys(GLOSTEEL_PRICING);
 
+// Products that qualify for FREE shipping
+export const FREE_SHIPPING_PRODUCT_IDS = [
+  '780934af-6b51-4040-9cbc-10488ac09e8d',  // 4K Solar Two Screens Outdoor Security Camera
+  '5dce8f01-ab70-4203-a45a-2affbccf4412',  // ET Nice DC Blue Astute 3.2m Sectional Garage Door Motor
+];
+
 export const createOrderRequestSchema = insertOrderSchema.extend({
   items: z.array(z.object({
     productId: z.string(),

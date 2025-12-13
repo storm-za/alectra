@@ -1,4 +1,4 @@
-import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, blogPosts, sessionVisits, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type BlogPost, type SessionVisit, type InsertSessionVisit, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type InsertBlogPost, type CreateOrderRequest } from "@shared/schema";
+import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, blogPosts, sessionVisits, FREE_SHIPPING_PRODUCT_IDS, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type BlogPost, type SessionVisit, type InsertSessionVisit, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type InsertBlogPost, type CreateOrderRequest } from "@shared/schema";
 import { db } from "./db";
 import { eq, sql, and, or, like, gte, lte, asc, desc, inArray } from "drizzle-orm";
 
@@ -281,20 +281,24 @@ export class DatabaseStorage implements IStorage {
       
       // Calculate shipping cost with priority hierarchy:
       // 1. If pickup is selected → R0
-      // 2. If cart has products with custom delivery fees → use highest custom fee
-      // 3. If cart contains 48KG LP Gas → R0 (special promotion)
-      // 4. If cart contains other LP Gas products → R50 (Pretoria only delivery)
-      // 5. If order total ≥ R2500 → R0
-      // 6. Otherwise → R110 standard delivery fee
+      // 2. If cart has products with custom delivery fees → use highest custom fee (heavy items like Glosteel)
+      // 3. If cart contains FREE shipping products → R0 (promotion)
+      // 4. If cart contains 48KG LP Gas → R0 (special promotion)
+      // 5. If cart contains other LP Gas products → R50 (Pretoria only delivery)
+      // 6. If order total ≥ R2500 → R0
+      // 7. Otherwise → R110 standard delivery fee
       let shippingCost = 110;
       
       if (request.deliveryMethod === "pickup") {
         shippingCost = 0;
       } else {
-        // Check for custom delivery fees (e.g., heavy items like Glosteel garage doors)
+        // Check for custom delivery fees (e.g., heavy items like Glosteel garage doors) - takes priority
         const customDeliveryFees = fetchedProducts
           .filter(p => p.deliveryFee !== null && p.deliveryFee !== undefined)
           .map(p => parseFloat(p.deliveryFee as string));
+        
+        // Check if cart contains products with FREE shipping promotion
+        const hasFreeShippingProduct = fetchedProducts.some(p => FREE_SHIPPING_PRODUCT_IDS.includes(p.id));
         
         // Check if cart contains 48KG LP Gas (ID: 51891f80-9f0b-4817-9a2c-c5ff57f44905)
         const has48kgLPGas = fetchedProducts.some(p => p.id === '51891f80-9f0b-4817-9a2c-c5ff57f44905');
@@ -303,7 +307,9 @@ export class DatabaseStorage implements IStorage {
         const hasLPGas = fetchedProducts.some(p => p.categoryId === 'e110c296-9deb-457b-9a4d-edfa9aa529e0');
         
         if (customDeliveryFees.length > 0) {
-          shippingCost = Math.max(...customDeliveryFees);
+          shippingCost = Math.max(...customDeliveryFees); // Heavy items take priority
+        } else if (hasFreeShippingProduct) {
+          shippingCost = 0; // FREE shipping promotion for specific products
         } else if (has48kgLPGas) {
           shippingCost = 0; // Special promotion: FREE delivery on 48kg LP Gas
         } else if (hasLPGas) {
