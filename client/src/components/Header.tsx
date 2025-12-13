@@ -1,4 +1,5 @@
-import { ShoppingCart, Phone, Menu, User, LogOut, ChevronDown, ChevronRight } from "lucide-react";
+import { ShoppingCart, Phone, Menu, User, LogOut, ChevronDown, ChevronRight, Search, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -32,7 +33,18 @@ interface HeaderProps {
 export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [shopMenuOpen, setShopMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [, navigate] = useLocation();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery("");
+    }
+  };
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -96,6 +108,40 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
       {/* Main header */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
         <div className="flex items-center justify-between h-16">
+          {/* Mobile Search Overlay */}
+          {isSearchOpen && (
+            <div className="absolute inset-0 bg-background z-50 flex items-center px-4 lg:hidden">
+              <form onSubmit={handleSearch} className="flex-1 flex items-center gap-2">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 pr-4"
+                    autoFocus
+                    data-testid="input-mobile-search"
+                  />
+                </div>
+                <Button type="submit" size="sm" data-testid="button-mobile-search-submit">
+                  Search
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => {
+                    setIsSearchOpen(false);
+                    setSearchQuery("");
+                  }}
+                  data-testid="button-mobile-search-close"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </form>
+            </div>
+          )}
           {/* Logo */}
           <Link href="/" className="flex items-center hover-elevate active-elevate-2 rounded-md px-2 py-1 -ml-2" data-testid="link-home-logo">
             <div className="h-16 w-auto overflow-hidden flex items-center justify-center">
@@ -146,41 +192,54 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
-            {/* User menu */}
-            {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" data-testid="button-user-menu">
-                    <User className="h-5 w-5" />
+            {/* Mobile Search Button */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="lg:hidden"
+              onClick={() => setIsSearchOpen(true)}
+              data-testid="button-mobile-search"
+            >
+              <Search className="h-5 w-5" />
+            </Button>
+
+            {/* User menu - Desktop only */}
+            <div className="hidden lg:block">
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" data-testid="button-user-menu">
+                      <User className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>
+                      {user?.name}
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/account" className="flex items-center cursor-pointer" data-testid="link-account">
+                        <User className="mr-2 h-4 w-4" />
+                        My Account
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => logoutMutation.mutate()}
+                      data-testid="button-logout"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Link href="/login">
+                  <Button variant="ghost" size="sm" data-testid="button-login-header">
+                    Login
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>
-                    {user?.name}
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/account" className="flex items-center cursor-pointer" data-testid="link-account">
-                      <User className="mr-2 h-4 w-4" />
-                      My Account
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => logoutMutation.mutate()}
-                    data-testid="button-logout"
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Link href="/login">
-                <Button variant="ghost" size="sm" data-testid="button-login-header">
-                  Login
-                </Button>
-              </Link>
-            )}
+                </Link>
+              )}
+            </div>
 
             {/* Cart button */}
             <Button
