@@ -1,6 +1,6 @@
 import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, blogPosts, sessionVisits, FREE_SHIPPING_PRODUCT_IDS, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type BlogPost, type SessionVisit, type InsertSessionVisit, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type InsertBlogPost, type CreateOrderRequest } from "@shared/schema";
 import { db } from "./db";
-import { eq, sql, and, or, like, gte, lte, asc, desc, inArray } from "drizzle-orm";
+import { eq, sql, and, or, like, ilike, gte, lte, asc, desc, inArray } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -152,8 +152,8 @@ export class DatabaseStorage implements IStorage {
     if (params.search) {
       conditions.push(
         or(
-          like(products.name, `%${params.search}%`),
-          like(products.description, `%${params.search}%`)
+          ilike(products.name, `%${params.search}%`),
+          ilike(products.description, `%${params.search}%`)
         )
       );
     }
@@ -183,24 +183,53 @@ export class DatabaseStorage implements IStorage {
       query = query.where(and(...conditions)) as any;
     }
 
+    // For search queries, prioritize name matches over description-only matches
+    const nameMatchFirst = params.search 
+      ? sql`CASE WHEN ${products.name} ILIKE ${'%' + params.search + '%'} THEN 0 ELSE 1 END`
+      : null;
+
     switch (params.sort) {
       case 'price-asc':
-        query = query.orderBy(sql`CAST(${products.price} AS DECIMAL) ASC`) as any;
+        if (nameMatchFirst) {
+          query = query.orderBy(nameMatchFirst, sql`CAST(${products.price} AS DECIMAL) ASC`) as any;
+        } else {
+          query = query.orderBy(sql`CAST(${products.price} AS DECIMAL) ASC`) as any;
+        }
         break;
       case 'price-desc':
-        query = query.orderBy(sql`CAST(${products.price} AS DECIMAL) DESC`) as any;
+        if (nameMatchFirst) {
+          query = query.orderBy(nameMatchFirst, sql`CAST(${products.price} AS DECIMAL) DESC`) as any;
+        } else {
+          query = query.orderBy(sql`CAST(${products.price} AS DECIMAL) DESC`) as any;
+        }
         break;
       case 'name-asc':
-        query = query.orderBy(asc(products.name)) as any;
+        if (nameMatchFirst) {
+          query = query.orderBy(nameMatchFirst, asc(products.name)) as any;
+        } else {
+          query = query.orderBy(asc(products.name)) as any;
+        }
         break;
       case 'name-desc':
-        query = query.orderBy(desc(products.name)) as any;
+        if (nameMatchFirst) {
+          query = query.orderBy(nameMatchFirst, desc(products.name)) as any;
+        } else {
+          query = query.orderBy(desc(products.name)) as any;
+        }
         break;
       case 'newest':
-        query = query.orderBy(desc(products.createdAt)) as any;
+        if (nameMatchFirst) {
+          query = query.orderBy(nameMatchFirst, desc(products.createdAt)) as any;
+        } else {
+          query = query.orderBy(desc(products.createdAt)) as any;
+        }
         break;
       default:
-        query = query.orderBy(asc(products.name)) as any;
+        if (nameMatchFirst) {
+          query = query.orderBy(nameMatchFirst, asc(products.name)) as any;
+        } else {
+          query = query.orderBy(asc(products.name)) as any;
+        }
     }
 
     return await query;
