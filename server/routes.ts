@@ -256,7 +256,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (isValid) {
         recordLoginAttempt(clientId, true);
         (req.session as any).isAdmin = true;
-        res.json({ success: true, message: "Admin login successful" });
+        
+        // Explicitly save session to ensure it's persisted before response
+        req.session.save((err) => {
+          if (err) {
+            console.error('Session save error:', err);
+            return res.status(500).json({ success: false, message: "Session save failed" });
+          }
+          res.json({ success: true, message: "Admin login successful" });
+        });
       } else {
         recordLoginAttempt(clientId, false);
         res.status(401).json({ success: false, message: "Invalid password" });
