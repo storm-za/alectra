@@ -155,6 +155,8 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
                   <MapPin className="h-4 w-4 text-primary" />
                   <AlertDescription>
                     <strong>Pretoria Delivery Only:</strong> LP Gas products are only delivered within Pretoria at a flat rate of R50. Nationwide delivery is not available for LP Gas.
+                    <br /><br />
+                    <strong>Same-Day Delivery:</strong> Orders placed before 12:00 will be delivered the same day. Orders placed after 12:00 will be scheduled for the next business day. If the next day is a public holiday, delivery will be on the following business day.
                   </AlertDescription>
                 </Alert>
               )}
