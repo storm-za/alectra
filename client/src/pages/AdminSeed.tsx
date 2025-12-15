@@ -116,6 +116,7 @@ export default function AdminSeed() {
       const response = await fetch("/api/admin/clear-production", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
       });
 
       const data = await response.json();
@@ -139,6 +140,7 @@ export default function AdminSeed() {
       const response = await fetch("/api/admin/seed-production", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
       });
 
       const data = await response.json();
