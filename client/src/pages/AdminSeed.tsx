@@ -14,12 +14,16 @@ export default function AdminSeed() {
   const [clearing, setClearing] = useState(false);
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string; categoriesCreated?: number; productsCreated?: number; reviewsCreated?: number; blogPostsCreated?: number; alreadyComplete?: boolean } | null>(null);
 
   const { data: authStatus, isLoading: authLoading, refetch: refetchAuth } = useQuery<{ isAdmin: boolean }>({
     queryKey: ['/api/admin/check'],
     staleTime: 0
   });
+
+  // Determine if user is authenticated (either from API check or local state after login)
+  const isAdminAuthenticated = authStatus?.isAdmin || isLoggedIn;
 
   const loginMutation = useMutation({
     mutationFn: async (password: string) => {
@@ -29,6 +33,7 @@ export default function AdminSeed() {
     onSuccess: () => {
       setLoginError("");
       setPassword("");
+      setIsLoggedIn(true);
       refetchAuth();
       queryClient.invalidateQueries({ queryKey: ['/api/admin/check'] });
     },
@@ -50,7 +55,7 @@ export default function AdminSeed() {
     );
   }
 
-  if (!authStatus?.isAdmin) {
+  if (!isAdminAuthenticated) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
