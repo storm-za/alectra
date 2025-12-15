@@ -48,6 +48,7 @@ export default function Admin() {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const { data: authStatus, isLoading: authLoading, refetch: refetchAuth } = useQuery<{ isAdmin: boolean }>({
     queryKey: ['/api/admin/check'],
@@ -74,6 +75,7 @@ export default function Admin() {
     onSuccess: () => {
       setLoginError("");
       setPassword("");
+      setIsLoggedIn(true);
       refetchAuth();
       queryClient.invalidateQueries({ queryKey: ['/api/admin/check'] });
     },
@@ -88,10 +90,14 @@ export default function Admin() {
       return response.json();
     },
     onSuccess: () => {
+      setIsLoggedIn(false);
       refetchAuth();
       queryClient.invalidateQueries({ queryKey: ['/api/admin/check'] });
     }
   });
+
+  // Determine if user is authenticated (either from API check or local state after login)
+  const isAdminAuthenticated = authStatus?.isAdmin || isLoggedIn;
 
   const { data: stats, isLoading: statsLoading, error: statsError } = useQuery<VisitStats>({
     queryKey: ['/api/admin/stats', selectedDate],
@@ -105,7 +111,7 @@ export default function Admin() {
       if (!response.ok) throw new Error('Failed to fetch stats');
       return response.json();
     },
-    enabled: !!authStatus?.isAdmin,
+    enabled: isAdminAuthenticated,
     retry: false
   });
 
@@ -120,7 +126,7 @@ export default function Admin() {
       if (!response.ok) throw new Error('Failed to fetch orders');
       return response.json();
     },
-    enabled: !!authStatus?.isAdmin,
+    enabled: isAdminAuthenticated,
     retry: false
   });
 
@@ -140,7 +146,7 @@ export default function Admin() {
       if (!response.ok) throw new Error('Failed to fetch monthly stats');
       return response.json();
     },
-    enabled: !!authStatus?.isAdmin,
+    enabled: isAdminAuthenticated,
     retry: false
   });
 
@@ -157,7 +163,7 @@ export default function Admin() {
     );
   }
 
-  if (!authStatus?.isAdmin) {
+  if (!isAdminAuthenticated) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
