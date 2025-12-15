@@ -194,6 +194,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
 
   const requireAdminAuth = (req: any, res: any, next: any) => {
+    console.log('requireAdminAuth check:', {
+      sessionID: req.sessionID,
+      isAdmin: (req.session as any).isAdmin,
+      hasSession: !!req.session
+    });
     if (!(req.session as any).isAdmin) {
       return res.status(401).json({ message: "Admin authentication required" });
     }
@@ -257,12 +262,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         recordLoginAttempt(clientId, true);
         (req.session as any).isAdmin = true;
         
+        console.log('Admin login success, saving session:', {
+          sessionID: req.sessionID,
+          isAdmin: (req.session as any).isAdmin
+        });
+        
         // Explicitly save session to ensure it's persisted before response
         req.session.save((err) => {
           if (err) {
             console.error('Session save error:', err);
             return res.status(500).json({ success: false, message: "Session save failed" });
           }
+          console.log('Session saved successfully for sessionID:', req.sessionID);
           res.json({ success: true, message: "Admin login successful" });
         });
       } else {
