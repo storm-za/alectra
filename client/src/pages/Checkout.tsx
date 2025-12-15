@@ -317,13 +317,14 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   
   // Check if cart contains 48KG LP Gas product (special promotion: FREE delivery)
   const has48kgLPGas = cartItems.some(
-    (item) => item.product.id === '51891f80-9f0b-4817-9a2c-c5ff57f44905'
+    (item) => item.product.slug === '48kg-exchange'
   );
   
   // Check if cart contains LP Gas products (Pretoria only, R50 delivery)
-  // LP Gas category ID: e110c296-9deb-457b-9a4d-edfa9aa529e0
+  // LP Gas products have slugs containing 'exchange' (cylinders) or starting with 'lp-gas' (regulators)
+  const LP_GAS_SLUG_PATTERNS = ['9kg-exchange', '19kg-exchange', '48kg-exchange', 'lp-gas-regulator'];
   const hasLPGas = cartItems.some(
-    (item) => item.product.categoryId === 'e110c296-9deb-457b-9a4d-edfa9aa529e0'
+    (item) => LP_GAS_SLUG_PATTERNS.some(pattern => item.product.slug.includes(pattern))
   );
   
   // Check if cart contains products with FREE shipping promotion

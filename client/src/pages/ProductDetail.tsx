@@ -493,7 +493,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             <Card className="mb-4">
               <CardContent className="p-4">
                 <div className="space-y-4">
-                  {product.categoryId === 'e110c296-9deb-457b-9a4d-edfa9aa529e0' ? (
+                  {category?.slug === 'lp-gas-exchange' ? (
                     // LP Gas products - Pretoria only delivery
                     (<>
                       <Alert className="border-primary/50 bg-primary/5">
@@ -504,7 +504,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                           <strong>Same-Day Delivery:</strong> Orders placed before 12:00 will be delivered the same day. Orders placed after 12:00 will be scheduled for the next business day. If the next day is a public holiday, delivery will be on the following business day.
                         </AlertDescription>
                       </Alert>
-                      {product.id === '51891f80-9f0b-4817-9a2c-c5ff57f44905' && (
+                      {product.slug === '48kg-exchange' && (
                         <Alert className="border-green-500/50 bg-green-50 dark:bg-green-950/20">
                           <BadgePercent className="h-4 w-4 text-green-600 dark:text-green-400" />
                           <AlertDescription className="text-green-900 dark:text-green-100">

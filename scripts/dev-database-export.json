@@ -1085,23 +1085,6 @@
       "discontinued": false
     },
     {
-      "id": "b59a0887-edbd-492b-9e30-9a98704cb9f4",
-      "name": "Centurion D3 Smart Gate Motor Full Kit",
-      "slug": "centurion-d3-smart-full-kit-advanced-gate-automation-solution-1",
-      "description": "Complete D3 Smart kit with anti-theft bracket. Everything needed for a secure residential installation.\n\nKit Includes:\n- D3 Smart motor\n- 4m steel rack\n- Anti-theft bracket\n- Battery\n- Remote controls\n\nReady to install with full protection against motor theft.\n\nApplications: Residential homes requiring complete security.",
-      "price": "6319.00",
-      "brand": "Centurion",
-      "sku": "ALEC-0014-CENTURION_D3_SMART_FULL_KIT_AD",
-      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
-      "imageUrl": "attached_assets/products/centurion-d3-smart-full-kit-advanced-gate-automation-solution-1.jpg",
-      "images": [
-        "attached_assets/products/centurion-d3-smart-full-kit-advanced-gate-automation-solution-1.jpg"
-      ],
-      "stock": 100,
-      "featured": true,
-      "discontinued": false
-    },
-    {
       "id": "7b97fa57-1430-4cdc-8c74-27695761f1c1",
       "name": "Centurion D5 Evo Smart Gate Motor Full Kit",
       "slug": "centurion-d3-smart-full-kit-advanced-gate-automation-solution",
@@ -4651,6 +4634,31 @@
       ],
       "stock": 100,
       "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "b59a0887-edbd-492b-9e30-9a98704cb9f4",
+      "name": "Centurion D3 Smart Gate Motor Full Kit",
+      "slug": "centurion-d3-smart-full-kit-advanced-gate-automation-solution-1",
+      "description": "Innovative gate automation for every home entrance\n\nThe Centurion D3 SMART sliding gate motor is perfectly suited for domestic gates weighing up to 300kg, making it the ideal choice for standard residential applications.\n\nEnjoy the smart security your home deserves at an accessible price point. The D3 SMART represents the philosophy that true sophistication lies in simplicity. This motor seamlessly blends elegant design with premium performance and intelligent functionality, bringing reliable gate automation within reach for every homeowner.\n\nLoaded with advanced yet intuitive features designed to simplify your daily life. Control your gate effortlessly through the MyCentsys Remote smartphone application, receive detailed diagnostic feedback for complete peace of mind, and rely on dependable battery-powered technology that keeps working even during power outages.\n\nEasy for installers, packed with features, and budget-friendly - the D3 SMART is the intelligent choice for your residence.\n\nKey Benefits:\n\n• Rapid & Secure Operation: Swift gate opening keeps your property protected from unwanted access\n• Smartphone Control: Manage your gate with ultimate convenience through the intuitive mobile app\n• Simplified Installation: Industry-leading design saves installers valuable time and effort\n• Dependable Battery Backup: Consistent operation even when mains power fails\n• Smart Diagnostics: Advanced alerts and notifications keep you informed at all times\n• Enhanced Security: Improved anti-theft cage provides outstanding protection\n• Effortless Setup: Smartphone commissioning and single-action manual release for convenience\n• Wireless Safety: Compatible with Photon SMART Beams for a complete cable-free experience\n\nElevate your home security with minimal hassle. The D3 SMART gate motor is the smart investment for every household.\n\nKit Contents:\n• 1 x Centurion D3 Smart Gate Motor\n• 1 x D3 Smart Base Plate\n• 1 x 12V 7Ah Xprod Battery\n• 1 x Anti-Theft Bracket with Padlock\n• 2 x Centurion 4-Button Remote Controls\n• 4m Raz Rack (8 x 500mm sections)",
+      "price": "6319.00",
+      "brand": "Centurion",
+      "sku": "ALEC-0014-CENTURION_D3_SMART_FULL_KIT_AD",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "imageUrl": "attached_assets/products/centurion-d3-smart-full-kit.png",
+      "images": [
+        "attached_assets/products/centurion-d3-smart-full-kit.png",
+        "attached_assets/products/centurion-d3-smart-full-kit-74.jpg",
+        "attached_assets/products/centurion-d3-smart-full-kit-75.jpg",
+        "attached_assets/products/centurion-d3-smart-full-kit-76.jpg",
+        "attached_assets/products/centurion-d3-smart-full-kit-77.jpg",
+        "attached_assets/products/centurion-d3-smart-full-kit-78.jpg",
+        "attached_assets/products/centurion-d3-smart-full-kit-79.jpg",
+        "attached_assets/products/centurion-d3-smart-full-kit-80.jpg",
+        "attached_assets/products/centurion-d3-smart-full-kit-81.jpg"
+      ],
+      "stock": 100,
+      "featured": true,
       "discontinued": false
     }
   ],
