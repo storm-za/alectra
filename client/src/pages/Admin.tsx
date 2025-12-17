@@ -572,6 +572,13 @@ export default function Admin() {
                     Open Database Seeding Tool
                   </Button>
                 </Link>
+                
+                <Link href="/admin/products">
+                  <Button className="w-full" variant="outline" data-testid="link-admin-products">
+                    <Eye className="mr-2 h-4 w-4" />
+                    Edit Product Images
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </TabsContent>

@@ -1743,6 +1743,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // UPDATE PRODUCT IMAGES - Quick way to update images in production
+  app.patch("/api/admin/products/:slug/images", async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const { imageUrl, images } = req.body;
+
+      if (!imageUrl) {
+        return res.status(400).json({ message: "imageUrl is required" });
+      }
+
+      const product = await storage.updateProductImages(
+        slug,
+        imageUrl,
+        images || []
+      );
+
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.json({ success: true, product });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // GET ALL PRODUCTS FOR ADMIN (with search)
+  app.get("/api/admin/products", async (req, res) => {
+    try {
+      const { search } = req.query;
+      let allProducts = await storage.getAllProducts();
+      
+      if (search && typeof search === 'string') {
+        const searchLower = search.toLowerCase();
+        allProducts = allProducts.filter(p => 
+          p.name.toLowerCase().includes(searchLower) ||
+          p.slug.toLowerCase().includes(searchLower) ||
+          p.sku.toLowerCase().includes(searchLower)
+        );
+      }
+      
+      // Sort by name
+      allProducts.sort((a, b) => a.name.localeCompare(b.name));
+      
+      res.json(allProducts);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // EXPORT DEV DATABASE (for copying to production)
   app.get("/api/admin/export-dev-data", async (req, res) => {
     try {
