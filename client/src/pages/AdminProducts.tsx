@@ -17,7 +17,6 @@ import { Link } from "wouter";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Product } from "@shared/schema";
 import { ObjectUploader } from "@/components/ObjectUploader";
-import type { UploadResult } from "@uppy/core";
 
 const getImageUrl = (url: string) => {
   if (!url) return 'https://via.placeholder.com/64?text=No+Image';
@@ -215,7 +214,7 @@ export default function AdminProducts() {
                       const data = await res.json();
                       return { method: 'PUT' as const, url: data.uploadURL };
                     }}
-                    onComplete={(result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+                    onComplete={(result) => {
                       if (result.successful && result.successful.length > 0) {
                         const uploadUrl = result.successful[0].uploadURL;
                         if (uploadUrl) {
@@ -272,7 +271,7 @@ export default function AdminProducts() {
                       const data = await res.json();
                       return { method: 'PUT' as const, url: data.uploadURL };
                     }}
-                    onComplete={(result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+                    onComplete={(result) => {
                       if (result.successful && result.successful.length > 0) {
                         const newImages: string[] = [];
                         for (const file of result.successful) {
