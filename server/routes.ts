@@ -7,6 +7,7 @@ import { desc } from "drizzle-orm";
 import { hashPassword, verifyPassword, requireAuth } from "./auth";
 import { EmailService } from "./email";
 import bcrypt from "bcrypt";
+import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
@@ -1766,6 +1767,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true, product });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
+    }
+  });
+
+  // GET UPLOAD URL FOR PRODUCT IMAGES
+  app.post("/api/admin/upload-url", async (req, res) => {
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      res.json({ uploadURL });
+    } catch (error: any) {
+      console.error("Error getting upload URL:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // SERVE UPLOADED OBJECTS
+  app.get("/objects/:objectPath(*)", async (req, res) => {
+    const objectStorageService = new ObjectStorageService();
+    try {
+      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
+      objectStorageService.downloadObject(objectFile, res);
+    } catch (error) {
+      console.error("Error serving object:", error);
+      if (error instanceof ObjectNotFoundError) {
+        return res.sendStatus(404);
+      }
+      return res.sendStatus(500);
     }
   });
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,10 +12,12 @@ import {
   DialogTitle, 
   DialogFooter 
 } from "@/components/ui/dialog";
-import { Loader2, Search, Image, Plus, Trash2, ArrowLeft, CheckCircle, Save } from "lucide-react";
+import { Loader2, Search, Image, Plus, Trash2, ArrowLeft, CheckCircle, Save, Upload } from "lucide-react";
 import { Link } from "wouter";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Product } from "@shared/schema";
+import { ObjectUploader } from "@/components/ObjectUploader";
+import type { UploadResult } from "@uppy/core";
 
 const getImageUrl = (url: string) => {
   if (!url) return 'https://via.placeholder.com/64?text=No+Image';
@@ -196,13 +198,38 @@ export default function AdminProducts() {
             <div className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="mainImage">Main Image URL</Label>
-                <Input
-                  id="mainImage"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="https://example.com/image.jpg"
-                  data-testid="input-main-image"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    id="mainImage"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    placeholder="https://example.com/image.jpg"
+                    className="flex-1"
+                    data-testid="input-main-image"
+                  />
+                  <ObjectUploader
+                    maxNumberOfFiles={1}
+                    maxFileSize={10485760}
+                    onGetUploadParameters={async () => {
+                      const res = await fetch('/api/admin/upload-url', { method: 'POST' });
+                      const data = await res.json();
+                      return { method: 'PUT' as const, url: data.uploadURL };
+                    }}
+                    onComplete={(result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+                      if (result.successful && result.successful.length > 0) {
+                        const uploadUrl = result.successful[0].uploadURL;
+                        if (uploadUrl) {
+                          const url = new URL(uploadUrl);
+                          const objectPath = `/objects${url.pathname.split('/.private')[1]}`;
+                          setImageUrl(objectPath);
+                        }
+                      }
+                    }}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </ObjectUploader>
+                </div>
                 {imageUrl && (
                   <div className="mt-2">
                     <img
@@ -219,12 +246,13 @@ export default function AdminProducts() {
 
               <div className="space-y-2">
                 <Label>Gallery Images ({galleryImages.length})</Label>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   <Input
                     value={newGalleryImage}
                     onChange={(e) => setNewGalleryImage(e.target.value)}
                     placeholder="Add gallery image URL..."
                     onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addGalleryImage())}
+                    className="flex-1 min-w-[200px]"
                     data-testid="input-new-gallery-image"
                   />
                   <Button
@@ -236,6 +264,31 @@ export default function AdminProducts() {
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
+                  <ObjectUploader
+                    maxNumberOfFiles={5}
+                    maxFileSize={10485760}
+                    onGetUploadParameters={async () => {
+                      const res = await fetch('/api/admin/upload-url', { method: 'POST' });
+                      const data = await res.json();
+                      return { method: 'PUT' as const, url: data.uploadURL };
+                    }}
+                    onComplete={(result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+                      if (result.successful && result.successful.length > 0) {
+                        const newImages: string[] = [];
+                        for (const file of result.successful) {
+                          if (file.uploadURL) {
+                            const url = new URL(file.uploadURL);
+                            const objectPath = `/objects${url.pathname.split('/.private')[1]}`;
+                            newImages.push(objectPath);
+                          }
+                        }
+                        setGalleryImages([...galleryImages, ...newImages]);
+                      }
+                    }}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </ObjectUploader>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 mt-2">
