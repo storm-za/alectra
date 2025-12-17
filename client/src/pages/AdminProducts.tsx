@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +17,12 @@ import { Link } from "wouter";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Product } from "@shared/schema";
 
+const getImageUrl = (url: string) => {
+  if (!url) return 'https://via.placeholder.com/64?text=No+Image';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  return url.startsWith('/') ? url : `/${url}`;
+};
+
 export default function AdminProducts() {
   const [search, setSearch] = useState("");
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -25,15 +31,26 @@ export default function AdminProducts() {
   const [newGalleryImage, setNewGalleryImage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const { data: products, isLoading } = useQuery<Product[]>({
-    queryKey: ['/api/admin/products', search],
+  const { data: allProducts, isLoading } = useQuery<Product[]>({
+    queryKey: ['/api/admin/products'],
     queryFn: async () => {
-      const params = search ? `?search=${encodeURIComponent(search)}` : '';
-      const res = await fetch(`/api/admin/products${params}`);
+      const res = await fetch('/api/admin/products');
       if (!res.ok) throw new Error("Failed to fetch products");
       return res.json();
     },
+    staleTime: 60000,
   });
+
+  const products = useMemo(() => {
+    if (!allProducts) return [];
+    if (!search.trim()) return allProducts.slice(0, 50);
+    const searchLower = search.toLowerCase();
+    return allProducts.filter(p => 
+      p.name.toLowerCase().includes(searchLower) ||
+      p.slug.toLowerCase().includes(searchLower) ||
+      p.sku.toLowerCase().includes(searchLower)
+    ).slice(0, 50);
+  }, [allProducts, search]);
 
   const updateMutation = useMutation({
     mutationFn: async ({ slug, imageUrl, images }: { slug: string; imageUrl: string; images: string[] }) => {
@@ -138,7 +155,7 @@ export default function AdminProducts() {
                   data-testid={`product-row-${product.slug}`}
                 >
                   <img
-                    src={product.imageUrl}
+                    src={getImageUrl(product.imageUrl)}
                     alt={product.name}
                     className="w-16 h-16 object-cover rounded"
                     onError={(e) => {
@@ -189,7 +206,7 @@ export default function AdminProducts() {
                 {imageUrl && (
                   <div className="mt-2">
                     <img
-                      src={imageUrl}
+                      src={getImageUrl(imageUrl)}
                       alt="Preview"
                       className="w-32 h-32 object-cover rounded border"
                       onError={(e) => {
@@ -225,7 +242,7 @@ export default function AdminProducts() {
                   {galleryImages.map((img, index) => (
                     <div key={index} className="relative group">
                       <img
-                        src={img}
+                        src={getImageUrl(img)}
                         alt={`Gallery ${index + 1}`}
                         className="w-full aspect-square object-cover rounded border"
                         onError={(e) => {
