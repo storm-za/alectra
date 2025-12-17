@@ -12,7 +12,7 @@ import {
   DialogTitle, 
   DialogFooter 
 } from "@/components/ui/dialog";
-import { Loader2, Search, Image, Plus, Trash2, ArrowLeft, CheckCircle, Save, Upload } from "lucide-react";
+import { Loader2, Search, Image, Plus, Trash2, ArrowLeft, CheckCircle, Save, Upload, Lock } from "lucide-react";
 import { Link } from "wouter";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Product } from "@shared/schema";
@@ -25,12 +25,51 @@ const getImageUrl = (url: string) => {
 };
 
 export default function AdminProducts() {
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [search, setSearch] = useState("");
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [imageUrl, setImageUrl] = useState("");
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [newGalleryImage, setNewGalleryImage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  const { data: authStatus, isLoading: authLoading, refetch: refetchAuth } = useQuery<{ isAdmin: boolean }>({
+    queryKey: ['/api/admin/check'],
+    staleTime: 0
+  });
+
+  const loginMutation = useMutation({
+    mutationFn: async (password: string) => {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+        credentials: 'include'
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error(data.message || `Too many attempts. Try again in ${data.retryAfter || 60} seconds.`);
+        }
+        throw new Error(data.message || 'Login failed');
+      }
+      return data;
+    },
+    onSuccess: () => {
+      setLoginError("");
+      setPassword("");
+      setIsLoggedIn(true);
+      refetchAuth();
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/check'] });
+    },
+    onError: (error: any) => {
+      setLoginError(error.message || "Invalid password");
+    }
+  });
+
+  const isAdminAuthenticated = authStatus?.isAdmin || isLoggedIn;
 
   const { data: allProducts, isLoading } = useQuery<Product[]>({
     queryKey: ['/api/admin/products'],
@@ -94,6 +133,64 @@ export default function AdminProducts() {
       images: galleryImages,
     });
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAdminAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <Lock className="h-6 w-6 text-primary" />
+            </div>
+            <CardTitle>Product Image Editor</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={(e) => { e.preventDefault(); loginMutation.mutate(password); }} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="password">Admin Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter admin password"
+                  data-testid="input-admin-password"
+                />
+              </div>
+              {loginError && (
+                <Alert variant="destructive">
+                  <AlertDescription>{loginError}</AlertDescription>
+                </Alert>
+              )}
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={loginMutation.isPending || !password}
+                data-testid="button-admin-login"
+              >
+                {loginMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Logging in...
+                  </>
+                ) : (
+                  "Login"
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
