@@ -557,12 +557,21 @@ export class EmailService {
                   <td style="padding: 0 30px 30px 30px;">
                     <div style="background-color: #eff6ff; padding: 20px; border-radius: 6px; border-left: 4px solid #3b82f6;">
                       <h3 style="margin: 0 0 10px 0; color: #1e40af; font-size: 16px;">What happens next?</h3>
+                      ${data.deliveryMethod === 'pickup' ? `
+                      <ul style="margin: 0; padding-left: 20px; color: #1e40af;">
+                        <li style="margin-bottom: 8px;">Your order will be processed within 1 business day</li>
+                        <li style="margin-bottom: 8px;">We'll notify you when your order is ready for collection</li>
+                        <li style="margin-bottom: 8px;">Collect from: Pretoria (address provided in notification)</li>
+                        <li>Please bring your order confirmation when collecting</li>
+                      </ul>
+                      ` : `
                       <ul style="margin: 0; padding-left: 20px; color: #1e40af;">
                         <li style="margin-bottom: 8px;">Your order will be processed within 1 business day</li>
                         <li style="margin-bottom: 8px;">We'll prepare your items for delivery via The Courier Guy</li>
                         <li style="margin-bottom: 8px;">You'll receive tracking information once dispatched</li>
                         <li>Expected delivery: 2-5 business days</li>
                       </ul>
+                      `}
                     </div>
                   </td>
                 </tr>
