@@ -69,7 +69,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paystack");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("yoco");
 
   const { data: user } = useQuery<{ user: any | null }>({
     queryKey: ["/api/auth/me"],
