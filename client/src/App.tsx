@@ -10,6 +10,8 @@ import CartDrawer from "@/components/CartDrawer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { useToast } from "@/hooks/use-toast";
 import type { Product, CartItem, ProductVariant } from "@shared/schema";
+// CHRISTMAS THEME - Remove this import after December
+import ChristmasTheme from "@/components/ChristmasTheme";
 
 // Lazy load pages for code splitting - reduces initial bundle size
 const Home = lazy(() => import("@/pages/Home"));
@@ -132,6 +134,8 @@ function Router() {
   return (
     <div className="flex flex-col min-h-screen">
       <ScrollToTop />
+      {/* CHRISTMAS THEME - Remove this component after December */}
+      <ChristmasTheme />
       <Header cartItemCount={cartItemCount} onCartClick={() => setCartOpen(true)} />
       
       <main className="flex-1">
