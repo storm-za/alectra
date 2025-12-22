@@ -600,36 +600,44 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
               </TabsList>
               <TabsContent value="description" className="mt-4">
                 <div className="prose prose-sm dark:prose-invert max-w-none">
-                  {product.description.split('\n').map((paragraph, index) => {
-                    const trimmed = paragraph.trim();
-                    if (!trimmed) return null;
-                    
-                    // Check if it's a heading-like line (ends with colon and is short)
-                    if (trimmed.endsWith(':') && trimmed.length < 80) {
+                  {/* Check if description contains HTML tags */}
+                  {product.description.includes('<') && product.description.includes('>') ? (
+                    <div 
+                      className="text-sm text-muted-foreground [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1 [&_li]:text-muted-foreground [&_p]:mb-3 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-foreground [&_h3]:mt-4 [&_h3]:mb-2 [&_h4]:text-base [&_h4]:font-semibold [&_h4]:text-foreground [&_h4]:mt-4 [&_h4]:mb-2 [&_strong]:text-foreground [&_strong]:font-medium"
+                      dangerouslySetInnerHTML={{ __html: product.description }}
+                    />
+                  ) : (
+                    product.description.split('\n').map((paragraph, index) => {
+                      const trimmed = paragraph.trim();
+                      if (!trimmed) return null;
+                      
+                      // Check if it's a heading-like line (ends with colon and is short)
+                      if (trimmed.endsWith(':') && trimmed.length < 80) {
+                        return (
+                          <h4 key={index} className="text-base font-semibold text-foreground mt-4 mb-2 first:mt-0">
+                            {trimmed}
+                          </h4>
+                        );
+                      }
+                      
+                      // Check if it starts with a bullet point emoji or dash
+                      if (trimmed.match(/^[🔹✅📏💧⚡🔌🛡️📡🎥🧰⚙️🌩📻📍🔒•\-–—]/)) {
+                        return (
+                          <p key={index} className="text-sm text-muted-foreground pl-2 py-0.5 flex items-start gap-2">
+                            <span className="shrink-0">{trimmed.charAt(0)}</span>
+                            <span>{trimmed.slice(1).trim()}</span>
+                          </p>
+                        );
+                      }
+                      
+                      // Regular paragraph
                       return (
-                        <h4 key={index} className="text-base font-semibold text-foreground mt-4 mb-2 first:mt-0">
+                        <p key={index} className="text-sm text-muted-foreground mb-3 last:mb-0">
                           {trimmed}
-                        </h4>
-                      );
-                    }
-                    
-                    // Check if it starts with a bullet point emoji or dash
-                    if (trimmed.match(/^[🔹✅📏💧⚡🔌🛡️📡🎥🧰⚙️🌩📻📍🔒•\-–—]/)) {
-                      return (
-                        <p key={index} className="text-sm text-muted-foreground pl-2 py-0.5 flex items-start gap-2">
-                          <span className="shrink-0">{trimmed.charAt(0)}</span>
-                          <span>{trimmed.slice(1).trim()}</span>
                         </p>
                       );
-                    }
-                    
-                    // Regular paragraph
-                    return (
-                      <p key={index} className="text-sm text-muted-foreground mb-3 last:mb-0">
-                        {trimmed}
-                      </p>
-                    );
-                  })}
+                    })
+                  )}
                 </div>
               </TabsContent>
               <TabsContent value="reviews" className="mt-4">
