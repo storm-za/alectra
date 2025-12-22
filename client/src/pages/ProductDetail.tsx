@@ -493,8 +493,8 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             <Card className="mb-4">
               <CardContent className="p-4">
                 <div className="space-y-4">
-                  {category?.slug === 'lp-gas-exchange' ? (
-                    // LP Gas products - Pretoria only delivery
+                  {category?.slug === 'lp-gas-exchange' && product.slug !== '4kg-braai-briquettes' ? (
+                    // LP Gas products - Pretoria only delivery (except Braai Briquettes which ships nationwide)
                     (<>
                       <Alert className="border-primary/50 bg-primary/5">
                         <MapPin className="h-4 w-4 text-primary" />
