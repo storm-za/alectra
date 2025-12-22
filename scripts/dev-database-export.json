@@ -4660,6 +4660,21 @@
       "stock": 100,
       "featured": true,
       "discontinued": false
+    },
+    {
+      "id": "fc37f396-5bcd-4aec-b831-768e7017f29a",
+      "name": "4kg Braai Briquettes",
+      "slug": "4kg-braai-briquettes",
+      "description": "<p>Get reliable, consistent heat every time with our <strong>4kg Braai Briquettes</strong>, ideal for South African braais, camping, catering, and everyday home use. These premium briquettes are designed to burn longer and more evenly than regular charcoal, giving you steady heat control for perfectly cooked meat.</p>\n\n<p>Made from quality compressed charcoal, these braai briquettes ignite easily, produce minimal smoke, and deliver long-lasting coals that stay hot throughout your braai. Perfect for steaks, wors, chicken, lamb, and slow-cooked cuts.</p>\n\n<p>Whether you're hosting a weekend braai, preparing food for an event, or stocking up for regular use, this 4kg bag of braai briquettes offers excellent value and dependable performance.</p>\n\n<h3>Key Features and Benefits</h3>\n<ul>\n  <li>Long-lasting, even heat output</li>\n  <li>Ideal for traditional South African braais</li>\n  <li>Burns hotter and longer than standard charcoal</li>\n  <li>Low smoke and clean burn</li>\n  <li>Easy to light and maintain</li>\n  <li>Convenient 4kg bag size</li>\n</ul>\n\n<p>Perfect for home braais, outdoor cooking, camping, and catering, these briquettes are a must-have for any braai enthusiast.</p>\n\n<p><strong>Order your 4kg Braai Briquettes today</strong> and enjoy consistent heat, better cooking control, and a superior braai experience.</p>",
+      "price": "36.00",
+      "brand": "Alectra",
+      "sku": "BRIQ-4KG",
+      "categoryId": "e110c296-9deb-457b-9a4d-edfa9aa529e0",
+      "imageUrl": "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80",
+      "images": [],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
     }
   ],
   "categories": [
