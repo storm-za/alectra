@@ -1912,13 +1912,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         // Create products with proper category mapping - PRESERVE ORIGINAL IDs
         // This is critical for variant pricing (LP Gas, Glosteel doors)
-        if (existingProducts.length === 0 && devData.products) {
-          // Build reverse lookup: oldCategoryId -> categorySlug
-          const oldCategoryIdToSlug = new Map<string, string>();
-          devData.categories?.forEach((cat: any) => {
-            oldCategoryIdToSlug.set(cat.id, cat.slug);
-          });
+        // Build reverse lookup: oldCategoryId -> categorySlug
+        const oldCategoryIdToSlug = new Map<string, string>();
+        devData.categories?.forEach((cat: any) => {
+          oldCategoryIdToSlug.set(cat.id, cat.slug);
+        });
 
+        if (existingProducts.length === 0 && devData.products) {
+          // Full seed - no products exist yet
           for (const p of devData.products) {
             try {
               // Map old category ID to new category ID via slug
@@ -1932,6 +1933,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
               // Use direct DB insert to preserve original product IDs
               // This ensures LP Gas and Glosteel variant pricing works correctly
+              const productData: any = {
+                name: p.name,
+                slug: p.slug,
+                description: p.description,
+                price: p.price,
+                brand: p.brand,
+                sku: p.sku,
+                categoryId: newCategoryId,
+                imageUrl: p.imageUrl,
+                images: p.images || [],
+                stock: p.stock || 100,
+                featured: p.featured || false,
+                discontinued: p.discontinued || false,
+              };
+              
+              // If product has original ID, preserve it for variant matching
+              if (p.id) {
+                productData.id = p.id;
+              }
+              
+              await db.insert(products).values(productData);
+              productsCreated++;
+            } catch (e) {
+              // Skip duplicates
+            }
+          }
+        } else if (devData.products) {
+          // Incremental seed - add only missing products (by slug)
+          const existingProductSlugs = new Set(existingProducts.map(p => p.slug));
+          const missingProducts = devData.products.filter((p: any) => !existingProductSlugs.has(p.slug));
+          
+          for (const p of missingProducts) {
+            try {
+              // Map old category ID to new category ID via slug
+              let newCategoryId = null;
+              if (p.categoryId) {
+                const categorySlug = oldCategoryIdToSlug.get(p.categoryId);
+                if (categorySlug) {
+                  newCategoryId = categorySlugToId.get(categorySlug) || null;
+                }
+              }
+
               const productData: any = {
                 name: p.name,
                 slug: p.slug,
