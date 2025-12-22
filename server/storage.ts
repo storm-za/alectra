@@ -347,7 +347,12 @@ export class DatabaseStorage implements IStorage {
         const has48kgLPGas = fetchedProducts.some(p => p.id === '51891f80-9f0b-4817-9a2c-c5ff57f44905');
         
         // Check if cart contains LP Gas products (category ID: e110c296-9deb-457b-9a4d-edfa9aa529e0)
-        const hasLPGas = fetchedProducts.some(p => p.categoryId === 'e110c296-9deb-457b-9a4d-edfa9aa529e0');
+        // Exclude 4kg Braai Briquettes (ID: fc37f396-5bcd-4aec-b831-768e7017f29a) - uses standard nationwide shipping
+        const LP_GAS_STANDARD_SHIPPING_EXCEPTIONS = ['fc37f396-5bcd-4aec-b831-768e7017f29a'];
+        const hasLPGas = fetchedProducts.some(p => 
+          p.categoryId === 'e110c296-9deb-457b-9a4d-edfa9aa529e0' && 
+          !LP_GAS_STANDARD_SHIPPING_EXCEPTIONS.includes(p.id)
+        );
         
         if (customDeliveryFees.length > 0) {
           shippingCost = Math.max(...customDeliveryFees); // Heavy items take priority
