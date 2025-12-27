@@ -47,7 +47,7 @@ Preferred communication style: Simple, everyday language.
 - **SEO Features**: Schema.org Product structured data, Open Graph and Twitter Card meta tags, canonical URLs.
 
 ### Seasonal Themes
-- **Christmas Theme**: Active for December 2025, featuring subtle snowfall animation and corner decorations.
+- **Christmas Theme**: Currently disabled (post-December 2025). Theme files preserved at `client/src/components/ChristmasTheme.tsx` and `client/src/styles/christmas-theme.css` for future seasonal re-activation.
 
 ## External Dependencies
 
