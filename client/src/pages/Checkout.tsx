@@ -28,7 +28,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { FREE_SHIPPING_PRODUCT_IDS, type CartItem, type UserAddress, type PaystackInitializeResponse, type PaystackVerifyResponse } from "@shared/schema";
-import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Gift, Snowflake, Star, Wallet } from "lucide-react";
+import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Wallet } from "lucide-react";
 import { SiVisa, SiMastercard, SiApplepay, SiGooglepay } from "react-icons/si";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -592,60 +592,6 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                         </div>
                       </>
                     )}
-
-                    {/* Christmas Gift Section - Festive styling to stand apart */}
-                    <div className="relative mt-8 mb-6">
-                      <div className="absolute inset-0 bg-gradient-to-r from-red-600 via-red-500 to-green-600 rounded-xl opacity-10" />
-                      <div className="relative border-2 border-red-200 dark:border-red-900 rounded-xl overflow-hidden">
-                        <div className="bg-gradient-to-r from-red-700 via-red-600 to-green-700 px-4 py-3">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <div className="bg-white/20 p-2 rounded-full">
-                                <Gift className="h-5 w-5 text-white" />
-                              </div>
-                              <div className="text-white">
-                                <h3 className="font-bold text-lg flex items-center gap-2">
-                                  Christmas Gift
-                                  <Star className="h-4 w-4 text-yellow-300 fill-yellow-300" />
-                                </h3>
-                                <p className="text-sm text-white/80">Make it extra special this festive season!</p>
-                              </div>
-                            </div>
-                            <div className="absolute top-3 right-12 opacity-20">
-                              <Snowflake className="h-8 w-8 text-white animate-pulse" />
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="bg-gradient-to-b from-red-50 to-white dark:from-red-950/30 dark:to-background p-5">
-                          <FormField
-                            control={form.control}
-                            name="isGift"
-                            render={({ field }) => (
-                              <FormItem className="flex flex-row items-start space-x-4 space-y-0">
-                                <FormControl>
-                                  <Switch
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                    data-testid="switch-is-gift"
-                                    className="data-[state=checked]:bg-red-600"
-                                  />
-                                </FormControl>
-                                <div className="space-y-1 leading-none">
-                                  <FormLabel className="text-base font-semibold cursor-pointer">
-                                    This order is a Christmas gift
-                                  </FormLabel>
-                                  <p className="text-sm text-muted-foreground">
-                                    When selected we'll include a beautiful gift bag for your products, on us!
-                                  </p>
-                                </div>
-                              </FormItem>
-                            )}
-                          />
-                          
-                        </div>
-                      </div>
-                    </div>
 
                     {/* Payment Method Selection */}
                     <div className="space-y-4" data-testid="payment-method-selection">
