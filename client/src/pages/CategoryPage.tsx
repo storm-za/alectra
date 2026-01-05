@@ -135,6 +135,26 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
     "DTS": dtsBanner,
   };
 
+  // Custom sorting for Centurion products: D3, D5, D6, D10, Vantage, then parts
+  const getCenturionSortGroup = (product: Product): number => {
+    const name = product.name.toLowerCase();
+    if (name.includes('d3')) return 1;
+    if (name.includes('d5')) return 2;
+    if (name.includes('d6')) return 3;
+    if (name.includes('d10')) return 4;
+    if (name.includes('vantage')) return 5;
+    return 6; // Parts and accessories
+  };
+
+  const sortCenturionProducts = (products: Product[]): Product[] => {
+    return [...products].sort((a, b) => {
+      const groupA = getCenturionSortGroup(a);
+      const groupB = getCenturionSortGroup(b);
+      if (groupA !== groupB) return groupA - groupB;
+      return parseFloat(a.price) - parseFloat(b.price);
+    });
+  };
+
   // Organize products by brand for gate-motors category (only when no filters active)
   const brandSections = useMemo((): BrandSection[] | null => {
     if (!shouldUseBrandSections || !products) {
@@ -155,12 +175,15 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
       productsByBrand[productBrand].push(product);
     });
 
-    // Add sections for brands with banners first (sorted by price low to high)
+    // Add sections for brands with banners first
     brandsWithBanners.forEach(brandName => {
       if (productsByBrand[brandName]) {
-        const sortedProducts = [...productsByBrand[brandName]].sort(
-          (a, b) => parseFloat(a.price) - parseFloat(b.price)
-        );
+        // Use custom sorting for Centurion, default price sorting for others
+        const sortedProducts = brandName === 'Centurion'
+          ? sortCenturionProducts(productsByBrand[brandName])
+          : [...productsByBrand[brandName]].sort(
+              (a, b) => parseFloat(a.price) - parseFloat(b.price)
+            );
         sections.push({
           brand: brandName,
           banner: brandBanners[brandName],
