@@ -22,6 +22,7 @@ import type { Product, Category } from "@shared/schema";
 
 // Brand banners for gate-motors category
 import centurionBanner from "@assets/optimized/centurion-banner.webp";
+import Gemini_Generated_Image_nmcqzznmcqzznmcq from "@assets/Gemini_Generated_Image_nmcqzznmcqzznmcq.png";
 // Placeholder imports for upcoming brand banners (will be added when images are provided)
 // import geminiBanner from "@assets/optimized/gemini-banner.webp";
 // import dtsBanner from "@assets/optimized/dts-banner.webp";
@@ -385,14 +386,14 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
               </div>
             ) : brandSections ? (
               /* Brand-organized layout for gate-motors */
-              <div className="space-y-12">
+              (<div className="space-y-12">
                 {brandSections.map((section) => (
                   <div key={section.brand} data-testid={`brand-section-${section.brand.toLowerCase().replace(/\s+/g, '-')}`}>
                     {/* Brand Banner */}
                     {section.banner && (
                       <div className="mb-6 rounded-lg overflow-hidden">
                         <img
-                          src={section.banner}
+                          src={Gemini_Generated_Image_nmcqzznmcqzznmcq}
                           alt={`${section.brand} products`}
                           className="w-full h-auto object-cover"
                           data-testid={`banner-${section.brand.toLowerCase()}`}
@@ -417,7 +418,7 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
                     </div>
                   </div>
                 ))}
-              </div>
+              </div>)
             ) : (
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
