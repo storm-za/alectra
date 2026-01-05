@@ -1744,6 +1744,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // CLEAR PRODUCTS ONLY - Deletes products, categories, reviews but keeps orders
+  // Use this to re-seed products without losing order history
+  app.post("/api/admin/clear-products", async (req, res) => {
+    try {
+      const { sql } = await import("drizzle-orm");
+      const { db } = await import("../server/db");
+      
+      // First, set product_id to NULL on order_items so orders aren't deleted
+      // This preserves order history while allowing product deletion
+      await db.execute(sql.raw(`UPDATE order_items SET product_id = NULL`));
+      
+      // Delete products, categories, reviews, and blog posts
+      // Orders and order_items are preserved
+      const tablesToClear = ['reviews', 'products', 'categories', 'blog_posts'];
+      
+      for (const table of tablesToClear) {
+        try {
+          await db.execute(sql.raw(`TRUNCATE TABLE ${table} CASCADE`));
+        } catch (e: any) {
+          // Ignore "table does not exist" errors - that's fine, nothing to clear
+          if (!e.message?.includes('does not exist')) {
+            throw e;
+          }
+        }
+      }
+      
+      res.json({
+        success: true,
+        message: "Products cleared successfully. Order history has been preserved. You can now re-seed with fresh data.",
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: "Failed to clear products: " + error.message,
+      });
+    }
+  });
+
   // UPDATE PRODUCT IMAGES - Quick way to update images in production
   app.patch("/api/admin/products/:slug/images", async (req, res) => {
     try {

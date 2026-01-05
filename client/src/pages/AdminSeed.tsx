@@ -2,16 +2,43 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle, AlertCircle, Trash2, ArrowLeft } from "lucide-react";
+import { Loader2, CheckCircle, AlertCircle, Trash2, ArrowLeft, Package } from "lucide-react";
 import { Link } from "wouter";
 
 export default function AdminSeed() {
   const [loading, setLoading] = useState(false);
   const [clearing, setClearing] = useState(false);
+  const [clearingProducts, setClearingProducts] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string; categoriesCreated?: number; productsCreated?: number; reviewsCreated?: number; blogPostsCreated?: number; alreadyComplete?: boolean } | null>(null);
 
+  const handleClearProducts = async () => {
+    if (!confirm("⚠️ This will DELETE ALL products, categories, and reviews.\n\nOrder history will be PRESERVED.\n\nAre you sure?")) {
+      return;
+    }
+
+    setClearingProducts(true);
+    setResult(null);
+
+    try {
+      const response = await fetch("/api/admin/clear-products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await response.json();
+      setResult(data);
+    } catch (error: any) {
+      setResult({
+        success: false,
+        message: "Failed to clear products: " + error.message,
+      });
+    } finally {
+      setClearingProducts(false);
+    }
+  };
+
   const handleClear = async () => {
-    if (!confirm("⚠️ WARNING: This will DELETE ALL products, categories, reviews, and orders from the production database!\n\nThis action cannot be undone. Are you sure?")) {
+    if (!confirm("⚠️ WARNING: This will DELETE ALL products, categories, reviews, AND orders from the production database!\n\nThis action cannot be undone. Are you sure?")) {
       return;
     }
 
@@ -107,8 +134,29 @@ export default function AdminSeed() {
             </div>
 
             <Button
+              onClick={handleClearProducts}
+              disabled={loading || clearing || clearingProducts}
+              size="lg"
+              variant="outline"
+              className="w-full border-orange-500 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/20"
+              data-testid="button-clear-products"
+            >
+              {clearingProducts && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {!clearingProducts && <Package className="mr-2 h-4 w-4" />}
+              Clear Products Only (Keep Orders)
+            </Button>
+
+            <Alert className="text-sm border-orange-500/50 bg-orange-50 dark:bg-orange-950/20">
+              <Package className="h-4 w-4 text-orange-600" />
+              <AlertDescription className="text-orange-900 dark:text-orange-100">
+                <strong>Recommended:</strong> This clears all products, categories, and reviews but <strong>keeps your order history</strong>.
+                Use this to re-seed products without losing sales data.
+              </AlertDescription>
+            </Alert>
+
+            <Button
               onClick={handleClear}
-              disabled={loading || clearing}
+              disabled={loading || clearing || clearingProducts}
               size="lg"
               variant="destructive"
               className="w-full"
@@ -116,14 +164,14 @@ export default function AdminSeed() {
             >
               {clearing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {!clearing && <Trash2 className="mr-2 h-4 w-4" />}
-              Clear Production Database
+              Clear Everything (Including Orders)
             </Button>
 
             <Alert variant="destructive" className="text-sm">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                <strong>Danger Zone:</strong> The clear button will delete ALL data from production.
-                Use this if products have wrong categories or images aren't loading. After clearing, click "Seed Production Database" above to repopulate with fresh data.
+                <strong>Danger Zone:</strong> This deletes ALL data including order history.
+                Only use this for a complete fresh start.
               </AlertDescription>
             </Alert>
 
