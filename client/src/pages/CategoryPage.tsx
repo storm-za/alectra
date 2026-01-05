@@ -22,10 +22,8 @@ import type { Product, Category } from "@shared/schema";
 
 // Brand banners for gate-motors category
 import centurionBanner from "@assets/optimized/centurion-banner.webp";
-import Gemini_Generated_Image_nmcqzznmcqzznmcq from "@assets/Gemini_Generated_Image_nmcqzznmcqzznmcq.png";
-// Placeholder imports for upcoming brand banners (will be added when images are provided)
-// import geminiBanner from "@assets/optimized/gemini-banner.webp";
-// import dtsBanner from "@assets/optimized/dts-banner.webp";
+import geminiBanner from "@assets/optimized/gemini-banner.webp";
+import dtsBanner from "@assets/optimized/dts-banner.webp";
 
 interface BrandSection {
   brand: string;
@@ -131,6 +129,8 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
   // Brand banners configuration for gate-motors category
   const brandBanners: Record<string, string> = {
     "Centurion": centurionBanner,
+    "Gemini": geminiBanner,
+    "DTS": dtsBanner,
   };
 
   // Organize products by brand for gate-motors category (only when no filters active)
