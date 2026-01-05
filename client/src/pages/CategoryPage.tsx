@@ -66,6 +66,9 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
     queryKey: ["/api/brands"],
   });
 
+  // Check if we should use brand sections layout (gate-motors without filters)
+  const shouldUseBrandSections = slug === 'gate-motors' && !search && brand === 'all' && priceRange[0] === 0 && priceRange[1] === 10000;
+
   const buildQueryKey = () => {
     const queryParams = new URLSearchParams();
     if (slug) queryParams.append("categorySlug", slug);
@@ -74,8 +77,14 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
     if (priceRange[0] > 0) queryParams.append("minPrice", priceRange[0].toString());
     if (priceRange[1] < 10000) queryParams.append("maxPrice", priceRange[1].toString());
     if (sortBy) queryParams.append("sort", sortBy);
-    queryParams.append("page", page.toString());
-    queryParams.append("limit", limit.toString());
+    
+    // For gate-motors brand sections, fetch all products (no pagination)
+    if (shouldUseBrandSections) {
+      queryParams.append("limit", "500"); // Fetch all products for brand sections
+    } else {
+      queryParams.append("page", page.toString());
+      queryParams.append("limit", limit.toString());
+    }
     
     const queryString = queryParams.toString();
     return queryString ? `/api/products?${queryString}` : `/api/products?page=${page}&limit=${limit}`;
@@ -122,7 +131,7 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
 
   // Organize products by brand for gate-motors category (only when no filters active)
   const brandSections = useMemo((): BrandSection[] | null => {
-    if (slug !== 'gate-motors' || !products || hasActiveFilters) {
+    if (!shouldUseBrandSections || !products) {
       return null;
     }
 
@@ -171,7 +180,7 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
     }
 
     return sections;
-  }, [slug, products, hasActiveFilters]);
+  }, [shouldUseBrandSections, products]);
 
   if (!isLoading && !category) {
     return (
