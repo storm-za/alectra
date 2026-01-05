@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   Dialog, 
   DialogContent, 
@@ -12,10 +13,18 @@ import {
   DialogTitle, 
   DialogFooter 
 } from "@/components/ui/dialog";
-import { Loader2, Search, Image, Plus, Trash2, ArrowLeft, CheckCircle, Save, Upload, Lock } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Loader2, Search, Image, Plus, Trash2, ArrowLeft, CheckCircle, Save, Upload, Lock, FileText, FolderMinus } from "lucide-react";
 import { Link } from "wouter";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import type { Product } from "@shared/schema";
+import type { Product, Category } from "@shared/schema";
 import { ObjectUploader } from "@/components/ObjectUploader";
 
 const getImageUrl = (url: string) => {
@@ -34,6 +43,9 @@ export default function AdminProducts() {
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [newGalleryImage, setNewGalleryImage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("images");
 
   const { data: authStatus, isLoading: authLoading, refetch: refetchAuth } = useQuery<{ isAdmin: boolean }>({
     queryKey: ['/api/admin/check'],
@@ -81,6 +93,10 @@ export default function AdminProducts() {
     staleTime: 60000,
   });
 
+  const { data: categories } = useQuery<Category[]>({
+    queryKey: ['/api/categories'],
+  });
+
   const products = useMemo(() => {
     if (!allProducts) return [];
     if (!search.trim()) return allProducts.slice(0, 50);
@@ -106,12 +122,44 @@ export default function AdminProducts() {
     },
   });
 
+  const updateCategoryMutation = useMutation({
+    mutationFn: async ({ slug, categoryId }: { slug: string; categoryId: string | null }) => {
+      return apiRequest('PATCH', `/api/admin/products/${slug}/category`, { categoryId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/products'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+      setSuccessMessage("Product category updated successfully!");
+      setTimeout(() => {
+        setEditingProduct(null);
+        setSuccessMessage("");
+      }, 1500);
+    },
+  });
+
+  const updateDescriptionMutation = useMutation({
+    mutationFn: async ({ slug, description }: { slug: string; description: string }) => {
+      return apiRequest('PATCH', `/api/admin/products/${slug}/description`, { description });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/products'] });
+      setSuccessMessage("Product description updated successfully!");
+      setTimeout(() => {
+        setEditingProduct(null);
+        setSuccessMessage("");
+      }, 1500);
+    },
+  });
+
   const openEditor = (product: Product) => {
     setEditingProduct(product);
     setImageUrl(product.imageUrl);
     setGalleryImages([...product.images]);
     setNewGalleryImage("");
     setSuccessMessage("");
+    setDescription(product.description || "");
+    setSelectedCategoryId(product.categoryId);
+    setActiveTab("images");
   };
 
   const addGalleryImage = () => {
@@ -132,6 +180,36 @@ export default function AdminProducts() {
       imageUrl,
       images: galleryImages,
     });
+  };
+
+  const handleSaveDescription = () => {
+    if (!editingProduct) return;
+    updateDescriptionMutation.mutate({
+      slug: editingProduct.slug,
+      description,
+    });
+  };
+
+  const handleSaveCategory = () => {
+    if (!editingProduct) return;
+    updateCategoryMutation.mutate({
+      slug: editingProduct.slug,
+      categoryId: selectedCategoryId,
+    });
+  };
+
+  const handleRemoveFromCategory = () => {
+    if (!editingProduct) return;
+    updateCategoryMutation.mutate({
+      slug: editingProduct.slug,
+      categoryId: null,
+    });
+  };
+
+  const getCategoryName = (categoryId: string | null) => {
+    if (!categoryId) return "Uncategorized";
+    const category = categories?.find(c => c.id === categoryId);
+    return category?.name || "Unknown";
   };
 
   if (authLoading) {
@@ -268,7 +346,7 @@ export default function AdminProducts() {
                     </p>
                   </div>
                   <Button variant="outline" size="sm" data-testid={`button-edit-${product.slug}`}>
-                    Edit Images
+                    Edit
                   </Button>
                 </div>
               ))}
@@ -279,7 +357,7 @@ export default function AdminProducts() {
         <Dialog open={!!editingProduct} onOpenChange={(open) => !open && setEditingProduct(null)}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Edit Images: {editingProduct?.name}</DialogTitle>
+              <DialogTitle>Edit Product: {editingProduct?.name}</DialogTitle>
             </DialogHeader>
 
             {successMessage && (
@@ -291,150 +369,275 @@ export default function AdminProducts() {
               </Alert>
             )}
 
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="mainImage">Main Image URL</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="mainImage"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="https://example.com/image.jpg"
-                    className="flex-1"
-                    data-testid="input-main-image"
-                  />
-                  <ObjectUploader
-                    maxNumberOfFiles={1}
-                    maxFileSize={10485760}
-                    onGetUploadParameters={async () => {
-                      const res = await fetch('/api/admin/upload-url', { method: 'POST' });
-                      const data = await res.json();
-                      return { method: 'PUT' as const, url: data.uploadURL };
-                    }}
-                    onComplete={(result) => {
-                      if (result.successful && result.successful.length > 0) {
-                        const uploadUrl = result.successful[0].uploadURL;
-                        if (uploadUrl) {
-                          const url = new URL(uploadUrl);
-                          const objectPath = `/objects${url.pathname.split('/.private')[1]}`;
-                          setImageUrl(objectPath);
-                        }
-                      }
-                    }}
-                  >
-                    <Upload className="h-4 w-4 mr-2" />
-                    Upload
-                  </ObjectUploader>
-                </div>
-                {imageUrl && (
-                  <div className="mt-2">
-                    <img
-                      src={getImageUrl(imageUrl)}
-                      alt="Preview"
-                      className="w-32 h-32 object-cover rounded border"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/128?text=Invalid+URL';
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="images" className="flex items-center gap-2">
+                  <Image className="h-4 w-4" />
+                  Images
+                </TabsTrigger>
+                <TabsTrigger value="description" className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Description
+                </TabsTrigger>
+                <TabsTrigger value="category" className="flex items-center gap-2">
+                  <FolderMinus className="h-4 w-4" />
+                  Category
+                </TabsTrigger>
+              </TabsList>
 
-              <div className="space-y-2">
-                <Label>Gallery Images ({galleryImages.length})</Label>
-                <div className="flex gap-2 flex-wrap">
-                  <Input
-                    value={newGalleryImage}
-                    onChange={(e) => setNewGalleryImage(e.target.value)}
-                    placeholder="Add gallery image URL..."
-                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addGalleryImage())}
-                    className="flex-1 min-w-[200px]"
-                    data-testid="input-new-gallery-image"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={addGalleryImage}
-                    disabled={!newGalleryImage.trim()}
-                    data-testid="button-add-gallery-image"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                  <ObjectUploader
-                    maxNumberOfFiles={5}
-                    maxFileSize={10485760}
-                    onGetUploadParameters={async () => {
-                      const res = await fetch('/api/admin/upload-url', { method: 'POST' });
-                      const data = await res.json();
-                      return { method: 'PUT' as const, url: data.uploadURL };
-                    }}
-                    onComplete={(result) => {
-                      if (result.successful && result.successful.length > 0) {
-                        const newImages: string[] = [];
-                        for (const file of result.successful) {
-                          if (file.uploadURL) {
-                            const url = new URL(file.uploadURL);
+              <TabsContent value="images" className="space-y-6 mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="mainImage">Main Image URL</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="mainImage"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      placeholder="https://example.com/image.jpg"
+                      className="flex-1"
+                      data-testid="input-main-image"
+                    />
+                    <ObjectUploader
+                      maxNumberOfFiles={1}
+                      maxFileSize={10485760}
+                      onGetUploadParameters={async () => {
+                        const res = await fetch('/api/admin/upload-url', { method: 'POST' });
+                        const data = await res.json();
+                        return { method: 'PUT' as const, url: data.uploadURL };
+                      }}
+                      onComplete={(result) => {
+                        if (result.successful && result.successful.length > 0) {
+                          const uploadUrl = result.successful[0].uploadURL;
+                          if (uploadUrl) {
+                            const url = new URL(uploadUrl);
                             const objectPath = `/objects${url.pathname.split('/.private')[1]}`;
-                            newImages.push(objectPath);
+                            setImageUrl(objectPath);
                           }
                         }
-                        setGalleryImages([...galleryImages, ...newImages]);
-                      }
-                    }}
-                  >
-                    <Upload className="h-4 w-4 mr-2" />
-                    Upload
-                  </ObjectUploader>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2 mt-2">
-                  {galleryImages.map((img, index) => (
-                    <div key={index} className="relative group">
+                      }}
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload
+                    </ObjectUploader>
+                  </div>
+                  {imageUrl && (
+                    <div className="mt-2">
                       <img
-                        src={getImageUrl(img)}
-                        alt={`Gallery ${index + 1}`}
-                        className="w-full aspect-square object-cover rounded border"
+                        src={getImageUrl(imageUrl)}
+                        alt="Preview"
+                        className="w-32 h-32 object-cover rounded border"
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100?text=Invalid';
+                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/128?text=Invalid+URL';
                         }}
                       />
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => removeGalleryImage(index)}
-                        data-testid={`button-remove-gallery-${index}`}
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                      <p className="text-xs text-muted-foreground truncate mt-1">{img.substring(0, 30)}...</p>
                     </div>
-                  ))}
+                  )}
                 </div>
-              </div>
-            </div>
 
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setEditingProduct(null)}
-                data-testid="button-cancel-edit"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSave}
-                disabled={updateMutation.isPending || !imageUrl.trim()}
-                data-testid="button-save-images"
-              >
-                {updateMutation.isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Save className="mr-2 h-4 w-4" />
-                )}
-                Save Changes
-              </Button>
-            </DialogFooter>
+                <div className="space-y-2">
+                  <Label>Gallery Images ({galleryImages.length})</Label>
+                  <div className="flex gap-2 flex-wrap">
+                    <Input
+                      value={newGalleryImage}
+                      onChange={(e) => setNewGalleryImage(e.target.value)}
+                      placeholder="Add gallery image URL..."
+                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addGalleryImage())}
+                      className="flex-1 min-w-[200px]"
+                      data-testid="input-new-gallery-image"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={addGalleryImage}
+                      disabled={!newGalleryImage.trim()}
+                      data-testid="button-add-gallery-image"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                    <ObjectUploader
+                      maxNumberOfFiles={5}
+                      maxFileSize={10485760}
+                      onGetUploadParameters={async () => {
+                        const res = await fetch('/api/admin/upload-url', { method: 'POST' });
+                        const data = await res.json();
+                        return { method: 'PUT' as const, url: data.uploadURL };
+                      }}
+                      onComplete={(result) => {
+                        if (result.successful && result.successful.length > 0) {
+                          const newImages: string[] = [];
+                          for (const file of result.successful) {
+                            if (file.uploadURL) {
+                              const url = new URL(file.uploadURL);
+                              const objectPath = `/objects${url.pathname.split('/.private')[1]}`;
+                              newImages.push(objectPath);
+                            }
+                          }
+                          setGalleryImages([...galleryImages, ...newImages]);
+                        }
+                      }}
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload
+                    </ObjectUploader>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 mt-2">
+                    {galleryImages.map((img, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={getImageUrl(img)}
+                          alt={`Gallery ${index + 1}`}
+                          className="w-full aspect-square object-cover rounded border"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100?text=Invalid';
+                          }}
+                        />
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => removeGalleryImage(index)}
+                          data-testid={`button-remove-gallery-${index}`}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                        <p className="text-xs text-muted-foreground truncate mt-1">{img.substring(0, 30)}...</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setEditingProduct(null)}
+                    data-testid="button-cancel-edit"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleSave}
+                    disabled={updateMutation.isPending || !imageUrl.trim()}
+                    data-testid="button-save-images"
+                  >
+                    {updateMutation.isPending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="mr-2 h-4 w-4" />
+                    )}
+                    Save Images
+                  </Button>
+                </DialogFooter>
+              </TabsContent>
+
+              <TabsContent value="description" className="space-y-6 mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="description">Product Description</Label>
+                  <Textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Enter product description..."
+                    rows={10}
+                    className="resize-none"
+                    data-testid="input-description"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {description.length} characters
+                  </p>
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setEditingProduct(null)}
+                    data-testid="button-cancel-description"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleSaveDescription}
+                    disabled={updateDescriptionMutation.isPending}
+                    data-testid="button-save-description"
+                  >
+                    {updateDescriptionMutation.isPending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="mr-2 h-4 w-4" />
+                    )}
+                    Save Description
+                  </Button>
+                </DialogFooter>
+              </TabsContent>
+
+              <TabsContent value="category" className="space-y-6 mt-4">
+                <div className="space-y-4">
+                  <div className="p-4 bg-muted rounded-lg">
+                    <p className="text-sm font-medium">Current Category</p>
+                    <p className="text-lg">{getCategoryName(editingProduct?.categoryId || null)}</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Move to Category</Label>
+                    <Select
+                      value={selectedCategoryId || "uncategorized"}
+                      onValueChange={(value) => setSelectedCategoryId(value === "uncategorized" ? null : value)}
+                    >
+                      <SelectTrigger data-testid="select-category">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="uncategorized">Uncategorized (Remove from collection)</SelectItem>
+                        {categories?.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {editingProduct?.categoryId && (
+                    <Button
+                      variant="destructive"
+                      onClick={handleRemoveFromCategory}
+                      disabled={updateCategoryMutation.isPending}
+                      className="w-full"
+                      data-testid="button-remove-from-category"
+                    >
+                      {updateCategoryMutation.isPending ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <FolderMinus className="mr-2 h-4 w-4" />
+                      )}
+                      Remove from Current Collection
+                    </Button>
+                  )}
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setEditingProduct(null)}
+                    data-testid="button-cancel-category"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleSaveCategory}
+                    disabled={updateCategoryMutation.isPending}
+                    data-testid="button-save-category"
+                  >
+                    {updateCategoryMutation.isPending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="mr-2 h-4 w-4" />
+                    )}
+                    Save Category
+                  </Button>
+                </DialogFooter>
+              </TabsContent>
+            </Tabs>
           </DialogContent>
         </Dialog>
       </div>
