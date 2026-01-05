@@ -56,42 +56,40 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
               data-testid={`link-category-${category.slug}`}
             >
               <Card className="group relative overflow-hidden aspect-square cursor-pointer border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                {/* Background image */}
+                {/* Background image - no dark overlay */}
                 <div className="absolute inset-0">
                   {getCategoryImage(category) && (
                     <img 
                       src={getCategoryImage(category)!} 
                       alt={category.name}
                       loading="lazy"
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   )}
                 </div>
                 
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-80 group-hover:opacity-70 transition-opacity"></div>
+                {/* Product count badge - top right */}
+                <div className="absolute top-3 right-3 z-10">
+                  <span className="inline-flex items-center px-2.5 py-1 bg-orange-500 text-white text-xs font-bold rounded-full shadow-lg">
+                    {category.productCount} {category.productCount === 1 ? 'Product' : 'Products'}
+                  </span>
+                </div>
                 
-                {/* Orange accent line at top */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 to-yellow-500 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
-                
-                {/* Content */}
-                <div className="relative h-full flex flex-col justify-end p-6">
-                  {/* Product count badge */}
-                  <div className="absolute top-4 right-4">
-                    <span className="inline-flex items-center px-3 py-1.5 bg-orange-500 text-white text-xs font-bold rounded-full shadow-lg">
-                      {category.productCount} {category.productCount === 1 ? 'Product' : 'Products'}
-                    </span>
-                  </div>
-                  
-                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-3 group-hover:text-orange-400 transition-colors">
-                    {category.name}
-                  </h3>
-                  
-                  <div className="flex items-center gap-2 text-white/80 group-hover:text-white transition-colors">
-                    <span className="text-sm font-medium">Shop Now</span>
-                    <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                {/* Modern frosted glass label at bottom */}
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <div className="backdrop-blur-md bg-black/60 rounded-lg px-4 py-3 border border-white/10 shadow-xl">
+                    <h3 className="text-lg md:text-xl font-bold text-white group-hover:text-orange-400 transition-colors">
+                      {category.name}
+                    </h3>
+                    <div className="flex items-center gap-1.5 text-white/90 group-hover:text-white transition-colors mt-1">
+                      <span className="text-sm font-medium">Shop Now</span>
+                      <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </div>
                 </div>
+                
+                {/* Orange accent line at top on hover */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 to-yellow-500 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 z-10"></div>
               </Card>
             </Link>
           ))}
