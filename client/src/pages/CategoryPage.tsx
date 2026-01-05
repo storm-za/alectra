@@ -22,6 +22,9 @@ import type { Product, Category } from "@shared/schema";
 
 // Brand banners for gate-motors category
 import centurionBanner from "@assets/optimized/centurion-banner.webp";
+// Placeholder imports for upcoming brand banners (will be added when images are provided)
+// import geminiBanner from "@assets/optimized/gemini-banner.webp";
+// import dtsBanner from "@assets/optimized/dts-banner.webp";
 
 interface BrandSection {
   brand: string;
