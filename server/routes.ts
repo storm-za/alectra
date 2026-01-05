@@ -1770,6 +1770,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // UPDATE PRODUCT CATEGORY - Remove product from collection or move to another
+  app.patch("/api/admin/products/:slug/category", async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const { categoryId } = req.body;
+
+      // categoryId can be null (to remove from collection) or a valid category ID
+      const product = await storage.updateProductCategory(slug, categoryId || null);
+
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.json({ success: true, product });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // UPDATE PRODUCT DESCRIPTION
+  app.patch("/api/admin/products/:slug/description", async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const { description } = req.body;
+
+      if (typeof description !== 'string') {
+        return res.status(400).json({ message: "description is required" });
+      }
+
+      const product = await storage.updateProductDescription(slug, description);
+
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.json({ success: true, product });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // GET UPLOAD URL FOR PRODUCT IMAGES
   app.post("/api/admin/upload-url", async (req, res) => {
     try {
