@@ -55,7 +55,7 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
               href={`/collections/${category.slug}`}
               data-testid={`link-category-${category.slug}`}
             >
-              <Card className="group relative overflow-hidden h-56 md:h-64 cursor-pointer border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+              <Card className="group relative overflow-hidden aspect-square cursor-pointer border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 {/* Background image */}
                 <div className="absolute inset-0">
                   {getCategoryImage(category) && (
