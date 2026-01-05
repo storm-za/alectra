@@ -93,7 +93,7 @@
       "price": "53.00",
       "brand": "Alectra",
       "sku": "ALEC-0074-VECTOR_VANTAGE_CABLE_PER_METER",
-      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "categoryId": null,
       "imageUrl": "attached_assets/products/vector-vantage-cable-per-meter.jpg",
       "images": [
         "attached_assets/products/vector-vantage-cable-per-meter.jpg"
@@ -222,23 +222,6 @@
       "discontinued": false
     },
     {
-      "id": "6e685705-e4ee-495d-a890-c0d750f57d6e",
-      "name": "Centurion D5/D6 Smart Anti-Theft Bracket",
-      "slug": "centurion-d5-d6-smart-anti-theft-bracket",
-      "description": "Current anti-theft bracket for D5 and D6 Smart gate motors. Professional-grade theft protection.\n\nKey Features:\n- Fits D5 and D6 Smart\n- Hardened steel construction\n- Tamper-proof design\n- Integrated locking\n\nEssential protection for high-value motor installations.\n\nApplications: D5 Smart and D6 Smart installations in high-risk areas.",
-      "price": "1099.00",
-      "brand": "My Store",
-      "sku": "ALEC-0011-CENTURION_D5_D6_SMART_ANTI_THE",
-      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
-      "imageUrl": "attached_assets/products/centurion-d5-d6-smart-anti-theft-bracket.jpg",
-      "images": [
-        "attached_assets/products/centurion-d5-d6-smart-anti-theft-bracket.jpg"
-      ],
-      "stock": 100,
-      "featured": false,
-      "discontinued": false
-    },
-    {
       "id": "32c4aded-d77a-4c3e-9383-18921e3c0ba6",
       "name": "Wood/Hinge Screws (85 in a Pack)",
       "slug": "wood-hinge-screws-85-in-a-pack",
@@ -250,6 +233,23 @@
       "imageUrl": "attached_assets/products/wood-hinge-screws-85-in-a-pack.png",
       "images": [
         "attached_assets/products/wood-hinge-screws-85-in-a-pack.png"
+      ],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "6e685705-e4ee-495d-a890-c0d750f57d6e",
+      "name": "Centurion D5/D6 Smart Anti-Theft Bracket",
+      "slug": "centurion-d5-d6-smart-anti-theft-bracket",
+      "description": "Current anti-theft bracket for D5 and D6 Smart gate motors. Professional-grade theft protection.\n\nKey Features:\n- Fits D5 and D6 Smart\n- Hardened steel construction\n- Tamper-proof design\n- Integrated locking\n\nEssential protection for high-value motor installations.\n\nApplications: D5 Smart and D6 Smart installations in high-risk areas.",
+      "price": "1099.00",
+      "brand": "Centurion",
+      "sku": "ALEC-0011-CENTURION_D5_D6_SMART_ANTI_THE",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "imageUrl": "attached_assets/products/centurion-d5-d6-smart-anti-theft-bracket.jpg",
+      "images": [
+        "attached_assets/products/centurion-d5-d6-smart-anti-theft-bracket.jpg"
       ],
       "stock": 100,
       "featured": false,
@@ -301,40 +301,6 @@
       "imageUrl": "attached_assets/products/glosteel-garage-door-safari-brown.jpg",
       "images": [
         "attached_assets/products/glosteel-garage-door-safari-brown.jpg"
-      ],
-      "stock": 100,
-      "featured": false,
-      "discontinued": false
-    },
-    {
-      "id": "ecf6c672-441f-4b30-849f-b2d9c58549c0",
-      "name": "Centurion D10 Smart Sliding Gate Motor (No remotes included)",
-      "slug": "centurion-d10-sliding-gate-motor",
-      "description": "Industrial-strength sliding gate motor for gates up to 1000kg. The D10 Smart delivers exceptional power and speed.\n\nKey Features:\n- 1000kg gate capacity\n- Turbo speed option\n- 24V DC with battery backup\n- SMART wireless configuration\n- Anti-theft design\n\nDesigned for commercial and high-traffic applications with 750+ cycles per day capability.\n\nApplications: Factories, estates, office parks, commercial properties.",
-      "price": "9999.00",
-      "brand": "My Store",
-      "sku": "ALEC-0001-CENTURION_D10_SLIDING_GATE_MOT",
-      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
-      "imageUrl": "attached_assets/products/centurion-d10-sliding-gate-motor.png",
-      "images": [
-        "attached_assets/products/centurion-d10-sliding-gate-motor.png"
-      ],
-      "stock": 100,
-      "featured": false,
-      "discontinued": false
-    },
-    {
-      "id": "52059708-e59b-44a4-8452-fdeadc4cc04e",
-      "name": "Centurion D6 Smart Gate Motor (No remotes included)",
-      "slug": "centurion-d6-smart-gate-motor",
-      "description": "Mid-range Centurion motor for gates 500-750kg. Bridges the gap between D5 and D10 with enhanced features.\n\nKey Features:\n- 750kg gate capacity\n- Extended duty cycle\n- 24V DC with battery backup\n- Smart wireless configuration\n\nIdeal for heavier residential and light commercial gates.\n\nNote: Remotes sold separately.\n\nApplications: Heavy residential gates, small commercial entrances.",
-      "price": "6599.00",
-      "brand": "My Store",
-      "sku": "ALEC-0012-CENTURION_D6_SMART_GATE_MOTOR",
-      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
-      "imageUrl": "attached_assets/products/centurion-d6-smart-gate-motor.jpg",
-      "images": [
-        "attached_assets/products/centurion-d6-smart-gate-motor.jpg"
       ],
       "stock": 100,
       "featured": false,
@@ -403,6 +369,23 @@
       "imageUrl": "attached_assets/products/centurion-surge-and-lightning-protector.jpg",
       "images": [
         "attached_assets/products/centurion-surge-and-lightning-protector.jpg"
+      ],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "ecf6c672-441f-4b30-849f-b2d9c58549c0",
+      "name": "Centurion D10 Smart Sliding Gate Motor (No remotes included)",
+      "slug": "centurion-d10-sliding-gate-motor",
+      "description": "Industrial-strength sliding gate motor for gates up to 1000kg. The D10 Smart delivers exceptional power and speed.\n\nKey Features:\n- 1000kg gate capacity\n- Turbo speed option\n- 24V DC with battery backup\n- SMART wireless configuration\n- Anti-theft design\n\nDesigned for commercial and high-traffic applications with 750+ cycles per day capability.\n\nApplications: Factories, estates, office parks, commercial properties.",
+      "price": "9999.00",
+      "brand": "Centurion",
+      "sku": "ALEC-0001-CENTURION_D10_SLIDING_GATE_MOT",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "imageUrl": "attached_assets/products/centurion-d10-sliding-gate-motor.png",
+      "images": [
+        "attached_assets/products/centurion-d10-sliding-gate-motor.png"
       ],
       "stock": 100,
       "featured": false,
@@ -766,21 +749,6 @@
       "discontinued": false
     },
     {
-      "id": "a5537f31-b6c8-4c51-9ae3-9ca6bedc7d0c",
-      "name": "DigiDoor Remotes",
-      "slug": "digidoor",
-      "description": "DigiDoor compatible remote controls for garage and gate automation systems. Various button configurations available.\n\nKey Features:\n- DigiDoor system compatibility\n- Rolling code security encryption\n- Multiple button options available\n- Durable construction\n\nEnsure compatibility with your specific DigiDoor motor model before ordering.\n\nApplications: DigiDoor garage and gate automation systems.",
-      "price": "260.00",
-      "brand": "My Store",
-      "sku": "ALEC-0214-DIGIDOOR",
-      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
-      "imageUrl": "https://cdn.shopify.com/s/files/1/0653/9640/8365/files/digidoor-remotes-icon.jpg?v=1732102124",
-      "images": [],
-      "stock": 100,
-      "featured": false,
-      "discontinued": false
-    },
-    {
       "id": "fa780a0c-b891-437f-ad50-4be1e880eeeb",
       "name": "6 Line Angle Square Tube Black",
       "slug": "6-line-angle-square-tube-black",
@@ -832,6 +800,36 @@
       "discontinued": false
     },
     {
+      "id": "619fec8b-24c4-4609-a7ff-6cedd8ce5fbd",
+      "name": "Custom amount",
+      "slug": "custom-amount",
+      "description": "Custom order option for special requirements not covered by standard products. Contact Alectra Solutions to discuss your specific needs.\n\nThis product allows for:\n- Custom pricing on special orders\n- Bulk purchase arrangements\n- Custom configurations\n- Service packages\n- Trade account deposits\n\nContact our team at info@alectra.co.za or call to discuss your requirements.",
+      "price": "1.00",
+      "brand": "Alectra Solutions",
+      "sku": "ALEC-0212-CUSTOM-AMOUNT",
+      "categoryId": null,
+      "imageUrl": "",
+      "images": [],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "a5537f31-b6c8-4c51-9ae3-9ca6bedc7d0c",
+      "name": "DigiDoor Remotes",
+      "slug": "digidoor",
+      "description": "DigiDoor compatible remote controls for garage and gate automation systems. Various button configurations available.\n\nKey Features:\n- DigiDoor system compatibility\n- Rolling code security encryption\n- Multiple button options available\n- Durable construction\n\nEnsure compatibility with your specific DigiDoor motor model before ordering.\n\nApplications: DigiDoor garage and gate automation systems.",
+      "price": "260.00",
+      "brand": "My Store",
+      "sku": "ALEC-0214-DIGIDOOR",
+      "categoryId": null,
+      "imageUrl": "https://cdn.shopify.com/s/files/1/0653/9640/8365/files/digidoor-remotes-icon.jpg?v=1732102124",
+      "images": [],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
+    },
+    {
       "id": "791aa678-1fa7-4976-8711-e0fa757f05d0",
       "name": "24V 3.5AH Battery",
       "slug": "24v-3-5ah",
@@ -844,22 +842,7 @@
       "images": [
         "attached_assets/products/24v-3-5ah.png"
       ],
-      "stock": 100,
-      "featured": false,
-      "discontinued": false
-    },
-    {
-      "id": "619fec8b-24c4-4609-a7ff-6cedd8ce5fbd",
-      "name": "Custom amount",
-      "slug": "custom-amount",
-      "description": "Custom order option for special requirements not covered by standard products. Contact Alectra Solutions to discuss your specific needs.\n\nThis product allows for:\n- Custom pricing on special orders\n- Bulk purchase arrangements\n- Custom configurations\n- Service packages\n- Trade account deposits\n\nContact our team at info@alectra.co.za or call to discuss your requirements.",
-      "price": "1.00",
-      "brand": "Alectra Solutions",
-      "sku": "ALEC-0212-CUSTOM-AMOUNT",
-      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
-      "imageUrl": "",
-      "images": [],
-      "stock": 100,
+      "stock": 99,
       "featured": false,
       "discontinued": false
     },
@@ -2309,23 +2292,6 @@
       "discontinued": false
     },
     {
-      "id": "357d4e41-9f0d-47f2-bd99-10ea702b6f5d",
-      "name": "Centurion D6 Smart Gate Motor Full Kit",
-      "slug": "centurion-d6-smart-full-kit-advanced-gate-automation-solution",
-      "description": "Complete D6 Smart package with all accessories. Perfect for larger gates requiring more power.\n\nKit Includes:\n- D6 Smart motor\n- Steel rack\n- Anti-theft bracket\n- Battery\n- Remote controls\n\nComprehensive kit for heavy-duty residential applications.\n\nApplications: Large residential gates, light commercial use.",
-      "price": "8699.00",
-      "brand": "Alectra Solutions",
-      "sku": "ALEC-0200-CENTURION_D6_SMART_FULL_KIT_AD",
-      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
-      "imageUrl": "attached_assets/products/centurion-d6-smart-full-kit-advanced-gate-automation-solution.png",
-      "images": [
-        "attached_assets/products/centurion-d6-smart-full-kit-advanced-gate-automation-solution.png"
-      ],
-      "stock": 100,
-      "featured": false,
-      "discontinued": false
-    },
-    {
       "id": "7c0ef3c4-7181-4d35-8145-562bc2434f11",
       "name": "19KG LP Gas",
       "slug": "19kg-exchange",
@@ -2343,17 +2309,17 @@
       "discontinued": false
     },
     {
-      "id": "b07bb634-dc64-4fa9-b886-fba59a175a28",
-      "name": "Centurion D6 Smart Gate Motor Kit",
-      "slug": "centurion-d6-smart-full-kit-no-anti-theft-bracket",
-      "description": "D6 Smart complete kit without anti-theft bracket. Value package for secure installation environments.\n\nKit Includes:\n- D6 Smart motor (750kg capacity)\n- Steel rack\n- Battery\n- Remote controls\n\nFor environments where additional theft protection is not required.\n\nApplications: Secure estates, monitored complexes.",
-      "price": "6799.00",
-      "brand": "Alectra Solutions",
-      "sku": "ALEC-0201-CENTURION_D6_SMART_FULL_KIT_NO",
+      "id": "357d4e41-9f0d-47f2-bd99-10ea702b6f5d",
+      "name": "Centurion D6 Smart Gate Motor Full Kit",
+      "slug": "centurion-d6-smart-full-kit-advanced-gate-automation-solution",
+      "description": "Complete D6 Smart package with all accessories. Perfect for larger gates requiring more power.\n\nKit Includes:\n- D6 Smart motor\n- Steel rack\n- Anti-theft bracket\n- Battery\n- Remote controls\n\nComprehensive kit for heavy-duty residential applications.\n\nApplications: Large residential gates, light commercial use.",
+      "price": "8699.00",
+      "brand": "Centurion",
+      "sku": "ALEC-0200-CENTURION_D6_SMART_FULL_KIT_AD",
       "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
-      "imageUrl": "attached_assets/products/centurion-d6-smart-full-kit-no-anti-theft-bracket.png",
+      "imageUrl": "attached_assets/products/centurion-d6-smart-full-kit-advanced-gate-automation-solution.png",
       "images": [
-        "attached_assets/products/centurion-d6-smart-full-kit-no-anti-theft-bracket.png"
+        "attached_assets/products/centurion-d6-smart-full-kit-advanced-gate-automation-solution.png"
       ],
       "stock": 100,
       "featured": false,
@@ -3659,7 +3625,7 @@
       "price": "165.00",
       "brand": "My Store",
       "sku": "ALEC-0223-DURASLIDE",
-      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "categoryId": null,
       "imageUrl": "https://cdn.shopify.com/s/files/1/0653/9640/8365/files/Duraslide-Remotes.jpg?v=1732102129",
       "images": [],
       "stock": 0,
@@ -3735,23 +3701,6 @@
       "discontinued": true
     },
     {
-      "id": "0b9bd340-74f2-47e4-8cb2-83f28b19d9ef",
-      "name": "Centurion D3 Smart Sliding Gate Motor",
-      "slug": "centurion-d3-smart-sliding-gate-motor",
-      "description": "Reliable D3 Smart sliding gate motor providing essential automation features for residential properties.\n\nKey Features:\n- 350kg gate capacity\n- 24V DC motor\n- Smart wireless setup\n- Soft start/stop\n- Battery backup capable\n\nThe most affordable Centurion option with full Smart features.\n\nApplications: Standard residential sliding gates.",
-      "price": "4799.00",
-      "brand": "Alectra Solutions",
-      "sku": "ALEC-0190-CENTURION_D3_SMART_SLIDING_GAT",
-      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
-      "imageUrl": "attached_assets/products/centurion-d3-smart-sliding-gate-motor.png",
-      "images": [
-        "attached_assets/products/centurion-d3-smart-sliding-gate-motor.png"
-      ],
-      "stock": 99,
-      "featured": false,
-      "discontinued": false
-    },
-    {
       "id": "780934af-6b51-4040-9cbc-10488ac09e8d",
       "name": "4K Solar Two Screens Outdoor Security Camera",
       "slug": "4k-solar-two-screens-outdoor-security-camera",
@@ -3798,6 +3747,23 @@
       "imageUrl": "attached_assets/products/12v-10a-9-channel-cctv-battery-backup.png",
       "images": [
         "attached_assets/products/12v-10a-9-channel-cctv-battery-backup.png"
+      ],
+      "stock": 99,
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "0b9bd340-74f2-47e4-8cb2-83f28b19d9ef",
+      "name": "Centurion D3 Smart Sliding Gate Motor",
+      "slug": "centurion-d3-smart-sliding-gate-motor",
+      "description": "Reliable D3 Smart sliding gate motor providing essential automation features for residential properties.\n\nKey Features:\n- 350kg gate capacity\n- 24V DC motor\n- Smart wireless setup\n- Soft start/stop\n- Battery backup capable\n\nThe most affordable Centurion option with full Smart features.\n\nApplications: Standard residential sliding gates.",
+      "price": "4799.00",
+      "brand": "Centurion",
+      "sku": "ALEC-0190-CENTURION_D3_SMART_SLIDING_GAT",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "imageUrl": "attached_assets/products/centurion-d3-smart-sliding-gate-motor.png",
+      "images": [
+        "attached_assets/products/centurion-d3-smart-sliding-gate-motor.png"
       ],
       "stock": 99,
       "featured": false,
@@ -4552,23 +4518,6 @@
       "discontinued": false
     },
     {
-      "id": "75520db7-19e6-459f-ad16-eca6ae7a55f0",
-      "name": "Centurion D5 Evo Smart Gate Motor And Remotes",
-      "slug": "centurion-d5-evo-smart-gate-motor-2x-nova-4-button-remotes",
-      "description": "D5 Evo Smart motor bundle with 2 Nova 4-button remotes included. Ready to install with control for the whole family.\n\nPackage Includes:\n- D5 Evo Smart motor\n- 2x Nova 4-button remotes\n\nKey Features:\n- 500kg gate capacity\n- Smart configuration\n- App control capable\n- Battery backup\n\nConvenient package with remotes included.\n\nApplications: Residential sliding gates.",
-      "price": "5499.00",
-      "brand": "Alectra Solutions",
-      "sku": "ALEC-0195-CENTURION_D5_EVO_SMART_GATE_MO",
-      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
-      "imageUrl": "attached_assets/products/centurion-d5-evo-smart-gate-motor-2x-nova-4-button-remotes.png",
-      "images": [
-        "attached_assets/products/centurion-d5-evo-smart-gate-motor-2x-nova-4-button-remotes.png"
-      ],
-      "stock": 100,
-      "featured": false,
-      "discontinued": false
-    },
-    {
       "id": "5ee6ee08-386c-4cdd-bb0c-a98386e996e9",
       "name": "CENTURION RDO II ROLL-UP Complete Kit",
       "slug": "centurion-rdo-ii-roll-up-motor",
@@ -4675,6 +4624,57 @@
       "stock": 100,
       "featured": false,
       "discontinued": false
+    },
+    {
+      "id": "52059708-e59b-44a4-8452-fdeadc4cc04e",
+      "name": "Centurion D6 Smart Gate Motor (No remotes included)",
+      "slug": "centurion-d6-smart-gate-motor",
+      "description": "Mid-range Centurion motor for gates 500-750kg. Bridges the gap between D5 and D10 with enhanced features.\n\nKey Features:\n- 750kg gate capacity\n- Extended duty cycle\n- 24V DC with battery backup\n- Smart wireless configuration\n\nIdeal for heavier residential and light commercial gates.\n\nNote: Remotes sold separately.\n\nApplications: Heavy residential gates, small commercial entrances.",
+      "price": "6599.00",
+      "brand": "Centurion",
+      "sku": "ALEC-0012-CENTURION_D6_SMART_GATE_MOTOR",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "imageUrl": "attached_assets/products/centurion-d6-smart-gate-motor.jpg",
+      "images": [
+        "attached_assets/products/centurion-d6-smart-gate-motor.jpg"
+      ],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "b07bb634-dc64-4fa9-b886-fba59a175a28",
+      "name": "Centurion D6 Smart Gate Motor Kit",
+      "slug": "centurion-d6-smart-full-kit-no-anti-theft-bracket",
+      "description": "D6 Smart complete kit without anti-theft bracket. Value package for secure installation environments.\n\nKit Includes:\n- D6 Smart motor (750kg capacity)\n- Steel rack\n- Battery\n- Remote controls\n\nFor environments where additional theft protection is not required.\n\nApplications: Secure estates, monitored complexes.",
+      "price": "6799.00",
+      "brand": "Centurion",
+      "sku": "ALEC-0201-CENTURION_D6_SMART_FULL_KIT_NO",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "imageUrl": "attached_assets/products/centurion-d6-smart-full-kit-no-anti-theft-bracket.png",
+      "images": [
+        "attached_assets/products/centurion-d6-smart-full-kit-no-anti-theft-bracket.png"
+      ],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "75520db7-19e6-459f-ad16-eca6ae7a55f0",
+      "name": "Centurion D5 Evo Smart Gate Motor And Remotes",
+      "slug": "centurion-d5-evo-smart-gate-motor-2x-nova-4-button-remotes",
+      "description": "D5 Evo Smart motor bundle with 2 Nova 4-button remotes included. Ready to install with control for the whole family.\n\nPackage Includes:\n- D5 Evo Smart motor\n- 2x Nova 4-button remotes\n\nKey Features:\n- 500kg gate capacity\n- Smart configuration\n- App control capable\n- Battery backup\n\nConvenient package with remotes included.\n\nApplications: Residential sliding gates.",
+      "price": "5499.00",
+      "brand": "Centurion",
+      "sku": "ALEC-0195-CENTURION_D5_EVO_SMART_GATE_MO",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "imageUrl": "attached_assets/products/centurion-d5-evo-smart-gate-motor-2x-nova-4-button-remotes.png",
+      "images": [
+        "attached_assets/products/centurion-d5-evo-smart-gate-motor-2x-nova-4-button-remotes.png"
+      ],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
     }
   ],
   "categories": [
@@ -4721,13 +4721,6 @@
       "imageUrl": "attached_assets/products/dc-blue-advance-sectional-garage-motor-extrusion.jpg"
     },
     {
-      "id": "9a538922-574f-4579-a29a-c202d5fe4595",
-      "name": "Garage Door Parts",
-      "slug": "garage-door-parts",
-      "description": "Garage doors and related components",
-      "imageUrl": "attached_assets/products/nylon-roller-heavy-duty.png"
-    },
-    {
       "id": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
       "name": "CCTV Systems",
       "slug": "cctv-cameras",
@@ -4740,6 +4733,13 @@
       "slug": "lp-gas-exchange",
       "description": "LPG cylinders, regulators, and gas appliances",
       "imageUrl": "/attached_assets/products/19kg-exchange.png"
+    },
+    {
+      "id": "9a538922-574f-4579-a29a-c202d5fe4595",
+      "name": "Garage Doors & Parts",
+      "slug": "garage-door-parts",
+      "description": "Garage doors and related components",
+      "imageUrl": "attached_assets/products/nylon-roller-heavy-duty.png"
     }
   ],
   "blogs": [
