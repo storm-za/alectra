@@ -25,6 +25,8 @@ import centurionBanner from "@assets/optimized/centurion-banner.webp";
 import geminiBanner from "@assets/optimized/gemini-banner.webp";
 import dtsBanner from "@assets/optimized/dts-banner.webp";
 
+import Gemini_Generated_Image_nmcqzznmcqzznmcq from "@assets/Gemini_Generated_Image_nmcqzznmcqzznmcq.png";
+
 interface BrandSection {
   brand: string;
   banner: string | null;
@@ -393,7 +395,7 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
                     {section.banner && (
                       <div className="mb-6 rounded-lg overflow-hidden">
                         <img
-                          src={section.banner}
+                          src={Gemini_Generated_Image_nmcqzznmcqzznmcq}
                           alt={`${section.brand} products`}
                           className="w-full h-auto object-cover"
                           data-testid={`banner-${section.brand.toLowerCase()}`}
