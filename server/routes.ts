@@ -1751,12 +1751,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { sql } = await import("drizzle-orm");
       const { db } = await import("../server/db");
       
-      // First, set product_id to NULL on order_items so orders aren't deleted
-      // This preserves order history while allowing product deletion
-      await db.execute(sql.raw(`UPDATE order_items SET product_id = NULL`));
+      // Drop the foreign key constraint on order_items so we can delete products
+      // The order_items will keep their product_id values (now orphaned) but the order history is preserved
+      try {
+        await db.execute(sql.raw(`ALTER TABLE order_items DROP CONSTRAINT IF EXISTS order_items_product_id_products_id_fk`));
+      } catch (e: any) {
+        // Constraint might not exist or have different name, continue anyway
+        console.log("Note: Could not drop FK constraint:", e.message);
+      }
       
       // Delete products, categories, reviews, and blog posts
-      // Orders and order_items are preserved
+      // Orders and order_items are preserved (order_items keeps product info but loses reference)
       const tablesToClear = ['reviews', 'products', 'categories', 'blog_posts'];
       
       for (const table of tablesToClear) {
