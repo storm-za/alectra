@@ -131,10 +131,12 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
   const isLoading = categoryLoading || productsLoading;
 
   // Brand banners configuration for gate-motors category
-  // Centurion and Gemini have banners - other brands will be added when requested
+  // Centurion, Gemini, and DTS have banners
+  // DTS section will also include all remaining products
   const brandBanners: Record<string, string> = {
     "Centurion": centurionBanner,
     "Gemini": geminiBanner,
+    "DTS": dtsBanner,
   };
 
   // Organize products by brand for gate-motors category (only when no filters active)
@@ -171,20 +173,29 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
       }
     });
 
-    // Collect remaining products (brands without banners)
+    // Collect remaining products (brands without banners) - these go to DTS section
     Object.entries(productsByBrand).forEach(([brandName, brandProducts]) => {
       if (!brandsWithBanners.includes(brandName)) {
         otherProducts.push(...brandProducts);
       }
     });
 
-    // Add "Other Brands" section if there are products without banners
+    // Add remaining products to DTS section (merge with existing DTS products if any)
     if (otherProducts.length > 0) {
-      sections.push({
-        brand: 'Other Brands',
-        banner: null,
-        products: otherProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price)),
-      });
+      // Find existing DTS section and add remaining products to it
+      const dtsSection = sections.find(s => s.brand === 'DTS');
+      if (dtsSection) {
+        dtsSection.products = [...dtsSection.products, ...otherProducts].sort(
+          (a, b) => parseFloat(a.price) - parseFloat(b.price)
+        );
+      } else {
+        // Create DTS section with remaining products
+        sections.push({
+          brand: 'DTS',
+          banner: brandBanners['DTS'],
+          products: otherProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price)),
+        });
+      }
     }
 
     return sections;
