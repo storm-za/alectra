@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRoute, Link } from "wouter";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ProductCard from "@/components/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,15 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import type { Product, Category } from "@shared/schema";
+
+// Brand banners for gate-motors category
+import centurionBanner from "@assets/optimized/centurion-banner.webp";
+
+interface BrandSection {
+  brand: string;
+  banner: string | null;
+  products: Product[];
+}
 
 interface ProductsResponse {
   products: Product[];
@@ -105,6 +114,64 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
 
   const hasActiveFilters = search || (brand && brand !== "all") || priceRange[0] > 0 || priceRange[1] < 10000;
   const isLoading = categoryLoading || productsLoading;
+
+  // Brand banners configuration for gate-motors category
+  const brandBanners: Record<string, string> = {
+    "Centurion": centurionBanner,
+  };
+
+  // Organize products by brand for gate-motors category (only when no filters active)
+  const brandSections = useMemo((): BrandSection[] | null => {
+    if (slug !== 'gate-motors' || !products || hasActiveFilters) {
+      return null;
+    }
+
+    const brandsWithBanners = Object.keys(brandBanners);
+    const sections: BrandSection[] = [];
+    const otherProducts: Product[] = [];
+
+    // Group products by brand
+    const productsByBrand: Record<string, Product[]> = {};
+    products.forEach(product => {
+      const productBrand = product.brand || 'Other';
+      if (!productsByBrand[productBrand]) {
+        productsByBrand[productBrand] = [];
+      }
+      productsByBrand[productBrand].push(product);
+    });
+
+    // Add sections for brands with banners first (sorted by price low to high)
+    brandsWithBanners.forEach(brandName => {
+      if (productsByBrand[brandName]) {
+        const sortedProducts = [...productsByBrand[brandName]].sort(
+          (a, b) => parseFloat(a.price) - parseFloat(b.price)
+        );
+        sections.push({
+          brand: brandName,
+          banner: brandBanners[brandName],
+          products: sortedProducts,
+        });
+      }
+    });
+
+    // Collect remaining products (brands without banners)
+    Object.entries(productsByBrand).forEach(([brandName, brandProducts]) => {
+      if (!brandsWithBanners.includes(brandName)) {
+        otherProducts.push(...brandProducts);
+      }
+    });
+
+    // Add "Other Brands" section if there are products without banners
+    if (otherProducts.length > 0) {
+      sections.push({
+        brand: 'Other Brands',
+        banner: null,
+        products: otherProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price)),
+      });
+    }
+
+    return sections;
+  }, [slug, products, hasActiveFilters]);
 
   if (!isLoading && !category) {
     return (
@@ -303,6 +370,41 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
                     Clear Filters
                   </Button>
                 )}
+              </div>
+            ) : brandSections ? (
+              /* Brand-organized layout for gate-motors */
+              <div className="space-y-12">
+                {brandSections.map((section) => (
+                  <div key={section.brand} data-testid={`brand-section-${section.brand.toLowerCase().replace(/\s+/g, '-')}`}>
+                    {/* Brand Banner */}
+                    {section.banner && (
+                      <div className="mb-6 rounded-lg overflow-hidden">
+                        <img
+                          src={section.banner}
+                          alt={`${section.brand} products`}
+                          className="w-full h-auto object-cover"
+                          data-testid={`banner-${section.brand.toLowerCase()}`}
+                        />
+                      </div>
+                    )}
+                    {/* Brand Section Header (only for sections without banners) */}
+                    {!section.banner && (
+                      <h2 className="text-2xl font-bold mb-6" data-testid={`heading-${section.brand.toLowerCase().replace(/\s+/g, '-')}`}>
+                        {section.brand}
+                      </h2>
+                    )}
+                    {/* Products Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                      {section.products.map((product) => (
+                        <ProductCard
+                          key={product.id}
+                          product={product}
+                          onAddToCart={onAddToCart}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
               <>
