@@ -131,10 +131,10 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
   const isLoading = categoryLoading || productsLoading;
 
   // Brand banners configuration for gate-motors category
+  // Centurion and Gemini have banners - other brands will be added when requested
   const brandBanners: Record<string, string> = {
     "Centurion": centurionBanner,
     "Gemini": geminiBanner,
-    "DTS": dtsBanner,
   };
 
   // Organize products by brand for gate-motors category (only when no filters active)
