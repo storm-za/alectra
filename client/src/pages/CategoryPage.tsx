@@ -393,7 +393,7 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
                     {section.banner && (
                       <div className="mb-6 rounded-lg overflow-hidden">
                         <img
-                          src={Gemini_Generated_Image_nmcqzznmcqzznmcq}
+                          src={section.banner}
                           alt={`${section.brand} products`}
                           className="w-full h-auto object-cover"
                           data-testid={`banner-${section.brand.toLowerCase()}`}
