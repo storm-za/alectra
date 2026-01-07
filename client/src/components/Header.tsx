@@ -192,13 +192,12 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
-            {/* Mobile Search Button */}
+            {/* Search Button */}
             <Button 
               variant="ghost" 
               size="icon" 
-              className="lg:hidden"
               onClick={() => setIsSearchOpen(true)}
-              data-testid="button-mobile-search"
+              data-testid="button-search"
             >
               <Search className="h-5 w-5" />
             </Button>
