@@ -675,7 +675,7 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
                 <li><strong>Warranty:</strong> We offer manufacturer warranties on all gate motors. Professional installation is recommended.</li>
               </ul>
               <p className="mt-4">
-                <strong>Need help choosing?</strong> Contact us at <a href="mailto:info@alectra.co.za" className="text-primary hover:underline">info@alectra.co.za</a> for 
+                <strong>Need help choosing?</strong> Contact us at <a href="mailto:info@alectra.co.za" className="text-primary hover:underline">alectraglobal@gmail.com</a> for 
                 personalized recommendations based on your gate specifications.
               </p>
             </div>
