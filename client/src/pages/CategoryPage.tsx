@@ -9,7 +9,13 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { SEO } from "@/components/SEO";
 import { Breadcrumb } from "@/components/Breadcrumb";
-import { ChevronLeft, ChevronRight, Search, X, Filter, ChevronDown, ChevronUp, MapPin } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, X, Filter, ChevronDown, ChevronUp, MapPin, ChevronDownIcon } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import {
   Select,
   SelectContent,
@@ -126,6 +132,91 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
   const hasActiveFilters = search || (brand && brand !== "all") || priceRange[0] > 0 || priceRange[1] < 10000;
   const isLoading = categoryLoading || productsLoading;
 
+  // Gate Motors FAQ data for SEO
+  const gateMotorsFAQ = [
+    {
+      question: "What size gate motor do I need for my sliding gate?",
+      answer: "The motor size depends on your gate's weight: For gates up to 300kg, a Centurion D3 or ET Nice Drive 300 is ideal. Gates 300-500kg need a D5 Evo Smart or ET Nice Drive 500. For heavy gates 500-800kg, choose a Centurion D6 Smart. Extra-heavy gates 800kg+ require a Centurion D10 Smart. Always add 20% extra capacity for safety margin."
+    },
+    {
+      question: "Which is better: Centurion or Gemini gate motors?",
+      answer: "Both are excellent South African brands. Centurion motors (D3, D5, D6, D10) offer advanced smart features, battery backup, and integration with home automation. They're ideal for frequent use and premium installations. Gemini motors are more budget-friendly while still reliable, making them perfect for residential properties with standard requirements. For commercial or high-traffic gates, Centurion is recommended."
+    },
+    {
+      question: "Do gate motors work during load shedding?",
+      answer: "Yes! All our gate motors include or support battery backup systems. Centurion Smart motors have built-in battery charging and can operate for 50+ cycles during power outages. We recommend a 7Ah battery for residential use and 18Ah for commercial applications to ensure uninterrupted access during load shedding."
+    },
+    {
+      question: "How long does gate motor installation take?",
+      answer: "Professional installation typically takes 3-5 hours for a standard sliding gate motor. This includes mounting the motor, laying the rack, electrical connections, programming remotes, and safety testing. Swing gate motor installation usually takes 4-6 hours as it requires precise alignment. We recommend professional installation to ensure warranty validity."
+    },
+    {
+      question: "What's included in a gate motor full kit?",
+      answer: "Our full kits include everything for installation: the motor unit, 4-6 meters of nylon/steel rack, mounting hardware, 2 remote controls, anti-theft bracket, battery (where specified), and installation manual. Premium kits also include battery backup systems and extended warranties. Motor-only options are available if you already have existing infrastructure."
+    },
+    {
+      question: "Can I control my gate motor from my phone?",
+      answer: "Yes! Centurion Smart motors are compatible with the Centurion Smart app, allowing you to open/close your gate, monitor status, and receive alerts from anywhere. You'll need a Centurion Smart Hub (sold separately) to enable smartphone control. This also integrates with home automation systems like Google Home and Amazon Alexa."
+    }
+  ];
+
+  // Create structured data for gate-motors category
+  const gateMotorsStructuredData = slug === 'gate-motors' ? {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `https://alectra.co.za/collections/gate-motors`,
+        "name": "Gate Motors South Africa - Sliding & Swing Gate Automation",
+        "description": "Shop premium gate motors from Centurion, Gemini & ET Nice. Sliding gate motors, swing gate openers, full installation kits with battery backup. Free delivery on orders over R1000.",
+        "url": "https://alectra.co.za/collections/gate-motors",
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": "https://alectra.co.za/#website",
+          "name": "Alectra Solutions",
+          "url": "https://alectra.co.za"
+        },
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://alectra.co.za" },
+            { "@type": "ListItem", "position": 2, "name": "Gate Motors", "item": "https://alectra.co.za/collections/gate-motors" }
+          ]
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": gateMotorsFAQ.map(faq => ({
+          "@type": "Question",
+          "name": faq.question,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.answer
+          }
+        }))
+      },
+      {
+        "@type": "ItemList",
+        "itemListElement": (products ?? []).slice(0, 10).map((product, index) => ({
+          "@type": "ListItem",
+          "position": index + 1,
+          "item": {
+            "@type": "Product",
+            "name": product.name,
+            "url": `https://alectra.co.za/products/${product.slug}`,
+            "image": product.imageUrl?.startsWith('http') ? product.imageUrl : `https://alectra.co.za/${(product.imageUrl || '').replace(/^\/+/, '')}`,
+            "offers": {
+              "@type": "Offer",
+              "price": product.price,
+              "priceCurrency": "ZAR",
+              "availability": (product.stock ?? 0) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+            }
+          }
+        }))
+      }
+    ]
+  } : null;
+
   // Brand banners configuration for gate-motors category
   // Centurion, Gemini, and DTS have banners
   // DTS section will also include all remaining products
@@ -233,12 +324,28 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
     );
   }
 
+  // SEO title and description for gate-motors
+  const getSEOTitle = () => {
+    if (slug === 'gate-motors') {
+      return "Gate Motors South Africa | Centurion, Gemini & ET Nice | Best Prices";
+    }
+    return `${category?.name || 'Category'} - Security Products`;
+  };
+
+  const getSEODescription = () => {
+    if (slug === 'gate-motors') {
+      return "Shop gate motors from R2,499. Centurion D3, D5, D6, D10 Smart motors. Gemini & ET Nice sliding gate motors. Full kits with battery backup. Free delivery over R1000. Load shedding ready.";
+    }
+    return category?.description || `Browse our ${category?.name || 'security'} products. Quality security and automation solutions for South African homes and businesses.`;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title={`${category?.name || 'Category'} - Security Products`}
-        description={category?.description || `Browse our ${category?.name || 'security'} products. Quality security and automation solutions for South African homes and businesses.`}
+        title={getSEOTitle()}
+        description={getSEODescription()}
         image={category?.imageUrl || undefined}
+        structuredData={gateMotorsStructuredData || undefined}
       />
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
         <Breadcrumb
@@ -273,6 +380,18 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
                     <strong>Same-Day Delivery:</strong> Orders placed before 12:00 will be delivered the same day. Orders placed after 12:00 will be scheduled for the next business day. If the next day is a public holiday, delivery will be on the following business day.
                   </AlertDescription>
                 </Alert>
+              )}
+
+              {/* Gate Motors SEO Intro Content */}
+              {slug === 'gate-motors' && (
+                <div className="mt-6 prose prose-sm max-w-none text-muted-foreground">
+                  <p>
+                    Find the perfect <strong>gate motor</strong> for your home or business. We stock South Africa's leading brands including 
+                    <strong> Centurion</strong> (D3, D5, D6, D10 Smart), <strong>Gemini</strong>, and <strong>ET Nice</strong> sliding gate motors. 
+                    All our gate motors are <strong>load shedding ready</strong> with battery backup options, ensuring your property stays secure 
+                    during power outages. Choose from motor-only units or complete installation kits with rack, remotes, and anti-theft brackets.
+                  </p>
+                </div>
               )}
             </>
           )}
@@ -523,6 +642,45 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
             )}
           </div>
         </div>
+
+        {/* Gate Motors FAQ Section for SEO */}
+        {slug === 'gate-motors' && (
+          <div className="mt-12 border-t pt-8">
+            <h2 className="text-2xl font-bold mb-6">Frequently Asked Questions About Gate Motors</h2>
+            <Accordion type="single" collapsible className="w-full" data-testid="accordion-faq">
+              {gateMotorsFAQ.map((faq, index) => (
+                <AccordionItem key={index} value={`faq-${index}`} data-testid={`accordion-item-faq-${index}`}>
+                  <AccordionTrigger className="text-left font-medium" data-testid={`accordion-trigger-faq-${index}`}>
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground" data-testid={`accordion-content-faq-${index}`}>
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+
+            {/* Additional SEO Content */}
+            <div className="mt-8 prose prose-sm max-w-none text-muted-foreground">
+              <h3 className="text-lg font-semibold text-foreground">Gate Motor Buying Guide</h3>
+              <p>
+                Choosing the right gate motor ensures reliable, secure access to your property for years to come. 
+                Here's what to consider when shopping for a sliding gate motor or swing gate motor in South Africa:
+              </p>
+              <ul className="list-disc pl-5 space-y-2">
+                <li><strong>Gate Weight:</strong> Measure your gate's weight to select an appropriately powered motor. Undersized motors fail prematurely.</li>
+                <li><strong>Usage Frequency:</strong> High-traffic commercial properties need heavy-duty motors like the Centurion D10.</li>
+                <li><strong>Battery Backup:</strong> Essential for load shedding - all our motors support backup batteries.</li>
+                <li><strong>Smart Features:</strong> Centurion Smart motors offer app control, status monitoring, and home automation integration.</li>
+                <li><strong>Warranty:</strong> We offer manufacturer warranties on all gate motors. Professional installation is recommended.</li>
+              </ul>
+              <p className="mt-4">
+                <strong>Need help choosing?</strong> Contact us at <a href="mailto:info@alectra.co.za" className="text-primary hover:underline">info@alectra.co.za</a> for 
+                personalized recommendations based on your gate specifications.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
