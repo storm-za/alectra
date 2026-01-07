@@ -108,9 +108,9 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
       {/* Main header */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
         <div className="flex items-center justify-between h-16">
-          {/* Mobile Search Overlay */}
+          {/* Search Overlay */}
           {isSearchOpen && (
-            <div className="absolute inset-0 bg-background z-50 flex items-center px-4 lg:hidden">
+            <div className="absolute inset-0 bg-background z-50 flex items-center px-4">
               <form onSubmit={handleSearch} className="flex-1 flex items-center gap-2">
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -121,10 +121,10 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10 pr-4"
                     autoFocus
-                    data-testid="input-mobile-search"
+                    data-testid="input-search"
                   />
                 </div>
-                <Button type="submit" size="sm" data-testid="button-mobile-search-submit">
+                <Button type="submit" size="sm" data-testid="button-search-submit">
                   Search
                 </Button>
                 <Button 
@@ -135,7 +135,7 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
                     setIsSearchOpen(false);
                     setSearchQuery("");
                   }}
-                  data-testid="button-mobile-search-close"
+                  data-testid="button-search-close"
                 >
                   <X className="h-5 w-5" />
                 </Button>
