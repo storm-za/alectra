@@ -141,23 +141,31 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
         form.setValue("locationLongitude", position.coords.longitude.toString());
         setLocationStatus("success");
         toast({
-          title: "Location shared",
+          title: "Location pinned",
           description: "Your GPS coordinates have been saved for accurate delivery",
         });
       },
       (error) => {
-        setLocationStatus("error");
-        let message = "Could not get your location";
+        setLocationStatus("idle");
+        let title = "Location unavailable";
+        let message = "Could not detect your location. You can still complete checkout without it.";
         if (error.code === error.PERMISSION_DENIED) {
-          message = "Please allow location access in your browser settings";
+          title = "Permission needed";
+          message = "Please allow location access in your browser, then try again.";
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          title = "Location unavailable";
+          message = "Your device couldn't detect your location. Make sure GPS is enabled.";
+        } else if (error.code === error.TIMEOUT) {
+          title = "Location timeout";
+          message = "Taking too long to get location. Please try again or continue without it.";
         }
         toast({
-          title: "Location error",
+          title,
           description: message,
           variant: "destructive",
         });
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
     );
   };
 
@@ -707,7 +715,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap">
                                   <h4 className="font-semibold text-base">
-                                    {locationStatus === "success" ? "Location Shared" : "Pin Your Exact Location"}
+                                    {locationStatus === "success" ? "Location Pinned" : "Pin Your Exact Location"}
                                   </h4>
                                   <Badge variant="secondary" className="text-xs font-medium">Optional</Badge>
                                 </div>
