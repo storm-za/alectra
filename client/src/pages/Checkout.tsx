@@ -707,7 +707,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap">
                                   <h4 className="font-semibold text-base">
-                                    {locationStatus === "success" ? "Location Shared" : "Share Your GPS Location"}
+                                    {locationStatus === "success" ? "Location Shared" : "Pin Your Exact Location"}
                                   </h4>
                                   <Badge variant="secondary" className="text-xs font-medium">Optional</Badge>
                                 </div>
