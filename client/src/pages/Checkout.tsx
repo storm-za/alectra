@@ -684,49 +684,77 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                           />
                         </div>
 
-                        {/* Optional Location Sharing - WhatsApp style */}
-                        <div className="bg-gradient-to-r from-muted/30 to-muted/50 rounded-xl p-4 border border-border/50">
-                          <div className="flex items-center justify-between gap-4">
-                            <div className="flex items-start gap-3">
-                              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                <Navigation className="h-5 w-5 text-primary" />
+                        {/* GPS Location Sharing - Enterprise Style */}
+                        <div className={`relative overflow-hidden rounded-xl border transition-all duration-300 ${
+                          locationStatus === "success" 
+                            ? "bg-gradient-to-br from-green-500/5 via-green-500/10 to-emerald-500/5 border-green-500/30" 
+                            : "bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 border-primary/20"
+                        }`}>
+                          <div className="absolute inset-0 bg-grid-white/5 [mask-image:linear-gradient(0deg,transparent,black)]" />
+                          <div className="relative p-5 space-y-4">
+                            <div className="flex items-start gap-4">
+                              <div className={`h-12 w-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg transition-colors duration-300 ${
+                                locationStatus === "success" 
+                                  ? "bg-gradient-to-br from-green-500 to-emerald-600" 
+                                  : "bg-gradient-to-br from-primary to-primary/80"
+                              }`}>
+                                {locationStatus === "success" ? (
+                                  <Check className="h-6 w-6 text-white" />
+                                ) : (
+                                  <Navigation className="h-6 w-6 text-white" />
+                                )}
                               </div>
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <h4 className="font-semibold text-sm">Share Your Location</h4>
-                                  <Badge variant="secondary" className="text-xs">Optional</Badge>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <h4 className="font-semibold text-base">
+                                    {locationStatus === "success" ? "Location Shared" : "Share Your GPS Location"}
+                                  </h4>
+                                  <Badge variant="secondary" className="text-xs font-medium">Optional</Badge>
                                 </div>
-                                <p className="text-xs text-muted-foreground mt-0.5">
-                                  Helps the courier find you easily
+                                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                                  {locationStatus === "success" 
+                                    ? "Your exact coordinates have been saved for precise delivery" 
+                                    : "Help our courier find your exact location for faster, more accurate delivery"
+                                  }
                                 </p>
                               </div>
                             </div>
+                            
                             <Button
                               type="button"
-                              variant={locationStatus === "success" ? "default" : "outline"}
-                              size="sm"
+                              variant={locationStatus === "success" ? "outline" : "default"}
                               onClick={handleShareLocation}
-                              disabled={locationStatus === "loading"}
+                              disabled={locationStatus === "loading" || locationStatus === "success"}
                               data-testid="button-share-location"
-                              className={locationStatus === "success" ? "bg-green-600 hover:bg-green-700" : ""}
+                              className={`w-full h-12 text-sm font-semibold transition-all duration-300 ${
+                                locationStatus === "success" 
+                                  ? "border-green-500/50 text-green-600 dark:text-green-400 bg-green-500/5 cursor-default" 
+                                  : "shadow-lg hover:shadow-xl"
+                              }`}
                             >
                               {locationStatus === "loading" ? (
                                 <>
-                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                  Getting...
+                                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                                  Detecting Your Location...
                                 </>
                               ) : locationStatus === "success" ? (
                                 <>
-                                  <Check className="h-4 w-4 mr-2" />
-                                  Location Saved
+                                  <Check className="h-5 w-5 mr-2" />
+                                  GPS Coordinates Saved
                                 </>
                               ) : (
                                 <>
-                                  <MapPin className="h-4 w-4 mr-2" />
-                                  Use My Location
+                                  <MapPin className="h-5 w-5 mr-2" />
+                                  Share My Location
                                 </>
                               )}
                             </Button>
+                            
+                            {locationStatus !== "success" && (
+                              <p className="text-xs text-center text-muted-foreground">
+                                Your browser will ask for permission to access your location
+                              </p>
+                            )}
                           </div>
                         </div>
                       </>
