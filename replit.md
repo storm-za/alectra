@@ -46,6 +46,12 @@ Preferred communication style: Simple, everyday language.
 - **Attributes**: Includes standard Google Shopping attributes like `g:id`, `g:title`, `g:price`, `g:availability`, `g:brand`, `g:product_type`, `g:google_product_category`.
 - **SEO Features**: Schema.org Product structured data, Open Graph and Twitter Card meta tags, canonical URLs.
 
+### Location Sharing
+- **Interactive Map**: Uses Leaflet with OpenStreetMap tiles (no API key required).
+- **Flow**: Browser geolocation captures initial coordinates → Interactive map appears → User drags pin or clicks to fine-tune → Coordinates saved to form and database.
+- **Technical**: react-leaflet@4.2.1 for React 18 compatibility; LocationPicker lazy-loaded with Suspense; map only renders after successful geolocation.
+- **Email Integration**: Order confirmation emails generate clickable Google Maps links from stored coordinates.
+
 ### Seasonal Themes
 - **Christmas Theme**: Currently disabled (post-December 2025). Theme files preserved at `client/src/components/ChristmasTheme.tsx` and `client/src/styles/christmas-theme.css` for future seasonal re-activation.
 
