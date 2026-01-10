@@ -28,7 +28,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { FREE_SHIPPING_PRODUCT_IDS, type CartItem, type UserAddress, type PaystackInitializeResponse, type PaystackVerifyResponse } from "@shared/schema";
-import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Wallet, ShoppingCart } from "lucide-react";
+import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Wallet, ShoppingCart, ExternalLink, Navigation } from "lucide-react";
 import { SiVisa, SiMastercard, SiApplepay, SiGooglepay } from "react-icons/si";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -44,6 +44,7 @@ const checkoutSchema = z.object({
   deliveryCity: z.string().optional(),
   deliveryProvince: z.string().optional(),
   deliveryPostalCode: z.string().optional(),
+  locationPinUrl: z.string().optional(),
   isGift: z.boolean().default(false),
   giftMessage: z.string().optional(),
 }).refine((data) => {
@@ -100,6 +101,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       deliveryCity: "",
       deliveryProvince: "",
       deliveryPostalCode: "",
+      locationPinUrl: "",
       isGift: false,
       giftMessage: "",
     },
@@ -112,6 +114,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       deliveryCity: "",
       deliveryProvince: "",
       deliveryPostalCode: "",
+      locationPinUrl: "",
       isGift: false,
       giftMessage: "",
     } : undefined,
@@ -635,6 +638,55 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                                   <Input placeholder="0001" {...field} data-testid="input-postal-code" />
                                 </FormControl>
                                 <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        {/* Optional Pin Drop Location */}
+                        <div className="bg-gradient-to-r from-muted/30 to-muted/50 rounded-xl p-4 border border-border/50 space-y-3">
+                          <div className="flex items-start gap-3">
+                            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                              <Navigation className="h-5 w-5 text-primary" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-semibold text-sm">Pin Your Location</h4>
+                                <Badge variant="secondary" className="text-xs">Optional</Badge>
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                Share your exact location for accurate delivery
+                              </p>
+                            </div>
+                          </div>
+                          
+                          <FormField
+                            control={form.control}
+                            name="locationPinUrl"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <div className="flex gap-2">
+                                    <Input 
+                                      placeholder="Paste Google Maps link here..." 
+                                      {...field} 
+                                      data-testid="input-location-pin"
+                                      className="flex-1"
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="icon"
+                                      onClick={() => window.open('https://www.google.com/maps', '_blank')}
+                                      data-testid="button-open-google-maps"
+                                    >
+                                      <ExternalLink className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </FormControl>
+                                <p className="text-xs text-muted-foreground">
+                                  Open Google Maps, drop a pin on your location, and paste the share link here
+                                </p>
                               </FormItem>
                             )}
                           />
