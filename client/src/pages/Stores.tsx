@@ -65,7 +65,7 @@ export default function Stores() {
                   <Clock className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="font-medium">Opening Hours</p>
-                    <p className="text-muted-foreground">Monday - Saterday</p>
+                    <p className="text-muted-foreground">Monday - Saturday</p>
                     <p className="text-muted-foreground">08:00 - 16:45</p>
                   </div>
                 </div>
