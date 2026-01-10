@@ -1023,6 +1023,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 deliveryCity: order.deliveryCity || "",
                 deliveryProvince: order.deliveryProvince || "",
                 deliveryPostalCode: order.deliveryPostalCode || "",
+                locationLatitude: order.locationLatitude || undefined,
+                locationLongitude: order.locationLongitude || undefined,
                 isGift: order.isGift || false,
                 giftMessage: order.giftMessage || undefined,
                 items: orderItemsData.map((item) => ({
@@ -1217,6 +1219,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   deliveryCity: order.deliveryCity || "",
                   deliveryProvince: order.deliveryProvince || "",
                   deliveryPostalCode: order.deliveryPostalCode || "",
+                  locationLatitude: order.locationLatitude || undefined,
+                  locationLongitude: order.locationLongitude || undefined,
                   isGift: order.isGift || false,
                   giftMessage: order.giftMessage || undefined,
                   items: orderItemsData.map((item) => ({
@@ -1334,6 +1338,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         deliveryCity: order.deliveryCity || "",
         deliveryProvince: order.deliveryProvince || "",
         deliveryPostalCode: order.deliveryPostalCode || "",
+        locationLatitude: order.locationLatitude || undefined,
+        locationLongitude: order.locationLongitude || undefined,
         isGift: order.isGift || false,
         giftMessage: order.giftMessage || undefined,
         items: orderItemsData.map((item) => ({

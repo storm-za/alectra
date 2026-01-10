@@ -34,6 +34,8 @@ export interface OrderEmailData {
   deliveryCity: string;
   deliveryProvince: string;
   deliveryPostalCode: string;
+  locationLatitude?: string;
+  locationLongitude?: string;
   isGift?: boolean;
   giftMessage?: string;
   items: Array<{
@@ -708,6 +710,12 @@ export class EmailService {
                           <td style="padding: 6px 0; color: #374151;"><strong>Postal Code:</strong></td>
                           <td style="padding: 6px 0; color: #111827;">${data.deliveryPostalCode}</td>
                         </tr>
+                        ${data.locationLatitude && data.locationLongitude ? `
+                        <tr>
+                          <td style="padding: 6px 0; color: #374151;"><strong>Pin Location:</strong></td>
+                          <td style="padding: 6px 0; color: #111827;"><a href="https://www.google.com/maps?q=${data.locationLatitude},${data.locationLongitude}" target="_blank" style="color: #2563eb; text-decoration: underline;">View on Google Maps</a></td>
+                        </tr>
+                        ` : ''}
                         ` : `
                         <tr>
                           <td colspan="2" style="padding: 6px 0; color: #92400e;">

@@ -28,7 +28,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { FREE_SHIPPING_PRODUCT_IDS, type CartItem, type UserAddress, type PaystackInitializeResponse, type PaystackVerifyResponse } from "@shared/schema";
-import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Wallet, ShoppingCart, ExternalLink, Navigation } from "lucide-react";
+import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Wallet, ShoppingCart, Navigation, Check, Loader2 } from "lucide-react";
 import { SiVisa, SiMastercard, SiApplepay, SiGooglepay } from "react-icons/si";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -44,7 +44,8 @@ const checkoutSchema = z.object({
   deliveryCity: z.string().optional(),
   deliveryProvince: z.string().optional(),
   deliveryPostalCode: z.string().optional(),
-  locationPinUrl: z.string().optional(),
+  locationLatitude: z.string().optional(),
+  locationLongitude: z.string().optional(),
   isGift: z.boolean().default(false),
   giftMessage: z.string().optional(),
 }).refine((data) => {
@@ -71,6 +72,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const { toast } = useToast();
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("yoco");
+  const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   const { data: user } = useQuery<{ user: any | null }>({
     queryKey: ["/api/auth/me"],
@@ -101,7 +103,8 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       deliveryCity: "",
       deliveryProvince: "",
       deliveryPostalCode: "",
-      locationPinUrl: "",
+      locationLatitude: "",
+      locationLongitude: "",
       isGift: false,
       giftMessage: "",
     },
@@ -114,11 +117,49 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       deliveryCity: "",
       deliveryProvince: "",
       deliveryPostalCode: "",
-      locationPinUrl: "",
+      locationLatitude: "",
+      locationLongitude: "",
       isGift: false,
       giftMessage: "",
     } : undefined,
   });
+
+  const handleShareLocation = () => {
+    if (!navigator.geolocation) {
+      toast({
+        title: "Location not supported",
+        description: "Your browser doesn't support location sharing",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLocationStatus("loading");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        form.setValue("locationLatitude", position.coords.latitude.toString());
+        form.setValue("locationLongitude", position.coords.longitude.toString());
+        setLocationStatus("success");
+        toast({
+          title: "Location shared",
+          description: "Your GPS coordinates have been saved for accurate delivery",
+        });
+      },
+      (error) => {
+        setLocationStatus("error");
+        let message = "Could not get your location";
+        if (error.code === error.PERMISSION_DENIED) {
+          message = "Please allow location access in your browser settings";
+        }
+        toast({
+          title: "Location error",
+          description: message,
+          variant: "destructive",
+        });
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
 
   const deliveryMethod = form.watch("deliveryMethod");
   const isGift = form.watch("isGift");
@@ -643,53 +684,50 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                           />
                         </div>
 
-                        {/* Optional Pin Drop Location */}
-                        <div className="bg-gradient-to-r from-muted/30 to-muted/50 rounded-xl p-4 border border-border/50 space-y-3">
-                          <div className="flex items-start gap-3">
-                            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                              <Navigation className="h-5 w-5 text-primary" />
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <h4 className="font-semibold text-sm">Pin Your Location</h4>
-                                <Badge variant="secondary" className="text-xs">Optional</Badge>
+                        {/* Optional Location Sharing - WhatsApp style */}
+                        <div className="bg-gradient-to-r from-muted/30 to-muted/50 rounded-xl p-4 border border-border/50">
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="flex items-start gap-3">
+                              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <Navigation className="h-5 w-5 text-primary" />
                               </div>
-                              <p className="text-xs text-muted-foreground mt-0.5">
-                                Share your exact location for accurate delivery
-                              </p>
-                            </div>
-                          </div>
-                          
-                          <FormField
-                            control={form.control}
-                            name="locationPinUrl"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <div className="flex gap-2">
-                                    <Input 
-                                      placeholder="Paste Google Maps link here..." 
-                                      {...field} 
-                                      data-testid="input-location-pin"
-                                      className="flex-1"
-                                    />
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      size="icon"
-                                      onClick={() => window.open('https://www.google.com/maps', '_blank')}
-                                      data-testid="button-open-google-maps"
-                                    >
-                                      <ExternalLink className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                </FormControl>
-                                <p className="text-xs text-muted-foreground">
-                                  Open Google Maps, drop a pin on your location, and paste the share link here
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <h4 className="font-semibold text-sm">Share Your Location</h4>
+                                  <Badge variant="secondary" className="text-xs">Optional</Badge>
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-0.5">
+                                  Helps the courier find you easily
                                 </p>
-                              </FormItem>
-                            )}
-                          />
+                              </div>
+                            </div>
+                            <Button
+                              type="button"
+                              variant={locationStatus === "success" ? "default" : "outline"}
+                              size="sm"
+                              onClick={handleShareLocation}
+                              disabled={locationStatus === "loading"}
+                              data-testid="button-share-location"
+                              className={locationStatus === "success" ? "bg-green-600 hover:bg-green-700" : ""}
+                            >
+                              {locationStatus === "loading" ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                  Getting...
+                                </>
+                              ) : locationStatus === "success" ? (
+                                <>
+                                  <Check className="h-4 w-4 mr-2" />
+                                  Location Saved
+                                </>
+                              ) : (
+                                <>
+                                  <MapPin className="h-4 w-4 mr-2" />
+                                  Use My Location
+                                </>
+                              )}
+                            </Button>
+                          </div>
                         </div>
                       </>
                     )}
