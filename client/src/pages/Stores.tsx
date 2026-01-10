@@ -118,7 +118,6 @@ export default function Stores() {
           <h2 className="text-2xl font-bold mb-4">Why Visit Our Stores?</h2>
           <ul className="space-y-2 text-muted-foreground">
             <li>✓ Expert advice from knowledgeable staff</li>
-            <li>✓ See and test products before you buy</li>
             <li>✓ Immediate availability of popular items</li>
             <li>✓ Professional installation services available</li>
             <li>✓ Trade customer support</li>
