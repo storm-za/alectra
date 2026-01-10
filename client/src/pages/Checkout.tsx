@@ -28,7 +28,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { FREE_SHIPPING_PRODUCT_IDS, type CartItem, type UserAddress, type PaystackInitializeResponse, type PaystackVerifyResponse } from "@shared/schema";
-import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Wallet } from "lucide-react";
+import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Wallet, ShoppingCart } from "lucide-react";
 import { SiVisa, SiMastercard, SiApplepay, SiGooglepay } from "react-icons/si";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -362,81 +362,130 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const total = totalAfterDiscount + shippingCost;
 
   return (
-    <div className="min-h-screen bg-muted/30 py-12">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">Secure Checkout</h1>
-          <p className="text-muted-foreground flex items-center gap-2">
-            <Shield className="h-4 w-4 text-primary" />
-            Your information is safe and secure
-          </p>
+    <div className="min-h-screen bg-gradient-to-b from-muted/50 via-background to-muted/30">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8 lg:py-12">
+        {/* Enterprise Header with Progress Indicator */}
+        <div className="mb-10 lg:mb-12">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">Checkout</h1>
+              <p className="text-muted-foreground mt-1">Complete your order securely</p>
+            </div>
+            <div className="flex items-center gap-2 text-sm bg-primary/5 border border-primary/20 rounded-full px-4 py-2">
+              <Shield className="h-4 w-4 text-primary" />
+              <span className="font-medium text-primary">SSL Secured</span>
+            </div>
+          </div>
+          
+          {/* Progress Steps */}
+          <div className="hidden sm:flex items-center justify-center gap-0 max-w-xl mx-auto">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">1</div>
+              <span className="text-sm font-medium">Cart</span>
+            </div>
+            <div className="h-0.5 w-16 lg:w-24 bg-primary mx-2" />
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">2</div>
+              <span className="text-sm font-medium">Details</span>
+            </div>
+            <div className="h-0.5 w-16 lg:w-24 bg-muted mx-2" />
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-sm font-semibold">3</div>
+              <span className="text-sm text-muted-foreground">Payment</span>
+            </div>
+          </div>
         </div>
 
         {/* Delivery Method Selector */}
-        <div className="mb-10 max-w-2xl mx-auto" data-testid="delivery-method-selector">
-          <div className="grid grid-cols-2 gap-4">
+        <div className="mb-10 max-w-3xl mx-auto" data-testid="delivery-method-selector">
+          <h2 className="text-lg font-semibold mb-4 text-center">How would you like to receive your order?</h2>
+          <div className="grid grid-cols-2 gap-6">
             <button
               type="button"
               onClick={() => form.setValue("deliveryMethod", "delivery")}
-              className={`p-6 rounded-lg border-2 transition-all ${
+              className={`relative p-6 lg:p-8 rounded-xl border-2 transition-all duration-200 group ${
                 deliveryMethod === "delivery"
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover-elevate"
+                  ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
+                  : "border-border bg-card hover:border-primary/50 hover:shadow-md"
               }`}
               data-testid="button-delivery-method-delivery"
             >
-              <Truck className={`h-8 w-8 mx-auto mb-3 ${deliveryMethod === "delivery" ? "text-primary" : "text-muted-foreground"}`} />
-              <h3 className="font-semibold text-lg mb-1">Delivery</h3>
-              <p className="text-sm text-muted-foreground">We deliver nationwide</p>
+              {deliveryMethod === "delivery" && (
+                <div className="absolute top-3 right-3 h-6 w-6 rounded-full bg-primary flex items-center justify-center">
+                  <svg className="h-4 w-4 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              )}
+              <div className={`inline-flex items-center justify-center h-14 w-14 rounded-xl mb-4 transition-colors ${
+                deliveryMethod === "delivery" ? "bg-primary/10" : "bg-muted group-hover:bg-primary/5"
+              }`}>
+                <Truck className={`h-7 w-7 ${deliveryMethod === "delivery" ? "text-primary" : "text-muted-foreground group-hover:text-primary/70"}`} />
+              </div>
+              <h3 className="font-bold text-lg mb-1">Delivery</h3>
+              <p className="text-sm text-muted-foreground">Nationwide shipping via The Courier Guy</p>
             </button>
             
             <button
               type="button"
               onClick={() => form.setValue("deliveryMethod", "pickup")}
-              className={`p-6 rounded-lg border-2 transition-all ${
+              className={`relative p-6 lg:p-8 rounded-xl border-2 transition-all duration-200 group ${
                 deliveryMethod === "pickup"
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover-elevate"
+                  ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
+                  : "border-border bg-card hover:border-primary/50 hover:shadow-md"
               }`}
               data-testid="button-delivery-method-pickup"
             >
-              <Home className={`h-8 w-8 mx-auto mb-3 ${deliveryMethod === "pickup" ? "text-primary" : "text-muted-foreground"}`} />
-              <h3 className="font-semibold text-lg mb-1">Pickup</h3>
-              <p className="text-sm text-muted-foreground">Collect from our shop</p>
+              {deliveryMethod === "pickup" && (
+                <div className="absolute top-3 right-3 h-6 w-6 rounded-full bg-primary flex items-center justify-center">
+                  <svg className="h-4 w-4 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              )}
+              <div className={`inline-flex items-center justify-center h-14 w-14 rounded-xl mb-4 transition-colors ${
+                deliveryMethod === "pickup" ? "bg-primary/10" : "bg-muted group-hover:bg-primary/5"
+              }`}>
+                <Home className={`h-7 w-7 ${deliveryMethod === "pickup" ? "text-primary" : "text-muted-foreground group-hover:text-primary/70"}`} />
+              </div>
+              <h3 className="font-bold text-lg mb-1">Pickup</h3>
+              <p className="text-sm text-muted-foreground">Collect from our Pretoria store</p>
             </button>
           </div>
           
           {deliveryMethod === "pickup" && (
-            <Alert className="mt-4 bg-primary/5 border-primary">
-              <MapPin className="h-4 w-4" />
-              <AlertDescription className="font-medium">
-                Pickup Location: Alectra Solutions, Wonderboom, Pretoria, 0182
-              </AlertDescription>
-            </Alert>
+            <div className="mt-6 bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-xl p-4 flex items-start gap-3">
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <MapPin className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="font-semibold text-sm">Pickup Location</p>
+                <p className="text-sm text-muted-foreground">Alectra Solutions, Wonderboom, Pretoria, 0182</p>
+              </div>
+            </div>
           )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Checkout Form */}
-          <div className="lg:col-span-2">
-            <Card className="shadow-lg">
-              <CardHeader className="border-b bg-card">
-                <CardTitle className="flex items-center gap-2">
-                  {deliveryMethod === "pickup" ? (
-                    <>
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="shadow-xl border-0 bg-card">
+              <CardHeader className="border-b bg-gradient-to-r from-muted/50 to-muted/30 rounded-t-lg">
+                <CardTitle className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    {deliveryMethod === "pickup" ? (
                       <Home className="h-5 w-5 text-primary" />
-                      Pickup Information
-                    </>
-                  ) : (
-                    <>
+                    ) : (
                       <Truck className="h-5 w-5 text-primary" />
-                      Delivery Information
-                    </>
-                  )}
+                    )}
+                  </div>
+                  <div>
+                    <span className="text-lg">{deliveryMethod === "pickup" ? "Pickup Information" : "Delivery Information"}</span>
+                    <p className="text-sm font-normal text-muted-foreground mt-0.5">Enter your contact details</p>
+                  </div>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
+              <CardContent className="p-6 lg:p-8">
                 {deliveryMethod === "delivery" && addresses && addresses.length > 0 && (
                   <div className="mb-6">
                     <label className="text-sm font-medium mb-2 block">
@@ -594,10 +643,15 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                     )}
 
                     {/* Payment Method Selection */}
-                    <div className="space-y-4" data-testid="payment-method-selection">
-                      <div className="flex items-center gap-2">
-                        <Wallet className="h-5 w-5 text-primary" />
-                        <h3 className="font-semibold">Choose Payment Method</h3>
+                    <div className="space-y-4 pt-2" data-testid="payment-method-selection">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <CreditCard className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">Payment Method</h3>
+                          <p className="text-sm text-muted-foreground">Choose your preferred payment option</p>
+                        </div>
                       </div>
                       
                       <RadioGroup
@@ -614,19 +668,27 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                           />
                           <Label
                             htmlFor="payment-paystack"
-                            className="flex flex-col gap-3 rounded-lg border-2 border-muted bg-card p-4 hover:bg-accent/50 peer-data-[state=checked]:border-primary cursor-pointer transition-all"
+                            className={`flex flex-col gap-3 rounded-xl border-2 bg-card p-5 cursor-pointer transition-all duration-200 ${
+                              paymentMethod === "paystack" 
+                                ? "border-primary bg-primary/5 shadow-lg shadow-primary/10" 
+                                : "border-muted hover:border-primary/50 hover:shadow-md"
+                            }`}
                           >
                             <div className="flex items-center justify-between">
-                              <span className="font-semibold">Paystack</span>
-                              <div className="h-4 w-4 rounded-full border-2 border-muted peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary flex items-center justify-center">
+                              <span className="font-bold">Paystack</span>
+                              <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                                paymentMethod === "paystack" ? "border-primary bg-primary" : "border-muted"
+                              }`}>
                                 {paymentMethod === "paystack" && (
-                                  <div className="h-2 w-2 rounded-full bg-primary" />
+                                  <svg className="h-3 w-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                  </svg>
                                 )}
                               </div>
                             </div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <SiVisa className="h-6 w-auto text-[#1434CB]" />
-                              <SiMastercard className="h-6 w-auto text-[#FF5F00]" />
+                            <div className="flex items-center gap-3 flex-wrap">
+                              <SiVisa className="h-7 w-auto text-[#1434CB]" />
+                              <SiMastercard className="h-7 w-auto text-[#FF5F00]" />
                             </div>
                             <p className="text-xs text-muted-foreground">
                               Secure popup checkout
@@ -643,21 +705,29 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                           />
                           <Label
                             htmlFor="payment-yoco"
-                            className="flex flex-col gap-3 rounded-lg border-2 border-muted bg-card p-4 hover:bg-accent/50 peer-data-[state=checked]:border-primary cursor-pointer transition-all"
+                            className={`flex flex-col gap-3 rounded-xl border-2 bg-card p-5 cursor-pointer transition-all duration-200 ${
+                              paymentMethod === "yoco" 
+                                ? "border-primary bg-primary/5 shadow-lg shadow-primary/10" 
+                                : "border-muted hover:border-primary/50 hover:shadow-md"
+                            }`}
                           >
                             <div className="flex items-center justify-between">
-                              <span className="font-semibold">Yoco</span>
-                              <div className="h-4 w-4 rounded-full border-2 border-muted peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary flex items-center justify-center">
+                              <span className="font-bold">Yoco</span>
+                              <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                                paymentMethod === "yoco" ? "border-primary bg-primary" : "border-muted"
+                              }`}>
                                 {paymentMethod === "yoco" && (
-                                  <div className="h-2 w-2 rounded-full bg-primary" />
+                                  <svg className="h-3 w-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                  </svg>
                                 )}
                               </div>
                             </div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <SiVisa className="h-6 w-auto text-[#1434CB]" />
-                              <SiMastercard className="h-6 w-auto text-[#FF5F00]" />
-                              <SiApplepay className="h-6 w-auto text-foreground" />
-                              <SiGooglepay className="h-6 w-auto text-foreground" />
+                            <div className="flex items-center gap-3 flex-wrap">
+                              <SiVisa className="h-7 w-auto text-[#1434CB]" />
+                              <SiMastercard className="h-7 w-auto text-[#FF5F00]" />
+                              <SiApplepay className="h-7 w-auto text-foreground" />
+                              <SiGooglepay className="h-7 w-auto text-foreground" />
                             </div>
                             <p className="text-xs text-muted-foreground">
                               Redirect to secure checkout
@@ -668,43 +738,47 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                     </div>
 
                     {/* Trust Signals */}
-                    <div className="bg-muted/50 rounded-lg p-4 space-y-3" data-testid="trust-signals">
-                      <div className="flex items-center gap-3" data-testid="trust-secure-payment">
-                        <Lock className="h-5 w-5 text-primary flex-shrink-0" />
-                        <div>
-                          <p className="text-sm font-medium">Secure Payment</p>
-                          <p className="text-xs text-muted-foreground">256-bit SSL encryption protects your data</p>
+                    <div className="bg-gradient-to-br from-muted/30 to-muted/50 rounded-xl p-5 border border-border/50" data-testid="trust-signals">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="flex items-start gap-3" data-testid="trust-secure-payment">
+                          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <Lock className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold">Secure Payment</p>
+                            <p className="text-xs text-muted-foreground">256-bit SSL encryption</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-3" data-testid="trust-delivery">
-                        {deliveryMethod === "pickup" ? (
-                          <>
-                            <Home className="h-5 w-5 text-primary flex-shrink-0" />
-                            <div>
-                              <p className="text-sm font-medium">Convenient Pickup</p>
-                              <p className="text-xs text-muted-foreground">
-                                Collect from Alectra Solutions, Wonderboom, Pretoria
-                              </p>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <Truck className="h-5 w-5 text-primary flex-shrink-0" />
-                            <div>
-                              <p className="text-sm font-medium">Fast Delivery</p>
-                              <p className="text-xs text-muted-foreground">
-                                Nationwide via The Courier Guy • Free shipping on orders R2500+
-                              </p>
-                            </div>
-                          </>
-                        )}
+                        <div className="flex items-start gap-3" data-testid="trust-delivery">
+                          {deliveryMethod === "pickup" ? (
+                            <>
+                              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <Home className="h-5 w-5 text-primary" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-semibold">Easy Pickup</p>
+                                <p className="text-xs text-muted-foreground">Wonderboom, Pretoria</p>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <Truck className="h-5 w-5 text-primary" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-semibold">Fast Delivery</p>
+                                <p className="text-xs text-muted-foreground">Free on orders R2500+</p>
+                              </div>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
 
                     <Button 
                       type="submit" 
                       size="lg" 
-                      className="w-full h-14 text-base font-bold tracking-wide shadow-lg" 
+                      className="w-full h-14 text-base font-bold tracking-wide shadow-xl hover:shadow-2xl transition-shadow" 
                       disabled={createOrderMutation.isPending} 
                       data-testid="button-place-order"
                     >
@@ -714,7 +788,10 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                           Processing Order...
                         </span>
                       ) : (
-                        "Pay Now"
+                        <span className="flex items-center gap-2">
+                          <Lock className="h-4 w-4" />
+                          Complete Secure Payment
+                        </span>
                       )}
                     </Button>
                   </form>
@@ -724,73 +801,88 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           </div>
 
           {/* Order Summary */}
-          <div>
-            <Card className="sticky top-24 shadow-lg">
-              <CardHeader className="border-b bg-card">
-                <CardTitle className="text-lg">Order Summary</CardTitle>
+          <div className="lg:sticky lg:top-24">
+            <Card className="shadow-xl border-0 bg-card overflow-hidden">
+              <CardHeader className="border-b bg-gradient-to-r from-muted/50 to-muted/30">
+                <CardTitle className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <ShoppingCart className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <span className="text-lg">Order Summary</span>
+                    <p className="text-sm font-normal text-muted-foreground mt-0.5">{cartItems.length} item{cartItems.length !== 1 ? 's' : ''}</p>
+                  </div>
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 p-6">
-                {cartItems.map((item) => {
-                  const itemPrice = getItemPrice(item);
-                  const lineTotal = (itemPrice * item.quantity).toFixed(2);
-                  const imageUrl = item.product.imageUrl.startsWith('/') ? item.product.imageUrl : `/${item.product.imageUrl}`;
-                  const itemKey = item.variant ? `${item.product.id}-${item.variant}` : item.product.id;
+                {/* Cart Items */}
+                <div className="space-y-4 max-h-64 overflow-y-auto">
+                  {cartItems.map((item) => {
+                    const itemPrice = getItemPrice(item);
+                    const lineTotal = (itemPrice * item.quantity).toFixed(2);
+                    const imageUrl = item.product.imageUrl.startsWith('/') ? item.product.imageUrl : `/${item.product.imageUrl}`;
+                    const itemKey = item.variant ? `${item.product.id}-${item.variant}` : item.product.id;
 
-                  return (
-                    <div key={itemKey} className="flex gap-3">
-                      <img
-                        src={imageUrl}
-                        alt={item.product.name}
-                        className="w-16 h-16 object-cover rounded bg-muted"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium line-clamp-1">{item.product.name}</p>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
-                          {item.variant && (
-                            <Badge variant="secondary" className="text-xs">
-                              {item.variant === 'exchange' ? 'Exchange' : 'New'}
-                            </Badge>
-                          )}
+                    return (
+                      <div key={itemKey} className="flex gap-3 p-3 rounded-lg bg-muted/30 border border-border/50">
+                        <img
+                          src={imageUrl}
+                          alt={item.product.name}
+                          className="w-16 h-16 object-cover rounded-lg bg-muted"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium line-clamp-2">{item.product.name}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">Qty: {item.quantity}</span>
+                            {item.variant && (
+                              <Badge variant="secondary" className="text-xs">
+                                {item.variant === 'exchange' ? 'Exchange' : 'New'}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-sm font-bold mt-1">R {lineTotal}</p>
                         </div>
-                        <p className="text-sm font-semibold">R {lineTotal}</p>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
 
-                <Separator />
+                <Separator className="my-4" />
 
                 {tradeStatus?.approved && (
-                  <Alert className="bg-primary/10 border-primary">
-                    <BadgePercent className="h-4 w-4" />
-                    <AlertDescription className="text-sm font-medium text-primary">
-                      Trade Pricing Applied: 15% discount
-                    </AlertDescription>
-                  </Alert>
+                  <div className="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-xl p-3 flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <BadgePercent className="h-4 w-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-primary">Trade Pricing Applied</p>
+                      <p className="text-xs text-muted-foreground">15% wholesale discount</p>
+                    </div>
+                  </div>
                 )}
 
-                <div className="space-y-2">
+                {/* Order Totals */}
+                <div className="space-y-3 bg-muted/30 rounded-xl p-4 border border-border/50">
                   <div className="flex justify-between text-sm">
-                    <span>Subtotal</span>
-                    <span data-testid="text-summary-subtotal">R {totalAfterDiscount.toFixed(2)}</span>
+                    <span className="text-muted-foreground">Subtotal</span>
+                    <span className="font-medium" data-testid="text-summary-subtotal">R {totalAfterDiscount.toFixed(2)}</span>
                   </div>
                   {tradeStatus?.approved && tradeDiscount > 0 && (
-                    <div className="flex justify-between text-sm text-primary font-medium">
+                    <div className="flex justify-between text-sm text-primary">
                       <span>Trade Discount (15%)</span>
-                      <span data-testid="text-summary-trade-discount">- R {tradeDiscount.toFixed(2)}</span>
+                      <span className="font-semibold" data-testid="text-summary-trade-discount">- R {tradeDiscount.toFixed(2)}</span>
                     </div>
                   )}
                   {deliveryMethod === "delivery" && (
                     <div className="space-y-1">
                       <div className="flex justify-between text-sm">
-                        <span>Shipping</span>
-                        <span data-testid="text-summary-shipping" className={shippingCost === 0 ? "text-primary font-medium" : ""}>
+                        <span className="text-muted-foreground">Shipping</span>
+                        <span data-testid="text-summary-shipping" className={`font-medium ${shippingCost === 0 ? "text-primary" : ""}`}>
                           {shippingCost === 0 ? "FREE" : `R ${shippingCost.toFixed(2)}`}
                         </span>
                       </div>
                       {hasGlosteelDoors && (
-                        <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
+                        <div className="text-xs text-muted-foreground bg-muted p-2 rounded-lg mt-2">
                           <span className="font-medium text-foreground">R1,900 (Very Heavy Item)</span>
                           <br />
                           Glosteel Garage Door × {glosteelQuantity} = R{glosteelShipping.toLocaleString()}
@@ -798,23 +890,32 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       )}
                     </div>
                   )}
-                  <Separator />
-                  <div className="flex justify-between font-bold text-lg">
-                    <span>Total</span>
-                    <span data-testid="text-summary-total">R {total.toFixed(2)}</span>
+                  
+                  <Separator className="my-3" />
+                  
+                  <div className="flex justify-between items-baseline">
+                    <span className="text-base font-semibold">Total</span>
+                    <span className="text-2xl font-bold text-primary" data-testid="text-summary-total">R {total.toFixed(2)}</span>
                   </div>
                   {tradeStatus?.approved && (
-                    <div className="text-xs text-primary font-medium">
+                    <div className="text-xs text-center text-primary font-medium bg-primary/5 rounded-lg py-2">
                       You saved R {tradeDiscount.toFixed(2)} with trade pricing
                     </div>
                   )}
                 </div>
 
-                <div className="text-xs text-muted-foreground pt-4">
+                {/* Delivery Info Footer */}
+                <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/20 rounded-lg p-3 border border-border/30">
                   {deliveryMethod === "pickup" ? (
-                    <p>Pickup from: Alectra Solutions, Wonderboom, Pretoria, 0182</p>
+                    <>
+                      <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span>Pickup from: Alectra Solutions, Wonderboom, Pretoria</span>
+                    </>
                   ) : (
-                    <p>Delivery via The Courier Guy nationwide.</p>
+                    <>
+                      <Truck className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span>Delivery via The Courier Guy nationwide</span>
+                    </>
                   )}
                 </div>
               </CardContent>
