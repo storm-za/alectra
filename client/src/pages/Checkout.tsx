@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -7,6 +7,8 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+
+const LocationPicker = lazy(() => import("@/components/LocationPicker"));
 import {
   Form,
   FormControl,
@@ -721,47 +723,57 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                                 </div>
                                 <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
                                   {locationStatus === "success" 
-                                    ? "Your exact coordinates have been saved for precise delivery" 
+                                    ? "Drag the pin to fine-tune your exact location" 
                                     : "Help our courier find your exact location for faster, more accurate delivery"
                                   }
                                 </p>
                               </div>
                             </div>
                             
-                            <Button
-                              type="button"
-                              variant={locationStatus === "success" ? "outline" : "default"}
-                              onClick={handleShareLocation}
-                              disabled={locationStatus === "loading" || locationStatus === "success"}
-                              data-testid="button-share-location"
-                              className={`w-full h-12 text-sm font-semibold transition-all duration-300 ${
-                                locationStatus === "success" 
-                                  ? "border-green-500/50 text-green-600 dark:text-green-400 bg-green-500/5 cursor-default" 
-                                  : "shadow-lg hover:shadow-xl"
-                              }`}
-                            >
-                              {locationStatus === "loading" ? (
-                                <>
-                                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                                  Detecting Your Location...
-                                </>
-                              ) : locationStatus === "success" ? (
-                                <>
-                                  <Check className="h-5 w-5 mr-2" />
-                                  GPS Coordinates Saved
-                                </>
-                              ) : (
-                                <>
-                                  <MapPin className="h-5 w-5 mr-2" />
-                                  Share My Location
-                                </>
-                              )}
-                            </Button>
-                            
-                            {locationStatus !== "success" && (
-                              <p className="text-xs text-center text-muted-foreground">
-                                Your browser will ask for permission to access your location
-                              </p>
+                            {locationStatus === "success" && form.watch("locationLatitude") && form.watch("locationLongitude") ? (
+                              <Suspense fallback={
+                                <div className="w-full h-[200px] rounded-lg bg-muted/50 flex items-center justify-center">
+                                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                                </div>
+                              }>
+                                <LocationPicker
+                                  latitude={parseFloat(form.watch("locationLatitude") || "0")}
+                                  longitude={parseFloat(form.watch("locationLongitude") || "0")}
+                                  onLocationChange={(lat, lng) => {
+                                    form.setValue("locationLatitude", lat.toString());
+                                    form.setValue("locationLongitude", lng.toString());
+                                  }}
+                                />
+                                <p className="text-xs text-center text-muted-foreground">
+                                  Click or drag the pin to adjust your exact delivery location
+                                </p>
+                              </Suspense>
+                            ) : (
+                              <>
+                                <Button
+                                  type="button"
+                                  variant="default"
+                                  onClick={handleShareLocation}
+                                  disabled={locationStatus === "loading"}
+                                  data-testid="button-share-location"
+                                  className="w-full h-12 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                                >
+                                  {locationStatus === "loading" ? (
+                                    <>
+                                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                                      Detecting Your Location...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <MapPin className="h-5 w-5 mr-2" />
+                                      Share My Location
+                                    </>
+                                  )}
+                                </Button>
+                                <p className="text-xs text-center text-muted-foreground">
+                                  Your browser will ask for permission to access your location
+                                </p>
+                              </>
                             )}
                           </div>
                         </div>
