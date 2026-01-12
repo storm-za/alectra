@@ -432,6 +432,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Red',
     label: '65kg Blue/White - Left (Red Cone)',
     description: 'Premium 65kg torsion spring with distinctive blue/white color coding. Left-wound with red winding cone, engineered for larger residential doors requiring extra lifting capacity.',
+    image: '/images/torsion-springs/65kg-bluewhite.png',
   },
   '65kg-bluewhite-right': {
     price: 365,
@@ -442,6 +443,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Black',
     label: '65kg Blue/White - Right (Black Cone)',
     description: 'Premium 65kg torsion spring with distinctive blue/white color coding. Right-wound with black winding cone, matched counterpart for optimal door balance.',
+    image: '/images/torsion-springs/65kg-bluewhite.png',
   },
   '70kg-white-left': {
     price: 389,
