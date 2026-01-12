@@ -77,6 +77,8 @@ export const orderItems = pgTable("order_items", {
   quantity: integer("quantity").notNull(),
   priceAtPurchase: decimal("price_at_purchase", { precision: 10, scale: 2 }).notNull(),
   lineSubtotal: decimal("line_subtotal", { precision: 10, scale: 2 }).notNull(),
+  productName: text("product_name"),
+  productImage: text("product_image"),
 });
 
 export const userAddresses = pgTable("user_addresses", {
