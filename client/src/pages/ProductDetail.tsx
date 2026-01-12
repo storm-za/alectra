@@ -221,7 +221,11 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   // Ensure all image URLs start with / and remove duplicates
   const fixImageUrl = (url: string) => url.startsWith('/') ? url : `/${url}`;
   const allImages = [product.imageUrl, ...(product.images || [])].map(fixImageUrl);
-  const images = Array.from(new Set(allImages)); // Remove duplicates
+  const baseImages = Array.from(new Set(allImages)); // Remove duplicates
+  
+  // For torsion springs, use variant-specific image if available
+  const currentVariantImage = isTorsionSpring && torsionSpringInfo?.image ? torsionSpringInfo.image : null;
+  const images = currentVariantImage ? [currentVariantImage, ...baseImages.filter(img => img !== currentVariantImage)] : baseImages;
 
   // Create SEO-friendly description
   const seoDescription = product.description.length > 160 

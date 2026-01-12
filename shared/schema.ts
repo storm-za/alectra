@@ -353,6 +353,7 @@ export interface TorsionSpringVariantInfo {
   coneColor: string;
   label: string;
   description: string;
+  image?: string;
 }
 
 export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpringVariantInfo> = {
@@ -365,6 +366,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Red',
     label: '45kg Green - Left (Red Cone)',
     description: 'Professional-grade 45kg torsion spring with green color coding for easy identification. Left-wound with red winding cone, ideal for standard single garage doors. DASMA certified for reliable performance and safety.',
+    image: '/images/torsion-springs/45kg-green.png',
   },
   '45kg-green-right': {
     price: 289,
@@ -375,6 +377,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Black',
     label: '45kg Green - Right (Black Cone)',
     description: 'Professional-grade 45kg torsion spring with green color coding for easy identification. Right-wound with black winding cone, pairs with left-wound spring for balanced door operation.',
+    image: '/images/torsion-springs/45kg-green.png',
   },
   '50kg-beige-left': {
     price: 295,
