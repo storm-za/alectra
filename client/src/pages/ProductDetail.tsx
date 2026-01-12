@@ -198,6 +198,26 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const isTorsionSpring = product.id === TORSION_SPRING_PRODUCT_ID;
   const torsionSpringInfo = isTorsionSpring ? TORSION_SPRING_VARIANTS[selectedTorsionSpring] : null;
   
+  // Preload all torsion spring variant images for instant switching
+  useEffect(() => {
+    if (isTorsionSpring) {
+      const preloadImages = () => {
+        Object.values(TORSION_SPRING_VARIANTS).forEach((variant) => {
+          if (variant.image) {
+            const img = new Image();
+            img.src = variant.image;
+          }
+        });
+      };
+      // Use requestIdleCallback for non-blocking preload, with setTimeout fallback
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(preloadImages);
+      } else {
+        setTimeout(preloadImages, 100);
+      }
+    }
+  }, [isTorsionSpring]);
+  
   // Calculate display price based on variant for LP Gas cylinders, Glosteel doors, or Torsion Springs
   const getDisplayPrice = () => {
     if (lpGasPricing) {

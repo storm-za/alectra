@@ -366,7 +366,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Red',
     label: '45kg Green - Left (Red Cone)',
     description: 'Professional-grade 45kg torsion spring with green color coding for easy identification. Left-wound with red winding cone, ideal for standard single garage doors. DASMA certified for reliable performance and safety.',
-    image: '/images/torsion-springs/45kg-green.png',
+    image: '/images/torsion-springs/45kg-green.webp',
   },
   '45kg-green-right': {
     price: 289,
@@ -377,7 +377,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Black',
     label: '45kg Green - Right (Black Cone)',
     description: 'Professional-grade 45kg torsion spring with green color coding for easy identification. Right-wound with black winding cone, pairs with left-wound spring for balanced door operation.',
-    image: '/images/torsion-springs/45kg-green.png',
+    image: '/images/torsion-springs/45kg-green.webp',
   },
   '50kg-beige-left': {
     price: 295,
@@ -388,7 +388,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Red',
     label: '50kg Beige - Left (Red Cone)',
     description: 'Heavy-duty 50kg torsion spring with beige color coding. Left-wound with red winding cone, suitable for medium-weight sectional and roller garage doors. Precision-wound for smooth operation.',
-    image: '/images/torsion-springs/50kg-beige.png',
+    image: '/images/torsion-springs/50kg-beige.webp',
   },
   '50kg-beige-right': {
     price: 295,
@@ -399,7 +399,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Black',
     label: '50kg Beige - Right (Black Cone)',
     description: 'Heavy-duty 50kg torsion spring with beige color coding. Right-wound with black winding cone, essential counterpart for balanced garage door lifting.',
-    image: '/images/torsion-springs/50kg-beige.png',
+    image: '/images/torsion-springs/50kg-beige.webp',
   },
   '60kg-blue-left': {
     price: 335,
@@ -410,7 +410,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Red',
     label: '60kg Blue - Left (Red Cone)',
     description: 'Industrial-strength 60kg torsion spring with blue color coding. Left-wound with red winding cone, designed for heavier residential garage doors and light commercial applications.',
-    image: '/images/torsion-springs/60kg-blue.png',
+    image: '/images/torsion-springs/60kg-blue.webp',
   },
   '60kg-blue-right': {
     price: 335,
@@ -421,7 +421,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Black',
     label: '60kg Blue - Right (Black Cone)',
     description: 'Industrial-strength 60kg torsion spring with blue color coding. Right-wound with black winding cone, provides reliable counterbalance for heavier doors.',
-    image: '/images/torsion-springs/60kg-blue.png',
+    image: '/images/torsion-springs/60kg-blue.webp',
   },
   '65kg-bluewhite-left': {
     price: 365,
@@ -432,7 +432,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Red',
     label: '65kg Blue/White - Left (Red Cone)',
     description: 'Premium 65kg torsion spring with distinctive blue/white color coding. Left-wound with red winding cone, engineered for larger residential doors requiring extra lifting capacity.',
-    image: '/images/torsion-springs/65kg-bluewhite.png',
+    image: '/images/torsion-springs/65kg-bluewhite.webp',
   },
   '65kg-bluewhite-right': {
     price: 365,
@@ -443,7 +443,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Black',
     label: '65kg Blue/White - Right (Black Cone)',
     description: 'Premium 65kg torsion spring with distinctive blue/white color coding. Right-wound with black winding cone, matched counterpart for optimal door balance.',
-    image: '/images/torsion-springs/65kg-bluewhite.png',
+    image: '/images/torsion-springs/65kg-bluewhite.webp',
   },
   '70kg-white-left': {
     price: 389,
@@ -454,7 +454,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Red',
     label: '70kg White - Left (Red Cone)',
     description: 'High-capacity 70kg torsion spring with white color coding. Left-wound with red winding cone, perfect for double garage doors and insulated door panels.',
-    image: '/images/torsion-springs/70kg-white.png',
+    image: '/images/torsion-springs/70kg-white.webp',
   },
   '70kg-white-right': {
     price: 389,
@@ -465,7 +465,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Black',
     label: '70kg White - Right (Black Cone)',
     description: 'High-capacity 70kg torsion spring with white color coding. Right-wound with black winding cone, designed for effortless lifting of heavier double doors.',
-    image: '/images/torsion-springs/70kg-white.png',
+    image: '/images/torsion-springs/70kg-white.webp',
   },
   '80kg-yellow-left': {
     price: 465,
@@ -476,7 +476,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Red',
     label: '80kg Yellow - Left (Red Cone)',
     description: 'Commercial-grade 80kg torsion spring with yellow color coding. Left-wound with red winding cone, built for extra-large residential and commercial garage doors.',
-    image: '/images/torsion-springs/80kg-yellow.png',
+    image: '/images/torsion-springs/80kg-yellow.webp',
   },
   '80kg-yellow-right': {
     price: 465,
@@ -487,7 +487,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Black',
     label: '80kg Yellow - Right (Black Cone)',
     description: 'Commercial-grade 80kg torsion spring with yellow color coding. Right-wound with black winding cone, essential for balanced operation of heavy-duty doors.',
-    image: '/images/torsion-springs/80kg-yellow.png',
+    image: '/images/torsion-springs/80kg-yellow.webp',
   },
   '90kg-orange-left': {
     price: 480,
@@ -498,7 +498,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Red',
     label: '90kg Orange - Left (Red Cone)',
     description: 'Extra heavy-duty 90kg torsion spring with orange color coding. Left-wound with red winding cone, suitable for commercial installations and oversized garage doors.',
-    image: '/images/torsion-springs/90kg-orange.png',
+    image: '/images/torsion-springs/90kg-orange.webp',
   },
   '90kg-orange-right': {
     price: 480,
@@ -509,7 +509,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Black',
     label: '90kg Orange - Right (Black Cone)',
     description: 'Extra heavy-duty 90kg torsion spring with orange color coding. Right-wound with black winding cone, reliable counterbalance for demanding applications.',
-    image: '/images/torsion-springs/90kg-orange.png',
+    image: '/images/torsion-springs/90kg-orange.webp',
   },
   '100kg-green-left': {
     price: 670,
@@ -520,7 +520,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Red',
     label: '100kg Green - Left (Red Cone)',
     description: 'Maximum capacity 100kg torsion spring with green color coding. Left-wound with red winding cone, engineered for the heaviest commercial and industrial garage doors.',
-    image: '/images/torsion-springs/100kg-green.png',
+    image: '/images/torsion-springs/100kg-green.webp',
   },
   '100kg-green-right': {
     price: 670,
@@ -531,7 +531,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Black',
     label: '100kg Green - Right (Black Cone)',
     description: 'Maximum capacity 100kg torsion spring with green color coding. Right-wound with black winding cone, the ultimate solution for heavy industrial door systems.',
-    image: '/images/torsion-springs/100kg-green.png',
+    image: '/images/torsion-springs/100kg-green.webp',
   },
 };
 
