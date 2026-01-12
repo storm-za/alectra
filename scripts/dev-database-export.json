@@ -4705,6 +4705,21 @@
       "stock": 100,
       "featured": false,
       "discontinued": false
+    },
+    {
+      "id": "0e2a7bf7-0bdd-4e9f-a544-b3e11aa2de27",
+      "name": "Tension Spring 70kg (Brown)",
+      "slug": "tension-spring-70kg-brown",
+      "description": "Heavy-duty 70kg tension spring (extension spring) for garage door counterbalance systems. Designed for medium-weight doors up to 70kg, this oil-tempered steel spring delivers smooth, reliable lifting assistance throughout its 10,000+ cycle lifespan. Features brown end loop coating following industry color-coding standards for easy weight capacity identification. Tension springs install horizontally along the upper door tracks, stretching when the door closes to store potential energy that assists with opening. Manufactured from premium high-tensile spring steel wire for consistent performance in South African climate conditions. Ideal for standard single-car and light double-car garage doors with extension spring systems. Safety tip: Always replace tension springs in pairs and use safety cables to prevent injury if a spring breaks.",
+      "price": "150.00",
+      "brand": "Alectra",
+      "sku": "ALE-TS-70KG-BRN",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
+      "imageUrl": "/images/tension-spring-70kg-brown.png",
+      "images": [],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
     }
   ],
   "categories": [
