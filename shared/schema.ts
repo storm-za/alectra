@@ -410,6 +410,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Red',
     label: '60kg Blue - Left (Red Cone)',
     description: 'Industrial-strength 60kg torsion spring with blue color coding. Left-wound with red winding cone, designed for heavier residential garage doors and light commercial applications.',
+    image: '/images/torsion-springs/60kg-blue.png',
   },
   '60kg-blue-right': {
     price: 335,
@@ -420,6 +421,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Black',
     label: '60kg Blue - Right (Black Cone)',
     description: 'Industrial-strength 60kg torsion spring with blue color coding. Right-wound with black winding cone, provides reliable counterbalance for heavier doors.',
+    image: '/images/torsion-springs/60kg-blue.png',
   },
   '65kg-bluewhite-left': {
     price: 365,
