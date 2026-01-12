@@ -1395,7 +1395,7 @@
       "name": "Gemini 12V Gate Motor",
       "slug": "gemini-sel-gate-motor",
       "description": "Gemini 12V sliding gate motor delivering reliable automation at an economical price. Trusted South African brand with proven performance.\n\nKey Features:\n- 12V DC operation\n- Battery backup capable\n- Simple installation process\n- Gemini quality reliability\n- Suitable for residential gates\n\nA popular choice for homeowners seeking dependable gate automation.\n\nApplications: Residential sliding gates.",
-      "price": "4499.00",
+      "price": "4199.00",
       "brand": "Gemini",
       "sku": "ALEC-0065-GEMINI_SEL_GATE_MOTOR",
       "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
@@ -3701,23 +3701,6 @@
       "discontinued": true
     },
     {
-      "id": "780934af-6b51-4040-9cbc-10488ac09e8d",
-      "name": "4K Solar Two Screens Outdoor Security Camera",
-      "slug": "4k-solar-two-screens-outdoor-security-camera",
-      "description": "Upgrade your home or business security with the 4K Solar Two Screens Outdoor Camera, the perfect all-in-one surveillance solution powered completely by the sun. This advanced wireless security camera delivers crystal-clear 4K Ultra HD video, dual screens for multiple viewing angles, and reliable protection during loadshedding thanks to its built-in solar panel and long-life battery.\n\nDesigned for South African conditions, this camera offers zero electricity cost, easy installation, and powerful smart features for real-time monitoring from anywhere.\n\nKey Features:\n- 4K Ultra HD video quality for sharp, detailed footage\n- Integrated solar panel—no need for cables or external power\n- Two viewing screens for full-area monitoring\n- Wi-Fi enabled remote access from your smartphone\n- AI motion detection & instant alerts\n- Night vision technology for 24/7 security\n- Weatherproof outdoor design\n- SD card and cloud storage support\n- Ideal for homes, farms, driveways, businesses & construction sites\n\nWhy This Camera Is Perfect for South Africa:\n- Works during loadshedding\n- Completely wireless and solar-powered\n- Ultra-easy installation\n- Designed for high heat and outdoor conditions\n- No monthly fees — just install and use\n\nWhat's in the Box:\n- 4K Solar Two Screens Camera\n- Integrated solar panel\n- Mounting kit\n- Charging cable (backup use)\n- User manual\n\nPerfect For: Home security, Guesthouses & lodges, Farm entrances & yards, Driveways & parking areas, Businesses & shop fronts, Remote properties needing solar security\n\nFree nationwide delivery - Ships from Alectra Solutions, Wonderboom, Pretoria",
-      "price": "995.00",
-      "brand": "Generic",
-      "sku": "ALEC-SOLAR-4K-CAMERA",
-      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
-      "imageUrl": "/attached_assets/products/4k-solar-two-screens-outdoor-camera.png",
-      "images": [
-        "/attached_assets/products/4k-solar-two-screens-outdoor-camera.png"
-      ],
-      "stock": 100,
-      "featured": true,
-      "discontinued": false
-    },
-    {
       "id": "9802dda2-e94a-4599-afdc-1168ee3a62c8",
       "name": "HD Solar PTZ Triple-Lens Security Camera – 3 Screens",
       "slug": "hd-solar-ptz-triple-lens-security-camera-3-screens",
@@ -3733,23 +3716,6 @@
       ],
       "stock": 100,
       "featured": true,
-      "discontinued": false
-    },
-    {
-      "id": "f3003c4d-acb1-4c24-8ac9-50d1dd1be37f",
-      "name": "12V 10A 9-Channel CCTV Battery Backup",
-      "slug": "12v-10a-9-channel-cctv-battery-backup",
-      "description": "Power supply with integrated battery backup for uninterrupted CCTV operation. Maintains recording during power outages.\n\nKey Features:\n- 12V 10A output\n- 9 channels\n- Battery backup function\n- Automatic switchover\n- LED status indicators\n\nEnsures continuous surveillance during loadshedding and power failures.\n\nApplications: Critical surveillance areas, 24/7 monitoring systems.",
-      "price": "399.00",
-      "brand": "Alectra Solutions",
-      "sku": "ALEC-0119-12V_10A_9_CHANNEL_CCTV_BATTERY",
-      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
-      "imageUrl": "attached_assets/products/12v-10a-9-channel-cctv-battery-backup.png",
-      "images": [
-        "attached_assets/products/12v-10a-9-channel-cctv-battery-backup.png"
-      ],
-      "stock": 99,
-      "featured": false,
       "discontinued": false
     },
     {
@@ -3785,6 +3751,40 @@
       "stock": 0,
       "featured": false,
       "discontinued": true
+    },
+    {
+      "id": "f3003c4d-acb1-4c24-8ac9-50d1dd1be37f",
+      "name": "12V 10A 9-Channel CCTV Battery Backup",
+      "slug": "12v-10a-9-channel-cctv-battery-backup",
+      "description": "Power supply with integrated battery backup for uninterrupted CCTV operation. Maintains recording during power outages.\n\nKey Features:\n- 12V 10A output\n- 9 channels\n- Battery backup function\n- Automatic switchover\n- LED status indicators\n\nEnsures continuous surveillance during loadshedding and power failures.\n\nApplications: Critical surveillance areas, 24/7 monitoring systems.",
+      "price": "399.00",
+      "brand": "Alectra Solutions",
+      "sku": "ALEC-0119-12V_10A_9_CHANNEL_CCTV_BATTERY",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
+      "imageUrl": "attached_assets/products/12v-10a-9-channel-cctv-battery-backup.png",
+      "images": [
+        "attached_assets/products/12v-10a-9-channel-cctv-battery-backup.png"
+      ],
+      "stock": 0,
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "780934af-6b51-4040-9cbc-10488ac09e8d",
+      "name": "4K Solar Two Screens Outdoor Security Camera",
+      "slug": "4k-solar-two-screens-outdoor-security-camera",
+      "description": "Upgrade your home or business security with the 4K Solar Two Screens Outdoor Camera, the perfect all-in-one surveillance solution powered completely by the sun. This advanced wireless security camera delivers crystal-clear 4K Ultra HD video, dual screens for multiple viewing angles, and reliable protection during loadshedding thanks to its built-in solar panel and long-life battery.\n\nDesigned for South African conditions, this camera offers zero electricity cost, easy installation, and powerful smart features for real-time monitoring from anywhere.\n\nKey Features:\n- 4K Ultra HD video quality for sharp, detailed footage\n- Integrated solar panel—no need for cables or external power\n- Two viewing screens for full-area monitoring\n- Wi-Fi enabled remote access from your smartphone\n- AI motion detection & instant alerts\n- Night vision technology for 24/7 security\n- Weatherproof outdoor design\n- SD card and cloud storage support\n- Ideal for homes, farms, driveways, businesses & construction sites\n\nWhy This Camera Is Perfect for South Africa:\n- Works during loadshedding\n- Completely wireless and solar-powered\n- Ultra-easy installation\n- Designed for high heat and outdoor conditions\n- No monthly fees — just install and use\n\nWhat's in the Box:\n- 4K Solar Two Screens Camera\n- Integrated solar panel\n- Mounting kit\n- Charging cable (backup use)\n- User manual\n\nPerfect For: Home security, Guesthouses & lodges, Farm entrances & yards, Driveways & parking areas, Businesses & shop fronts, Remote properties needing solar security\n\nFree nationwide delivery - Ships from Alectra Solutions, Wonderboom, Pretoria",
+      "price": "995.00",
+      "brand": "Generic",
+      "sku": "ALEC-SOLAR-4K-CAMERA",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
+      "imageUrl": "/attached_assets/products/4k-solar-two-screens-outdoor-camera.png",
+      "images": [
+        "/attached_assets/products/4k-solar-two-screens-outdoor-camera.png"
+      ],
+      "stock": 0,
+      "featured": true,
+      "discontinued": false
     },
     {
       "id": "02b17b00-b2b7-420d-a3f0-27daf9565c2d",
@@ -4672,6 +4672,21 @@
       "images": [
         "attached_assets/products/centurion-d5-evo-smart-gate-motor-2x-nova-4-button-remotes.png"
       ],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Torsion Spring for Garage Door",
+      "slug": "torsion-spring-garage-door",
+      "description": "Professional-grade torsion springs for sectional and roller garage doors. Available in multiple weight capacities from 45kg to 100kg with industry-standard DASMA color coding for easy identification. Each spring features precision winding with color-coded cones (Red for left-wound, Black for right-wound) ensuring correct installation. Built from high-tensile oil-tempered steel wire for 10,000+ cycle lifespan. Essential replacement part for maintaining smooth, balanced garage door operation. Always replace springs in pairs for optimal performance and safety.",
+      "price": "289.00",
+      "brand": "Alectra",
+      "sku": "TORSION-SPRING",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
+      "imageUrl": "/images/torsion-springs/45kg-green.webp",
+      "images": [],
       "stock": 100,
       "featured": false,
       "discontinued": false
