@@ -4690,6 +4690,21 @@
       "stock": 100,
       "featured": false,
       "discontinued": false
+    },
+    {
+      "id": "3e96cf43-db62-4673-9169-5234b3880311",
+      "name": "Tension Spring 65kg (Red)",
+      "slug": "tension-spring-65kg-red",
+      "description": "Premium 65kg tension spring (extension spring) for garage door counterbalance systems. Engineered for doors weighing up to 65kg, this oil-tempered steel spring provides reliable, consistent lift assistance with every cycle. Features red end loop coating for easy weight identification following industry color standards. Tension springs mount horizontally along the upper tracks and stretch to store energy when the door closes, releasing it to assist opening. Built from high-tensile spring steel wire for 10,000+ cycle durability. Recommended for single-car garage doors with extension spring systems. Always replace tension springs in pairs for balanced operation and optimal safety. Compatible with standard extension spring hardware including safety cables, pulleys, and track mounting brackets.",
+      "price": "155.00",
+      "brand": "Alectra",
+      "sku": "ALE-TS-65KG-RED",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
+      "imageUrl": "/images/tension-spring-65kg-red.png",
+      "images": [],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
     }
   ],
   "categories": [
@@ -5847,6 +5862,13 @@
       "rating": 5,
       "comment": null,
       "createdAt": "2025-12-02T10:27:02.113Z"
+    },
+    {
+      "productSlug": "torsion-spring-garage-door",
+      "authorName": "Keagan",
+      "rating": 5,
+      "comment": "Very easy order experience compared to others.",
+      "createdAt": "2026-01-12T11:33:03.304Z"
     },
     {
       "productSlug": "9kg-exchange",
