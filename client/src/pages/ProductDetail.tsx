@@ -43,10 +43,10 @@ import { WhyShopWithUs } from "@/components/WhyShopWithUs";
 import { TradeAccountBenefits } from "@/components/TradeAccountBenefits";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertProductReviewSchema, LP_GAS_PRICING, LP_GAS_CYLINDER_IDS, GLOSTEEL_PRICING, GLOSTEEL_DOOR_IDS } from "@shared/schema";
+import { insertProductReviewSchema, LP_GAS_PRICING, LP_GAS_CYLINDER_IDS, GLOSTEEL_PRICING, GLOSTEEL_DOOR_IDS, TORSION_SPRING_VARIANTS, TORSION_SPRING_PRODUCT_ID } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import type { Product, ProductReview, InsertProductReview, LpGasVariant, GarageDoorSize, ProductVariant } from "@shared/schema";
+import type { Product, ProductReview, InsertProductReview, LpGasVariant, GarageDoorSize, TorsionSpringVariant, ProductVariant } from "@shared/schema";
 import { z } from "zod";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -68,6 +68,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const [selectedRating, setSelectedRating] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<LpGasVariant>('exchange');
   const [selectedDoorSize, setSelectedDoorSize] = useState<GarageDoorSize>('2450mm');
+  const [selectedTorsionSpring, setSelectedTorsionSpring] = useState<TorsionSpringVariant>('45kg-green-left');
   const [showStickyAddToCart, setShowStickyAddToCart] = useState(false);
   const addToCartButtonRef = useRef<HTMLButtonElement>(null);
   const { toast } = useToast();
@@ -193,7 +194,11 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const isGlosteelDoor = GLOSTEEL_DOOR_IDS.includes(product.id);
   const glosteelPricing = isGlosteelDoor ? GLOSTEEL_PRICING[product.id] : null;
   
-  // Calculate display price based on variant for LP Gas cylinders or Glosteel doors
+  // Check if this is a torsion spring with variant pricing
+  const isTorsionSpring = product.id === TORSION_SPRING_PRODUCT_ID;
+  const torsionSpringInfo = isTorsionSpring ? TORSION_SPRING_VARIANTS[selectedTorsionSpring] : null;
+  
+  // Calculate display price based on variant for LP Gas cylinders, Glosteel doors, or Torsion Springs
   const getDisplayPrice = () => {
     if (lpGasPricing) {
       return lpGasPricing[selectedVariant].toFixed(2);
@@ -201,11 +206,14 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     if (glosteelPricing) {
       return glosteelPricing[selectedDoorSize].toFixed(2);
     }
+    if (torsionSpringInfo) {
+      return torsionSpringInfo.price.toFixed(2);
+    }
     return parseFloat(product.price).toFixed(2);
   };
   
   const displayPrice = getDisplayPrice();
-  const priceValue = lpGasPricing ? lpGasPricing[selectedVariant] : (glosteelPricing ? glosteelPricing[selectedDoorSize] : parseFloat(product.price));
+  const priceValue = lpGasPricing ? lpGasPricing[selectedVariant] : (glosteelPricing ? glosteelPricing[selectedDoorSize] : (torsionSpringInfo ? torsionSpringInfo.price : parseFloat(product.price)));
   const isDiscontinued = (product as any).discontinued === true || priceValue === 0;
   const isLowStock = product.stock > 0 && product.stock <= 5 && !isDiscontinued;
   const isOutOfStock = product.stock === 0 || isDiscontinued;
@@ -424,8 +432,123 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
               </div>
             )}
 
+            {/* Torsion Spring Variant Selector */}
+            {isTorsionSpring && (
+              <div className="mb-6">
+                <h3 className="text-sm font-medium mb-3">Select Spring Specification:</h3>
+                <div className="space-y-4">
+                  {/* Weight/Color Selection */}
+                  <div>
+                    <Label className="text-xs text-muted-foreground mb-2 block">Weight & Color</Label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {(['45kg', '50kg', '60kg', '65kg', '70kg', '80kg', '90kg', '100kg'] as const).map((weight) => {
+                        const leftVariant = Object.keys(TORSION_SPRING_VARIANTS).find(k => k.startsWith(`${weight}-`) && k.endsWith('-left')) as TorsionSpringVariant;
+                        const info = TORSION_SPRING_VARIANTS[leftVariant];
+                        const isSelected = selectedTorsionSpring.startsWith(`${weight}-`);
+                        return (
+                          <button
+                            key={weight}
+                            type="button"
+                            onClick={() => {
+                              const currentWinding = selectedTorsionSpring.endsWith('-left') ? 'left' : 'right';
+                              const newVariant = `${weight}-${info.colorCode}-${currentWinding}` as TorsionSpringVariant;
+                              setSelectedTorsionSpring(newVariant);
+                            }}
+                            className={`flex flex-col items-center gap-1 rounded-md border-2 p-3 transition-colors ${
+                              isSelected ? 'border-primary bg-primary/5' : 'border-muted hover:bg-accent'
+                            }`}
+                            data-testid={`button-spring-${weight}`}
+                          >
+                            <span className="text-sm font-semibold">{weight}</span>
+                            <Badge 
+                              variant="outline" 
+                              className="text-xs"
+                              style={{ 
+                                borderColor: info.colorCode === 'bluewhite' ? '#3b82f6' : info.colorCode,
+                                color: info.colorCode === 'bluewhite' ? '#3b82f6' : (info.colorCode === 'white' || info.colorCode === 'yellow' || info.colorCode === 'beige' ? '#000' : info.colorCode)
+                              }}
+                            >
+                              {info.color}
+                            </Badge>
+                            <span className="text-xs font-medium text-primary">R{info.price}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  
+                  {/* Winding Direction Selection */}
+                  <div>
+                    <Label className="text-xs text-muted-foreground mb-2 block">Winding Direction</Label>
+                    <RadioGroup
+                      value={selectedTorsionSpring.endsWith('-left') ? 'left' : 'right'}
+                      onValueChange={(value) => {
+                        const currentParts = selectedTorsionSpring.split('-');
+                        const weight = currentParts[0];
+                        const color = currentParts[1];
+                        const newVariant = `${weight}-${color}-${value}` as TorsionSpringVariant;
+                        setSelectedTorsionSpring(newVariant);
+                      }}
+                      className="grid grid-cols-2 gap-3"
+                    >
+                      <div className="relative">
+                        <RadioGroupItem
+                          value="left"
+                          id="winding-left"
+                          className="peer sr-only"
+                          data-testid="radio-winding-left"
+                        />
+                        <Label
+                          htmlFor="winding-left"
+                          className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold">Left-Wound</span>
+                            <Badge className="bg-red-500 text-white text-xs">Red Cone</Badge>
+                          </div>
+                          <span className="text-sm text-muted-foreground">
+                            Installed on the right side of center bracket
+                          </span>
+                        </Label>
+                      </div>
+                      <div className="relative">
+                        <RadioGroupItem
+                          value="right"
+                          id="winding-right"
+                          className="peer sr-only"
+                          data-testid="radio-winding-right"
+                        />
+                        <Label
+                          htmlFor="winding-right"
+                          className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold">Right-Wound</span>
+                            <Badge className="bg-black text-white text-xs">Black Cone</Badge>
+                          </div>
+                          <span className="text-sm text-muted-foreground">
+                            Installed on the left side of center bracket
+                          </span>
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  
+                  {/* Selected Variant Description */}
+                  {torsionSpringInfo && (
+                    <Alert className="border-primary/50 bg-primary/5">
+                      <AlertDescription className="text-sm">
+                        <strong>Selected:</strong> {torsionSpringInfo.label}
+                        <p className="mt-1 text-muted-foreground">{torsionSpringInfo.description}</p>
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div className="mb-8">
-              <div className="flex items-baseline gap-2">
+              <div className="flex items-baseline gap-2 flex-wrap">
                 <span className="text-4xl font-bold" data-testid="text-product-price">
                   R {displayPrice}
                 </span>
@@ -438,6 +561,11 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 {isGlosteelDoor && (
                   <Badge variant="secondary" className="ml-2">
                     {selectedDoorSize}
+                  </Badge>
+                )}
+                {isTorsionSpring && torsionSpringInfo && (
+                  <Badge variant="secondary" className="ml-2">
+                    {torsionSpringInfo.weight} {torsionSpringInfo.winding === 'left' ? 'Left' : 'Right'}
                   </Badge>
                 )}
               </div>
@@ -478,6 +606,8 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                     onAddToCart(product, quantity, selectedVariant, displayPrice);
                   } else if (isGlosteelDoor && glosteelPricing) {
                     onAddToCart(product, quantity, selectedDoorSize, displayPrice);
+                  } else if (isTorsionSpring && torsionSpringInfo) {
+                    onAddToCart(product, quantity, selectedTorsionSpring, displayPrice);
                   } else {
                     onAddToCart(product, quantity);
                   }
@@ -942,6 +1072,8 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                   onAddToCart(product, quantity, selectedVariant, displayPrice);
                 } else if (isGlosteelDoor && glosteelPricing) {
                   onAddToCart(product, quantity, selectedDoorSize, displayPrice);
+                } else if (isTorsionSpring && torsionSpringInfo) {
+                  onAddToCart(product, quantity, selectedTorsionSpring, displayPrice);
                 } else {
                   onAddToCart(product, quantity);
                 }

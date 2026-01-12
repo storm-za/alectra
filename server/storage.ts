@@ -314,7 +314,7 @@ export class DatabaseStorage implements IStorage {
         const lineTotal = price * item.quantity;
         totalVatInclusive += lineTotal;
 
-        // Build product name with variant suffix for LP Gas / Glosteel doors
+        // Build product name with variant suffix for LP Gas / Glosteel doors / Torsion Springs
         let displayName = product.name;
         if (item.variant) {
           if (item.variant === 'exchange') {
@@ -323,6 +323,13 @@ export class DatabaseStorage implements IStorage {
             displayName = `${product.name} (New Cylinder)`;
           } else if (item.variant === '2450mm' || item.variant === '2550mm') {
             displayName = `${product.name} (${item.variant})`;
+          } else if (item.variant.includes('kg-') && (item.variant.endsWith('-left') || item.variant.endsWith('-right'))) {
+            // Torsion spring variant - format: 45kg-green-left -> "45kg Green Left-Wound"
+            const parts = item.variant.split('-');
+            const weight = parts[0];
+            const color = parts[1].charAt(0).toUpperCase() + parts[1].slice(1);
+            const winding = parts[2] === 'left' ? 'Left-Wound' : 'Right-Wound';
+            displayName = `${product.name} (${weight} ${color} ${winding})`;
           } else {
             displayName = `${product.name} (${item.variant})`;
           }

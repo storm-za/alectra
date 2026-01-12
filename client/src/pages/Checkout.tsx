@@ -29,7 +29,7 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { FREE_SHIPPING_PRODUCT_IDS, type CartItem, type UserAddress, type PaystackInitializeResponse, type PaystackVerifyResponse } from "@shared/schema";
+import { FREE_SHIPPING_PRODUCT_IDS, TORSION_SPRING_VARIANTS, type CartItem, type UserAddress, type PaystackInitializeResponse, type PaystackVerifyResponse, type TorsionSpringVariant } from "@shared/schema";
 import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Wallet, ShoppingCart, Navigation, Check, Loader2 } from "lucide-react";
 import { SiVisa, SiMastercard, SiApplepay, SiGooglepay } from "react-icons/si";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -970,11 +970,16 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                         />
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium line-clamp-2">{item.product.name}</p>
-                          <div className="flex items-center gap-2 mt-1">
+                          <div className="flex items-center gap-2 mt-1 flex-wrap">
                             <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">Qty: {item.quantity}</span>
                             {item.variant && (
                               <Badge variant="secondary" className="text-xs">
-                                {item.variant === 'exchange' ? 'Exchange' : 'New'}
+                                {item.variant === 'exchange' ? 'Exchange' : 
+                                 item.variant === 'new' ? 'New Cylinder' :
+                                 item.variant === '2450mm' || item.variant === '2550mm' ? item.variant :
+                                 TORSION_SPRING_VARIANTS[item.variant as TorsionSpringVariant] 
+                                   ? `${TORSION_SPRING_VARIANTS[item.variant as TorsionSpringVariant].weight} ${TORSION_SPRING_VARIANTS[item.variant as TorsionSpringVariant].winding === 'left' ? 'Left' : 'Right'}`
+                                   : item.variant}
                               </Badge>
                             )}
                           </div>

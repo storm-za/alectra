@@ -4,7 +4,8 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Minus, Plus, X } from "lucide-react";
 import { Link } from "wouter";
-import type { CartItem, ProductVariant } from "@shared/schema";
+import type { CartItem, ProductVariant, TorsionSpringVariant } from "@shared/schema";
+import { TORSION_SPRING_VARIANTS } from "@shared/schema";
 
 interface CartDrawerProps {
   open: boolean;
@@ -74,11 +75,17 @@ export default function CartDrawer({
                       <h4 className="font-medium text-sm line-clamp-2" data-testid={`text-cart-item-name-${itemKey}`}>
                         {item.product.name}
                       </h4>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
                         <p className="text-xs text-muted-foreground">{item.product.brand}</p>
                         {item.variant && (
                           <Badge variant="secondary" className="text-xs">
-                            {item.variant === 'exchange' ? 'Exchange' : 'New Cylinder'}
+                            {item.variant === 'exchange' ? 'Exchange' : 
+                             item.variant === 'new' ? 'New Cylinder' :
+                             item.variant === '2450mm' || item.variant === '2550mm' ? item.variant :
+                             // Check if it's a torsion spring variant
+                             TORSION_SPRING_VARIANTS[item.variant as TorsionSpringVariant] 
+                               ? `${TORSION_SPRING_VARIANTS[item.variant as TorsionSpringVariant].weight} ${TORSION_SPRING_VARIANTS[item.variant as TorsionSpringVariant].winding === 'left' ? 'Left' : 'Right'}`
+                               : item.variant}
                           </Badge>
                         )}
                       </div>

@@ -307,7 +307,16 @@ export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
 
 export type LpGasVariant = 'exchange' | 'new';
 export type GarageDoorSize = '2450mm' | '2550mm';
-export type ProductVariant = LpGasVariant | GarageDoorSize;
+export type TorsionSpringVariant = 
+  | '45kg-green-left' | '45kg-green-right'
+  | '50kg-beige-left' | '50kg-beige-right'
+  | '60kg-blue-left' | '60kg-blue-right'
+  | '65kg-bluewhite-left' | '65kg-bluewhite-right'
+  | '70kg-white-left' | '70kg-white-right'
+  | '80kg-yellow-left' | '80kg-yellow-right'
+  | '90kg-orange-left' | '90kg-orange-right'
+  | '100kg-green-left' | '100kg-green-right';
+export type ProductVariant = LpGasVariant | GarageDoorSize | TorsionSpringVariant;
 
 export type CartItem = {
   product: Product;
@@ -333,6 +342,184 @@ export const GLOSTEEL_PRICING: Record<string, { '2450mm': number; '2550mm': numb
 };
 
 export const GLOSTEEL_DOOR_IDS = Object.keys(GLOSTEEL_PRICING);
+
+// Torsion Spring variant pricing and metadata configuration
+export interface TorsionSpringVariantInfo {
+  price: number;
+  weight: string;
+  color: string;
+  colorCode: string;
+  winding: 'left' | 'right';
+  coneColor: string;
+  label: string;
+  description: string;
+}
+
+export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpringVariantInfo> = {
+  '45kg-green-left': {
+    price: 289,
+    weight: '45kg',
+    color: 'Green',
+    colorCode: 'green',
+    winding: 'left',
+    coneColor: 'Red',
+    label: '45kg Green - Left (Red Cone)',
+    description: 'Professional-grade 45kg torsion spring with green color coding for easy identification. Left-wound with red winding cone, ideal for standard single garage doors. DASMA certified for reliable performance and safety.',
+  },
+  '45kg-green-right': {
+    price: 289,
+    weight: '45kg',
+    color: 'Green',
+    colorCode: 'green',
+    winding: 'right',
+    coneColor: 'Black',
+    label: '45kg Green - Right (Black Cone)',
+    description: 'Professional-grade 45kg torsion spring with green color coding for easy identification. Right-wound with black winding cone, pairs with left-wound spring for balanced door operation.',
+  },
+  '50kg-beige-left': {
+    price: 295,
+    weight: '50kg',
+    color: 'Beige',
+    colorCode: 'beige',
+    winding: 'left',
+    coneColor: 'Red',
+    label: '50kg Beige - Left (Red Cone)',
+    description: 'Heavy-duty 50kg torsion spring with beige color coding. Left-wound with red winding cone, suitable for medium-weight sectional and roller garage doors. Precision-wound for smooth operation.',
+  },
+  '50kg-beige-right': {
+    price: 295,
+    weight: '50kg',
+    color: 'Beige',
+    colorCode: 'beige',
+    winding: 'right',
+    coneColor: 'Black',
+    label: '50kg Beige - Right (Black Cone)',
+    description: 'Heavy-duty 50kg torsion spring with beige color coding. Right-wound with black winding cone, essential counterpart for balanced garage door lifting.',
+  },
+  '60kg-blue-left': {
+    price: 335,
+    weight: '60kg',
+    color: 'Blue',
+    colorCode: 'blue',
+    winding: 'left',
+    coneColor: 'Red',
+    label: '60kg Blue - Left (Red Cone)',
+    description: 'Industrial-strength 60kg torsion spring with blue color coding. Left-wound with red winding cone, designed for heavier residential garage doors and light commercial applications.',
+  },
+  '60kg-blue-right': {
+    price: 335,
+    weight: '60kg',
+    color: 'Blue',
+    colorCode: 'blue',
+    winding: 'right',
+    coneColor: 'Black',
+    label: '60kg Blue - Right (Black Cone)',
+    description: 'Industrial-strength 60kg torsion spring with blue color coding. Right-wound with black winding cone, provides reliable counterbalance for heavier doors.',
+  },
+  '65kg-bluewhite-left': {
+    price: 365,
+    weight: '65kg',
+    color: 'Blue/White',
+    colorCode: 'bluewhite',
+    winding: 'left',
+    coneColor: 'Red',
+    label: '65kg Blue/White - Left (Red Cone)',
+    description: 'Premium 65kg torsion spring with distinctive blue/white color coding. Left-wound with red winding cone, engineered for larger residential doors requiring extra lifting capacity.',
+  },
+  '65kg-bluewhite-right': {
+    price: 365,
+    weight: '65kg',
+    color: 'Blue/White',
+    colorCode: 'bluewhite',
+    winding: 'right',
+    coneColor: 'Black',
+    label: '65kg Blue/White - Right (Black Cone)',
+    description: 'Premium 65kg torsion spring with distinctive blue/white color coding. Right-wound with black winding cone, matched counterpart for optimal door balance.',
+  },
+  '70kg-white-left': {
+    price: 389,
+    weight: '70kg',
+    color: 'White',
+    colorCode: 'white',
+    winding: 'left',
+    coneColor: 'Red',
+    label: '70kg White - Left (Red Cone)',
+    description: 'High-capacity 70kg torsion spring with white color coding. Left-wound with red winding cone, perfect for double garage doors and insulated door panels.',
+  },
+  '70kg-white-right': {
+    price: 389,
+    weight: '70kg',
+    color: 'White',
+    colorCode: 'white',
+    winding: 'right',
+    coneColor: 'Black',
+    label: '70kg White - Right (Black Cone)',
+    description: 'High-capacity 70kg torsion spring with white color coding. Right-wound with black winding cone, designed for effortless lifting of heavier double doors.',
+  },
+  '80kg-yellow-left': {
+    price: 465,
+    weight: '80kg',
+    color: 'Yellow',
+    colorCode: 'yellow',
+    winding: 'left',
+    coneColor: 'Red',
+    label: '80kg Yellow - Left (Red Cone)',
+    description: 'Commercial-grade 80kg torsion spring with yellow color coding. Left-wound with red winding cone, built for extra-large residential and commercial garage doors.',
+  },
+  '80kg-yellow-right': {
+    price: 465,
+    weight: '80kg',
+    color: 'Yellow',
+    colorCode: 'yellow',
+    winding: 'right',
+    coneColor: 'Black',
+    label: '80kg Yellow - Right (Black Cone)',
+    description: 'Commercial-grade 80kg torsion spring with yellow color coding. Right-wound with black winding cone, essential for balanced operation of heavy-duty doors.',
+  },
+  '90kg-orange-left': {
+    price: 480,
+    weight: '90kg',
+    color: 'Orange',
+    colorCode: 'orange',
+    winding: 'left',
+    coneColor: 'Red',
+    label: '90kg Orange - Left (Red Cone)',
+    description: 'Extra heavy-duty 90kg torsion spring with orange color coding. Left-wound with red winding cone, suitable for commercial installations and oversized garage doors.',
+  },
+  '90kg-orange-right': {
+    price: 480,
+    weight: '90kg',
+    color: 'Orange',
+    colorCode: 'orange',
+    winding: 'right',
+    coneColor: 'Black',
+    label: '90kg Orange - Right (Black Cone)',
+    description: 'Extra heavy-duty 90kg torsion spring with orange color coding. Right-wound with black winding cone, reliable counterbalance for demanding applications.',
+  },
+  '100kg-green-left': {
+    price: 670,
+    weight: '100kg',
+    color: 'Green',
+    colorCode: 'green',
+    winding: 'left',
+    coneColor: 'Red',
+    label: '100kg Green - Left (Red Cone)',
+    description: 'Maximum capacity 100kg torsion spring with green color coding. Left-wound with red winding cone, engineered for the heaviest commercial and industrial garage doors.',
+  },
+  '100kg-green-right': {
+    price: 670,
+    weight: '100kg',
+    color: 'Green',
+    colorCode: 'green',
+    winding: 'right',
+    coneColor: 'Black',
+    label: '100kg Green - Right (Black Cone)',
+    description: 'Maximum capacity 100kg torsion spring with green color coding. Right-wound with black winding cone, the ultimate solution for heavy industrial door systems.',
+  },
+};
+
+// Torsion spring product ID
+export const TORSION_SPRING_PRODUCT_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
 
 // Products that qualify for FREE shipping
 export const FREE_SHIPPING_PRODUCT_IDS = [
