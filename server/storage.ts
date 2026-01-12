@@ -290,7 +290,7 @@ export class DatabaseStorage implements IStorage {
 
       // 2. Validate stock and calculate totals (prices are VAT-inclusive)
       let totalVatInclusive = 0;
-      const itemsToCreate: Array<{ productId: string; quantity: number; priceAtPurchase: string; lineSubtotal: string }> = [];
+      const itemsToCreate: Array<{ productId: string; quantity: number; priceAtPurchase: string; lineSubtotal: string; productName: string; productImage: string | null }> = [];
 
       for (const item of request.items) {
         const product = productMap.get(item.productId);
@@ -314,11 +314,27 @@ export class DatabaseStorage implements IStorage {
         const lineTotal = price * item.quantity;
         totalVatInclusive += lineTotal;
 
+        // Build product name with variant suffix for LP Gas / Glosteel doors
+        let displayName = product.name;
+        if (item.variant) {
+          if (item.variant === 'exchange') {
+            displayName = `${product.name} (Exchange)`;
+          } else if (item.variant === 'new') {
+            displayName = `${product.name} (New Cylinder)`;
+          } else if (item.variant === '2450mm' || item.variant === '2550mm') {
+            displayName = `${product.name} (${item.variant})`;
+          } else {
+            displayName = `${product.name} (${item.variant})`;
+          }
+        }
+
         itemsToCreate.push({
           productId: product.id,
           quantity: item.quantity,
           priceAtPurchase: priceString,
           lineSubtotal: lineTotal.toFixed(2),
+          productName: displayName,
+          productImage: product.imageUrl,
         });
       }
 
@@ -451,6 +467,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getOrderItemsWithProducts(orderId: string): Promise<Array<OrderItem & { productName: string; productImage: string | null }>> {
+    // Fetch order items with joined product data for fallback
     const items = await db
       .select({
         id: orderItems.id,
@@ -459,14 +476,26 @@ export class DatabaseStorage implements IStorage {
         quantity: orderItems.quantity,
         priceAtPurchase: orderItems.priceAtPurchase,
         lineSubtotal: orderItems.lineSubtotal,
-        productName: products.name,
-        productImage: products.imageUrl,
+        storedProductName: orderItems.productName,
+        storedProductImage: orderItems.productImage,
+        fallbackProductName: products.name,
+        fallbackProductImage: products.imageUrl,
       })
       .from(orderItems)
       .innerJoin(products, eq(orderItems.productId, products.id))
       .where(eq(orderItems.orderId, orderId));
     
-    return items;
+    // Use stored name/image if available, otherwise fall back to current product data
+    return items.map(item => ({
+      id: item.id,
+      orderId: item.orderId,
+      productId: item.productId,
+      quantity: item.quantity,
+      priceAtPurchase: item.priceAtPurchase,
+      lineSubtotal: item.lineSubtotal,
+      productName: item.storedProductName || item.fallbackProductName,
+      productImage: item.storedProductImage || item.fallbackProductImage,
+    }));
   }
 
   async updateOrderPaymentReference(orderId: string, paymentReference: string): Promise<void> {
