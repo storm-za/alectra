@@ -388,6 +388,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Red',
     label: '50kg Beige - Left (Red Cone)',
     description: 'Heavy-duty 50kg torsion spring with beige color coding. Left-wound with red winding cone, suitable for medium-weight sectional and roller garage doors. Precision-wound for smooth operation.',
+    image: '/images/torsion-springs/50kg-beige.png',
   },
   '50kg-beige-right': {
     price: 295,
@@ -398,6 +399,7 @@ export const TORSION_SPRING_VARIANTS: Record<TorsionSpringVariant, TorsionSpring
     coneColor: 'Black',
     label: '50kg Beige - Right (Black Cone)',
     description: 'Heavy-duty 50kg torsion spring with beige color coding. Right-wound with black winding cone, essential counterpart for balanced garage door lifting.',
+    image: '/images/torsion-springs/50kg-beige.png',
   },
   '60kg-blue-left': {
     price: 335,
