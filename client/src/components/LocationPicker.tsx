@@ -1,5 +1,5 @@
 import { useEffect, useRef, useMemo } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -17,6 +17,25 @@ interface LocationPickerProps {
   latitude: number;
   longitude: number;
   onLocationChange: (lat: number, lng: number) => void;
+}
+
+function MapCenterUpdater({ latitude, longitude }: { latitude: number; longitude: number }) {
+  const map = useMap();
+  const prevCoordsRef = useRef({ lat: latitude, lng: longitude });
+  
+  useEffect(() => {
+    const prevCoords = prevCoordsRef.current;
+    const distance = Math.sqrt(
+      Math.pow(latitude - prevCoords.lat, 2) + Math.pow(longitude - prevCoords.lng, 2)
+    );
+    
+    if (distance > 0.001) {
+      map.flyTo([latitude, longitude], 16, { duration: 1 });
+      prevCoordsRef.current = { lat: latitude, lng: longitude };
+    }
+  }, [latitude, longitude, map]);
+  
+  return null;
 }
 
 function DraggableMarker({ 
@@ -73,6 +92,7 @@ export default function LocationPicker({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <MapCenterUpdater latitude={latitude} longitude={longitude} />
         <DraggableMarker
           latitude={latitude}
           longitude={longitude}
