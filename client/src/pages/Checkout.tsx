@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 const LocationPicker = lazy(() => import("@/components/LocationPicker"));
+import AddressSearch, { type ParsedAddress } from "@/components/AddressSearch";
 import {
   Form,
   FormControl,
@@ -30,7 +31,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { FREE_SHIPPING_PRODUCT_IDS, TORSION_SPRING_VARIANTS, type CartItem, type UserAddress, type PaystackInitializeResponse, type PaystackVerifyResponse, type TorsionSpringVariant } from "@shared/schema";
-import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Wallet, ShoppingCart, Navigation, Check, Loader2 } from "lucide-react";
+import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Wallet, ShoppingCart, Navigation, Check, Loader2, Search, PenLine } from "lucide-react";
 import { SiVisa, SiMastercard, SiApplepay, SiGooglepay } from "react-icons/si";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -69,12 +70,16 @@ interface CheckoutProps {
 
 type PaymentMethod = "paystack" | "yoco";
 
+type AddressEntryMode = "search" | "manual";
+
 export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("yoco");
   const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [addressEntryMode, setAddressEntryMode] = useState<AddressEntryMode>("search");
+  const [searchedAddress, setSearchedAddress] = useState<ParsedAddress | null>(null);
 
   const { data: user } = useQuery<{ user: any | null }>({
     queryKey: ["/api/auth/me"],
@@ -183,6 +188,26 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       form.setValue("deliveryProvince", address.province);
       form.setValue("deliveryPostalCode", address.postalCode);
     }
+  };
+
+  const handleSearchAddressSelect = (parsedAddress: ParsedAddress) => {
+    setSearchedAddress(parsedAddress);
+    form.setValue("deliveryAddress", parsedAddress.streetAddress);
+    form.setValue("deliveryCity", parsedAddress.city);
+    form.setValue("deliveryProvince", parsedAddress.province);
+    form.setValue("deliveryPostalCode", parsedAddress.postalCode);
+    form.setValue("locationLatitude", parsedAddress.latitude.toString());
+    form.setValue("locationLongitude", parsedAddress.longitude.toString());
+    setLocationStatus("success");
+    toast({
+      title: "Address found",
+      description: "Confirm the pin location on the map, then review your details below.",
+    });
+  };
+
+  const handleMapLocationChange = (lat: number, lng: number) => {
+    form.setValue("locationLatitude", lat.toString());
+    form.setValue("locationLongitude", lng.toString());
   };
 
   const createOrderMutation = useMutation({
@@ -618,165 +643,343 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
 
                     {deliveryMethod === "delivery" && (
                       <>
-                        <FormField
-                          control={form.control}
-                          name="deliveryAddress"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="flex items-center gap-2">
-                                <Home className="h-4 w-4 text-muted-foreground" />
-                                Delivery Address
-                              </FormLabel>
-                              <FormControl>
-                                <Textarea placeholder="123 Main Street, Apartment 4B" {...field} data-testid="input-address" className="min-h-[80px]" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="deliveryCity"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>City</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="Pretoria" {...field} data-testid="input-city" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={form.control}
-                            name="deliveryProvince"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Province</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger data-testid="select-province">
-                                      <SelectValue placeholder="Select province" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="Gauteng" data-testid="select-item-province-gauteng">Gauteng</SelectItem>
-                                    <SelectItem value="Western Cape" data-testid="select-item-province-western-cape">Western Cape</SelectItem>
-                                    <SelectItem value="KwaZulu-Natal" data-testid="select-item-province-kwazulu-natal">KwaZulu-Natal</SelectItem>
-                                    <SelectItem value="Eastern Cape" data-testid="select-item-province-eastern-cape">Eastern Cape</SelectItem>
-                                    <SelectItem value="Free State" data-testid="select-item-province-free-state">Free State</SelectItem>
-                                    <SelectItem value="Limpopo" data-testid="select-item-province-limpopo">Limpopo</SelectItem>
-                                    <SelectItem value="Mpumalanga" data-testid="select-item-province-mpumalanga">Mpumalanga</SelectItem>
-                                    <SelectItem value="Northern Cape" data-testid="select-item-province-northern-cape">Northern Cape</SelectItem>
-                                    <SelectItem value="North West" data-testid="select-item-province-north-west">North West</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={form.control}
-                            name="deliveryPostalCode"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Postal Code</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="0001" {...field} data-testid="input-postal-code" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        {/* GPS Location Sharing - Enterprise Style */}
-                        <div className={`relative overflow-hidden rounded-xl border transition-all duration-300 ${
-                          locationStatus === "success" 
-                            ? "bg-gradient-to-br from-green-500/5 via-green-500/10 to-emerald-500/5 border-green-500/30" 
-                            : "bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 border-primary/20"
-                        }`}>
-                          <div className="absolute inset-0 bg-grid-white/5 [mask-image:linear-gradient(0deg,transparent,black)]" />
-                          <div className="relative p-5 space-y-4">
-                            <div className="flex items-start gap-4">
-                              <div className={`h-12 w-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg transition-colors duration-300 ${
-                                locationStatus === "success" 
-                                  ? "bg-gradient-to-br from-green-500 to-emerald-600" 
-                                  : "bg-gradient-to-br from-primary to-primary/80"
-                              }`}>
-                                {locationStatus === "success" ? (
-                                  <Check className="h-6 w-6 text-white" />
-                                ) : (
-                                  <Navigation className="h-6 w-6 text-white" />
-                                )}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <h4 className="font-semibold text-base">
-                                    {locationStatus === "success" ? "Location Pinned" : "Pin Your Exact Location"}
-                                  </h4>
-                                  <Badge variant="secondary" className="text-xs font-medium">Optional</Badge>
-                                </div>
-                                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                                  {locationStatus === "success" 
-                                    ? "Drag the pin to fine-tune your exact location" 
-                                    : "Help our courier find your exact location for faster, more accurate delivery"
-                                  }
-                                </p>
-                              </div>
-                            </div>
-                            
-                            {locationStatus === "success" && form.watch("locationLatitude") && form.watch("locationLongitude") ? (
-                              <Suspense fallback={
-                                <div className="w-full h-[200px] rounded-lg bg-muted/50 flex items-center justify-center">
-                                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                                </div>
-                              }>
-                                <LocationPicker
-                                  latitude={parseFloat(form.watch("locationLatitude") || "0")}
-                                  longitude={parseFloat(form.watch("locationLongitude") || "0")}
-                                  onLocationChange={(lat, lng) => {
-                                    form.setValue("locationLatitude", lat.toString());
-                                    form.setValue("locationLongitude", lng.toString());
-                                  }}
-                                />
-                                <p className="text-xs text-center text-muted-foreground">
-                                  Click or drag the pin to adjust your exact delivery location
-                                </p>
-                              </Suspense>
-                            ) : (
-                              <>
-                                <Button
-                                  type="button"
-                                  variant="default"
-                                  onClick={handleShareLocation}
-                                  disabled={locationStatus === "loading"}
-                                  data-testid="button-share-location"
-                                  className="w-full h-12 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                                >
-                                  {locationStatus === "loading" ? (
-                                    <>
-                                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                                      Detecting Your Location...
-                                    </>
-                                  ) : (
-                                    <>
-                                      <MapPin className="h-5 w-5 mr-2" />
-                                      Share My Location
-                                    </>
-                                  )}
-                                </Button>
-                                <p className="text-xs text-center text-muted-foreground">
-                                  Your browser will ask for permission to access your location
-                                </p>
-                              </>
-                            )}
+                        {/* Address Entry Mode Toggle */}
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 pb-2">
+                          <span className="text-sm font-medium text-muted-foreground">How would you like to enter your address?</span>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              variant={addressEntryMode === "search" ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setAddressEntryMode("search")}
+                              className="gap-2"
+                              data-testid="button-address-mode-search"
+                            >
+                              <Search className="h-4 w-4" />
+                              Search Address
+                            </Button>
+                            <Button
+                              type="button"
+                              variant={addressEntryMode === "manual" ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setAddressEntryMode("manual")}
+                              className="gap-2"
+                              data-testid="button-address-mode-manual"
+                            >
+                              <PenLine className="h-4 w-4" />
+                              Enter Manually
+                            </Button>
                           </div>
                         </div>
+
+                        {/* Search Address Mode */}
+                        {addressEntryMode === "search" && (
+                          <div className="space-y-4">
+                            <div className="relative overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5">
+                              <div className="absolute inset-0 bg-grid-white/5 [mask-image:linear-gradient(0deg,transparent,black)]" />
+                              <div className="relative p-5 space-y-4">
+                                <div className="flex items-start gap-4">
+                                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center flex-shrink-0 shadow-lg">
+                                    <Search className="h-6 w-6 text-white" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="font-semibold text-base">Search Your Address</h4>
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                      Type your address to find it on the map, then confirm the location
+                                    </p>
+                                  </div>
+                                </div>
+                                
+                                <AddressSearch
+                                  onAddressSelect={handleSearchAddressSelect}
+                                  placeholder="Start typing your address (e.g., 123 Main Street, Pretoria)"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Map Preview after search */}
+                            {searchedAddress && locationStatus === "success" && form.watch("locationLatitude") && form.watch("locationLongitude") && (
+                              <div className="relative overflow-hidden rounded-xl border border-green-500/30 bg-gradient-to-br from-green-500/5 via-green-500/10 to-emerald-500/5">
+                                <div className="relative p-5 space-y-4">
+                                  <div className="flex items-start gap-4">
+                                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center flex-shrink-0 shadow-lg">
+                                      <Check className="h-6 w-6 text-white" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <h4 className="font-semibold text-base">Confirm Your Location</h4>
+                                      <p className="text-sm text-muted-foreground mt-1">
+                                        Drag the pin to fine-tune your exact delivery location
+                                      </p>
+                                    </div>
+                                  </div>
+                                  
+                                  <Suspense fallback={
+                                    <div className="w-full h-[200px] rounded-lg bg-muted/50 flex items-center justify-center">
+                                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                                    </div>
+                                  }>
+                                    <LocationPicker
+                                      latitude={parseFloat(form.watch("locationLatitude") || "0")}
+                                      longitude={parseFloat(form.watch("locationLongitude") || "0")}
+                                      onLocationChange={handleMapLocationChange}
+                                    />
+                                  </Suspense>
+                                  <p className="text-xs text-center text-muted-foreground">
+                                    Click or drag the pin to adjust your exact delivery location
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Auto-filled Address Details (editable) */}
+                            {searchedAddress && (
+                              <div className="space-y-4 pt-2">
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                  <Check className="h-4 w-4 text-green-500" />
+                                  <span>Address auto-filled from your search. You can edit if needed:</span>
+                                </div>
+                                
+                                <FormField
+                                  control={form.control}
+                                  name="deliveryAddress"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="flex items-center gap-2">
+                                        <Home className="h-4 w-4 text-muted-foreground" />
+                                        Street Address
+                                      </FormLabel>
+                                      <FormControl>
+                                        <Textarea placeholder="123 Main Street, Apartment 4B" {...field} data-testid="input-address" className="min-h-[60px]" />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                  <FormField
+                                    control={form.control}
+                                    name="deliveryCity"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>City</FormLabel>
+                                        <FormControl>
+                                          <Input placeholder="Pretoria" {...field} data-testid="input-city" />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+
+                                  <FormField
+                                    control={form.control}
+                                    name="deliveryProvince"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Province</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value}>
+                                          <FormControl>
+                                            <SelectTrigger data-testid="select-province">
+                                              <SelectValue placeholder="Select province" />
+                                            </SelectTrigger>
+                                          </FormControl>
+                                          <SelectContent>
+                                            <SelectItem value="Gauteng" data-testid="select-item-province-gauteng">Gauteng</SelectItem>
+                                            <SelectItem value="Western Cape" data-testid="select-item-province-western-cape">Western Cape</SelectItem>
+                                            <SelectItem value="KwaZulu-Natal" data-testid="select-item-province-kwazulu-natal">KwaZulu-Natal</SelectItem>
+                                            <SelectItem value="Eastern Cape" data-testid="select-item-province-eastern-cape">Eastern Cape</SelectItem>
+                                            <SelectItem value="Free State" data-testid="select-item-province-free-state">Free State</SelectItem>
+                                            <SelectItem value="Limpopo" data-testid="select-item-province-limpopo">Limpopo</SelectItem>
+                                            <SelectItem value="Mpumalanga" data-testid="select-item-province-mpumalanga">Mpumalanga</SelectItem>
+                                            <SelectItem value="Northern Cape" data-testid="select-item-province-northern-cape">Northern Cape</SelectItem>
+                                            <SelectItem value="North West" data-testid="select-item-province-north-west">North West</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+
+                                  <FormField
+                                    control={form.control}
+                                    name="deliveryPostalCode"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Postal Code</FormLabel>
+                                        <FormControl>
+                                          <Input placeholder="0001" {...field} data-testid="input-postal-code" />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Manual Entry Mode */}
+                        {addressEntryMode === "manual" && (
+                          <>
+                            <FormField
+                              control={form.control}
+                              name="deliveryAddress"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="flex items-center gap-2">
+                                    <Home className="h-4 w-4 text-muted-foreground" />
+                                    Delivery Address
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Textarea placeholder="123 Main Street, Apartment 4B" {...field} data-testid="input-address" className="min-h-[80px]" />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="deliveryCity"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>City</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="Pretoria" {...field} data-testid="input-city" />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+
+                              <FormField
+                                control={form.control}
+                                name="deliveryProvince"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Province</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                      <FormControl>
+                                        <SelectTrigger data-testid="select-province">
+                                          <SelectValue placeholder="Select province" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent>
+                                        <SelectItem value="Gauteng" data-testid="select-item-province-gauteng">Gauteng</SelectItem>
+                                        <SelectItem value="Western Cape" data-testid="select-item-province-western-cape">Western Cape</SelectItem>
+                                        <SelectItem value="KwaZulu-Natal" data-testid="select-item-province-kwazulu-natal">KwaZulu-Natal</SelectItem>
+                                        <SelectItem value="Eastern Cape" data-testid="select-item-province-eastern-cape">Eastern Cape</SelectItem>
+                                        <SelectItem value="Free State" data-testid="select-item-province-free-state">Free State</SelectItem>
+                                        <SelectItem value="Limpopo" data-testid="select-item-province-limpopo">Limpopo</SelectItem>
+                                        <SelectItem value="Mpumalanga" data-testid="select-item-province-mpumalanga">Mpumalanga</SelectItem>
+                                        <SelectItem value="Northern Cape" data-testid="select-item-province-northern-cape">Northern Cape</SelectItem>
+                                        <SelectItem value="North West" data-testid="select-item-province-north-west">North West</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+
+                              <FormField
+                                control={form.control}
+                                name="deliveryPostalCode"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Postal Code</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="0001" {...field} data-testid="input-postal-code" />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+
+                            {/* GPS Location Sharing - for manual entry */}
+                            <div className={`relative overflow-hidden rounded-xl border transition-all duration-300 ${
+                              locationStatus === "success" 
+                                ? "bg-gradient-to-br from-green-500/5 via-green-500/10 to-emerald-500/5 border-green-500/30" 
+                                : "bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 border-primary/20"
+                            }`}>
+                              <div className="absolute inset-0 bg-grid-white/5 [mask-image:linear-gradient(0deg,transparent,black)]" />
+                              <div className="relative p-5 space-y-4">
+                                <div className="flex items-start gap-4">
+                                  <div className={`h-12 w-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg transition-colors duration-300 ${
+                                    locationStatus === "success" 
+                                      ? "bg-gradient-to-br from-green-500 to-emerald-600" 
+                                      : "bg-gradient-to-br from-primary to-primary/80"
+                                  }`}>
+                                    {locationStatus === "success" ? (
+                                      <Check className="h-6 w-6 text-white" />
+                                    ) : (
+                                      <Navigation className="h-6 w-6 text-white" />
+                                    )}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <h4 className="font-semibold text-base">
+                                        {locationStatus === "success" ? "Location Pinned" : "Pin Your Exact Location"}
+                                      </h4>
+                                      <Badge variant="secondary" className="text-xs font-medium">Optional</Badge>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                                      {locationStatus === "success" 
+                                        ? "Drag the pin to fine-tune your exact location" 
+                                        : "Help our courier find your exact location for faster, more accurate delivery"
+                                      }
+                                    </p>
+                                  </div>
+                                </div>
+                                
+                                {locationStatus === "success" && form.watch("locationLatitude") && form.watch("locationLongitude") ? (
+                                  <Suspense fallback={
+                                    <div className="w-full h-[200px] rounded-lg bg-muted/50 flex items-center justify-center">
+                                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                                    </div>
+                                  }>
+                                    <LocationPicker
+                                      latitude={parseFloat(form.watch("locationLatitude") || "0")}
+                                      longitude={parseFloat(form.watch("locationLongitude") || "0")}
+                                      onLocationChange={handleMapLocationChange}
+                                    />
+                                    <p className="text-xs text-center text-muted-foreground">
+                                      Click or drag the pin to adjust your exact delivery location
+                                    </p>
+                                  </Suspense>
+                                ) : (
+                                  <>
+                                    <Button
+                                      type="button"
+                                      variant="default"
+                                      onClick={handleShareLocation}
+                                      disabled={locationStatus === "loading"}
+                                      data-testid="button-share-location"
+                                      className="w-full h-12 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                                    >
+                                      {locationStatus === "loading" ? (
+                                        <>
+                                          <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                                          Detecting Your Location...
+                                        </>
+                                      ) : (
+                                        <>
+                                          <MapPin className="h-5 w-5 mr-2" />
+                                          Share My Location
+                                        </>
+                                      )}
+                                    </Button>
+                                    <p className="text-xs text-center text-muted-foreground">
+                                      Your browser will ask for permission to access your location
+                                    </p>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </>
                     )}
 
