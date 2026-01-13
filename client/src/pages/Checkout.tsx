@@ -731,15 +731,16 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                               </div>
                             )}
 
-                            {/* Auto-filled Address Details (editable) */}
-                            {searchedAddress && (
-                              <div className="space-y-4 pt-2">
+                            {/* Address Details (always visible, auto-filled after search) */}
+                            <div className="space-y-4 pt-2">
+                              {searchedAddress && (
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                   <Check className="h-4 w-4 text-green-500" />
                                   <span>Address auto-filled from your search. You can edit if needed:</span>
                                 </div>
-                                
-                                <FormField
+                              )}
+                              
+                              <FormField
                                   control={form.control}
                                   name="deliveryAddress"
                                   render={({ field }) => (
@@ -815,7 +816,6 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                                   />
                                 </div>
                               </div>
-                            )}
                           </div>
                         )}
 
