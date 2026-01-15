@@ -62,6 +62,9 @@ export const orders = pgTable("orders", {
   subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
   vat: decimal("vat", { precision: 10, scale: 2 }).notNull(),
   tradeDiscount: decimal("trade_discount", { precision: 10, scale: 2 }),
+  discountCodeId: varchar("discount_code_id"),
+  discountCodeValue: text("discount_code_value"),
+  discountAmount: decimal("discount_amount", { precision: 10, scale: 2 }),
   shippingCost: decimal("shipping_cost", { precision: 10, scale: 2 }).notNull().default("0"),
   total: decimal("total", { precision: 10, scale: 2 }).notNull(),
   status: text("status").notNull().default("pending"),
@@ -143,6 +146,23 @@ export const sessionVisits = pgTable("session_visits", {
 
 export type SessionVisit = typeof sessionVisits.$inferSelect;
 export type InsertSessionVisit = typeof sessionVisits.$inferInsert;
+
+export const discountTypeEnum = pgEnum("discount_type", ["free_shipping", "fixed_amount", "percentage"]);
+
+export const discountCodes = pgTable("discount_codes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  code: text("code").notNull().unique(),
+  type: discountTypeEnum("type").notNull(),
+  value: decimal("value", { precision: 10, scale: 2 }),
+  maxUses: integer("max_uses"),
+  usesCount: integer("uses_count").notNull().default(0),
+  active: boolean("active").notNull().default(true),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type DiscountCode = typeof discountCodes.$inferSelect;
+export type InsertDiscountCode = typeof discountCodes.$inferInsert;
 
 export const usersRelations = relations(users, ({ many }) => ({
   orders: many(orders),
@@ -276,6 +296,19 @@ export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({
   id: true,
   publishedAt: true,
   updatedAt: true,
+});
+
+export const insertDiscountCodeSchema = createInsertSchema(discountCodes).omit({
+  id: true,
+  createdAt: true,
+  usesCount: true,
+}).extend({
+  code: z.string().min(3, "Code must be at least 3 characters").max(50, "Code too long"),
+  type: z.enum(["free_shipping", "fixed_amount", "percentage"]),
+  value: z.string().optional().nullable(),
+  maxUses: z.number().int().min(1).optional().nullable(),
+  active: z.boolean().default(true),
+  expiresAt: z.string().optional().nullable(),
 });
 
 export type User = typeof users.$inferSelect;
