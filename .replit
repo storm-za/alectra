@@ -46,6 +46,7 @@ integrations = ["javascript_stripe:1.0.0", "javascript_database:1.0.0", "javascr
 
 [userenv.production]
 NODE_ENV = "production"
+TRUST_PROXY = "1"
 
 [userenv.shared]
 ADMIN_PASSWORD = "AlectraIsBaas1."
