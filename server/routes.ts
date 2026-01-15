@@ -1911,6 +1911,179 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ============ DISCOUNT CODES ADMIN ENDPOINTS ============
+
+  // GET ALL DISCOUNT CODES
+  app.get("/api/admin/discount-codes", requireAdminAuth, async (req, res) => {
+    try {
+      const codes = await storage.getAllDiscountCodes();
+      res.json(codes);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // GET SINGLE DISCOUNT CODE
+  app.get("/api/admin/discount-codes/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const code = await storage.getDiscountCodeById(req.params.id);
+      if (!code) {
+        return res.status(404).json({ message: "Discount code not found" });
+      }
+      res.json(code);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // CREATE DISCOUNT CODE
+  app.post("/api/admin/discount-codes", requireAdminAuth, async (req, res) => {
+    try {
+      const { code, type, value, maxUses, active, expiresAt } = req.body;
+      
+      if (!code || !type) {
+        return res.status(400).json({ message: "Code and type are required" });
+      }
+
+      // Validate type-specific requirements
+      if ((type === "fixed_amount" || type === "percentage") && !value) {
+        return res.status(400).json({ message: "Value is required for fixed amount or percentage discounts" });
+      }
+
+      if (type === "percentage" && (parseFloat(value) < 0 || parseFloat(value) > 100)) {
+        return res.status(400).json({ message: "Percentage must be between 0 and 100" });
+      }
+
+      // Check if code already exists
+      const existing = await storage.getDiscountCodeByCode(code);
+      if (existing) {
+        return res.status(400).json({ message: "A discount code with this name already exists" });
+      }
+
+      const discountCode = await storage.createDiscountCode({
+        code,
+        type,
+        value: value ? value.toString() : null,
+        maxUses: maxUses ? parseInt(maxUses) : null,
+        active: active !== false,
+        expiresAt: expiresAt || null,
+      });
+
+      res.status(201).json(discountCode);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // UPDATE DISCOUNT CODE
+  app.put("/api/admin/discount-codes/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const { code, type, value, maxUses, active, expiresAt } = req.body;
+      
+      const existing = await storage.getDiscountCodeById(req.params.id);
+      if (!existing) {
+        return res.status(404).json({ message: "Discount code not found" });
+      }
+
+      // If changing code, check for duplicates
+      if (code && code.toUpperCase() !== existing.code) {
+        const duplicate = await storage.getDiscountCodeByCode(code);
+        if (duplicate) {
+          return res.status(400).json({ message: "A discount code with this name already exists" });
+        }
+      }
+
+      const updated = await storage.updateDiscountCode(req.params.id, {
+        code: code || existing.code,
+        type: type || existing.type,
+        value: value !== undefined ? (value ? value.toString() : null) : existing.value,
+        maxUses: maxUses !== undefined ? (maxUses ? parseInt(maxUses) : null) : existing.maxUses,
+        active: active !== undefined ? active : existing.active,
+        expiresAt: expiresAt !== undefined ? expiresAt : existing.expiresAt?.toISOString(),
+      });
+
+      res.json(updated);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // DELETE DISCOUNT CODE
+  app.delete("/api/admin/discount-codes/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const deleted = await storage.deleteDiscountCode(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Discount code not found" });
+      }
+      res.json({ message: "Discount code deleted successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // ============ DISCOUNT CODE VALIDATION (for checkout) ============
+
+  // VALIDATE DISCOUNT CODE
+  app.post("/api/discount-codes/validate", async (req, res) => {
+    try {
+      const { code, subtotal } = req.body;
+      
+      if (!code) {
+        return res.status(400).json({ message: "Code is required" });
+      }
+
+      const discountCode = await storage.getDiscountCodeByCode(code);
+      
+      if (!discountCode) {
+        return res.status(404).json({ message: "Invalid discount code" });
+      }
+
+      // Check if active
+      if (!discountCode.active) {
+        return res.status(400).json({ message: "This discount code is no longer active" });
+      }
+
+      // Check expiration
+      if (discountCode.expiresAt && new Date(discountCode.expiresAt) < new Date()) {
+        return res.status(400).json({ message: "This discount code has expired" });
+      }
+
+      // Check usage limits
+      if (discountCode.maxUses && discountCode.usesCount >= discountCode.maxUses) {
+        return res.status(400).json({ message: "This discount code has reached its usage limit" });
+      }
+
+      // Calculate discount amount based on type
+      let discountAmount = 0;
+      const orderSubtotal = parseFloat(subtotal || "0");
+
+      switch (discountCode.type) {
+        case "free_shipping":
+          discountAmount = 0; // Will be handled separately in checkout
+          break;
+        case "fixed_amount":
+          discountAmount = parseFloat(discountCode.value || "0");
+          break;
+        case "percentage":
+          discountAmount = (orderSubtotal * parseFloat(discountCode.value || "0")) / 100;
+          break;
+      }
+
+      res.json({
+        valid: true,
+        discountCode: {
+          id: discountCode.id,
+          code: discountCode.code,
+          type: discountCode.type,
+          value: discountCode.value,
+        },
+        discountAmount: discountAmount.toFixed(2),
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // EXPORT DEV DATABASE (for copying to production)
   app.get("/api/admin/export-dev-data", async (req, res) => {
     try {

@@ -1,4 +1,4 @@
-import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, blogPosts, sessionVisits, FREE_SHIPPING_PRODUCT_IDS, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type BlogPost, type SessionVisit, type InsertSessionVisit, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type InsertBlogPost, type CreateOrderRequest } from "@shared/schema";
+import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, blogPosts, sessionVisits, discountCodes, FREE_SHIPPING_PRODUCT_IDS, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type BlogPost, type SessionVisit, type InsertSessionVisit, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type InsertBlogPost, type CreateOrderRequest, type DiscountCode, type InsertDiscountCode } from "@shared/schema";
 import { db } from "./db";
 import { eq, sql, and, or, like, ilike, gte, lte, asc, desc, inArray } from "drizzle-orm";
 
@@ -61,6 +61,15 @@ export interface IStorage {
   getSessionVisitsForDate(date: Date): Promise<SessionVisit[]>;
   getSessionVisitsForDateRange(startDate: Date, endDate: Date): Promise<SessionVisit[]>;
   getVisitStats(date: Date): Promise<{ totalVisits: number; uniqueSessions: number; topPages: { path: string; count: number }[] }>;
+
+  // Discount Codes
+  getAllDiscountCodes(): Promise<DiscountCode[]>;
+  getDiscountCodeById(id: string): Promise<DiscountCode | undefined>;
+  getDiscountCodeByCode(code: string): Promise<DiscountCode | undefined>;
+  createDiscountCode(code: InsertDiscountCode): Promise<DiscountCode>;
+  updateDiscountCode(id: string, updates: Partial<InsertDiscountCode>): Promise<DiscountCode | undefined>;
+  deleteDiscountCode(id: string): Promise<boolean>;
+  incrementDiscountCodeUsage(id: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -742,6 +751,69 @@ export class DatabaseStorage implements IStorage {
       uniqueSessions,
       topPages
     };
+  }
+
+  // Discount Codes
+  async getAllDiscountCodes(): Promise<DiscountCode[]> {
+    return await db
+      .select()
+      .from(discountCodes)
+      .orderBy(desc(discountCodes.createdAt));
+  }
+
+  async getDiscountCodeById(id: string): Promise<DiscountCode | undefined> {
+    const [code] = await db
+      .select()
+      .from(discountCodes)
+      .where(eq(discountCodes.id, id));
+    return code || undefined;
+  }
+
+  async getDiscountCodeByCode(code: string): Promise<DiscountCode | undefined> {
+    const [discountCode] = await db
+      .select()
+      .from(discountCodes)
+      .where(eq(discountCodes.code, code.toUpperCase()));
+    return discountCode || undefined;
+  }
+
+  async createDiscountCode(code: InsertDiscountCode): Promise<DiscountCode> {
+    const [discountCode] = await db
+      .insert(discountCodes)
+      .values({
+        ...code,
+        code: code.code.toUpperCase(),
+      })
+      .returning();
+    return discountCode;
+  }
+
+  async updateDiscountCode(id: string, updates: Partial<InsertDiscountCode>): Promise<DiscountCode | undefined> {
+    const updateData = { ...updates };
+    if (updateData.code) {
+      updateData.code = updateData.code.toUpperCase();
+    }
+    const [updated] = await db
+      .update(discountCodes)
+      .set(updateData)
+      .where(eq(discountCodes.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async deleteDiscountCode(id: string): Promise<boolean> {
+    const result = await db
+      .delete(discountCodes)
+      .where(eq(discountCodes.id, id))
+      .returning();
+    return result.length > 0;
+  }
+
+  async incrementDiscountCodeUsage(id: string): Promise<void> {
+    await db
+      .update(discountCodes)
+      .set({ usesCount: sql`${discountCodes.usesCount} + 1` })
+      .where(eq(discountCodes.id, id));
   }
 }
 
