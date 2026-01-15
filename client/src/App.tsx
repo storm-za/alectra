@@ -36,6 +36,7 @@ const Search = lazy(() => import("@/pages/Search"));
 const AdminSeed = lazy(() => import("@/pages/AdminSeed"));
 const Admin = lazy(() => import("@/pages/Admin"));
 const AdminProducts = lazy(() => import("@/pages/AdminProducts"));
+const AdminDiscountCodes = lazy(() => import("@/pages/AdminDiscountCodes"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
 function PageLoader() {
@@ -211,6 +212,9 @@ function Router() {
             </Route>
             <Route path="/admin/products">
               <AdminProducts />
+            </Route>
+            <Route path="/admin/discount-codes">
+              <AdminDiscountCodes />
             </Route>
             <Route component={NotFound} />
           </Switch>

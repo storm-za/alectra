@@ -367,8 +367,48 @@ export class DatabaseStorage implements IStorage {
         }
       }
 
-      // 4. Calculate final amounts (prices already include VAT)
-      const totalAfterDiscount = totalVatInclusive - tradeDiscount;
+      // 4. Server-side discount code validation and calculation (ignore client values)
+      let discountCodeAmount = 0;
+      let hasFreeShippingDiscountCode = false;
+      let validatedDiscountCode: { id: string; code: string; type: string; value: string | null } | null = null;
+
+      if (request.discountCodeId) {
+        // Re-validate discount code from database - do not trust client values
+        const [dbDiscountCode] = await tx.select()
+          .from(discountCodes)
+          .where(eq(discountCodes.id, request.discountCodeId))
+          .limit(1);
+
+        if (dbDiscountCode) {
+          const now = new Date();
+          const isActive = dbDiscountCode.isActive;
+          const notExpired = !dbDiscountCode.expiresAt || new Date(dbDiscountCode.expiresAt) > now;
+          const withinUsageLimit = dbDiscountCode.maxUses === null || dbDiscountCode.usesCount < dbDiscountCode.maxUses;
+
+          if (isActive && notExpired && withinUsageLimit) {
+            validatedDiscountCode = {
+              id: dbDiscountCode.id,
+              code: dbDiscountCode.code,
+              type: dbDiscountCode.type,
+              value: dbDiscountCode.value,
+            };
+
+            // Calculate discount amount server-side based on type
+            if (dbDiscountCode.type === "free_shipping") {
+              hasFreeShippingDiscountCode = true;
+            } else if (dbDiscountCode.type === "fixed_amount" && dbDiscountCode.value) {
+              discountCodeAmount = parseFloat(dbDiscountCode.value);
+            } else if (dbDiscountCode.type === "percentage" && dbDiscountCode.value) {
+              const percentage = parseFloat(dbDiscountCode.value);
+              discountCodeAmount = (totalVatInclusive * percentage) / 100;
+            }
+          }
+        }
+      }
+
+      // 5. Calculate final amounts (prices already include VAT)
+      const totalAfterTradeDiscount = totalVatInclusive - tradeDiscount;
+      const totalAfterDiscount = Math.max(0, totalAfterTradeDiscount - discountCodeAmount);
       const subtotalExclVat = totalAfterDiscount / 1.15;
       const vat = totalAfterDiscount - subtotalExclVat;
       
@@ -404,7 +444,9 @@ export class DatabaseStorage implements IStorage {
           !LP_GAS_STANDARD_SHIPPING_EXCEPTIONS.includes(p.id)
         );
         
-        if (customDeliveryFees.length > 0) {
+        if (hasFreeShippingDiscountCode) {
+          shippingCost = 0; // Free shipping discount code applied
+        } else if (customDeliveryFees.length > 0) {
           shippingCost = Math.max(...customDeliveryFees); // Heavy items take priority
         } else if (hasFreeShippingProduct) {
           shippingCost = 0; // FREE shipping promotion for specific products
@@ -420,7 +462,7 @@ export class DatabaseStorage implements IStorage {
       // Final total includes shipping
       const finalTotal = totalAfterDiscount + shippingCost;
 
-      // 5. Create the order with server-controlled status
+      // 6. Create the order with server-controlled status
       const [createdOrder] = await tx.insert(orders).values({
         deliveryMethod: request.deliveryMethod || "delivery",
         customerName: request.customerName,
@@ -436,12 +478,22 @@ export class DatabaseStorage implements IStorage {
         subtotal: subtotalExclVat.toFixed(2),
         vat: vat.toFixed(2),
         tradeDiscount: tradeDiscount > 0 ? tradeDiscount.toFixed(2) : null,
+        discountCodeId: validatedDiscountCode?.id || null,
+        discountCodeValue: validatedDiscountCode?.code || null,
+        discountAmount: validatedDiscountCode ? (discountCodeAmount > 0 ? discountCodeAmount.toFixed(2) : (hasFreeShippingDiscountCode ? "0.00" : null)) : null,
         shippingCost: shippingCost.toFixed(2),
         total: finalTotal.toFixed(2),
         status: "pending",
       }).returning();
 
-      // 6. Create order items
+      // 7. If discount code was validated and applied, increment usage count
+      if (validatedDiscountCode) {
+        await tx.update(discountCodes)
+          .set({ usesCount: sql`${discountCodes.usesCount} + 1` })
+          .where(eq(discountCodes.id, validatedDiscountCode.id));
+      }
+
+      // 8. Create order items
       const createdItems = await tx.insert(orderItems).values(
         itemsToCreate.map(item => ({
           ...item,
@@ -449,7 +501,7 @@ export class DatabaseStorage implements IStorage {
         }))
       ).returning();
 
-      // 7. Decrement stock for each product
+      // 9. Decrement stock for each product
       for (const item of request.items) {
         await tx.update(products)
           .set({ stock: sql`${products.stock} - ${item.quantity}` })

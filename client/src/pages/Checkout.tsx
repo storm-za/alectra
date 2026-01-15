@@ -31,7 +31,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { FREE_SHIPPING_PRODUCT_IDS, TORSION_SPRING_VARIANTS, type CartItem, type UserAddress, type PaystackInitializeResponse, type PaystackVerifyResponse, type TorsionSpringVariant } from "@shared/schema";
-import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Wallet, ShoppingCart, Navigation, Check, Loader2, Search, PenLine } from "lucide-react";
+import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Wallet, ShoppingCart, Navigation, Check, Loader2, Search, PenLine, Tag, X } from "lucide-react";
 import { SiVisa, SiMastercard, SiApplepay, SiGooglepay } from "react-icons/si";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -72,6 +72,14 @@ type PaymentMethod = "paystack" | "yoco";
 
 type AddressEntryMode = "search" | "manual";
 
+interface AppliedDiscount {
+  id: string;
+  code: string;
+  type: "free_shipping" | "fixed_amount" | "percentage";
+  value: string | null;
+  discountAmount: number;
+}
+
 export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const [, navigate] = useLocation();
   const { toast } = useToast();
@@ -80,6 +88,9 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [addressEntryMode, setAddressEntryMode] = useState<AddressEntryMode>("search");
   const [searchedAddress, setSearchedAddress] = useState<ParsedAddress | null>(null);
+  const [discountCodeInput, setDiscountCodeInput] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(null);
+  const [discountError, setDiscountError] = useState<string | null>(null);
 
   const { data: user } = useQuery<{ user: any | null }>({
     queryKey: ["/api/auth/me"],
@@ -210,6 +221,57 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
     form.setValue("locationLongitude", lng.toString());
   };
 
+  const validateDiscountMutation = useMutation({
+    mutationFn: async ({ code, subtotal }: { code: string; subtotal: number }) => {
+      const res = await apiRequest("POST", "/api/discount-codes/validate", { code, subtotal });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Invalid discount code");
+      }
+      return data;
+    },
+    onSuccess: (data: { valid: boolean; discountCode: { id: string; code: string; type: string; value: string | null }; discountAmount: string }) => {
+      setAppliedDiscount({
+        id: data.discountCode.id,
+        code: data.discountCode.code,
+        type: data.discountCode.type as AppliedDiscount["type"],
+        value: data.discountCode.value,
+        discountAmount: parseFloat(data.discountAmount),
+      });
+      setDiscountError(null);
+      setDiscountCodeInput("");
+      toast({
+        title: "Discount applied",
+        description: data.discountCode.type === "free_shipping" 
+          ? "Free shipping has been applied to your order!"
+          : `Discount code ${data.discountCode.code} applied successfully!`,
+      });
+    },
+    onError: (error: any) => {
+      setDiscountError(error.message);
+      setAppliedDiscount(null);
+    },
+  });
+
+  const handleApplyDiscount = () => {
+    if (!discountCodeInput.trim()) {
+      setDiscountError("Please enter a discount code");
+      return;
+    }
+    setDiscountError(null);
+    const cartTotal = cartItems.reduce((sum, item) => {
+      const price = item.variantPrice ? parseFloat(item.variantPrice) : parseFloat(item.product.price);
+      return sum + price * item.quantity;
+    }, 0);
+    validateDiscountMutation.mutate({ code: discountCodeInput.trim(), subtotal: cartTotal });
+  };
+
+  const removeDiscount = () => {
+    setAppliedDiscount(null);
+    setDiscountCodeInput("");
+    setDiscountError(null);
+  };
+
   const createOrderMutation = useMutation({
     mutationFn: async (data: CheckoutFormData) => {
       const orderData = {
@@ -220,6 +282,11 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           variant: item.variant,
           variantPrice: item.variantPrice,
         })),
+        discountCodeId: appliedDiscount?.id || null,
+        discountCode: appliedDiscount?.code || null,
+        discountType: appliedDiscount?.type || null,
+        discountValue: appliedDiscount?.value || null,
+        discountAmount: appliedDiscount ? (appliedDiscount.type === "free_shipping" ? "0" : appliedDiscount.discountAmount.toString()) : null,
       };
 
       const res = await apiRequest("POST", "/api/orders", orderData);
@@ -370,11 +437,21 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   
   // Apply 15% trade discount to VAT-inclusive total if approved
   const tradeDiscount = tradeStatus?.approved ? totalVatInclusive * 0.15 : 0;
-  const totalAfterDiscount = totalVatInclusive - tradeDiscount;
+  const totalAfterTradeDiscount = totalVatInclusive - tradeDiscount;
+  
+  // Apply discount code (fixed_amount or percentage types)
+  let discountCodeAmount = 0;
+  if (appliedDiscount && appliedDiscount.type !== "free_shipping") {
+    discountCodeAmount = appliedDiscount.discountAmount;
+  }
+  const totalAfterDiscount = Math.max(0, totalAfterTradeDiscount - discountCodeAmount);
   
   // Extract VAT from the final total (after discount)
   const subtotal = totalAfterDiscount / 1.15;
   const vat = subtotal * 0.15;
+  
+  // Check if free shipping discount code is applied
+  const hasFreeShippingDiscount = appliedDiscount?.type === "free_shipping";
   
   // Glosteel garage door slugs - very heavy items requiring R1900 shipping per door
   const GLOSTEEL_SLUGS = [
@@ -413,16 +490,19 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   
   // Calculate shipping cost priority:
   // 1. If pickup is selected, shipping is FREE
-  // 2. If cart has Glosteel garage doors, R1900 per door (very heavy items - takes priority)
-  // 3. If cart has products with custom delivery fees, use the highest custom fee
-  // 4. If cart contains FREE shipping products, FREE delivery (promotion)
-  // 5. If cart contains 48KG LP Gas, FREE delivery (special promotion)
-  // 6. If cart contains other LP Gas products, R50 (Pretoria only delivery)
-  // 7. FREE if order total is R2500+
-  // 8. Otherwise, R110 standard delivery fee
+  // 2. If free shipping discount code is applied, shipping is FREE
+  // 3. If cart has Glosteel garage doors, R1900 per door (very heavy items - takes priority)
+  // 4. If cart has products with custom delivery fees, use the highest custom fee
+  // 5. If cart contains FREE shipping products, FREE delivery (promotion)
+  // 6. If cart contains 48KG LP Gas, FREE delivery (special promotion)
+  // 7. If cart contains other LP Gas products, R50 (Pretoria only delivery)
+  // 8. FREE if order total is R2500+
+  // 9. Otherwise, R110 standard delivery fee
   let shippingCost = 110;
   if (deliveryMethod === "pickup") {
     shippingCost = 0;
+  } else if (hasFreeShippingDiscount) {
+    shippingCost = 0; // Free shipping discount code applied
   } else if (hasGlosteelDoors) {
     shippingCost = glosteelShipping; // R1900 per garage door - heavy items take priority
   } else if (customDeliveryFees.length > 0) {
@@ -1195,6 +1275,72 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
 
                 <Separator className="my-4" />
 
+                {/* Discount Code Input */}
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium flex items-center gap-2">
+                    <Tag className="h-4 w-4" />
+                    Discount Code
+                  </Label>
+                  {appliedDiscount ? (
+                    <div className="bg-gradient-to-r from-green-500/10 to-green-500/5 border border-green-500/30 rounded-xl p-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4 text-green-600" />
+                          <span className="font-mono font-bold text-green-700 dark:text-green-400" data-testid="text-applied-discount-code">
+                            {appliedDiscount.code}
+                          </span>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={removeDiscount}
+                          className="text-muted-foreground hover:text-destructive h-8 px-2"
+                          data-testid="button-remove-discount"
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                      <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                        {appliedDiscount.type === "free_shipping" 
+                          ? "Free shipping applied!"
+                          : appliedDiscount.type === "percentage"
+                            ? `${appliedDiscount.value}% off applied`
+                            : `R${appliedDiscount.value} off applied`}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Enter code"
+                        value={discountCodeInput}
+                        onChange={(e) => {
+                          setDiscountCodeInput(e.target.value.toUpperCase());
+                          setDiscountError(null);
+                        }}
+                        className="flex-1 font-mono uppercase"
+                        data-testid="input-discount-code"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleApplyDiscount}
+                        disabled={validateDiscountMutation.isPending}
+                        data-testid="button-apply-discount"
+                      >
+                        {validateDiscountMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          "Apply"
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                  {discountError && (
+                    <p className="text-xs text-destructive" data-testid="text-discount-error">{discountError}</p>
+                  )}
+                </div>
+
                 {tradeStatus?.approved && (
                   <div className="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-xl p-3 flex items-center gap-3">
                     <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -1211,7 +1357,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                 <div className="space-y-3 bg-muted/30 rounded-xl p-4 border border-border/50">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span className="font-medium" data-testid="text-summary-subtotal">R {totalAfterDiscount.toFixed(2)}</span>
+                    <span className="font-medium" data-testid="text-summary-subtotal">R {totalVatInclusive.toFixed(2)}</span>
                   </div>
                   {tradeStatus?.approved && tradeDiscount > 0 && (
                     <div className="flex justify-between text-sm text-primary">
@@ -1219,14 +1365,25 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       <span className="font-semibold" data-testid="text-summary-trade-discount">- R {tradeDiscount.toFixed(2)}</span>
                     </div>
                   )}
+                  {appliedDiscount && appliedDiscount.type !== "free_shipping" && discountCodeAmount > 0 && (
+                    <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
+                      <span>Discount ({appliedDiscount.code})</span>
+                      <span className="font-semibold" data-testid="text-summary-discount-code">- R {discountCodeAmount.toFixed(2)}</span>
+                    </div>
+                  )}
                   {deliveryMethod === "delivery" && (
                     <div className="space-y-1">
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Shipping</span>
-                        <span data-testid="text-summary-shipping" className={`font-medium ${shippingCost === 0 ? "text-primary" : ""}`}>
+                        <span data-testid="text-summary-shipping" className={`font-medium ${shippingCost === 0 ? "text-green-600 dark:text-green-400" : ""}`}>
                           {shippingCost === 0 ? "FREE" : `R ${shippingCost.toFixed(2)}`}
                         </span>
                       </div>
+                      {hasFreeShippingDiscount && (
+                        <div className="text-xs text-green-600 dark:text-green-400">
+                          Free shipping code applied: {appliedDiscount?.code}
+                        </div>
+                      )}
                       {hasGlosteelDoors && (
                         <div className="text-xs text-muted-foreground bg-muted p-2 rounded-lg mt-2">
                           <span className="font-medium text-foreground">R1,900 (Very Heavy Item)</span>

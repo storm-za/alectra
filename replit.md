@@ -55,6 +55,14 @@ Preferred communication style: Simple, everyday language.
 ### Seasonal Themes
 - **Christmas Theme**: Currently disabled (post-December 2025). Theme files preserved at `client/src/components/ChristmasTheme.tsx` and `client/src/styles/christmas-theme.css` for future seasonal re-activation.
 
+### Discount Code System
+- **Types**: Three discount types supported: `free_shipping` (applies to shipping cost), `fixed_amount` (direct rand deduction), `percentage` (0-100% of subtotal).
+- **Admin Management**: Full CRUD functionality at `/admin/discount-codes` with ability to set usage limits and expiration dates.
+- **Checkout Integration**: Real-time validation with visual feedback; codes stored uppercase for consistency.
+- **Security**: Server-side re-validation during order creation - discount codes are verified from database (active, not expired, within usage limits) before applying to order totals.
+- **Order Recording**: Discount code ID, code value, and calculated amount stored on orders; usage count automatically incremented upon successful order creation.
+- **Priority**: Applied after trade discount but before final total calculation; free shipping discount code takes precedence over product-based free shipping promotions.
+
 ## External Dependencies
 
 ### Payment Processing

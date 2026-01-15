@@ -17,7 +17,8 @@ import {
   Calendar,
   Database,
   Eye,
-  TrendingUp
+  TrendingUp,
+  Tag
 } from "lucide-react";
 import { Link } from "wouter";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -577,6 +578,13 @@ export default function Admin() {
                   <Button className="w-full" variant="outline" data-testid="link-admin-products">
                     <Eye className="mr-2 h-4 w-4" />
                     Edit Product Images
+                  </Button>
+                </Link>
+                
+                <Link href="/admin/discount-codes">
+                  <Button className="w-full" variant="outline" data-testid="link-admin-discount-codes">
+                    <Tag className="mr-2 h-4 w-4" />
+                    Manage Discount Codes
                   </Button>
                 </Link>
               </CardContent>

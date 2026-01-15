@@ -585,6 +585,11 @@ export const createOrderRequestSchema = insertOrderSchema.extend({
     variant: z.string().optional(),
     variantPrice: z.string().optional(),
   })).min(1),
+  discountCodeId: z.string().nullable().optional(),
+  discountCode: z.string().nullable().optional(),
+  discountType: z.enum(["free_shipping", "fixed_amount", "percentage"]).nullable().optional(),
+  discountValue: z.string().nullable().optional(),
+  discountAmount: z.string().nullable().optional(),
 });
 
 export type CreateOrderRequest = z.infer<typeof createOrderRequestSchema>;
