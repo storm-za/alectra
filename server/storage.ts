@@ -381,7 +381,7 @@ export class DatabaseStorage implements IStorage {
 
         if (dbDiscountCode) {
           const now = new Date();
-          const isActive = dbDiscountCode.isActive;
+          const isActive = dbDiscountCode.active;
           const notExpired = !dbDiscountCode.expiresAt || new Date(dbDiscountCode.expiresAt) > now;
           const withinUsageLimit = dbDiscountCode.maxUses === null || dbDiscountCode.usesCount < dbDiscountCode.maxUses;
 
