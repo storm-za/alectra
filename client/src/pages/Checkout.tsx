@@ -186,6 +186,36 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const deliveryMethod = form.watch("deliveryMethod");
   const pickupStore = form.watch("pickupStore");
 
+  // Reverse geocode coordinates to get address details
+  const reverseGeocode = async (lat: number, lng: number) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`,
+        { headers: { 'User-Agent': 'AlectraSolutions/1.0' } }
+      );
+      const data = await response.json();
+      
+      if (data && data.address) {
+        const addr = data.address;
+        // Build street address from components
+        const houseNumber = addr.house_number || '';
+        const road = addr.road || addr.street || '';
+        const streetAddress = houseNumber ? `${houseNumber} ${road}`.trim() : road;
+        
+        const city = addr.city || addr.town || addr.village || addr.suburb || addr.municipality || '';
+        const province = addr.state || addr.province || '';
+        const postalCode = addr.postcode || '';
+        
+        form.setValue("deliveryAddress", streetAddress || data.display_name?.split(',')[0] || '');
+        form.setValue("deliveryCity", city);
+        form.setValue("deliveryProvince", province);
+        form.setValue("deliveryPostalCode", postalCode);
+      }
+    } catch (error) {
+      console.error("Reverse geocoding failed:", error);
+    }
+  };
+
   const handleShareLocation = () => {
     if (!navigator.geolocation) {
       toast({
@@ -198,13 +228,19 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
 
     setLocationStatus("loading");
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        form.setValue("locationLatitude", position.coords.latitude.toString());
-        form.setValue("locationLongitude", position.coords.longitude.toString());
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        form.setValue("locationLatitude", lat.toString());
+        form.setValue("locationLongitude", lng.toString());
         setLocationStatus("success");
+        
+        // Reverse geocode to pre-fill address fields
+        await reverseGeocode(lat, lng);
+        
         toast({
-          title: "Location pinned",
-          description: "Your GPS coordinates have been saved. Drag the pin to adjust if needed.",
+          title: "Location detected",
+          description: "Your address has been filled in. Adjust the pin or edit the fields if needed.",
         });
       },
       (error) => {
@@ -243,9 +279,11 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
     setLocationStatus("success");
   };
 
-  const handleMapLocationChange = (lat: number, lng: number) => {
+  const handleMapLocationChange = async (lat: number, lng: number) => {
     form.setValue("locationLatitude", lat.toString());
     form.setValue("locationLongitude", lng.toString());
+    // Reverse geocode to update address fields when pin is moved
+    await reverseGeocode(lat, lng);
   };
 
   const validateDiscountMutation = useMutation({
@@ -899,28 +937,91 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                               </Suspense>
                             </div>
 
-                            <div className="bg-card rounded-xl border p-4">
-                              <AddressSearch
-                                onAddressSelect={handleSearchAddressSelect}
-                                placeholder="Search for your address..."
-                              />
-                            </div>
+                            {/* Editable address fields pre-filled from location */}
+                            <Card>
+                              <CardContent className="p-4 space-y-4">
+                                <p className="text-sm text-muted-foreground flex items-center gap-2">
+                                  <MapPin className="h-4 w-4" />
+                                  Drag the pin above to adjust, or edit the fields below
+                                </p>
+                                
+                                <FormField
+                                  control={form.control}
+                                  name="deliveryAddress"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="flex items-center gap-2">
+                                        <Home className="h-4 w-4 text-muted-foreground" />
+                                        Street Address
+                                      </FormLabel>
+                                      <FormControl>
+                                        <Textarea placeholder="123 Main Street" {...field} data-testid="input-address-location" className="min-h-[60px]" />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
 
-                            {searchedAddress && (
-                              <Card className="border-primary/30 bg-primary/5">
-                                <CardContent className="p-4">
-                                  <div className="flex items-start gap-3">
-                                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                      <MapPin className="h-5 w-5 text-primary" />
-                                    </div>
-                                    <div>
-                                      <p className="font-medium">{searchedAddress.streetAddress}</p>
-                                      <p className="text-sm text-muted-foreground">{searchedAddress.city}, {searchedAddress.province}, {searchedAddress.postalCode}</p>
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            )}
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                  <FormField
+                                    control={form.control}
+                                    name="deliveryCity"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>City</FormLabel>
+                                        <FormControl>
+                                          <Input placeholder="Pretoria" {...field} data-testid="input-city-location" />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+
+                                  <FormField
+                                    control={form.control}
+                                    name="deliveryProvince"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Province</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value}>
+                                          <FormControl>
+                                            <SelectTrigger data-testid="select-province-location">
+                                              <SelectValue placeholder="Select" />
+                                            </SelectTrigger>
+                                          </FormControl>
+                                          <SelectContent>
+                                            <SelectItem value="Gauteng">Gauteng</SelectItem>
+                                            <SelectItem value="Western Cape">Western Cape</SelectItem>
+                                            <SelectItem value="KwaZulu-Natal">KwaZulu-Natal</SelectItem>
+                                            <SelectItem value="Eastern Cape">Eastern Cape</SelectItem>
+                                            <SelectItem value="Free State">Free State</SelectItem>
+                                            <SelectItem value="Limpopo">Limpopo</SelectItem>
+                                            <SelectItem value="Mpumalanga">Mpumalanga</SelectItem>
+                                            <SelectItem value="Northern Cape">Northern Cape</SelectItem>
+                                            <SelectItem value="North West">North West</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+
+                                  <FormField
+                                    control={form.control}
+                                    name="deliveryPostalCode"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Postal Code</FormLabel>
+                                        <FormControl>
+                                          <Input placeholder="0001" {...field} data-testid="input-postal-code-location" />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                </div>
+                              </CardContent>
+                            </Card>
                           </div>
                         )}
 
@@ -947,18 +1048,16 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                             <ChevronLeft className="h-4 w-4" />
                             Back
                           </Button>
-                          {searchedAddress && (
-                            <Button 
-                              size="lg" 
-                              onClick={goToNextStep}
-                              disabled={!canProceedFromStep2bDelivery}
-                              className="gap-2 px-8"
-                              data-testid="button-use-address"
-                            >
-                              Use This Address
-                              <ChevronRight className="h-4 w-4" />
-                            </Button>
-                          )}
+                          <Button 
+                            size="lg" 
+                            onClick={goToNextStep}
+                            disabled={!canProceedFromStep2bDelivery}
+                            className="gap-2 px-8"
+                            data-testid="button-next-step3-location"
+                          >
+                            Next
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
                     ) : (
