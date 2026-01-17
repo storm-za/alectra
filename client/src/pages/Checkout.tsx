@@ -1218,7 +1218,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       >
                         <CardContent className="p-4 flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-md overflow-hidden bg-[#011B33] flex items-center justify-center p-1.5">
+                            <div className="h-10 w-10 rounded-md overflow-hidden bg-[#011B33] flex items-center justify-center p-px">
                               <img src={paystackLogo} alt="Paystack" className="h-full w-full object-contain" />
                             </div>
                             <div className="text-left">
