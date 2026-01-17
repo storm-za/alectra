@@ -1216,10 +1216,11 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       >
                         <CardContent className="p-4 flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className={`h-10 w-10 rounded-md flex items-center justify-center ${
-                              paymentMethod === "paystack" ? "bg-primary/10" : "bg-muted"
-                            }`}>
-                              <CreditCard className={`h-5 w-5 ${paymentMethod === "paystack" ? "text-primary" : "text-muted-foreground"}`} />
+                            <div className="h-10 w-10 rounded-md flex flex-col items-center justify-center gap-0.5 bg-white border">
+                              <div className="w-5 h-1 bg-[#00C3F7] rounded-sm"></div>
+                              <div className="w-5 h-1 bg-[#00C3F7] rounded-sm"></div>
+                              <div className="w-5 h-1 bg-[#00C3F7] rounded-sm"></div>
+                              <div className="w-3.5 h-1 bg-[#00C3F7] rounded-sm self-start ml-2.5"></div>
                             </div>
                             <div className="text-left">
                               <p className="font-semibold">Paystack</p>
