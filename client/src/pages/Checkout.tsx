@@ -34,6 +34,8 @@ import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, Cre
 import { SiVisa, SiMastercard } from "react-icons/si";
 import yocoLogo from "@assets/yoco-logo_1768669914726.jpg";
 import paystackLogo from "@assets/Paystack-mark-white-twitter_1768669952658.png";
+import amexLogo from "@assets/images_(1)_1768670341240.png";
+import googlePayLogo from "@assets/images_(2)_1768670342625.png";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -1203,6 +1205,8 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                           <div className="flex items-center gap-2">
                             <SiVisa className="h-6 w-auto text-[#1434CB]" />
                             <SiMastercard className="h-6 w-auto text-[#FF5F00]" />
+                            <img src={amexLogo} alt="American Express" className="h-6 w-auto rounded-sm" />
+                            <img src={googlePayLogo} alt="Google Pay" className="h-6 w-auto" />
                           </div>
                         </CardContent>
                       </Card>
