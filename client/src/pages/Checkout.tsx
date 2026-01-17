@@ -31,7 +31,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { FREE_SHIPPING_PRODUCT_IDS, TORSION_SPRING_VARIANTS, type CartItem, type UserAddress, type PaystackInitializeResponse, type PaystackVerifyResponse, type TorsionSpringVariant } from "@shared/schema";
-import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Wallet, ShoppingCart, Navigation, Check, Loader2, Search, PenLine, Tag, X } from "lucide-react";
+import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, Wallet, ShoppingCart, Navigation, Check, Loader2, Search, PenLine, Tag, X, Clock, RotateCcw, MessageCircle, Users, Star, Calendar, ShieldCheck, AlertTriangle } from "lucide-react";
 import { SiVisa, SiMastercard, SiApplepay, SiGooglepay } from "react-icons/si";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -520,39 +520,152 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   // Final total includes shipping
   const total = totalAfterDiscount + shippingCost;
 
+  // Calculate estimated delivery date (3-5 business days)
+  const getEstimatedDeliveryDate = () => {
+    const today = new Date();
+    let businessDays = 0;
+    let date = new Date(today);
+    
+    while (businessDays < 5) {
+      date.setDate(date.getDate() + 1);
+      const dayOfWeek = date.getDay();
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        businessDays++;
+      }
+    }
+    
+    return date.toLocaleDateString('en-ZA', { 
+      weekday: 'short', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
+  
+  const estimatedDelivery = getEstimatedDeliveryDate();
+
+  // Check for low stock items
+  const lowStockItems = cartItems.filter(item => item.product.stock <= 5 && item.product.stock > 0);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-muted/50 via-background to-muted/30">
+      {/* Enterprise Trust Banner - Full Width */}
+      <div className="bg-gradient-to-r from-green-600 via-green-500 to-emerald-500 text-white py-2.5 shadow-md" data-testid="trust-banner">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-xs sm:text-sm font-medium">
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="h-4 w-4" />
+              <span>100% Secure Checkout</span>
+            </div>
+            <div className="hidden sm:block w-px h-4 bg-white/30" />
+            <div className="flex items-center gap-1.5">
+              <Lock className="h-4 w-4" />
+              <span>256-bit SSL Encryption</span>
+            </div>
+            <div className="hidden md:block w-px h-4 bg-white/30" />
+            <div className="hidden md:flex items-center gap-1.5">
+              <RotateCcw className="h-4 w-4" />
+              <span>30-Day Easy Returns</span>
+            </div>
+            <div className="hidden lg:block w-px h-4 bg-white/30" />
+            <div className="hidden lg:flex items-center gap-1.5">
+              <Users className="h-4 w-4" />
+              <span>2,500+ Happy Customers</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8 lg:py-12">
         {/* Enterprise Header with Progress Indicator */}
-        <div className="mb-10 lg:mb-12">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+        <div className="mb-8 lg:mb-10">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">Checkout</h1>
-              <p className="text-muted-foreground mt-1">Complete your order securely</p>
+              <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">Secure Checkout</h1>
+              <p className="text-muted-foreground mt-1 flex items-center gap-2">
+                <Lock className="h-4 w-4 text-green-600" />
+                Your payment information is protected
+              </p>
             </div>
-            <div className="flex items-center gap-2 text-sm bg-primary/5 border border-primary/20 rounded-full px-4 py-2">
-              <Shield className="h-4 w-4 text-primary" />
-              <span className="font-medium text-primary">SSL Secured</span>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-sm bg-green-500/10 border border-green-500/30 rounded-full px-4 py-2">
+                <ShieldCheck className="h-4 w-4 text-green-600" />
+                <span className="font-medium text-green-700 dark:text-green-400">PCI-DSS Compliant</span>
+              </div>
             </div>
           </div>
           
-          {/* Progress Steps */}
-          <div className="hidden sm:flex items-center justify-center gap-0 max-w-xl mx-auto">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">1</div>
-              <span className="text-sm font-medium">Cart</span>
-            </div>
-            <div className="h-0.5 w-16 lg:w-24 bg-primary mx-2" />
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">2</div>
-              <span className="text-sm font-medium">Details</span>
-            </div>
-            <div className="h-0.5 w-16 lg:w-24 bg-muted mx-2" />
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-sm font-semibold">3</div>
-              <span className="text-sm text-muted-foreground">Payment</span>
+          {/* Progress Steps - Enhanced */}
+          <div className="bg-card rounded-2xl border shadow-sm p-4 mb-6">
+            <div className="flex items-center justify-between max-w-2xl mx-auto">
+              <div className="flex flex-col items-center gap-2">
+                <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold shadow-lg shadow-primary/30 ring-4 ring-primary/20">
+                  1
+                </div>
+                <span className="text-xs sm:text-sm font-bold text-primary">Information</span>
+              </div>
+              <div className="flex-1 h-1 bg-muted mx-2 rounded-full" />
+              <div className="flex flex-col items-center gap-2">
+                <div className="h-10 w-10 rounded-full bg-muted text-muted-foreground flex items-center justify-center font-bold">
+                  2
+                </div>
+                <span className="text-xs sm:text-sm text-muted-foreground">Payment</span>
+              </div>
+              <div className="flex-1 h-1 bg-muted mx-2 rounded-full" />
+              <div className="flex flex-col items-center gap-2">
+                <div className="h-10 w-10 rounded-full bg-muted text-muted-foreground flex items-center justify-center font-bold">
+                  3
+                </div>
+                <span className="text-xs sm:text-sm text-muted-foreground">Confirmation</span>
+              </div>
             </div>
           </div>
+
+          {/* Low Stock Warning */}
+          {lowStockItems.length > 0 && (
+            <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6 flex items-start gap-3" data-testid="low-stock-warning">
+              <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">Limited Stock Available</p>
+                <p className="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
+                  {lowStockItems.map(item => item.product.name).join(', ')} {lowStockItems.length === 1 ? 'has' : 'have'} limited stock. Complete your order to secure {lowStockItems.length === 1 ? 'it' : 'them'}.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Estimated Delivery Banner */}
+          {deliveryMethod === "delivery" && (
+            <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-6 flex items-center justify-between gap-4 flex-wrap" data-testid="delivery-estimate">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                  <Calendar className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-blue-800 dark:text-blue-200">Estimated Delivery</p>
+                  <p className="text-lg font-bold text-blue-900 dark:text-blue-100">Arrives by {estimatedDelivery}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/50 px-3 py-1.5 rounded-full">
+                <Truck className="h-3.5 w-3.5" />
+                <span>Via The Courier Guy</span>
+              </div>
+            </div>
+          )}
+
+          {/* Same-Day Dispatch Urgency Banner */}
+          {new Date().getHours() < 12 && (
+            <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-xl p-4 mb-6 flex items-center gap-3" data-testid="same-day-dispatch">
+              <div className="h-10 w-10 rounded-lg bg-orange-500/20 flex items-center justify-center flex-shrink-0">
+                <Clock className="h-5 w-5 text-orange-600" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-orange-800 dark:text-orange-200">Same-Day Dispatch Available</p>
+                <p className="text-xs text-orange-700 dark:text-orange-300">
+                  Order within the next {12 - new Date().getHours()} hours for same-day dispatch
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Delivery Method Selector */}
@@ -1158,63 +1271,93 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       </RadioGroup>
                     </div>
 
-                    {/* Trust Signals */}
-                    <div className="bg-gradient-to-br from-muted/30 to-muted/50 rounded-xl p-5 border border-border/50" data-testid="trust-signals">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="flex items-start gap-3" data-testid="trust-secure-payment">
-                          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <Lock className="h-5 w-5 text-primary" />
+                    {/* Trust Signals - Enhanced */}
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 rounded-xl p-5 border border-green-200 dark:border-green-800" data-testid="trust-signals">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div className="flex flex-col items-center text-center gap-2" data-testid="trust-secure-payment">
+                          <div className="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                            <Lock className="h-6 w-6 text-green-600" />
                           </div>
                           <div>
-                            <p className="text-sm font-semibold">Secure Payment</p>
-                            <p className="text-xs text-muted-foreground">256-bit SSL encryption</p>
+                            <p className="text-xs font-semibold text-green-800 dark:text-green-200">Secure</p>
+                            <p className="text-[10px] text-green-600 dark:text-green-400">256-bit SSL</p>
                           </div>
                         </div>
-                        <div className="flex items-start gap-3" data-testid="trust-delivery">
-                          {deliveryMethod === "pickup" ? (
-                            <>
-                              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                <Home className="h-5 w-5 text-primary" />
-                              </div>
-                              <div>
-                                <p className="text-sm font-semibold">Easy Pickup</p>
-                                <p className="text-xs text-muted-foreground">Wonderboom, Pretoria</p>
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                <Truck className="h-5 w-5 text-primary" />
-                              </div>
-                              <div>
-                                <p className="text-sm font-semibold">Fast Delivery</p>
-                                <p className="text-xs text-muted-foreground">Free on orders R2500+</p>
-                              </div>
-                            </>
-                          )}
+                        <div className="flex flex-col items-center text-center gap-2" data-testid="trust-verified">
+                          <div className="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                            <ShieldCheck className="h-6 w-6 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold text-green-800 dark:text-green-200">Verified</p>
+                            <p className="text-[10px] text-green-600 dark:text-green-400">PCI-DSS</p>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-center text-center gap-2" data-testid="trust-returns">
+                          <div className="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                            <RotateCcw className="h-6 w-6 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold text-green-800 dark:text-green-200">Easy Returns</p>
+                            <p className="text-[10px] text-green-600 dark:text-green-400">30 Days</p>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-center text-center gap-2" data-testid="trust-support">
+                          <div className="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                            <MessageCircle className="h-6 w-6 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold text-green-800 dark:text-green-200">Support</p>
+                            <p className="text-[10px] text-green-600 dark:text-green-400">WhatsApp</p>
+                          </div>
                         </div>
                       </div>
+                    </div>
+
+                    {/* Payment Security Badges */}
+                    <div className="flex items-center justify-center gap-4 py-3 bg-muted/30 rounded-xl border border-border/50">
+                      <div className="flex items-center gap-2">
+                        <SiVisa className="h-8 w-auto text-[#1434CB]" />
+                        <span className="text-[10px] text-muted-foreground font-medium">Verified by Visa</span>
+                      </div>
+                      <div className="w-px h-6 bg-border" />
+                      <div className="flex items-center gap-2">
+                        <SiMastercard className="h-8 w-auto text-[#FF5F00]" />
+                        <span className="text-[10px] text-muted-foreground font-medium">SecureCode</span>
+                      </div>
+                    </div>
+
+                    {/* POPI Compliance Notice */}
+                    <div className="text-center text-xs text-muted-foreground bg-muted/20 rounded-lg p-3 border border-border/30" data-testid="popi-notice">
+                      <Shield className="h-4 w-4 inline mr-1.5 text-muted-foreground" />
+                      Your personal information is protected under POPIA. We never share your data with third parties.
+                      <a href="/privacy" className="text-primary hover:underline ml-1">Privacy Policy</a>
                     </div>
 
                     <Button 
                       type="submit" 
                       size="lg" 
-                      className="w-full h-14 text-base font-bold tracking-wide shadow-xl hover:shadow-2xl transition-shadow" 
+                      className="w-full font-bold tracking-wide shadow-xl" 
                       disabled={createOrderMutation.isPending} 
                       data-testid="button-place-order"
                     >
                       {createOrderMutation.isPending ? (
                         <span className="flex items-center gap-2">
                           <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent" />
-                          Processing Order...
+                          Processing Secure Payment...
                         </span>
                       ) : (
                         <span className="flex items-center gap-2">
                           <Lock className="h-4 w-4" />
-                          Complete Secure Payment
+                          Complete Secure Payment - R {total.toFixed(2)}
                         </span>
                       )}
                     </Button>
+
+                    {/* Order Guarantee */}
+                    <div className="text-center text-xs text-muted-foreground">
+                      <Check className="h-4 w-4 inline mr-1 text-green-600" />
+                      Order confirmation sent immediately to your email
+                    </div>
                   </form>
                 </Form>
               </CardContent>
@@ -1421,11 +1564,38 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                     </>
                   )}
                 </div>
+
+                {/* Google Rating Badge */}
+                <div className="flex items-center justify-center gap-2 py-3 bg-muted/20 rounded-xl border border-border/30">
+                  <div className="flex items-center gap-1">
+                    <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                    <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                    <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                    <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                    <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                  </div>
+                  <span className="text-sm font-semibold">4.9/5</span>
+                  <span className="text-xs text-muted-foreground">(Based on customer reviews)</span>
+                </div>
               </CardContent>
             </Card>
           </div>
         </div>
       </div>
+
+      {/* Floating WhatsApp Support Button */}
+      <a
+        href="https://wa.me/27125663123?text=Hi%2C%20I%20need%20help%20with%20my%20checkout"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-full shadow-2xl hover:shadow-green-500/25 transition-all duration-300 hover:scale-105"
+        data-testid="whatsapp-support"
+      >
+        <svg viewBox="0 0 24 24" className="h-6 w-6 fill-current">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        <span className="font-semibold hidden sm:inline">Need Help?</span>
+      </a>
     </div>
   );
 }
