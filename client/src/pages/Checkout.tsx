@@ -1190,10 +1190,8 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       >
                         <CardContent className="p-4 flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className={`h-10 w-10 rounded-md flex items-center justify-center ${
-                              paymentMethod === "yoco" ? "bg-primary/10" : "bg-muted"
-                            }`}>
-                              <CreditCard className={`h-5 w-5 ${paymentMethod === "yoco" ? "text-primary" : "text-muted-foreground"}`} />
+                            <div className="h-10 w-10 rounded-md flex items-center justify-center bg-[#22B8CF] overflow-hidden">
+                              <span className="text-white font-bold text-xs">YOCO</span>
                             </div>
                             <div className="text-left">
                               <p className="font-semibold">Yoco</p>
