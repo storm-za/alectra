@@ -1235,6 +1235,38 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                         </CardContent>
                       </Card>
 
+                      {/* Security badges */}
+                      <div className="flex items-center justify-center gap-4 pt-4 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Lock className="h-3.5 w-3.5" />
+                          <span>256-bit SSL</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Shield className="h-3.5 w-3.5" />
+                          <span>PCI Compliant</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Order Summary */}
+                  <Card>
+                    <CardHeader className="pb-4">
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <ShoppingCart className="h-5 w-5" />
+                        Order Summary
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <OrderSummaryContent />
+                      
+                      {tradeStatus?.approved && (
+                        <div className="mt-4 bg-primary/5 border border-primary/20 rounded-lg p-3 flex items-center gap-2">
+                          <BadgePercent className="h-4 w-4 text-primary" />
+                          <span className="text-sm font-medium text-primary">15% Trade Discount Applied</span>
+                        </div>
+                      )}
+
                       {/* Discount Code */}
                       <div className="pt-4 border-t mt-4">
                         <Label className="text-sm font-medium flex items-center gap-2 mb-2">
@@ -1276,38 +1308,6 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                           <p className="text-xs text-destructive mt-1" data-testid="text-discount-error">{discountError}</p>
                         )}
                       </div>
-
-                      {/* Security badges */}
-                      <div className="flex items-center justify-center gap-4 pt-4 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Lock className="h-3.5 w-3.5" />
-                          <span>256-bit SSL</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Shield className="h-3.5 w-3.5" />
-                          <span>PCI Compliant</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Order Summary */}
-                  <Card>
-                    <CardHeader className="pb-4">
-                      <CardTitle className="flex items-center gap-2 text-lg">
-                        <ShoppingCart className="h-5 w-5" />
-                        Order Summary
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <OrderSummaryContent />
-                      
-                      {tradeStatus?.approved && (
-                        <div className="mt-4 bg-primary/5 border border-primary/20 rounded-lg p-3 flex items-center gap-2">
-                          <BadgePercent className="h-4 w-4 text-primary" />
-                          <span className="text-sm font-medium text-primary">15% Trade Discount Applied</span>
-                        </div>
-                      )}
                     </CardContent>
                   </Card>
                 </div>
