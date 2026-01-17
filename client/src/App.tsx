@@ -77,10 +77,60 @@ const getCartItemKey = (item: CartItem) => {
   return item.variant ? `${item.product.id}-${item.variant}` : item.product.id;
 };
 
+// Cart persistence helpers
+const CART_STORAGE_KEY = "alectra_cart";
+const CART_EXPIRY_HOURS = 24;
+
+interface StoredCart {
+  items: CartItem[];
+  timestamp: number;
+}
+
+const loadCartFromStorage = (): CartItem[] => {
+  try {
+    const stored = localStorage.getItem(CART_STORAGE_KEY);
+    if (!stored) return [];
+    
+    const data: StoredCart = JSON.parse(stored);
+    const hoursElapsed = (Date.now() - data.timestamp) / (1000 * 60 * 60);
+    
+    // Clear cart if older than 24 hours
+    if (hoursElapsed > CART_EXPIRY_HOURS) {
+      localStorage.removeItem(CART_STORAGE_KEY);
+      return [];
+    }
+    
+    return data.items || [];
+  } catch {
+    return [];
+  }
+};
+
+const saveCartToStorage = (items: CartItem[]) => {
+  try {
+    if (items.length === 0) {
+      localStorage.removeItem(CART_STORAGE_KEY);
+    } else {
+      const data: StoredCart = {
+        items,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(data));
+    }
+  } catch {
+    // Storage might be full or unavailable
+  }
+};
+
 function Router() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => loadCartFromStorage());
   const [cartOpen, setCartOpen] = useState(false);
   const { toast } = useToast();
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    saveCartToStorage(cartItems);
+  }, [cartItems]);
 
   const addToCart = (product: Product, quantity: number = 1, variant?: ProductVariant, variantPrice?: string) => {
     setCartItems((items) => {
