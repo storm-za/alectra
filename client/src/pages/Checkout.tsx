@@ -516,16 +516,20 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const goToNextStep = () => {
     if (currentStep === 1 && canProceedFromStep1) {
       setCurrentStep(2);
+      window.scrollTo(0, 0);
     } else if (currentStep === 2 && canProceedFromStep2a) {
       setCurrentStep(3);
       if (deliveryMethod === "delivery") {
         setAddressEntryMode(null);
       }
+      window.scrollTo(0, 0);
     } else if (currentStep === 3) {
       if (deliveryMethod === "delivery" && canProceedFromStep2bDelivery) {
         setCurrentStep(4);
+        window.scrollTo(0, 0);
       } else if (deliveryMethod === "pickup" && canProceedFromStep2bPickup) {
         setCurrentStep(4);
+        window.scrollTo(0, 0);
       }
     }
   };
@@ -536,6 +540,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       if (currentStep === 3) {
         setAddressEntryMode(null);
       }
+      window.scrollTo(0, 0);
     }
   };
 
