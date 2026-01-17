@@ -32,6 +32,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { FREE_SHIPPING_PRODUCT_IDS, TORSION_SPRING_VARIANTS, type CartItem, type UserAddress, type PaystackVerifyResponse, type TorsionSpringVariant } from "@shared/schema";
 import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, ShoppingCart, Navigation, Check, Loader2, Search, PenLine, Tag, ChevronLeft, ChevronRight, Building2, ExternalLink, Star, ChevronDown, ChevronUp } from "lucide-react";
 import { SiVisa, SiMastercard } from "react-icons/si";
+import yocoLogo from "@assets/yoco-logo_1768669914726.jpg";
+import paystackLogo from "@assets/Paystack-mark-white-twitter_1768669952658.png";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -1190,8 +1192,8 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       >
                         <CardContent className="p-4 flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-md flex items-center justify-center bg-[#22B8CF] overflow-hidden">
-                              <span className="text-white font-bold text-xs">YOCO</span>
+                            <div className="h-10 w-10 rounded-md overflow-hidden">
+                              <img src={yocoLogo} alt="Yoco" className="h-full w-full object-cover" />
                             </div>
                             <div className="text-left">
                               <p className="font-semibold">Yoco</p>
@@ -1216,11 +1218,8 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       >
                         <CardContent className="p-4 flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-md flex flex-col items-center justify-center gap-0.5 bg-white border">
-                              <div className="w-5 h-1 bg-[#00C3F7] rounded-sm"></div>
-                              <div className="w-5 h-1 bg-[#00C3F7] rounded-sm"></div>
-                              <div className="w-5 h-1 bg-[#00C3F7] rounded-sm"></div>
-                              <div className="w-3.5 h-1 bg-[#00C3F7] rounded-sm self-start ml-2.5"></div>
+                            <div className="h-10 w-10 rounded-md overflow-hidden bg-[#011B33] flex items-center justify-center p-1.5">
+                              <img src={paystackLogo} alt="Paystack" className="h-full w-full object-contain" />
                             </div>
                             <div className="text-left">
                               <p className="font-semibold">Paystack</p>
