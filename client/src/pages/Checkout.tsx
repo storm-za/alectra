@@ -98,14 +98,14 @@ const STORES = {
     name: "Wonderboom Store",
     address: "107A Dassiebos Ave, Wonderboom, Pretoria, 0182",
     mapsUrl: "https://maps.app.goo.gl/1YqjKqZ3dAQedFWc9",
-    hours: "Mon-Fri: 8am-5pm, Sat: 8am-1pm",
+    hours: "Mon-Sun: 08:00 - 16:45",
   },
   hatfield: {
     id: "hatfield",
     name: "Hatfield Store",
     address: "1234 Burnett St, Hatfield, Pretoria, 0083",
     mapsUrl: "https://maps.app.goo.gl/LSUuz7pxboVphHGG7",
-    hours: "Mon-Fri: 8am-5pm, Sat: 8am-1pm",
+    hours: "Mon-Sat: 08:00 - 16:45",
   },
 };
 
