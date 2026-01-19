@@ -1401,6 +1401,48 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                     </CardHeader>
                     <CardContent>
                       <OrderSummaryContent />
+
+                      {/* Customer & Delivery Details */}
+                      <div className="pt-4 border-t mt-4 space-y-3">
+                        <div>
+                          <Label className="text-xs text-muted-foreground flex items-center gap-1.5 mb-1">
+                            <User className="h-3.5 w-3.5" />
+                            Contact
+                          </Label>
+                          <p className="text-sm font-medium" data-testid="text-summary-name">{form.watch("customerName")}</p>
+                          <p className="text-sm text-muted-foreground" data-testid="text-summary-email">{form.watch("customerEmail")}</p>
+                          <p className="text-sm text-muted-foreground" data-testid="text-summary-phone">{form.watch("customerPhone")}</p>
+                        </div>
+
+                        <div>
+                          <Label className="text-xs text-muted-foreground flex items-center gap-1.5 mb-1">
+                            {deliveryMethod === "delivery" ? (
+                              <>
+                                <Truck className="h-3.5 w-3.5" />
+                                Delivery Address
+                              </>
+                            ) : (
+                              <>
+                                <Building2 className="h-3.5 w-3.5" />
+                                Pickup Store
+                              </>
+                            )}
+                          </Label>
+                          {deliveryMethod === "delivery" ? (
+                            <div data-testid="text-summary-address">
+                              <p className="text-sm font-medium">{form.watch("deliveryAddress")}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {form.watch("deliveryCity")}, {form.watch("deliveryProvince")} {form.watch("deliveryPostalCode")}
+                              </p>
+                            </div>
+                          ) : (
+                            <div data-testid="text-summary-pickup">
+                              <p className="text-sm font-medium">{STORES[pickupStore as keyof typeof STORES]?.name}</p>
+                              <p className="text-sm text-muted-foreground">{STORES[pickupStore as keyof typeof STORES]?.address}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                       
                       {tradeStatus?.approved && (
                         <div className="mt-4 bg-primary/5 border border-primary/20 rounded-lg p-3 flex items-center gap-2">
