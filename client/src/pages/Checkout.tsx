@@ -1419,8 +1419,8 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                           paymentMethod === "paystack"
                             ? "border-primary bg-primary/5 ring-2 ring-primary/20"
                             : "border-border"
-                        }`}
-                        onClick={() => setPaymentMethod("paystack")}
+                        } ${!paystackReady ? "opacity-60" : ""}`}
+                        onClick={() => paystackReady && setPaymentMethod("paystack")}
                         data-testid="button-payment-paystack"
                       >
                         <CardContent className="p-4 flex items-center justify-between">
@@ -1429,8 +1429,13 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                               <img src={paystackLogo} alt="Paystack" className="h-full w-full object-contain" />
                             </div>
                             <div className="text-left">
-                              <p className="font-semibold">Paystack</p>
-                              <p className="text-xs text-muted-foreground">Credit/Debit Card</p>
+                              <p className="font-semibold flex items-center gap-2">
+                                Paystack
+                                {!paystackReady && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {paystackReady ? "Credit/Debit Card" : "Loading payment system..."}
+                              </p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
