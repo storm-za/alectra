@@ -1,4 +1,4 @@
-import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, blogPosts, sessionVisits, discountCodes, FREE_SHIPPING_PRODUCT_IDS, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type BlogPost, type SessionVisit, type InsertSessionVisit, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type InsertBlogPost, type CreateOrderRequest, type DiscountCode, type InsertDiscountCode } from "@shared/schema";
+import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, blogPosts, sessionVisits, discountCodes, wishlistItems, FREE_SHIPPING_PRODUCT_IDS, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type BlogPost, type SessionVisit, type InsertSessionVisit, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type InsertBlogPost, type CreateOrderRequest, type DiscountCode, type InsertDiscountCode, type WishlistItem } from "@shared/schema";
 import { db } from "./db";
 import { eq, sql, and, or, like, ilike, gte, lte, asc, desc, inArray } from "drizzle-orm";
 
@@ -70,6 +70,13 @@ export interface IStorage {
   updateDiscountCode(id: string, updates: Partial<InsertDiscountCode>): Promise<DiscountCode | undefined>;
   deleteDiscountCode(id: string): Promise<boolean>;
   incrementDiscountCodeUsage(id: string): Promise<void>;
+
+  // Wishlist
+  getUserWishlist(userId: string): Promise<Array<WishlistItem & { product: Product }>>;
+  addToWishlist(userId: string, productId: string): Promise<WishlistItem>;
+  removeFromWishlist(userId: string, productId: string): Promise<boolean>;
+  isInWishlist(userId: string, productId: string): Promise<boolean>;
+  getUserWishlistProductIds(userId: string): Promise<string[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -903,6 +910,72 @@ export class DatabaseStorage implements IStorage {
       .update(discountCodes)
       .set({ usesCount: sql`${discountCodes.usesCount} + 1` })
       .where(eq(discountCodes.id, id));
+  }
+
+  // Wishlist methods
+  async getUserWishlist(userId: string): Promise<Array<WishlistItem & { product: Product }>> {
+    const items = await db
+      .select({
+        id: wishlistItems.id,
+        userId: wishlistItems.userId,
+        productId: wishlistItems.productId,
+        createdAt: wishlistItems.createdAt,
+        product: products,
+      })
+      .from(wishlistItems)
+      .innerJoin(products, eq(wishlistItems.productId, products.id))
+      .where(eq(wishlistItems.userId, userId))
+      .orderBy(desc(wishlistItems.createdAt));
+    
+    return items.map(item => ({
+      id: item.id,
+      userId: item.userId,
+      productId: item.productId,
+      createdAt: item.createdAt,
+      product: item.product,
+    }));
+  }
+
+  async addToWishlist(userId: string, productId: string): Promise<WishlistItem> {
+    // Check if already in wishlist
+    const existing = await db
+      .select()
+      .from(wishlistItems)
+      .where(and(eq(wishlistItems.userId, userId), eq(wishlistItems.productId, productId)));
+    
+    if (existing.length > 0) {
+      return existing[0];
+    }
+    
+    const [item] = await db
+      .insert(wishlistItems)
+      .values({ userId, productId })
+      .returning();
+    return item;
+  }
+
+  async removeFromWishlist(userId: string, productId: string): Promise<boolean> {
+    const result = await db
+      .delete(wishlistItems)
+      .where(and(eq(wishlistItems.userId, userId), eq(wishlistItems.productId, productId)))
+      .returning();
+    return result.length > 0;
+  }
+
+  async isInWishlist(userId: string, productId: string): Promise<boolean> {
+    const [item] = await db
+      .select()
+      .from(wishlistItems)
+      .where(and(eq(wishlistItems.userId, userId), eq(wishlistItems.productId, productId)));
+    return !!item;
+  }
+
+  async getUserWishlistProductIds(userId: string): Promise<string[]> {
+    const items = await db
+      .select({ productId: wishlistItems.productId })
+      .from(wishlistItems)
+      .where(eq(wishlistItems.userId, userId));
+    return items.map(item => item.productId);
   }
 }
 
