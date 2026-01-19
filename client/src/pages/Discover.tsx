@@ -7,6 +7,32 @@ import { Search, Tag, TrendingUp, Zap, ChevronRight } from "lucide-react";
 import { SEO } from "@/components/SEO";
 import type { Category, Product } from "@shared/schema";
 
+import electricFencingImg from "@assets/optimized/electric-fencing-category.webp";
+import remotesImg from "@assets/optimized/remotes-category.webp";
+import cctvImg from "@assets/optimized/cctv-category.webp";
+import gateMotorsImg from "@assets/optimized/gate-motors-category.webp";
+import lpGasImg from "@assets/optimized/lp-gas-category.webp";
+import garageDoorsImg from "@assets/optimized/garage-door-parts-category.webp";
+import batteriesImg from "@assets/optimized/batteries-category.webp";
+import garageMotorsImg from "@assets/optimized/garage-motors-category.webp";
+import intercomsImg from "@assets/optimized/intercoms-category.webp";
+
+const optimizedCategoryImages: Record<string, string> = {
+  'electric-fencing': electricFencingImg,
+  'remotes': remotesImg,
+  'cctv-cameras': cctvImg,
+  'gate-motors': gateMotorsImg,
+  'lp-gas-exchange': lpGasImg,
+  'garage-door-parts': garageDoorsImg,
+  'batteries': batteriesImg,
+  'garage-motors': garageMotorsImg,
+  'intercoms': intercomsImg,
+};
+
+const getCategoryImage = (category: Category): string => {
+  return optimizedCategoryImages[category.slug] || category.imageUrl || '';
+};
+
 export default function Discover() {
   const { data: categories, isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -62,9 +88,7 @@ export default function Discover() {
             ) : (
               <div className="divide-y">
                 {categories?.map((category) => {
-                  const imageUrl = category.imageUrl?.startsWith('/') 
-                    ? category.imageUrl 
-                    : `/${category.imageUrl}`;
+                  const imageUrl = getCategoryImage(category);
                   
                   return (
                     <Link 
@@ -74,7 +98,7 @@ export default function Discover() {
                     >
                       <div className="px-4 py-3 flex items-center gap-4 hover-elevate">
                         <div className="h-12 w-12 rounded-lg bg-muted overflow-hidden flex-shrink-0">
-                          {category.imageUrl ? (
+                          {imageUrl ? (
                             <img 
                               src={imageUrl}
                               alt={category.name}
