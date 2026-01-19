@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Tag, TrendingUp, Zap, ChevronRight } from "lucide-react";
+import { Search, ChevronRight } from "lucide-react";
 import { SEO } from "@/components/SEO";
 import type { Category, Product } from "@shared/schema";
 
@@ -118,52 +118,6 @@ export default function Discover() {
                 })}
               </div>
             )}
-          </section>
-
-          {/* Quick Action Buttons */}
-          <section className="px-4 py-6 bg-muted/30">
-            <div className="grid grid-cols-4 gap-2">
-              <Card className="hover-elevate">
-                <Link href="/collections/all?sort=popular" data-testid="link-trending">
-                  <CardContent className="p-3 text-center">
-                    <div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center mx-auto mb-2">
-                      <TrendingUp className="h-5 w-5 text-orange-600 dark:text-orange-400" />
-                    </div>
-                    <p className="font-medium text-xs" data-testid="text-trending">Trending</p>
-                  </CardContent>
-                </Link>
-              </Card>
-              <Card className="hover-elevate">
-                <Link href="/collections/all?filter=deals" data-testid="link-deals">
-                  <CardContent className="p-3 text-center">
-                    <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-2">
-                      <Tag className="h-5 w-5 text-green-600 dark:text-green-400" />
-                    </div>
-                    <p className="font-medium text-xs" data-testid="text-deals">Deals</p>
-                  </CardContent>
-                </Link>
-              </Card>
-              <Card className="hover-elevate">
-                <Link href="/collections/all?sort=newest" data-testid="link-new-arrivals">
-                  <CardContent className="p-3 text-center">
-                    <div className="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mx-auto mb-2">
-                      <Zap className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                    </div>
-                    <p className="font-medium text-xs" data-testid="text-new-arrivals">New</p>
-                  </CardContent>
-                </Link>
-              </Card>
-              <Card className="hover-elevate">
-                <Link href="/search" data-testid="link-search">
-                  <CardContent className="p-3 text-center">
-                    <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mx-auto mb-2">
-                      <Search className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <p className="font-medium text-xs" data-testid="text-search">Search</p>
-                  </CardContent>
-                </Link>
-              </Card>
-            </div>
           </section>
 
           {/* Recommended Products */}
