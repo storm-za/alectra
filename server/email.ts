@@ -219,7 +219,7 @@ export class EmailService {
                     <table role="presentation" style="width: 100%;">
                       <tr>
                         <td style="vertical-align: middle;">
-                          <img src="https://alectra.co.za/uploads/logo.png" alt="Alectra Solutions" width="40" height="40" style="width: 40px; height: 40px; display: block;" />
+                          <img src="https://alectra.co.za/attached_assets/alectra-logo_1763806823535.png" alt="Alectra Solutions" width="40" height="40" style="width: 40px; height: 40px; object-fit: contain; display: block;" />
                         </td>
                         <td style="vertical-align: middle; padding-left: 12px;">
                           <span style="font-size: 16px; font-weight: 600; color: #111827;">Alectra Solutions</span>
