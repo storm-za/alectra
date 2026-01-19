@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import MobileNav from "@/components/MobileNav";
 import { useToast } from "@/hooks/use-toast";
 import type { Product, CartItem, ProductVariant } from "@shared/schema";
 
@@ -37,6 +38,9 @@ const AdminSeed = lazy(() => import("@/pages/AdminSeed"));
 const Admin = lazy(() => import("@/pages/Admin"));
 const AdminProducts = lazy(() => import("@/pages/AdminProducts"));
 const AdminDiscountCodes = lazy(() => import("@/pages/AdminDiscountCodes"));
+const MyShop = lazy(() => import("@/pages/MyShop"));
+const Discover = lazy(() => import("@/pages/Discover"));
+const Profile = lazy(() => import("@/pages/Profile"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
 function PageLoader() {
@@ -185,7 +189,7 @@ function Router() {
       <ScrollToTop />
       <Header cartItemCount={cartItemCount} onCartClick={() => setCartOpen(true)} />
       
-      <main className="flex-1">
+      <main className="flex-1 pb-16 lg:pb-0">
         <Suspense fallback={<PageLoader />}>
           <Switch>
             <Route path="/">
@@ -266,6 +270,15 @@ function Router() {
             <Route path="/admin/discount-codes">
               <AdminDiscountCodes />
             </Route>
+            <Route path="/my-shop">
+              <MyShop onAddToCart={addToCart} />
+            </Route>
+            <Route path="/discover">
+              <Discover />
+            </Route>
+            <Route path="/profile">
+              <Profile />
+            </Route>
             <Route component={NotFound} />
           </Switch>
         </Suspense>
@@ -273,6 +286,7 @@ function Router() {
 
       <Footer />
       <WhatsAppButton />
+      <MobileNav cartItemCount={cartItemCount} onCartClick={() => setCartOpen(true)} />
 
       <CartDrawer
         open={cartOpen}
