@@ -508,6 +508,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User Wishlist (Protected)
+  app.get("/api/user/wishlist", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const wishlist = await storage.getUserWishlist(userId);
+      res.json(wishlist);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/user/wishlist/ids", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const productIds = await storage.getUserWishlistProductIds(userId);
+      res.json(productIds);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/user/wishlist/:productId", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const { productId } = req.params;
+      const item = await storage.addToWishlist(userId, productId);
+      res.status(201).json(item);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/user/wishlist/:productId", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const { productId } = req.params;
+      const deleted = await storage.removeFromWishlist(userId, productId);
+      if (!deleted) {
+        return res.status(404).json({ message: "Item not found in wishlist" });
+      }
+      res.json({ message: "Removed from wishlist" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Categories
   app.get("/api/categories", async (req, res) => {
     try {
