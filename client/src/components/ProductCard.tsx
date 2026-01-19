@@ -64,7 +64,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
         <div className="absolute top-2 right-2 z-10">
           <WishlistButton 
             productId={product.id} 
-            className="bg-background/80 backdrop-blur-sm hover:bg-background"
+            className="bg-background/80 backdrop-blur-sm"
           />
         </div>
       </div>

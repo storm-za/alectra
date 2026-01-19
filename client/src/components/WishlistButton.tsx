@@ -116,7 +116,7 @@ export function WishlistButton({ productId, className, size = "icon", showLabel 
       disabled={isPending}
       className={cn(
         "rounded-full",
-        isInWishlist && "text-red-500 hover:text-red-600",
+        isInWishlist && "text-red-500",
         className
       )}
       data-testid={`button-wishlist-${productId}`}

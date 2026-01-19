@@ -1,19 +1,24 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Search, RotateCcw, ShoppingBag, Plus, Heart, Package, ChevronRight, ListPlus, Clock, Star } from "lucide-react";
+import { Search, RotateCcw, ShoppingBag, Plus, Heart, Package, ChevronRight, ListPlus, Clock, Star, ShoppingCart, Trash2 } from "lucide-react";
 import type { Product } from "@shared/schema";
 import { SEO } from "@/components/SEO";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 interface MyShopProps {
   onAddToCart: (product: Product, quantity?: number) => void;
 }
 
 export default function MyShop({ onAddToCart }: MyShopProps) {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
   const { data: user } = useQuery<{ user: any | null }>({
     queryKey: ["/api/auth/me"],
     retry: false,
@@ -24,8 +29,32 @@ export default function MyShop({ onAddToCart }: MyShopProps) {
     enabled: !!user?.user,
   });
 
+  const { data: wishlistItems = [], isLoading: wishlistLoading } = useQuery<Product[]>({
+    queryKey: ["/api/user/wishlist"],
+    enabled: !!user?.user,
+  });
+
   const { data: featuredProducts } = useQuery<Product[]>({
     queryKey: ["/api/products/featured"],
+  });
+
+  const removeFromWishlistMutation = useMutation({
+    mutationFn: (productId: string) => apiRequest("DELETE", `/api/user/wishlist/${productId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user/wishlist"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user/wishlist/ids"] });
+      toast({
+        title: "Removed from Wishlist",
+        description: "Item removed from your wishlist",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to remove item from wishlist",
+        variant: "destructive",
+      });
+    },
   });
 
   const isLoggedIn = !!user?.user;
@@ -111,20 +140,100 @@ export default function MyShop({ onAddToCart }: MyShopProps) {
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-bold tracking-tight flex items-center gap-2">
                     <Heart className="h-5 w-5 text-rose-500" />
-                    SAVED ITEMS
+                    WISHLIST
                   </h2>
+                  {wishlistItems.length > 0 && (
+                    <span className="text-sm text-muted-foreground" data-testid="text-wishlist-count">
+                      {wishlistItems.length} item{wishlistItems.length !== 1 ? 's' : ''}
+                    </span>
+                  )}
                 </div>
                 
-                <Card className="border-dashed">
-                  <CardContent className="p-8 text-center">
-                    <Heart className="h-12 w-12 text-muted-foreground/30 mx-auto mb-3" />
-                    <p className="font-medium">No saved items yet</p>
-                    <p className="text-sm text-muted-foreground mt-1">Items you save will appear here</p>
-                    <Button variant="outline" className="mt-4" asChild>
-                      <Link href="/collections/all">Browse Products</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
+                {wishlistLoading ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {[1, 2].map((i) => (
+                      <Card key={i} className="animate-pulse">
+                        <CardContent className="p-4 flex items-center gap-4">
+                          <div className="h-20 w-20 rounded-lg bg-muted" />
+                          <div className="flex-1 space-y-2">
+                            <div className="h-4 bg-muted rounded w-3/4" />
+                            <div className="h-4 bg-muted rounded w-1/2" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : wishlistItems.length > 0 ? (
+                  <div className="space-y-3">
+                    {wishlistItems.map((product) => {
+                      const isOutOfStock = product.stock === 0 || (product as any).discontinued === true;
+                      return (
+                        <Card key={product.id} className="hover-elevate" data-testid={`card-wishlist-${product.id}`}>
+                          <CardContent className="p-4">
+                            <div className="flex items-center gap-4">
+                              <Link href={`/products/${product.slug}`} data-testid={`link-wishlist-image-${product.id}`}>
+                                <div className="h-20 w-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                                  <img
+                                    src={product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`}
+                                    alt={product.name}
+                                    className="w-full h-full object-contain"
+                                    loading="lazy"
+                                  />
+                                </div>
+                              </Link>
+                              <div className="flex-1 min-w-0">
+                                <Link href={`/products/${product.slug}`} data-testid={`link-wishlist-name-${product.id}`}>
+                                  <p className="text-xs text-muted-foreground">{product.brand}</p>
+                                  <p className="font-medium line-clamp-2" data-testid={`text-wishlist-name-${product.id}`}>
+                                    {product.name}
+                                  </p>
+                                  <p className="text-primary font-bold mt-1" data-testid={`text-wishlist-price-${product.id}`}>
+                                    R {parseFloat(product.price).toFixed(2)}
+                                  </p>
+                                </Link>
+                                {isOutOfStock && (
+                                  <Badge variant="secondary" className="mt-1">Out of Stock</Badge>
+                                )}
+                              </div>
+                              <div className="flex flex-col gap-2">
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  disabled={isOutOfStock}
+                                  onClick={() => onAddToCart(product)}
+                                  data-testid={`button-wishlist-add-to-cart-${product.id}`}
+                                >
+                                  <ShoppingCart className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="text-muted-foreground"
+                                  onClick={() => removeFromWishlistMutation.mutate(product.id)}
+                                  disabled={removeFromWishlistMutation.isPending}
+                                  data-testid={`button-wishlist-remove-${product.id}`}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <Card className="border-dashed">
+                    <CardContent className="p-8 text-center">
+                      <Heart className="h-12 w-12 text-muted-foreground/30 mx-auto mb-3" />
+                      <p className="font-medium">No saved items yet</p>
+                      <p className="text-sm text-muted-foreground mt-1">Items you save will appear here</p>
+                      <Button variant="outline" className="mt-4" asChild>
+                        <Link href="/collections/all">Browse Products</Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
               </section>
 
               {orders && orders.length > 0 && (
