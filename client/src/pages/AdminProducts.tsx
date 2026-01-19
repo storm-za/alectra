@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Search, Image, Plus, Trash2, ArrowLeft, CheckCircle, Save, Upload, Lock, FileText, FolderMinus } from "lucide-react";
+import { Loader2, Search, Image, Plus, Trash2, ArrowLeft, CheckCircle, Save, Upload, Lock, FileText, FolderMinus, Package } from "lucide-react";
 import { Link } from "wouter";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Product, Category } from "@shared/schema";
@@ -46,6 +46,7 @@ export default function AdminProducts() {
   const [description, setDescription] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("images");
+  const [stockLevel, setStockLevel] = useState<number>(0);
 
   const { data: authStatus, isLoading: authLoading, refetch: refetchAuth } = useQuery<{ isAdmin: boolean }>({
     queryKey: ['/api/admin/check'],
@@ -151,6 +152,21 @@ export default function AdminProducts() {
     },
   });
 
+  const updateStockMutation = useMutation({
+    mutationFn: async ({ slug, stock }: { slug: string; stock: number }) => {
+      return apiRequest('PATCH', `/api/admin/products/${slug}/stock`, { stock });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/products'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+      setSuccessMessage("Product stock updated successfully!");
+      setTimeout(() => {
+        setEditingProduct(null);
+        setSuccessMessage("");
+      }, 1500);
+    },
+  });
+
   const openEditor = (product: Product) => {
     setEditingProduct(product);
     setImageUrl(product.imageUrl);
@@ -160,6 +176,7 @@ export default function AdminProducts() {
     setDescription(product.description || "");
     setSelectedCategoryId(product.categoryId);
     setActiveTab("images");
+    setStockLevel(product.stock);
   };
 
   const addGalleryImage = () => {
@@ -203,6 +220,14 @@ export default function AdminProducts() {
     updateCategoryMutation.mutate({
       slug: editingProduct.slug,
       categoryId: null,
+    });
+  };
+
+  const handleSaveStock = () => {
+    if (!editingProduct) return;
+    updateStockMutation.mutate({
+      slug: editingProduct.slug,
+      stock: stockLevel,
     });
   };
 
@@ -370,7 +395,7 @@ export default function AdminProducts() {
             )}
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="images" className="flex items-center gap-2">
                   <Image className="h-4 w-4" />
                   Images
@@ -382,6 +407,10 @@ export default function AdminProducts() {
                 <TabsTrigger value="category" className="flex items-center gap-2">
                   <FolderMinus className="h-4 w-4" />
                   Category
+                </TabsTrigger>
+                <TabsTrigger value="stock" className="flex items-center gap-2" data-testid="tab-stock">
+                  <Package className="h-4 w-4" />
+                  Stock
                 </TabsTrigger>
               </TabsList>
 
@@ -634,6 +663,80 @@ export default function AdminProducts() {
                       <Save className="mr-2 h-4 w-4" />
                     )}
                     Save Category
+                  </Button>
+                </DialogFooter>
+              </TabsContent>
+
+              <TabsContent value="stock" className="space-y-6 mt-4">
+                <div className="space-y-4">
+                  <div className="p-4 bg-muted rounded-lg">
+                    <p className="text-sm font-medium">Current Stock Level</p>
+                    <p className="text-2xl font-bold">{editingProduct?.stock ?? 0} units</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="stockLevel">New Stock Level</Label>
+                    <Input
+                      id="stockLevel"
+                      type="number"
+                      min={0}
+                      value={stockLevel}
+                      onChange={(e) => setStockLevel(Math.max(0, parseInt(e.target.value) || 0))}
+                      placeholder="Enter stock quantity..."
+                      data-testid="input-stock-level"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Set to 0 to mark as out of stock
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setStockLevel(0)}
+                      data-testid="button-stock-zero"
+                    >
+                      Set to 0
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setStockLevel(10)}
+                      data-testid="button-stock-10"
+                    >
+                      Set to 10
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setStockLevel(100)}
+                      data-testid="button-stock-100"
+                    >
+                      Set to 100
+                    </Button>
+                  </div>
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setEditingProduct(null)}
+                    data-testid="button-cancel-stock"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleSaveStock}
+                    disabled={updateStockMutation.isPending}
+                    data-testid="button-save-stock"
+                  >
+                    {updateStockMutation.isPending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="mr-2 h-4 w-4" />
+                    )}
+                    Save Stock
                   </Button>
                 </DialogFooter>
               </TabsContent>

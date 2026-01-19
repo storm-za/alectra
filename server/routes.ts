@@ -1860,6 +1860,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // UPDATE PRODUCT STOCK
+  app.patch("/api/admin/products/:slug/stock", async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const { stock } = req.body;
+
+      if (typeof stock !== 'number' || stock < 0) {
+        return res.status(400).json({ message: "stock must be a non-negative number" });
+      }
+
+      const product = await storage.updateProductStock(slug, stock);
+
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.json({ success: true, product });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // GET UPLOAD URL FOR PRODUCT IMAGES
   app.post("/api/admin/upload-url", async (req, res) => {
     try {
