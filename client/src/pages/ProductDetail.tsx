@@ -596,7 +596,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             </div>
 
             {/* Quantity and Add to Cart */}
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-center gap-4 mb-8 flex-wrap">
               <div className="flex items-center border rounded-md">
                 <Button
                   variant="ghost"
