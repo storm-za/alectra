@@ -51,6 +51,12 @@ export interface OrderEmailData {
   tradeDiscount?: string;
 }
 
+export interface ShippingNotificationEmailData {
+  customerName: string;
+  customerEmail: string;
+  trackingLink: string;
+}
+
 // Base URL for production - used for absolute image URLs in emails
 // Use the custom domain if available, otherwise fall back to Replit app URL
 const PRODUCTION_BASE_URL = "https://alectra.co.za";
@@ -171,6 +177,108 @@ export class EmailService {
       console.error("Failed to send quote request email:", error);
       throw error;
     }
+  }
+
+  async sendShippingNotification(data: ShippingNotificationEmailData): Promise<void> {
+    const emailHtml = this.generateShippingNotificationHtml(data);
+
+    try {
+      await this.transporter.sendMail({
+        from: `"Alectra Solutions" <${process.env.GMAIL_USER}>`,
+        to: data.customerEmail,
+        subject: `Your Alectra Order Is On The Way! 🚚✨`,
+        html: emailHtml,
+      });
+      console.log(`Shipping notification email sent to ${data.customerEmail}`);
+    } catch (error) {
+      console.error("Failed to send shipping notification email:", error);
+      throw error;
+    }
+  }
+
+  private generateShippingNotificationHtml(data: ShippingNotificationEmailData): string {
+    // Extract first name for personalized greeting
+    const firstName = data.customerName.split(' ')[0];
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Your Order Is On The Way</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 40px 20px;">
+              <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                <!-- Header with logo -->
+                <tr>
+                  <td style="padding: 30px 30px 20px 30px;">
+                    <table role="presentation" style="width: 100%;">
+                      <tr>
+                        <td style="vertical-align: middle;">
+                          <img src="https://alectra.co.za/uploads/logo.png" alt="Alectra Solutions" width="40" height="40" style="width: 40px; height: 40px; display: block;" />
+                        </td>
+                        <td style="vertical-align: middle; padding-left: 12px;">
+                          <span style="font-size: 16px; font-weight: 600; color: #111827;">Alectra Solutions</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Main content -->
+                <tr>
+                  <td style="padding: 0 30px 30px 30px;">
+                    <h1 style="margin: 0 0 20px 0; color: #111827; font-size: 24px; font-weight: normal;">
+                      Hello ${firstName},
+                    </h1>
+                    
+                    <p style="margin: 0 0 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      Your Alectra order is on the way.
+                    </p>
+                    
+                    <p style="margin: 0 0 8px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      You can track your delivery at any time using the link below:
+                    </p>
+                    
+                    <p style="margin: 0 0 24px 0;">
+                      <a href="${data.trackingLink}" style="color: #2563eb; font-size: 16px; text-decoration: underline; word-break: break-all;">${data.trackingLink}</a>
+                    </p>
+                    
+                    <p style="margin: 0 0 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      If you have any questions, or need help, feel free to reply to this email, we're always here to assist.
+                    </p>
+                    
+                    <p style="margin: 0 0 24px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      Thank you for choosing Alectra!
+                    </p>
+                    
+                    <p style="margin: 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      Warm regards,<br>
+                      <strong>Alectra Solutions</strong>
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td style="background-color: #f9fafb; padding: 20px 30px; border-radius: 0 0 8px 8px;">
+                    <p style="margin: 0; color: #9ca3af; font-size: 12px; text-align: center;">
+                      Alectra Solutions (PTY) LTD | Security & Automation Specialists<br>
+                      📞 012 566 3123 | 📧 solutionsalectra@gmail.com
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
   }
 
   private generateQuoteRequestHtml(data: QuoteRequestEmailData): string {

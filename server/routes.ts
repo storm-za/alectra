@@ -459,7 +459,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin: Update order tracking link (auto-sets status to shipped)
+  // Admin: Update order tracking link (auto-sets status to shipped and sends email)
   app.patch("/api/admin/orders/:orderId/tracking", requireAdminAuth, async (req, res) => {
     try {
       const { orderId } = req.params;
@@ -481,6 +481,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!updatedOrder) {
         return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Send shipping notification email to customer
+      try {
+        const emailService = new EmailService();
+        await emailService.sendShippingNotification({
+          customerName: updatedOrder.customerName,
+          customerEmail: updatedOrder.customerEmail,
+          trackingLink: trackingLink
+        });
+        console.log(`Shipping notification email sent to ${updatedOrder.customerEmail}`);
+      } catch (emailError) {
+        console.error("Failed to send shipping notification email:", emailError);
+        // Don't fail the request - order was updated successfully
       }
       
       res.json(updatedOrder);
