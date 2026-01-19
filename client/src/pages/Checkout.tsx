@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -130,6 +130,36 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(null);
   const [discountError, setDiscountError] = useState<string | null>(null);
   const [orderSummaryOpen, setOrderSummaryOpen] = useState(false);
+  
+  // Payment SDK readiness and processing states
+  const [paystackReady, setPaystackReady] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
+  // Check Paystack SDK readiness on mount
+  useEffect(() => {
+    const checkPaystackReady = () => {
+      if ((window as any).PaystackPop) {
+        setPaystackReady(true);
+        return true;
+      }
+      return false;
+    };
+
+    // Check immediately
+    if (checkPaystackReady()) return;
+
+    // Poll every 100ms for up to 5 seconds
+    let attempts = 0;
+    const maxAttempts = 50;
+    const interval = setInterval(() => {
+      attempts++;
+      if (checkPaystackReady() || attempts >= maxAttempts) {
+        clearInterval(interval);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const { data: user } = useQuery<{ user: any | null }>({
     queryKey: ["/api/auth/me"],
@@ -337,6 +367,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
 
   const createOrderMutation = useMutation({
     mutationFn: async (data: CheckoutFormData) => {
+      setIsProcessingPayment(true);
       const orderData = {
         ...data,
         items: cartItems.map((item) => ({
@@ -364,6 +395,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           const initData = await initResponse.json();
 
           if (!initData.redirectUrl) {
+            setIsProcessingPayment(false);
             toast({ title: "Payment Error", description: "Failed to initialize payment.", variant: "destructive" });
             return;
           }
@@ -375,22 +407,28 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           const initData = await initResponse.json();
 
           if (!initData.accessCode) {
+            setIsProcessingPayment(false);
             toast({ title: "Payment Error", description: "Failed to initialize payment.", variant: "destructive" });
             return;
           }
 
           const PaystackPop = (window as any).PaystackPop;
           if (!PaystackPop) {
+            setIsProcessingPayment(false);
             toast({ title: "Payment Error", description: "Payment system not loaded. Please refresh.", variant: "destructive" });
             return;
           }
 
           const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
           if (!publicKey) {
+            setIsProcessingPayment(false);
             toast({ title: "Configuration Error", description: "Payment system not configured.", variant: "destructive" });
             return;
           }
 
+          // Hide overlay when popup opens (Paystack handles from here)
+          setIsProcessingPayment(false);
+          
           const popup = new PaystackPop();
           popup.newTransaction({
             key: publicKey,
@@ -399,9 +437,11 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
             currency: "ZAR",
             reference: initData.reference,
             onSuccess: (paystackResponse: any) => {
+              setIsProcessingPayment(true);
               apiRequest("GET", `/api/payment/verify/${paystackResponse.reference}`)
                 .then(verifyRes => verifyRes.json())
                 .then((verifyData: PaystackVerifyResponse) => {
+                  setIsProcessingPayment(false);
                   if (verifyData.status === "success" && verifyData.data) {
                     toast({ title: "Payment Successful!", description: "Your order has been confirmed." });
                     onClearCart();
@@ -411,19 +451,23 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                   }
                 })
                 .catch((error: any) => {
+                  setIsProcessingPayment(false);
                   toast({ title: "Verification Error", description: error.message || "Failed to verify payment", variant: "destructive" });
                 });
             },
             onCancel: () => {
+              setIsProcessingPayment(false);
               toast({ title: "Payment Cancelled", description: "You closed the payment window.", variant: "destructive" });
             },
           });
         }
       } catch (error: any) {
+        setIsProcessingPayment(false);
         toast({ title: "Payment Error", description: error.message || "Failed to initialize payment", variant: "destructive" });
       }
     },
     onError: (error: any) => {
+      setIsProcessingPayment(false);
       toast({ title: "Error", description: error.message || "Failed to place order.", variant: "destructive" });
     },
   });
@@ -636,6 +680,25 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-muted/30 via-background to-muted/20 flex flex-col">
+      {/* Payment Processing Overlay */}
+      {isProcessingPayment && (
+        <div className="fixed inset-0 z-[100] bg-background/80 backdrop-blur-sm flex items-center justify-center" data-testid="payment-processing-overlay">
+          <div className="bg-card border rounded-lg p-8 shadow-xl flex flex-col items-center gap-4 max-w-sm mx-4">
+            <div className="relative">
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </div>
+            <div className="text-center">
+              <h3 className="font-semibold text-lg">Processing Payment</h3>
+              <p className="text-sm text-muted-foreground mt-1">Please wait while we secure your order...</p>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Lock className="h-3 w-3" />
+              <span>256-bit SSL encrypted</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Trust Banner */}
       <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 px-4">
         <div className="max-w-4xl mx-auto flex items-center justify-center gap-4 text-xs sm:text-sm font-medium flex-wrap">
