@@ -87,7 +87,7 @@ export default function MyShop({ onAddToCart }: MyShopProps) {
             <>
               <section>
                 <Card className="overflow-hidden hover-elevate cursor-pointer bg-primary border-primary" data-testid="card-rapid-reorder">
-                  <Link href="/account" data-testid="link-rapid-reorder">
+                  <Link href="/account?tab=orders" data-testid="link-rapid-reorder">
                     <CardContent className="p-6 flex items-center gap-5">
                       <div className="h-14 w-14 rounded-lg bg-primary-foreground/10 flex items-center justify-center flex-shrink-0">
                         <RotateCcw className="h-7 w-7 text-primary-foreground" />
@@ -210,7 +210,7 @@ export default function MyShop({ onAddToCart }: MyShopProps) {
                       <Clock className="h-5 w-5 text-muted-foreground" />
                       RECENT ORDERS
                     </h2>
-                    <Link href="/account" className="text-primary text-sm font-medium">View All</Link>
+                    <Link href="/account?tab=orders" className="text-primary text-sm font-medium">View All</Link>
                   </div>
                   
                   <div className="space-y-3">

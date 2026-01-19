@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,29 @@ type ProfileFormData = z.infer<typeof profileFormSchema>;
 
 export default function Account() {
   const { toast } = useToast();
+  const [location] = useLocation();
   const [isAddressDialogOpen, setIsAddressDialogOpen] = useState(false);
+  
+  // Get initial tab from URL query parameter
+  const getInitialTab = () => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab");
+    if (tab && ["profile", "orders", "addresses"].includes(tab)) {
+      return tab;
+    }
+    return "profile";
+  };
+  
+  const [activeTab, setActiveTab] = useState(getInitialTab);
+  
+  // Update tab when URL changes
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab");
+    if (tab && ["profile", "orders", "addresses"].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [location]);
 
   const { data: user, isLoading: userLoading } = useQuery<{ user: any }>({
     queryKey: ["/api/auth/me"],
@@ -143,7 +166,7 @@ export default function Account() {
     <div className="container max-w-6xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6" data-testid="heading-account">My Account</h1>
 
-      <Tabs defaultValue="profile" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3" data-testid="tabs-account">
           <TabsTrigger value="profile" data-testid="tab-profile">Profile</TabsTrigger>
           <TabsTrigger value="orders" data-testid="tab-orders">Order History</TabsTrigger>
