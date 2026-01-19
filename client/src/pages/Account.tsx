@@ -257,13 +257,34 @@ export default function Account() {
 
                       <Separator />
 
-                      <div className="space-y-2">
-                        {order.items.map((item) => (
-                          <div key={item.id} className="flex justify-between text-sm">
-                            <span>{item.productId}</span>
-                            <span>Qty: {item.quantity} × R{item.priceAtPurchase}</span>
-                          </div>
-                        ))}
+                      <div className="space-y-3">
+                        {order.items.map((item: any) => {
+                          const imageUrl = item.productImage?.startsWith('/') 
+                            ? item.productImage 
+                            : item.productImage ? `/${item.productImage}` : null;
+                          
+                          return (
+                            <div key={item.id} className="flex items-center gap-3" data-testid={`order-item-${item.id}`}>
+                              {imageUrl && (
+                                <div className="h-12 w-12 rounded-md overflow-hidden bg-muted flex-shrink-0">
+                                  <img 
+                                    src={imageUrl} 
+                                    alt={item.productName || 'Product'} 
+                                    className="h-full w-full object-cover"
+                                  />
+                                </div>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-sm line-clamp-1" data-testid={`order-item-name-${item.id}`}>
+                                  {item.productName || 'Unknown Product'}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  Qty: {item.quantity} × R{item.priceAtPurchase}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
 
                       <Separator />

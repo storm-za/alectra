@@ -521,13 +521,41 @@ export class DatabaseStorage implements IStorage {
     });
   }
 
-  async getUserOrders(userId: string): Promise<Array<Order & { items: OrderItem[] }>> {
+  async getUserOrders(userId: string): Promise<Array<Order & { items: Array<OrderItem & { productName?: string; productImage?: string | null }> }>> {
     const userOrders = await db.select().from(orders).where(eq(orders.userId, userId)).orderBy(desc(orders.createdAt));
     
     const ordersWithItems = await Promise.all(
       userOrders.map(async (order) => {
-        const items = await db.select().from(orderItems).where(eq(orderItems.orderId, order.id));
-        return { ...order, items };
+        // Use the same join approach as getOrderItemsWithProducts
+        const items = await db
+          .select({
+            id: orderItems.id,
+            orderId: orderItems.orderId,
+            productId: orderItems.productId,
+            quantity: orderItems.quantity,
+            priceAtPurchase: orderItems.priceAtPurchase,
+            lineSubtotal: orderItems.lineSubtotal,
+            storedProductName: orderItems.productName,
+            storedProductImage: orderItems.productImage,
+            fallbackProductName: products.name,
+            fallbackProductImage: products.imageUrl,
+          })
+          .from(orderItems)
+          .leftJoin(products, eq(orderItems.productId, products.id))
+          .where(eq(orderItems.orderId, order.id));
+        
+        const itemsWithProducts = items.map(item => ({
+          id: item.id,
+          orderId: item.orderId,
+          productId: item.productId,
+          quantity: item.quantity,
+          priceAtPurchase: item.priceAtPurchase,
+          lineSubtotal: item.lineSubtotal,
+          productName: item.storedProductName || item.fallbackProductName || 'Unknown Product',
+          productImage: item.storedProductImage || item.fallbackProductImage || null,
+        }));
+        
+        return { ...order, items: itemsWithProducts };
       })
     );
     
