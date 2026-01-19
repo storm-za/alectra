@@ -5,6 +5,7 @@ import { ShoppingCart } from "lucide-react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { StarRating } from "@/components/StarRating";
+import { WishlistButton } from "@/components/WishlistButton";
 import { FREE_SHIPPING_PRODUCT_IDS, type Product } from "@shared/schema";
 
 interface ProductCardProps {
@@ -29,36 +30,44 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
 
   return (
     <Card className="group overflow-hidden hover-elevate active-elevate-2 flex flex-col h-full" data-testid={`card-product-${product.id}`}>
-      <Link href={`/products/${product.slug}`}>
-        <div className="relative aspect-square overflow-hidden bg-muted">
-          <img
-            src={imageUrl}
-            alt={product.name}
-            loading="lazy"
-            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+      <div className="relative">
+        <Link href={`/products/${product.slug}`}>
+          <div className="relative aspect-square overflow-hidden bg-muted">
+            <img
+              src={imageUrl}
+              alt={product.name}
+              loading="lazy"
+              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+            />
+            {product.featured && (
+              <Badge className="absolute top-3 left-3" data-testid="badge-featured">
+                Featured
+              </Badge>
+            )}
+            {isLowStock && !isOutOfStock && (
+              <Badge variant="destructive" className="absolute top-3 right-12" data-testid="badge-low-stock">
+                Low Stock
+              </Badge>
+            )}
+            {isDiscontinued && (
+              <Badge variant="secondary" className="absolute top-3 right-12" data-testid="badge-discontinued">
+                Discontinued
+              </Badge>
+            )}
+            {isOutOfStock && !isDiscontinued && (
+              <Badge variant="secondary" className="absolute top-3 right-12" data-testid="badge-out-of-stock">
+                Out of Stock
+              </Badge>
+            )}
+          </div>
+        </Link>
+        <div className="absolute top-2 right-2 z-10">
+          <WishlistButton 
+            productId={product.id} 
+            className="bg-background/80 backdrop-blur-sm hover:bg-background"
           />
-          {product.featured && (
-            <Badge className="absolute top-3 left-3" data-testid="badge-featured">
-              Featured
-            </Badge>
-          )}
-          {isLowStock && !isOutOfStock && (
-            <Badge variant="destructive" className="absolute top-3 right-3" data-testid="badge-low-stock">
-              Low Stock
-            </Badge>
-          )}
-          {isDiscontinued && (
-            <Badge variant="secondary" className="absolute top-3 right-3" data-testid="badge-discontinued">
-              Discontinued
-            </Badge>
-          )}
-          {isOutOfStock && !isDiscontinued && (
-            <Badge variant="secondary" className="absolute top-3 right-3" data-testid="badge-out-of-stock">
-              Out of Stock
-            </Badge>
-          )}
         </div>
-      </Link>
+      </div>
 
       <CardContent className="flex-1 p-2 sm:p-4 space-y-1 sm:space-y-2">
         <div className="text-xs text-muted-foreground font-medium line-clamp-1">{product.brand}</div>

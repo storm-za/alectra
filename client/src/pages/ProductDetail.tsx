@@ -35,6 +35,7 @@ import {
 import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, MessageSquare, Star, Truck, ShieldCheck, CreditCard, Lock, MapPin, BadgePercent, Store } from "lucide-react";
 import { SiVisa, SiMastercard, SiApplepay, SiGooglepay } from "react-icons/si";
 import { StarRating } from "@/components/StarRating";
+import { WishlistButton } from "@/components/WishlistButton";
 import { SEO, createProductStructuredData } from "@/components/SEO";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { HappyCustomersGallery } from "@/components/HappyCustomersGallery";
@@ -640,6 +641,8 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 <ShoppingCart className="h-5 w-5 mr-2" />
                 {isDiscontinued ? "Discontinued" : isOutOfStock ? "Out of Stock" : "Add to Cart"}
               </Button>
+
+              <WishlistButton productId={product.id} showLabel size="lg" />
             </div>
 
             {/* Delivery Information */}
