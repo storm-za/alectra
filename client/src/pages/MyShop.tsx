@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Search, RotateCcw, ShoppingBag, Plus, Heart, Package, ChevronRight, ListPlus, Clock, Star, ShoppingCart, Trash2 } from "lucide-react";
+import { Search, RotateCcw, ShoppingBag, Heart, Package, ChevronRight, Clock, Star, ShoppingCart, Trash2 } from "lucide-react";
 import type { Product } from "@shared/schema";
 import { SEO } from "@/components/SEO";
 import { apiRequest } from "@/lib/queryClient";
@@ -86,53 +86,20 @@ export default function MyShop({ onAddToCart }: MyShopProps) {
           {isLoggedIn ? (
             <>
               <section>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-bold tracking-tight">ORDER AGAIN</h2>
-                  <Link href="/account" className="text-primary text-sm font-medium flex items-center gap-1">
-                    View History
-                    <ChevronRight className="h-4 w-4" />
+                <Card className="overflow-hidden hover-elevate cursor-pointer bg-primary border-primary" data-testid="card-rapid-reorder">
+                  <Link href="/account" data-testid="link-rapid-reorder">
+                    <CardContent className="p-6 flex items-center gap-5">
+                      <div className="h-14 w-14 rounded-lg bg-primary-foreground/10 flex items-center justify-center flex-shrink-0">
+                        <RotateCcw className="h-7 w-7 text-primary-foreground" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-primary-foreground/80 font-medium">Quick Access</p>
+                        <p className="font-bold text-2xl text-primary-foreground" data-testid="text-rapid-reorder">RAPID REORDER</p>
+                        <p className="text-sm text-primary-foreground/70 mt-1">Reorder from your previous purchases</p>
+                      </div>
+                      <ChevronRight className="h-6 w-6 text-primary-foreground/60 flex-shrink-0" />
+                    </CardContent>
                   </Link>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-3">
-                  <Card className="overflow-hidden hover-elevate cursor-pointer bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-                    <Link href="/collections/all" data-testid="link-shop-regulars">
-                      <CardContent className="p-4 flex flex-col items-start min-h-[140px]">
-                        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
-                          <ShoppingBag className="h-5 w-5" />
-                        </div>
-                        <p className="text-sm text-muted-foreground">Shop Your</p>
-                        <p className="font-bold text-lg" data-testid="text-shop-regulars">REGULARS</p>
-                      </CardContent>
-                    </Link>
-                  </Card>
-
-                  <Card className="overflow-hidden hover-elevate cursor-pointer bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border-cyan-500/20 dark:from-cyan-900/20 dark:to-cyan-950/10">
-                    <Link href="/account" data-testid="link-rapid-reorder">
-                      <CardContent className="p-4 flex flex-col items-start min-h-[140px]">
-                        <div className="h-10 w-10 rounded-lg bg-cyan-500/10 flex items-center justify-center mb-3">
-                          <RotateCcw className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
-                        </div>
-                        <p className="text-sm text-muted-foreground">Rapid</p>
-                        <p className="font-bold text-lg" data-testid="text-rapid-reorder">REORDER</p>
-                      </CardContent>
-                    </Link>
-                  </Card>
-                </div>
-              </section>
-
-              <section>
-                <Card className="overflow-hidden bg-gradient-to-r from-rose-100 to-rose-50 dark:from-rose-950/30 dark:to-rose-900/20 border-rose-200 dark:border-rose-800/30" data-testid="card-create-list">
-                  <CardContent className="p-5 flex items-center gap-4">
-                    <div className="flex-1">
-                      <p className="font-bold text-lg" data-testid="text-create">CREATE</p>
-                      <p className="text-2xl font-bold text-foreground" data-testid="text-new-list">NEW LIST</p>
-                      <p className="text-sm text-muted-foreground mt-1">Organize your favorites</p>
-                    </div>
-                    <Button size="icon" variant="outline" className="rounded-full bg-background/80 backdrop-blur" data-testid="button-create-list">
-                      <Plus className="h-6 w-6" />
-                    </Button>
-                  </CardContent>
                 </Card>
               </section>
 
