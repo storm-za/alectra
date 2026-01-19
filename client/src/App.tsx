@@ -220,7 +220,7 @@ function Router() {
               <Register />
             </Route>
             <Route path="/account">
-              <Account />
+              <Account onAddToCart={addToCart} />
             </Route>
             <Route path="/quote">
               <Quote />

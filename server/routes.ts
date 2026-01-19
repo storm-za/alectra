@@ -669,6 +669,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get product by ID (for reordering)
+  app.get("/api/products/id/:id", async (req, res) => {
+    try {
+      const product = await storage.getProductById(req.params.id);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.json(product);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching product: " + error.message });
+    }
+  });
+
   app.get("/api/products/:slug", async (req, res) => {
     try {
       const product = await storage.getProductBySlug(req.params.slug);

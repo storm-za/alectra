@@ -10,12 +10,12 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, MapPin, Package } from "lucide-react";
+import { Plus, Trash2, MapPin, Package, RotateCcw } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertUserAddressSchema, type UserAddress, type Order, type OrderItem } from "@shared/schema";
+import { insertUserAddressSchema, type UserAddress, type Order, type OrderItem, type Product } from "@shared/schema";
 import { z } from "zod";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 
@@ -27,7 +27,11 @@ const profileFormSchema = z.object({
 
 type ProfileFormData = z.infer<typeof profileFormSchema>;
 
-export default function Account() {
+interface AccountProps {
+  onAddToCart?: (product: Product, quantity?: number) => void;
+}
+
+export default function Account({ onAddToCart }: AccountProps) {
   const { toast } = useToast();
   const [location] = useLocation();
   const [isAddressDialogOpen, setIsAddressDialogOpen] = useState(false);
@@ -137,6 +141,48 @@ export default function Account() {
         return "default";
       default:
         return "secondary";
+    }
+  };
+
+  const handleReorder = async (order: Order & { items: OrderItem[] }) => {
+    if (!onAddToCart) {
+      toast({
+        title: "Unable to reorder",
+        description: "Cart functionality is not available",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    let addedCount = 0;
+    for (const item of order.items) {
+      if (item.productId) {
+        try {
+          const res = await fetch(`/api/products/id/${item.productId}`);
+          if (res.ok) {
+            const product = await res.json();
+            if (product && product.stock > 0) {
+              onAddToCart(product, item.quantity);
+              addedCount++;
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching product:', error);
+        }
+      }
+    }
+
+    if (addedCount > 0) {
+      toast({
+        title: "Added to cart",
+        description: `${addedCount} item${addedCount !== 1 ? 's' : ''} added to your cart`,
+      });
+    } else {
+      toast({
+        title: "No items added",
+        description: "The products from this order may no longer be available",
+        variant: "destructive",
+      });
     }
   };
 
@@ -322,6 +368,16 @@ export default function Account() {
                         <p>{order.deliveryAddress}, {order.deliveryCity}</p>
                         <p>{order.deliveryProvince}, {order.deliveryPostalCode}</p>
                       </div>
+
+                      <Button 
+                        variant="outline" 
+                        className="w-full mt-2"
+                        onClick={() => handleReorder(order)}
+                        data-testid={`button-reorder-${order.id}`}
+                      >
+                        <RotateCcw className="h-4 w-4 mr-2" />
+                        Re order
+                      </Button>
                     </div>
                   ))}
                 </div>
