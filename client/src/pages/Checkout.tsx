@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,7 +30,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { FREE_SHIPPING_PRODUCT_IDS, TORSION_SPRING_VARIANTS, type CartItem, type UserAddress, type PaystackVerifyResponse, type TorsionSpringVariant } from "@shared/schema";
-import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, ShoppingCart, Navigation, Check, Loader2, Search, PenLine, Tag, ChevronLeft, ChevronRight, Building2, ExternalLink, Star, ChevronDown, ChevronUp } from "lucide-react";
+import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, ShoppingCart, Navigation, Check, Loader2, Search, PenLine, Tag, ChevronLeft, ChevronRight, Building2, ExternalLink, Star, ChevronDown, ChevronUp, LogIn, UserCheck } from "lucide-react";
 import { SiVisa, SiMastercard } from "react-icons/si";
 import yocoLogo from "@assets/yoco-logo_1768669914726.jpg";
 import paystackLogo from "@assets/Paystack-mark-white-twitter_1768669952658.png";
@@ -751,6 +751,42 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                   <h2 className="text-2xl font-bold">Contact Information</h2>
                   <p className="text-muted-foreground">We'll use this to send order updates</p>
                 </div>
+
+                {/* Sign In Prompt / Logged In Indicator */}
+                {user?.user ? (
+                  <div className="max-w-xl mx-auto">
+                    <div className="flex items-center gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <UserCheck className="h-5 w-5 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">Signed in as {user.user.name || user.user.email}</p>
+                        <p className="text-xs text-muted-foreground">Your contact details have been pre-filled</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="max-w-xl mx-auto">
+                    <Card className="border-dashed border-2 hover-elevate cursor-pointer" data-testid="card-sign-in-prompt">
+                      <Link href="/login">
+                        <CardContent className="p-4">
+                          <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                              <LogIn className="h-6 w-6 text-primary" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-semibold">Sign in for faster checkout</p>
+                              <p className="text-sm text-muted-foreground">Your details will be auto-filled and you can track your orders</p>
+                            </div>
+                            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                          </div>
+                        </CardContent>
+                      </Link>
+                    </Card>
+                    <Separator className="my-4" />
+                    <p className="text-center text-sm text-muted-foreground">Or continue as a guest below</p>
+                  </div>
+                )}
 
                 <Card className="max-w-xl mx-auto">
                   <CardContent className="p-6 space-y-4">
