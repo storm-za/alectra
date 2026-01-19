@@ -174,8 +174,8 @@ export default function MyShop({ onAddToCart }: MyShopProps) {
                               <Link href={`/products/${product.slug}`} data-testid={`link-wishlist-image-${product.id}`}>
                                 <div className="h-20 w-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
                                   <img
-                                    src={product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`}
-                                    alt={product.name}
+                                    src={product.imageUrl ? (product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`) : '/placeholder.svg'}
+                                    alt={product.name || 'Product'}
                                     className="w-full h-full object-contain"
                                     loading="lazy"
                                   />

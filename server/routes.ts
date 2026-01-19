@@ -513,7 +513,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = (req.session as any).userId;
       const wishlist = await storage.getUserWishlist(userId);
-      res.json(wishlist);
+      // Return just the products array for frontend consumption
+      const products = wishlist.map(item => item.product);
+      res.json(products);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

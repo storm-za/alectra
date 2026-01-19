@@ -75,6 +75,16 @@ Preferred communication style: Simple, everyday language.
 - **Order Recording**: Discount code ID, code value, and calculated amount stored on orders; usage count automatically incremented upon successful order creation.
 - **Priority**: Applied after trade discount but before final total calculation; free shipping discount code takes precedence over product-based free shipping promotions.
 
+### Wishlist Feature
+- **Database**: `wishlist_items` table stores user-product associations with timestamps.
+- **Authentication**: Requires user login; unauthenticated clicks show "Sign in required" toast.
+- **UI Components**:
+  - `WishlistButton`: Reusable heart icon button that fills red when product is saved.
+  - Appears in `ProductCard` (top-right corner with backdrop blur) and `ProductDetail` page (labeled "Save/Saved" button next to Add to Cart).
+- **My Shop Page**: Displays wishlist items with product image, name, price, add-to-cart, and remove buttons. Shows item count and empty state when no items saved.
+- **API Routes**: `GET /api/user/wishlist` (returns products), `GET /api/user/wishlist/ids` (returns product IDs for efficient button state), `POST/DELETE /api/user/wishlist/:productId`.
+- **Cache Management**: Query invalidation on add/remove updates both wishlist and wishlist IDs queries.
+
 ## External Dependencies
 
 ### Payment Processing
