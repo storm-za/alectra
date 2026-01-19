@@ -373,22 +373,24 @@ export default function Account({ onAddToCart }: AccountProps) {
                       <div className="flex gap-2 mt-2">
                         <Button 
                           variant="outline" 
-                          className="flex-1"
+                          className={order.paymentStatus !== 'pending' ? "flex-1" : "w-full"}
                           onClick={() => handleReorder(order)}
                           data-testid={`button-reorder-${order.id}`}
                         >
                           <RotateCcw className="h-4 w-4 mr-2" />
                           Re order
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          className="flex-1"
-                          onClick={() => setTrackingOrder(order)}
-                          data-testid={`button-track-${order.id}`}
-                        >
-                          <Truck className="h-4 w-4 mr-2" />
-                          Track order
-                        </Button>
+                        {order.paymentStatus !== 'pending' && (
+                          <Button 
+                            variant="outline" 
+                            className="flex-1"
+                            onClick={() => setTrackingOrder(order)}
+                            data-testid={`button-track-${order.id}`}
+                          >
+                            <Truck className="h-4 w-4 mr-2" />
+                            Track order
+                          </Button>
+                        )}
                       </div>
                     </div>
                   ))}
