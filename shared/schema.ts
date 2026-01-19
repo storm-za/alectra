@@ -70,6 +70,7 @@ export const orders = pgTable("orders", {
   status: text("status").notNull().default("pending"),
   paymentReference: text("payment_reference"),
   paymentStatus: text("payment_status").notNull().default("pending"),
+  trackingLink: text("tracking_link"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, MapPin, Package, RotateCcw } from "lucide-react";
+import { Plus, Trash2, MapPin, Package, RotateCcw, Truck, Clock, ExternalLink } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -35,6 +35,7 @@ export default function Account({ onAddToCart }: AccountProps) {
   const { toast } = useToast();
   const [location] = useLocation();
   const [isAddressDialogOpen, setIsAddressDialogOpen] = useState(false);
+  const [trackingOrder, setTrackingOrder] = useState<(Order & { items: OrderItem[] }) | null>(null);
   
   // Get initial tab from URL query parameter
   const getInitialTab = () => {
@@ -369,15 +370,26 @@ export default function Account({ onAddToCart }: AccountProps) {
                         <p>{order.deliveryProvince}, {order.deliveryPostalCode}</p>
                       </div>
 
-                      <Button 
-                        variant="outline" 
-                        className="w-full mt-2"
-                        onClick={() => handleReorder(order)}
-                        data-testid={`button-reorder-${order.id}`}
-                      >
-                        <RotateCcw className="h-4 w-4 mr-2" />
-                        Re order
-                      </Button>
+                      <div className="flex gap-2 mt-2">
+                        <Button 
+                          variant="outline" 
+                          className="flex-1"
+                          onClick={() => handleReorder(order)}
+                          data-testid={`button-reorder-${order.id}`}
+                        >
+                          <RotateCcw className="h-4 w-4 mr-2" />
+                          Re order
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          className="flex-1"
+                          onClick={() => setTrackingOrder(order)}
+                          data-testid={`button-track-${order.id}`}
+                        >
+                          <Truck className="h-4 w-4 mr-2" />
+                          Track order
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -543,6 +555,70 @@ export default function Account({ onAddToCart }: AccountProps) {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Track Order Dialog */}
+      <Dialog open={!!trackingOrder} onOpenChange={(open) => !open && setTrackingOrder(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Truck className="h-5 w-5" />
+              Track Your Order
+            </DialogTitle>
+            <DialogDescription>
+              Order #{trackingOrder?.id.slice(0, 8).toUpperCase()}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {trackingOrder?.trackingLink ? (
+              // Order is shipped with tracking
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 p-4 bg-primary/10 rounded-lg">
+                  <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+                    <Truck className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-semibold">Your order is on the way!</p>
+                    <p className="text-sm text-muted-foreground">
+                      Order #{trackingOrder.id.slice(0, 8).toUpperCase()} has been shipped
+                    </p>
+                  </div>
+                </div>
+                
+                <Button 
+                  className="w-full" 
+                  asChild
+                  data-testid="button-tracking-link"
+                >
+                  <a href={trackingOrder.trackingLink} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    View Tracking Details
+                  </a>
+                </Button>
+              </div>
+            ) : (
+              // Order is still processing
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">
+                  <div className="h-10 w-10 rounded-full bg-muted-foreground/20 flex items-center justify-center">
+                    <Clock className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <p className="font-semibold">Your order was received</p>
+                    <p className="text-sm text-muted-foreground">
+                      We are processing your order and will update you when it ships
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="text-center text-sm text-muted-foreground">
+                  <p>You will receive an email with tracking information once your order is dispatched.</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
