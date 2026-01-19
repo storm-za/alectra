@@ -570,17 +570,82 @@ export default function Account({ onAddToCart }: AccountProps) {
           </DialogHeader>
           
           <div className="space-y-4 py-4">
+            {/* Order Status Badge */}
+            <div className="flex justify-center">
+              <Badge 
+                variant={getStatusBadgeVariant(trackingOrder?.status || 'pending')} 
+                className="text-sm px-4 py-1"
+              >
+                {trackingOrder?.status ? trackingOrder.status.charAt(0).toUpperCase() + trackingOrder.status.slice(1) : 'Pending'}
+              </Badge>
+            </div>
+
+            {/* Status Timeline */}
+            <div className="relative">
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex flex-col items-center flex-1">
+                  <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
+                    trackingOrder?.status ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                  }`}>
+                    <Package className="h-4 w-4" />
+                  </div>
+                  <span className="text-xs mt-1 text-center">Received</span>
+                </div>
+                <div className="flex-1 h-0.5 bg-muted mx-1">
+                  <div className={`h-full transition-all ${
+                    ['processing', 'shipped', 'delivered'].includes(trackingOrder?.status || '') ? 'bg-primary w-full' : 'w-0'
+                  }`} />
+                </div>
+                <div className="flex flex-col items-center flex-1">
+                  <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
+                    ['processing', 'shipped', 'delivered'].includes(trackingOrder?.status || '') ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                  }`}>
+                    <Clock className="h-4 w-4" />
+                  </div>
+                  <span className="text-xs mt-1 text-center">Processing</span>
+                </div>
+                <div className="flex-1 h-0.5 bg-muted mx-1">
+                  <div className={`h-full transition-all ${
+                    ['shipped', 'delivered'].includes(trackingOrder?.status || '') ? 'bg-primary w-full' : 'w-0'
+                  }`} />
+                </div>
+                <div className="flex flex-col items-center flex-1">
+                  <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
+                    ['shipped', 'delivered'].includes(trackingOrder?.status || '') ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                  }`}>
+                    <Truck className="h-4 w-4" />
+                  </div>
+                  <span className="text-xs mt-1 text-center">Shipped</span>
+                </div>
+                <div className="flex-1 h-0.5 bg-muted mx-1">
+                  <div className={`h-full transition-all ${
+                    trackingOrder?.status === 'delivered' ? 'bg-primary w-full' : 'w-0'
+                  }`} />
+                </div>
+                <div className="flex flex-col items-center flex-1">
+                  <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
+                    trackingOrder?.status === 'delivered' ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                  }`}>
+                    <MapPin className="h-4 w-4" />
+                  </div>
+                  <span className="text-xs mt-1 text-center">Delivered</span>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
             {trackingOrder?.trackingLink ? (
-              // Order is shipped with tracking
+              // Order has tracking link
               <div className="space-y-4">
-                <div className="flex items-center gap-3 p-4 bg-primary/10 rounded-lg">
-                  <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-                    <Truck className="h-5 w-5 text-primary" />
+                <div className="flex items-center gap-3 p-4 bg-primary/10 rounded-lg border border-primary/20">
+                  <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                    <Truck className="h-6 w-6 text-primary" />
                   </div>
                   <div>
                     <p className="font-semibold">Your order is on the way!</p>
                     <p className="text-sm text-muted-foreground">
-                      Order #{trackingOrder.id.slice(0, 8).toUpperCase()} has been shipped
+                      Track your shipment using the link below
                     </p>
                   </div>
                 </div>
@@ -599,9 +664,9 @@ export default function Account({ onAddToCart }: AccountProps) {
             ) : (
               // Order is still processing
               <div className="space-y-4">
-                <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">
-                  <div className="h-10 w-10 rounded-full bg-muted-foreground/20 flex items-center justify-center">
-                    <Clock className="h-5 w-5 text-muted-foreground" />
+                <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
+                  <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                    <Clock className="h-6 w-6 text-muted-foreground" />
                   </div>
                   <div>
                     <p className="font-semibold">Your order was received</p>
@@ -611,7 +676,7 @@ export default function Account({ onAddToCart }: AccountProps) {
                   </div>
                 </div>
                 
-                <div className="text-center text-sm text-muted-foreground">
+                <div className="text-center text-sm text-muted-foreground bg-muted/30 rounded-lg p-3">
                   <p>You will receive an email with tracking information once your order is dispatched.</p>
                 </div>
               </div>
