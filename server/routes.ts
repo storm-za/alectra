@@ -2,8 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { db } from "./db";
-import { createOrderRequestSchema, registerSchema, loginSchema, insertUserAddressSchema, insertProductReviewSchema, insertTradeApplicationSchema, productReviews, products, categories, orders } from "@shared/schema";
-import { desc } from "drizzle-orm";
+import { createOrderRequestSchema, registerSchema, loginSchema, insertUserAddressSchema, insertProductReviewSchema, insertTradeApplicationSchema, productReviews, products, categories, orders, orderItems } from "@shared/schema";
+import { desc, eq } from "drizzle-orm";
 import { hashPassword, verifyPassword, requireAuth } from "./auth";
 import { EmailService } from "./email";
 import bcrypt from "bcrypt";
@@ -437,6 +437,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
         todayRevenue,
         recentOrders: allOrders.slice(0, 10)
       });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Admin: Get all orders with items for email & tracking management
+  app.get("/api/admin/orders-full", requireAdminAuth, async (req, res) => {
+    try {
+      const allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt));
+      
+      // Get items for each order
+      const ordersWithItems = await Promise.all(allOrders.map(async (order) => {
+        const items = await db.select().from(orderItems).where(eq(orderItems.orderId, order.id));
+        return { ...order, items };
+      }));
+      
+      res.json(ordersWithItems);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Admin: Update order tracking link (auto-sets status to shipped)
+  app.patch("/api/admin/orders/:orderId/tracking", requireAdminAuth, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { trackingLink } = req.body;
+      
+      if (!trackingLink || typeof trackingLink !== 'string') {
+        return res.status(400).json({ message: "Tracking link is required" });
+      }
+      
+      // Update order with tracking link and set status to shipped
+      const [updatedOrder] = await db
+        .update(orders)
+        .set({ 
+          trackingLink,
+          status: 'shipped'
+        })
+        .where(eq(orders.id, orderId))
+        .returning();
+      
+      if (!updatedOrder) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      res.json(updatedOrder);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

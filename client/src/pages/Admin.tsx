@@ -18,7 +18,15 @@ import {
   Database,
   Eye,
   TrendingUp,
-  Tag
+  Tag,
+  Mail,
+  Truck,
+  Phone,
+  MapPin,
+  ExternalLink,
+  Package,
+  Check,
+  X
 } from "lucide-react";
 import { Link } from "wouter";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -45,11 +53,45 @@ interface DailyStats {
   uniqueSessions: number;
 }
 
+interface OrderItem {
+  id: string;
+  productId: string;
+  productName: string | null;
+  productImage: string | null;
+  quantity: number;
+  priceAtPurchase: string;
+  lineSubtotal: string;
+}
+
+interface FullOrder {
+  id: string;
+  userId: string | null;
+  deliveryMethod: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  deliveryAddress: string | null;
+  deliveryCity: string | null;
+  deliveryProvince: string | null;
+  deliveryPostalCode: string | null;
+  locationLatitude: string | null;
+  locationLongitude: string | null;
+  subtotal: string;
+  total: string;
+  status: string;
+  paymentStatus: string;
+  trackingLink: string | null;
+  createdAt: string;
+  items: OrderItem[];
+}
+
 export default function Admin() {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [trackingInputs, setTrackingInputs] = useState<Record<string, string>>({});
+  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
 
   const { data: authStatus, isLoading: authLoading, refetch: refetchAuth } = useQuery<{ isAdmin: boolean }>({
     queryKey: ['/api/admin/check'],
@@ -149,6 +191,36 @@ export default function Admin() {
     },
     enabled: isAdminAuthenticated,
     retry: false
+  });
+
+  const { data: fullOrders, isLoading: fullOrdersLoading, refetch: refetchFullOrders } = useQuery<FullOrder[]>({
+    queryKey: ['/api/admin/orders-full'],
+    queryFn: async () => {
+      const response = await fetch('/api/admin/orders-full');
+      if (response.status === 401) {
+        refetchAuth();
+        throw new Error('Session expired');
+      }
+      if (!response.ok) throw new Error('Failed to fetch orders');
+      return response.json();
+    },
+    enabled: isAdminAuthenticated,
+    retry: false
+  });
+
+  const updateTrackingMutation = useMutation({
+    mutationFn: async ({ orderId, trackingLink }: { orderId: string; trackingLink: string }) => {
+      const response = await apiRequest('PATCH', `/api/admin/orders/${orderId}/tracking`, { trackingLink });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to update tracking');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      refetchFullOrders();
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/orders-summary'] });
+    }
   });
 
   const handleLogin = (e: React.FormEvent) => {
@@ -259,6 +331,10 @@ export default function Admin() {
             <TabsTrigger value="tools" data-testid="tab-tools">
               <Database className="mr-2 h-4 w-4" />
               Tools
+            </TabsTrigger>
+            <TabsTrigger value="tracking" data-testid="tab-tracking">
+              <Mail className="mr-2 h-4 w-4" />
+              Email & Tracking
             </TabsTrigger>
           </TabsList>
 
@@ -587,6 +663,249 @@ export default function Admin() {
                     Manage Discount Codes
                   </Button>
                 </Link>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="tracking" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Mail className="h-5 w-5" />
+                  Email & Tracking Management
+                </CardTitle>
+                <CardDescription>
+                  View all customer orders, add tracking links, and access customer information for follow-ups
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {fullOrdersLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                  </div>
+                ) : fullOrders && fullOrders.length > 0 ? (
+                  <div className="space-y-4">
+                    {fullOrders.map((order) => (
+                      <div 
+                        key={order.id} 
+                        className="border rounded-lg overflow-hidden"
+                        data-testid={`admin-order-${order.id}`}
+                      >
+                        {/* Order Header - Always Visible */}
+                        <div 
+                          className="p-4 cursor-pointer hover-elevate"
+                          onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
+                        >
+                          <div className="flex flex-wrap items-start justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-semibold">{order.customerName}</span>
+                                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                  order.paymentStatus === 'paid' 
+                                    ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' 
+                                    : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300'
+                                }`}>
+                                  {order.paymentStatus}
+                                </span>
+                                {order.trackingLink && (
+                                  <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                                    Shipped
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                                <span className="flex items-center gap-1">
+                                  <Mail className="h-3 w-3" />
+                                  {order.customerEmail}
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <Phone className="h-3 w-3" />
+                                  {order.customerPhone}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-semibold">{formatCurrency(parseFloat(order.total))}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(order.createdAt).toLocaleDateString('en-ZA', {
+                                  year: 'numeric',
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Expanded Details */}
+                        {expandedOrder === order.id && (
+                          <div className="border-t bg-muted/30 p-4 space-y-4">
+                            {/* Products */}
+                            <div>
+                              <h4 className="font-medium mb-2 flex items-center gap-2">
+                                <Package className="h-4 w-4" />
+                                Products Ordered
+                              </h4>
+                              <div className="space-y-2">
+                                {order.items.map((item) => {
+                                  const imageUrl = item.productImage?.startsWith('/') 
+                                    ? item.productImage 
+                                    : item.productImage ? `/${item.productImage}` : null;
+                                  return (
+                                    <div key={item.id} className="flex items-center gap-3 bg-background rounded-lg p-2">
+                                      {imageUrl && (
+                                        <div className="h-12 w-12 rounded-md overflow-hidden bg-muted flex-shrink-0">
+                                          <img 
+                                            src={imageUrl} 
+                                            alt={item.productName || 'Product'} 
+                                            className="h-full w-full object-cover"
+                                          />
+                                        </div>
+                                      )}
+                                      <div className="flex-1 min-w-0">
+                                        <p className="font-medium text-sm line-clamp-1">{item.productName || 'Unknown Product'}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                          Qty: {item.quantity} × R{item.priceAtPurchase}
+                                        </p>
+                                      </div>
+                                      <p className="text-sm font-medium">R{item.lineSubtotal}</p>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+
+                            {/* Delivery Address */}
+                            {order.deliveryMethod === 'delivery' && order.deliveryAddress && (
+                              <div>
+                                <h4 className="font-medium mb-2 flex items-center gap-2">
+                                  <MapPin className="h-4 w-4" />
+                                  Delivery Address
+                                </h4>
+                                <div className="bg-background rounded-lg p-3 text-sm">
+                                  <p>{order.deliveryAddress}</p>
+                                  <p>{order.deliveryCity}, {order.deliveryProvince}</p>
+                                  <p>{order.deliveryPostalCode}</p>
+                                  {order.locationLatitude && order.locationLongitude && (
+                                    <a 
+                                      href={`https://www.google.com/maps?q=${order.locationLatitude},${order.locationLongitude}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-primary hover:underline text-xs mt-2 inline-flex items-center gap-1"
+                                    >
+                                      <ExternalLink className="h-3 w-3" />
+                                      View on Google Maps
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Tracking Link Section */}
+                            <div>
+                              <h4 className="font-medium mb-2 flex items-center gap-2">
+                                <Truck className="h-4 w-4" />
+                                Tracking Link
+                              </h4>
+                              {order.trackingLink ? (
+                                <div className="flex items-center gap-2 bg-background rounded-lg p-3">
+                                  <Check className="h-4 w-4 text-green-600" />
+                                  <a 
+                                    href={order.trackingLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-primary hover:underline text-sm flex items-center gap-1"
+                                    data-testid={`tracking-link-${order.id}`}
+                                  >
+                                    {order.trackingLink}
+                                    <ExternalLink className="h-3 w-3" />
+                                  </a>
+                                </div>
+                              ) : (
+                                <div className="flex gap-2">
+                                  <Input
+                                    placeholder="Enter tracking URL (e.g., https://thecourierguy.co.za/track/...)"
+                                    value={trackingInputs[order.id] || ''}
+                                    onChange={(e) => setTrackingInputs(prev => ({
+                                      ...prev,
+                                      [order.id]: e.target.value
+                                    }))}
+                                    className="flex-1"
+                                    data-testid={`input-tracking-${order.id}`}
+                                  />
+                                  <Button
+                                    onClick={() => {
+                                      const link = trackingInputs[order.id];
+                                      if (link) {
+                                        updateTrackingMutation.mutate({ orderId: order.id, trackingLink: link });
+                                        setTrackingInputs(prev => {
+                                          const newInputs = { ...prev };
+                                          delete newInputs[order.id];
+                                          return newInputs;
+                                        });
+                                      }
+                                    }}
+                                    disabled={!trackingInputs[order.id] || updateTrackingMutation.isPending}
+                                    data-testid={`button-add-tracking-${order.id}`}
+                                  >
+                                    {updateTrackingMutation.isPending ? (
+                                      <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                      <>
+                                        <Truck className="h-4 w-4 mr-2" />
+                                        Add Tracking
+                                      </>
+                                    )}
+                                  </Button>
+                                </div>
+                              )}
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Adding a tracking link will automatically update the order status to "Shipped"
+                              </p>
+                            </div>
+
+                            {/* Customer Contact Quick Actions */}
+                            <div className="flex flex-wrap gap-2 pt-2 border-t">
+                              <a 
+                                href={`mailto:${order.customerEmail}`}
+                                className="inline-flex"
+                              >
+                                <Button variant="outline" size="sm" data-testid={`button-email-${order.id}`}>
+                                  <Mail className="h-4 w-4 mr-2" />
+                                  Email Customer
+                                </Button>
+                              </a>
+                              <a 
+                                href={`tel:${order.customerPhone}`}
+                                className="inline-flex"
+                              >
+                                <Button variant="outline" size="sm" data-testid={`button-call-${order.id}`}>
+                                  <Phone className="h-4 w-4 mr-2" />
+                                  Call Customer
+                                </Button>
+                              </a>
+                              <a 
+                                href={`https://wa.me/${order.customerPhone.replace(/[^0-9]/g, '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex"
+                              >
+                                <Button variant="outline" size="sm" data-testid={`button-whatsapp-${order.id}`}>
+                                  <ExternalLink className="h-4 w-4 mr-2" />
+                                  WhatsApp
+                                </Button>
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground text-center py-8">No orders yet</p>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
