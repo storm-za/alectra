@@ -26,7 +26,8 @@ import {
   ExternalLink,
   Package,
   Check,
-  X
+  X,
+  Building2
 } from "lucide-react";
 import { Link } from "wouter";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -67,6 +68,7 @@ interface FullOrder {
   id: string;
   userId: string | null;
   deliveryMethod: string;
+  pickupStore: string | null;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
@@ -777,7 +779,7 @@ export default function Admin() {
                               </div>
                             </div>
 
-                            {/* Delivery Address */}
+                            {/* Delivery Address or Pickup Store */}
                             {order.deliveryMethod === 'delivery' && order.deliveryAddress && (
                               <div>
                                 <h4 className="font-medium mb-2 flex items-center gap-2">
@@ -798,6 +800,49 @@ export default function Admin() {
                                       <ExternalLink className="h-3 w-3" />
                                       View on Google Maps
                                     </a>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Pickup Store Location */}
+                            {order.deliveryMethod === 'pickup' && (
+                              <div>
+                                <h4 className="font-medium mb-2 flex items-center gap-2">
+                                  <Building2 className="h-4 w-4" />
+                                  Pickup Location
+                                </h4>
+                                <div className="bg-background rounded-lg p-3 text-sm">
+                                  {order.pickupStore === 'wonderboom' ? (
+                                    <>
+                                      <p className="font-medium">Wonderboom Store</p>
+                                      <p className="text-muted-foreground">107A Dassiebos Ave, Wonderboom, Pretoria, 0182</p>
+                                      <a 
+                                        href="https://maps.google.com/?q=107A+Dassiebos+Ave+Wonderboom+Pretoria"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary hover:underline text-xs mt-2 inline-flex items-center gap-1"
+                                      >
+                                        <ExternalLink className="h-3 w-3" />
+                                        View on Google Maps
+                                      </a>
+                                    </>
+                                  ) : order.pickupStore === 'hatfield' ? (
+                                    <>
+                                      <p className="font-medium">Hatfield Store</p>
+                                      <p className="text-muted-foreground">1234 Burnett St, Hatfield, Pretoria, 0083</p>
+                                      <a 
+                                        href="https://maps.google.com/?q=1234+Burnett+St+Hatfield+Pretoria"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary hover:underline text-xs mt-2 inline-flex items-center gap-1"
+                                      >
+                                        <ExternalLink className="h-3 w-3" />
+                                        View on Google Maps
+                                      </a>
+                                    </>
+                                  ) : (
+                                    <p className="text-muted-foreground italic">Pickup store not specified</p>
                                   )}
                                 </div>
                               </div>

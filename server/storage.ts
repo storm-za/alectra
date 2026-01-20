@@ -481,6 +481,7 @@ export class DatabaseStorage implements IStorage {
       // 6. Create the order with server-controlled status
       const [createdOrder] = await tx.insert(orders).values({
         deliveryMethod: request.deliveryMethod || "delivery",
+        pickupStore: request.pickupStore || null,
         customerName: request.customerName,
         customerEmail: request.customerEmail,
         customerPhone: request.customerPhone,
