@@ -503,6 +503,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin: Send pickup ready email for pickup orders
+  app.post("/api/admin/orders/:orderId/pickup-email", requireAdminAuth, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      
+      // Get the order with items
+      const [order] = await db.select().from(orders).where(eq(orders.id, orderId));
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      if (order.deliveryMethod !== 'pickup') {
+        return res.status(400).json({ message: "This order is not a pickup order" });
+      }
+      
+      if (!order.pickupStore) {
+        return res.status(400).json({ message: "Order has no pickup store selected" });
+      }
+      
+      // Get order items
+      const items = await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
+      
+      // Send pickup ready email
+      const emailService = new EmailService();
+      await emailService.sendPickupReadyNotification({
+        customerName: order.customerName,
+        customerEmail: order.customerEmail,
+        pickupStore: order.pickupStore,
+        items: items.map(item => ({
+          productName: item.productName || 'Product',
+          quantity: item.quantity
+        }))
+      });
+      
+      // Update order status to ready_for_pickup
+      await db
+        .update(orders)
+        .set({ status: 'ready_for_pickup' })
+        .where(eq(orders.id, orderId));
+      
+      res.json({ message: "Pickup ready email sent successfully" });
+    } catch (error: any) {
+      console.error("Failed to send pickup ready email:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // User Addresses (Protected)
   app.get("/api/user/addresses", requireAuth, async (req, res) => {
     try {

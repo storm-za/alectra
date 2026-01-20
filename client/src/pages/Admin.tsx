@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Loader2, 
   Lock, 
@@ -88,6 +89,7 @@ interface FullOrder {
 }
 
 export default function Admin() {
+  const { toast } = useToast();
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -222,6 +224,32 @@ export default function Admin() {
     onSuccess: () => {
       refetchFullOrders();
       queryClient.invalidateQueries({ queryKey: ['/api/admin/orders-summary'] });
+    }
+  });
+
+  const sendPickupEmailMutation = useMutation({
+    mutationFn: async (orderId: string) => {
+      const response = await apiRequest('POST', `/api/admin/orders/${orderId}/pickup-email`, {});
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to send pickup email');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Email Sent",
+        description: "Pickup ready notification sent to customer",
+      });
+      refetchFullOrders();
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/orders-summary'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send pickup email",
+        variant: "destructive",
+      });
     }
   });
 
@@ -844,6 +872,29 @@ export default function Admin() {
                                   ) : (
                                     <p className="text-muted-foreground italic">Pickup store not specified</p>
                                   )}
+                                </div>
+                                
+                                {/* Send Pickup Email Button */}
+                                <div className="mt-3">
+                                  <Button
+                                    onClick={() => sendPickupEmailMutation.mutate(order.id)}
+                                    disabled={sendPickupEmailMutation.isPending || order.status === 'ready_for_pickup'}
+                                    variant={order.status === 'ready_for_pickup' ? 'outline' : 'default'}
+                                    data-testid={`button-send-pickup-email-${order.id}`}
+                                  >
+                                    {sendPickupEmailMutation.isPending ? (
+                                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                    ) : (
+                                      <Mail className="h-4 w-4 mr-2" />
+                                    )}
+                                    {order.status === 'ready_for_pickup' ? 'Pickup Email Sent' : 'Send Pickup Email'}
+                                  </Button>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {order.status === 'ready_for_pickup' 
+                                      ? 'Customer has been notified that their order is ready'
+                                      : 'Notify customer that their order is ready for pickup'
+                                    }
+                                  </p>
                                 </div>
                               </div>
                             )}

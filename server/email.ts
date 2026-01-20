@@ -57,6 +57,16 @@ export interface ShippingNotificationEmailData {
   trackingLink: string;
 }
 
+export interface PickupReadyEmailData {
+  customerName: string;
+  customerEmail: string;
+  pickupStore: string;
+  items: Array<{
+    productName: string;
+    quantity: number;
+  }>;
+}
+
 // Base URL for production - used for absolute image URLs in emails
 // Use the custom domain if available, otherwise fall back to Replit app URL
 const PRODUCTION_BASE_URL = "https://alectra.co.za";
@@ -196,6 +206,23 @@ export class EmailService {
     }
   }
 
+  async sendPickupReadyNotification(data: PickupReadyEmailData): Promise<void> {
+    const emailHtml = this.generatePickupReadyHtml(data);
+
+    try {
+      await this.transporter.sendMail({
+        from: `"Alectra Solutions" <${process.env.GMAIL_USER}>`,
+        to: data.customerEmail,
+        subject: `Your Order Is Ready For Pickup! 📦`,
+        html: emailHtml,
+      });
+      console.log(`Pickup ready notification email sent to ${data.customerEmail}`);
+    } catch (error) {
+      console.error("Failed to send pickup ready notification email:", error);
+      throw error;
+    }
+  }
+
   private generateShippingNotificationHtml(data: ShippingNotificationEmailData): string {
     // Extract first name for personalized greeting
     const firstName = data.customerName.split(' ')[0];
@@ -269,6 +296,127 @@ export class EmailService {
                     <p style="margin: 0; color: #9ca3af; font-size: 12px; text-align: center;">
                       Alectra Solutions (PTY) LTD | Security & Automation Specialists<br>
                       📞 012 566 3123 | 📧 solutionsalectra@gmail.com
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+  }
+
+  private generatePickupReadyHtml(data: PickupReadyEmailData): string {
+    const firstName = data.customerName.split(' ')[0];
+    
+    const storeDetails: Record<string, { name: string; address: string; mapUrl: string }> = {
+      'wonderboom': {
+        name: 'Wonderboom Store',
+        address: '107A Dassiebos Ave, Wonderboom, Pretoria',
+        mapUrl: 'https://maps.google.com/?q=107A+Dassiebos+Ave,+Wonderboom,+Pretoria'
+      },
+      'hatfield': {
+        name: 'Hatfield Store',
+        address: '1234 Burnett St, Hatfield, Pretoria',
+        mapUrl: 'https://maps.google.com/?q=1234+Burnett+St,+Hatfield,+Pretoria'
+      }
+    };
+    
+    const store = storeDetails[data.pickupStore] || storeDetails['wonderboom'];
+    
+    const itemsList = data.items.map(item => 
+      `<li style="margin-bottom: 8px; color: #374151;">${item.productName}${item.quantity > 1 ? ` (x${item.quantity})` : ''}</li>`
+    ).join('');
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Your Order Is Ready For Pickup</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 40px 20px;">
+              <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                <!-- Header with logo -->
+                <tr>
+                  <td style="padding: 30px 30px 20px 30px;">
+                    <table role="presentation" style="width: 100%;">
+                      <tr>
+                        <td style="vertical-align: middle;">
+                          <img src="https://alectra.co.za/attached_assets/alectra-logo_1763806823535.png" alt="Alectra Solutions" width="40" height="40" style="width: 40px; height: 40px; object-fit: contain; display: block;" />
+                        </td>
+                        <td style="vertical-align: middle; padding-left: 12px;">
+                          <span style="font-size: 16px; font-weight: 600; color: #111827;">Alectra Solutions</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Main content -->
+                <tr>
+                  <td style="padding: 0 30px 30px 30px;">
+                    <h1 style="margin: 0 0 20px 0; color: #111827; font-size: 24px; font-weight: normal;">
+                      Hello ${firstName},
+                    </h1>
+                    
+                    <p style="margin: 0 0 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      Great news! Your order is ready for pickup.
+                    </p>
+                    
+                    <!-- Items Ready -->
+                    <div style="background-color: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                      <h3 style="margin: 0 0 12px 0; color: #166534; font-size: 16px; font-weight: 600;">Items Ready for Pickup:</h3>
+                      <ul style="margin: 0; padding-left: 20px;">
+                        ${itemsList}
+                      </ul>
+                    </div>
+                    
+                    <!-- Pickup Location -->
+                    <div style="background-color: #eff6ff; border: 1px solid #93c5fd; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                      <h3 style="margin: 0 0 8px 0; color: #1e40af; font-size: 16px; font-weight: 600;">Pickup Location:</h3>
+                      <p style="margin: 0 0 8px 0; color: #374151; font-size: 16px; font-weight: 600;">
+                        ${store.name}
+                      </p>
+                      <p style="margin: 0 0 12px 0; color: #6b7280; font-size: 14px;">
+                        ${store.address}
+                      </p>
+                      <a href="${store.mapUrl}" style="display: inline-block; background-color: #2563eb; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500;">
+                        Get Directions
+                      </a>
+                    </div>
+                    
+                    <p style="margin: 0 0 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      Please bring a valid ID when collecting your order. Our store hours are Monday to Friday, 8:00 AM to 5:00 PM.
+                    </p>
+                    
+                    <p style="margin: 0 0 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      If you have any questions, feel free to reply to this email or call us.
+                    </p>
+                    
+                    <p style="margin: 0 0 24px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      Thank you for choosing Alectra!
+                    </p>
+                    
+                    <p style="margin: 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      Warm regards,<br>
+                      <strong>Alectra Solutions</strong>
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td style="background-color: #f9fafb; padding: 20px 30px; border-radius: 0 0 8px 8px;">
+                    <p style="margin: 0; color: #9ca3af; font-size: 12px; text-align: center;">
+                      Alectra Solutions (PTY) LTD | Security & Automation Specialists<br>
+                      012 566 3123 | solutionsalectra@gmail.com
                     </p>
                   </td>
                 </tr>
