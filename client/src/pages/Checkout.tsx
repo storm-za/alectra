@@ -107,7 +107,7 @@ const STORES = {
   hatfield: {
     id: "hatfield",
     name: "Hatfield Store",
-    address: "1234 Burnett St, Hatfield, Pretoria, 0083",
+    address: "648 Jan Shoba St, Hillcrest, Pretoria, 0081",
     mapsUrl: "https://maps.app.goo.gl/LSUuz7pxboVphHGG7",
     hours: "Mon-Sat: 08:00 - 16:45",
   },

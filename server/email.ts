@@ -314,13 +314,13 @@ export class EmailService {
     const storeDetails: Record<string, { name: string; address: string; mapUrl: string }> = {
       'wonderboom': {
         name: 'Wonderboom Store',
-        address: '107A Dassiebos Ave, Wonderboom, Pretoria',
-        mapUrl: 'https://maps.google.com/?q=107A+Dassiebos+Ave,+Wonderboom,+Pretoria'
+        address: 'Alectra Solutions, Wonderboom, Pretoria, 0182',
+        mapUrl: 'https://maps.app.goo.gl/1YqjKqZ3dAQedFWc9'
       },
       'hatfield': {
         name: 'Hatfield Store',
-        address: '1234 Burnett St, Hatfield, Pretoria',
-        mapUrl: 'https://maps.google.com/?q=1234+Burnett+St,+Hatfield,+Pretoria'
+        address: '648 Jan Shoba St, Hillcrest, Pretoria, 0081',
+        mapUrl: 'https://maps.app.goo.gl/LSUuz7pxboVphHGG7'
       }
     };
     
