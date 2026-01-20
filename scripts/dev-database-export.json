@@ -795,7 +795,7 @@
       "images": [
         "attached_assets/products/12v-1-4ah-battery.png"
       ],
-      "stock": 99,
+      "stock": 95,
       "featured": false,
       "discontinued": false
     },
@@ -915,23 +915,6 @@
       "discontinued": false
     },
     {
-      "id": "06acc518-c0c3-4e25-b47e-6dc9626295cf",
-      "name": "12V 2.4Ah Battery",
-      "slug": "12v-2-4ah",
-      "description": "Reliable 12V 2.4Ah battery providing increased capacity for medium-duty backup applications. Sealed design requires no maintenance.\n\nKey Features:\n- 12V 2.4Ah capacity\n- Sealed lead-acid type\n- Maintenance-free\n- AGM technology\n- Rechargeable\n\nSuitable for larger alarm panels, access control systems, and devices requiring extended backup time.\n\nApplications: Security systems, access control, small gate motor backup.",
-      "price": "160.00",
-      "brand": "Battery",
-      "sku": "ALEC-0003-12V_2_4AH",
-      "categoryId": "4a2a1b8c-5003-4758-a893-9cfec30316b3",
-      "imageUrl": "attached_assets/products/12v-2-4ah.png",
-      "images": [
-        "attached_assets/products/12v-2-4ah.png"
-      ],
-      "stock": 99,
-      "featured": false,
-      "discontinued": false
-    },
-    {
       "id": "f371017d-27a8-41b8-8dd0-0a3700e2c79e",
       "name": "Centurion D3 Smart Gate Motor Full Kit No Anti-Theft Bracket",
       "slug": "centurion-d3-smart-full-kit-no-anti-theft-bracket",
@@ -996,6 +979,23 @@
         "attached_assets/products/9kg-exchange.png"
       ],
       "stock": 100,
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "06acc518-c0c3-4e25-b47e-6dc9626295cf",
+      "name": "12V 2.4Ah Battery",
+      "slug": "12v-2-4ah",
+      "description": "Reliable 12V 2.4Ah battery providing increased capacity for medium-duty backup applications. Sealed design requires no maintenance.\n\nKey Features:\n- 12V 2.4Ah capacity\n- Sealed lead-acid type\n- Maintenance-free\n- AGM technology\n- Rechargeable\n\nSuitable for larger alarm panels, access control systems, and devices requiring extended backup time.\n\nApplications: Security systems, access control, small gate motor backup.",
+      "price": "160.00",
+      "brand": "Battery",
+      "sku": "ALEC-0003-12V_2_4AH",
+      "categoryId": "4a2a1b8c-5003-4758-a893-9cfec30316b3",
+      "imageUrl": "attached_assets/products/12v-2-4ah.png",
+      "images": [
+        "attached_assets/products/12v-2-4ah.png"
+      ],
+      "stock": 94,
       "featured": false,
       "discontinued": false
     },
@@ -1867,23 +1867,6 @@
       "discontinued": false
     },
     {
-      "id": "51b2f6f3-1d55-4e55-ae4a-354d3adb5a8d",
-      "name": "20A 18-Channel CCTV Power Supply with Metal Casing",
-      "slug": "20a-18-channel-cctv-power-supply-with-metal-casing",
-      "description": "High-capacity 18-channel CCTV power supply providing 20A total output. Designed for large surveillance installations.\n\nKey Features:\n- 20A total capacity\n- 18 individual channels\n- Heavy-duty metal housing\n- Individual channel fusing\n- LED indicators\n\nEssential for large-scale CCTV deployments with many cameras.\n\nApplications: Large commercial installations, industrial surveillance, estates.",
-      "price": "449.00",
-      "brand": "Alectra Solutions",
-      "sku": "ALEC-0118-20A_18_CHANNEL_CCTV_POWER_SUPP",
-      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
-      "imageUrl": "attached_assets/products/20a-18-channel-cctv-power-supply-with-metal-casing.png",
-      "images": [
-        "attached_assets/products/20a-18-channel-cctv-power-supply-with-metal-casing.png"
-      ],
-      "stock": 100,
-      "featured": false,
-      "discontinued": false
-    },
-    {
       "id": "61247d98-da9e-4136-bcb0-fad5ecfd34f2",
       "name": "Nemtek 6mm Electric Fence Line Clamp",
       "slug": "nemtek-6mm-electric-fence-line-clamp",
@@ -1931,6 +1914,23 @@
         "attached_assets/products/nemtek-compression-spring-1-silver-5kg-black.jpg"
       ],
       "stock": 100,
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "51b2f6f3-1d55-4e55-ae4a-354d3adb5a8d",
+      "name": "20A 18-Channel CCTV Power Supply with Metal Casing",
+      "slug": "20a-18-channel-cctv-power-supply-with-metal-casing",
+      "description": "High-capacity 18-channel CCTV power supply providing 20A total output. Designed for large surveillance installations.\n\nKey Features:\n- 20A total capacity\n- 18 individual channels\n- Heavy-duty metal housing\n- Individual channel fusing\n- LED indicators\n\nEssential for large-scale CCTV deployments with many cameras.\n\nApplications: Large commercial installations, industrial surveillance, estates.",
+      "price": "449.00",
+      "brand": "Alectra Solutions",
+      "sku": "ALEC-0118-20A_18_CHANNEL_CCTV_POWER_SUPP",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
+      "imageUrl": "attached_assets/products/20a-18-channel-cctv-power-supply-with-metal-casing.png",
+      "images": [
+        "attached_assets/products/20a-18-channel-cctv-power-supply-with-metal-casing.png"
+      ],
+      "stock": 99,
       "featured": false,
       "discontinued": false
     },
@@ -3855,6 +3855,21 @@
       "discontinued": false
     },
     {
+      "id": "d606699d-c8dd-42e1-91be-a26e079f4787",
+      "name": "Test Product",
+      "slug": "test-product-test-001",
+      "description": "Test product for checkout",
+      "price": "199.99",
+      "brand": "TestBrand",
+      "sku": "TEST-001",
+      "categoryId": null,
+      "imageUrl": "https://via.placeholder.com/400",
+      "images": [],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
+    },
+    {
       "id": "8aef19fc-1658-4402-ac53-3898753ed7e1",
       "name": "Nemtek Hybrid Compression Spring 2 (8kg Gold) Black – 50 Pack",
       "slug": "nemtek-hybrid-compression-spring-2-8kg-gold-black-50-pack",
@@ -4331,23 +4346,6 @@
       "discontinued": false
     },
     {
-      "id": "13da557e-cde6-4d0b-9014-e29b7e9c1961",
-      "name": "10A 9-Channel CCTV Power Supply with Metal Casing",
-      "slug": "10a-9-channel-cctv-power-supply-with-metal-casing",
-      "description": "Professional 9-channel CCTV power distribution unit delivering 10A total output. The metal housing provides protection and heat dissipation.\n\nKey Features:\n- 10A total output capacity\n- 9 individual channels\n- Metal enclosure for protection\n- LED indicators per channel\n- Fused outputs for safety\n\nCentralized power solution for medium CCTV installations.\n\nApplications: 8-9 camera installations, commercial surveillance systems.",
-      "price": "349.00",
-      "brand": "Alectra",
-      "sku": "ALEC-0092-10A_9_CHANNEL_CCTV_POWER_SUPPL",
-      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
-      "imageUrl": "attached_assets/products/10a-9-channel-cctv-power-supply-with-metal-casing.png",
-      "images": [
-        "attached_assets/products/10a-9-channel-cctv-power-supply-with-metal-casing.png"
-      ],
-      "stock": 82,
-      "featured": false,
-      "discontinued": false
-    },
-    {
       "id": "ef18351f-67eb-44e4-b8a0-f931da72af0f",
       "name": "Hikvision 16-Channel CCTV Power Supply",
       "slug": "hikvision-16-channel-cctv-power-supply",
@@ -4717,6 +4715,40 @@
       "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
       "imageUrl": "/images/tension-spring-70kg-brown.png",
       "images": [],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "13da557e-cde6-4d0b-9014-e29b7e9c1961",
+      "name": "10A 9-Channel CCTV Power Supply with Metal Casing",
+      "slug": "10a-9-channel-cctv-power-supply-with-metal-casing",
+      "description": "Professional 9-channel CCTV power distribution unit delivering 10A total output. The metal housing provides protection and heat dissipation.\n\nKey Features:\n- 10A total output capacity\n- 9 individual channels\n- Metal enclosure for protection\n- LED indicators per channel\n- Fused outputs for safety\n\nCentralized power solution for medium CCTV installations.\n\nApplications: 8-9 camera installations, commercial surveillance systems.",
+      "price": "349.00",
+      "brand": "Alectra",
+      "sku": "ALEC-0092-10A_9_CHANNEL_CCTV_POWER_SUPPL",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
+      "imageUrl": "attached_assets/products/10a-9-channel-cctv-power-supply-with-metal-casing.png",
+      "images": [
+        "attached_assets/products/10a-9-channel-cctv-power-supply-with-metal-casing.png"
+      ],
+      "stock": 81,
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "2c8bbc61-a18d-49fe-a5f1-05e8c47101c9",
+      "name": "Gemini Slider 12V 7Ah Full Solar Kit",
+      "slug": "gemini-slider-12v-7ah-full-solar-kit",
+      "description": "Experience complete energy independence with the Gemini Slider 12V 7Ah Full Solar Kit – the ultimate off-grid gate automation solution for South African properties. This comprehensive package combines the reliable Gemini 12V sliding gate motor with a complete solar power system, ensuring your gate operates flawlessly even during load shedding or in areas without mains electricity. The kit includes everything needed for professional installation: the powerful Gemini 12V gate motor capable of handling gates up to 500kg, a high-efficiency monocrystalline solar panel, intelligent solar charge controller with overcharge protection, heavy-duty 7Ah deep-cycle battery, 4 meters of premium nylon gear rack, professional anti-theft mounting bracket, and two Gemini 3-button remote controls. The solar charge controller features automatic day/night detection and battery management to maximize system longevity. Designed specifically for South African conditions, this kit provides reliable operation in extreme heat, rain, and dust while eliminating monthly electricity costs. Perfect for farms, estates, rural properties, and security-conscious homeowners seeking backup power independence. Backed by Gemini's renowned quality and comprehensive warranty support.",
+      "price": "6729.00",
+      "brand": "Gemini",
+      "sku": "ALEC-0273-GEMINI_SLIDER_12V_FULL_SOLAR",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "imageUrl": "attached_assets/products/gemini-slider-12v-7ah-full-solar-kit.png",
+      "images": [
+        "attached_assets/products/gemini-slider-12v-7ah-full-solar-kit.png"
+      ],
       "stock": 100,
       "featured": false,
       "discontinued": false
