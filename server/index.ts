@@ -5,6 +5,7 @@ import compression from "compression";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { getMetaForPath, injectMetaTags, getProductLinksForCategory, injectProductLinks } from "./seo";
+import { optimizeImage, getBestImageFormat } from "./imageOptimizer";
 
 const app = express();
 
@@ -61,8 +62,57 @@ app.use(
   })
 );
 
-// Serve static assets (product images, etc.)
-app.use('/attached_assets', express.static('attached_assets'));
+// Optimized image endpoint - serves resized WebP/AVIF images with long cache
+app.get('/img/*', async (req, res) => {
+  try {
+    // Extract the original path from /img/path/to/image.jpg
+    const imagePath = req.path.replace(/^\/img\//, '');
+    
+    // Validate query parameters with bounds
+    const rawWidth = parseInt(req.query.w as string);
+    const rawQuality = parseInt(req.query.q as string);
+    
+    // Validate width is a reasonable number
+    const width = (!isNaN(rawWidth) && rawWidth > 0 && rawWidth <= 3000) ? rawWidth : 800;
+    const quality = (!isNaN(rawQuality) && rawQuality >= 10 && rawQuality <= 100) ? rawQuality : 80;
+    
+    // Determine best format based on Accept header
+    const format = getBestImageFormat(req.headers.accept);
+    
+    const result = await optimizeImage(imagePath, { width, quality, format });
+    
+    if (!result) {
+      // Return 400 for invalid paths (security) or 404 for missing files
+      return res.status(400).send('Invalid image request');
+    }
+    
+    // Set aggressive cache headers (1 year for immutable content)
+    res.set({
+      'Content-Type': result.mimeType,
+      'Cache-Control': 'public, max-age=31536000, immutable',
+      'Vary': 'Accept', // Important: different formats for different browsers
+    });
+    
+    res.send(result.buffer);
+  } catch (error) {
+    console.error('Image optimization error:', error);
+    res.status(500).send('Error processing image');
+  }
+});
+
+// Serve static assets with aggressive caching for product images
+app.use('/attached_assets', express.static('attached_assets', {
+  maxAge: '7d', // 7 day browser cache
+  etag: true,
+  lastModified: true,
+  immutable: false,
+  setHeaders: (res, filePath) => {
+    // Longer cache for optimized images
+    if (filePath.includes('/optimized/')) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+  }
+}));
 
 app.use((req, res, next) => {
   const start = Date.now();

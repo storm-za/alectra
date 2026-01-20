@@ -6,6 +6,7 @@ import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { StarRating } from "@/components/StarRating";
 import { WishlistButton } from "@/components/WishlistButton";
+import { ProductImage } from "@/components/OptimizedImage";
 import { FREE_SHIPPING_PRODUCT_IDS, type Product } from "@shared/schema";
 
 interface ProductCardProps {
@@ -33,10 +34,10 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
       <div className="relative">
         <Link href={`/products/${product.slug}`}>
           <div className="relative aspect-square overflow-hidden bg-muted">
-            <img
+            <ProductImage
               src={imageUrl}
               alt={product.name}
-              loading="lazy"
+              size="medium"
               className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
             />
             {product.featured && (

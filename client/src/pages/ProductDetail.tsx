@@ -51,6 +51,7 @@ import type { Product, ProductReview, InsertProductReview, LpGasVariant, GarageD
 import { z } from "zod";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { ProductImage, getOptimizedImageUrl } from "@/components/OptimizedImage";
 
 interface ProductDetailProps {
   onAddToCart: (product: Product, quantity: number, variant?: ProductVariant, variantPrice?: string) => void;
@@ -293,12 +294,12 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
           {/* Images */}
           <div>
             <div className="aspect-square mb-4 bg-muted rounded-lg overflow-hidden">
-              <img
+              <ProductImage
                 src={images[selectedImage]}
                 alt={product.name}
-                loading="lazy"
+                size="large"
+                priority={selectedImage === 0}
                 className="w-full h-full object-contain"
-                data-testid="img-product-main"
               />
             </div>
             {images.length > 1 && (
@@ -312,7 +313,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                     }`}
                     data-testid={`button-thumbnail-${idx}`}
                   >
-                    <img src={img} alt="" loading="lazy" className="w-full h-full object-contain" />
+                    <ProductImage src={img} alt="" size="thumbnail" className="w-full h-full object-contain" />
                   </button>
                 ))}
               </div>

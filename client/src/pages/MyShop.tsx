@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Search, RotateCcw, ShoppingBag, Heart, Package, ChevronRight, Clock, Star, ShoppingCart, Trash2 } from "lucide-react";
+import { ProductImage } from "@/components/OptimizedImage";
 import type { Product } from "@shared/schema";
 import { SEO } from "@/components/SEO";
 import { apiRequest } from "@/lib/queryClient";
@@ -140,11 +141,11 @@ export default function MyShop({ onAddToCart }: MyShopProps) {
                             <div className="flex items-center gap-4">
                               <Link href={`/products/${product.slug}`} data-testid={`link-wishlist-image-${product.id}`}>
                                 <div className="h-20 w-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                                  <img
+                                  <ProductImage
                                     src={product.imageUrl ? (product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`) : '/placeholder.svg'}
                                     alt={product.name || 'Product'}
+                                    size="small"
                                     className="w-full h-full object-contain"
-                                    loading="lazy"
                                   />
                                 </div>
                               </Link>
@@ -309,11 +310,11 @@ export default function MyShop({ onAddToCart }: MyShopProps) {
                   <Card key={product.id} className="flex-shrink-0 w-40 snap-start hover-elevate">
                     <Link href={`/products/${product.slug}`}>
                       <div className="aspect-square overflow-hidden rounded-t-lg bg-muted">
-                        <img
+                        <ProductImage
                           src={product.imageUrl}
                           alt={product.name}
+                          size="small"
                           className="w-full h-full object-cover"
-                          loading="lazy"
                         />
                       </div>
                       <CardContent className="p-3">

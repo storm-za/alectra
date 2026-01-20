@@ -10,6 +10,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { ChevronRight } from "lucide-react";
+import { ProductImage } from "@/components/OptimizedImage";
 import type { Product } from "@shared/schema";
 
 interface FrequentlyBoughtTogetherProps {
@@ -100,11 +101,11 @@ export function FrequentlyBoughtTogether({ currentProductId, categorySlug }: Fre
                 <Card className="h-full hover-elevate cursor-pointer overflow-hidden">
                   <CardContent className="p-0">
                     <div className="aspect-square overflow-hidden bg-muted">
-                      <img
+                      <ProductImage
                         src={imageUrl}
                         alt={product.name}
+                        size="small"
                         className="w-full h-full object-contain p-2"
-                        loading="lazy"
                       />
                     </div>
                     <div className="p-3">

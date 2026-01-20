@@ -85,6 +85,15 @@ Preferred communication style: Simple, everyday language.
 - **API Routes**: `GET /api/user/wishlist` (returns products), `GET /api/user/wishlist/ids` (returns product IDs for efficient button state), `POST/DELETE /api/user/wishlist/:productId`.
 - **Cache Management**: Query invalidation on add/remove updates both wishlist and wishlist IDs queries.
 
+### Image Optimization System
+- **Server-Side Optimization**: `/img/*` endpoint using Sharp library for on-demand image resizing and format conversion.
+- **Automatic Format Negotiation**: Serves WebP/AVIF based on browser Accept header (AVIF > WebP > JPEG fallback).
+- **Performance Results**: 1.5MB PNG → 23KB WebP at 400px width (98.5% reduction); 53KB WebP → 6.7KB at 400px (87% reduction).
+- **Responsive Images**: `ProductImage` component generates srcset with multiple widths (200, 400, 600, 800, 1000, 1200px).
+- **Caching Strategy**: In-memory cache (100 images, 24hr TTL) + aggressive HTTP cache headers (1 year immutable for optimized images, 7 days for static assets).
+- **Security**: Path traversal protection, allowed base directories (attached_assets only), extension whitelist (jpg/jpeg/png/webp/avif/gif), width/quality bounds validation.
+- **Components Using Optimization**: ProductCard, ProductDetail, CartDrawer, FrequentlyBoughtTogether, MyShop.
+
 ## External Dependencies
 
 ### Payment Processing

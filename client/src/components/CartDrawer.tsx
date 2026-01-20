@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Minus, Plus, X, ShoppingCart, Trash2, ShieldCheck, Truck } from "lucide-react";
 import { Link } from "wouter";
+import { ProductImage } from "@/components/OptimizedImage";
 import type { CartItem, ProductVariant, TorsionSpringVariant } from "@shared/schema";
 import { TORSION_SPRING_VARIANTS } from "@shared/schema";
 
@@ -77,9 +78,10 @@ export default function CartDrawer({
                     <CardContent className="p-3">
                       <div className="flex gap-3">
                         <div className="w-20 h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                          <img
+                          <ProductImage
                             src={imageUrl}
                             alt={item.product.name}
+                            size="small"
                             className="w-full h-full object-cover"
                           />
                         </div>
