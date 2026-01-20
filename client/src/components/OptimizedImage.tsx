@@ -93,22 +93,25 @@ export function OptimizedImage({
   const srcSet = generateSrcSet(imageSrc, quality);
   const optimizedSrc = getOptimizedUrl(imageSrc, defaultWidth, quality);
 
-  return (
-    <img
-      src={optimizedSrc}
-      srcSet={srcSet || undefined}
-      sizes={srcSet ? sizes : undefined}
-      alt={alt}
-      width={width}
-      height={height}
-      loading={priority ? 'eager' : 'lazy'}
-      decoding={priority ? 'sync' : 'async'}
-      fetchPriority={priority ? 'high' : 'auto'}
-      className={`${className} ${!isLoaded ? 'animate-pulse bg-muted' : ''}`}
-      onLoad={handleLoad}
-      onError={handleError}
-    />
-  );
+  const imgProps: React.ImgHTMLAttributes<HTMLImageElement> & { fetchpriority?: string } = {
+    src: optimizedSrc,
+    srcSet: srcSet || undefined,
+    sizes: srcSet ? sizes : undefined,
+    alt,
+    width,
+    height,
+    loading: priority ? 'eager' : 'lazy',
+    decoding: priority ? 'sync' : 'async',
+    className: `${className} ${!isLoaded ? 'animate-pulse bg-muted' : ''}`,
+    onLoad: handleLoad,
+    onError: handleError,
+  };
+  
+  if (priority) {
+    imgProps.fetchpriority = 'high';
+  }
+
+  return <img {...imgProps} />;
 }
 
 export function ProductImage({
