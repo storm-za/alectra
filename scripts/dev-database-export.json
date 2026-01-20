@@ -4770,6 +4770,25 @@
       "stock": 100,
       "featured": false,
       "discontinued": false
+    },
+    {
+      "id": "6241c0c7-38ba-4f87-8f0f-8ec37f594def",
+      "name": "Gemini Roll-Up Garage Door Motor Kit",
+      "slug": "gemini-rollup-garage-door-motor-kit",
+      "description": "Introducing the Gemini Roll Up Door Motor, a powerful and reliable solution designed to enhance the functionality and convenience of your roll-up doors. This motor is the perfect addition for residential spaces, offering seamless automation for smooth operation.\n\nCrafted with precision and durability in mind, the Gemini Roll Up Door Motor ensures long-lasting performance and effortless control. It features a robust motor that delivers optimal power, enabling swift and efficient opening and closing of roll-up doors.\n\nThe Gemini Roll Up Door Motor boasts an intelligent design that prioritizes user convenience. Equipped with advanced technology, it offers a range of smart features, including remote control operation, enabling you to open or close your doors with just a press of a button. Additionally, the motor incorporates safety mechanisms such as automatic stop and reverse function, providing added protection against accidents and ensuring the security of your property.\n\nOne of the standout features of the Gemini Roll Up Door Motor is its built-in battery backup. This innovative addition ensures that the motor remains fully operational even when the main power supply is disrupted – perfect for South African load shedding conditions.\n\nInstallation and setup of the Gemini Roll Up Door Motor are hassle-free, making it suitable for both DIY enthusiasts and professionals. Its compact size and versatile compatibility allow for easy integration with various door sizes and types, offering flexibility to meet your specific needs.\n\nThis unit comes with a Double door extension to link both your single garage doors to the same motor.\n\n**Kit Includes:**\n• 1x Garage door motor head\n• 1x Roll Up Extrusion\n• 1x Stabilizer box\n• 1x Stabilizer square pole\n• 1x Stabilizer door extension\n• 2x 2.4Ah 12V Batteries\n• 2x 3 Button remotes\n\n**Specifications:**\n• Installed Length: 2710mm\n• Opening Length: 2100mm\n\nUpgrade your roll-up doors with the Gemini Roll Up Door Motor and experience the benefits of automated convenience, increased security, and reliable performance.",
+      "price": "4500.00",
+      "brand": "Gemini",
+      "sku": "ALEC-0275-GEMINI_ROLLUP_MOTOR_KIT",
+      "categoryId": "9da5ba6b-1973-4969-a9d6-ee1631773f23",
+      "imageUrl": "attached_assets/products/gemini-rollup-garage-door-motor-kit.webp",
+      "images": [
+        "attached_assets/products/gemini-rollup-garage-door-motor-kit.webp",
+        "attached_assets/products/gemini-rollup-garage-door-motor-kit-2.webp",
+        "attached_assets/products/gemini-rollup-garage-door-motor-kit-3.webp"
+      ],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
     }
   ],
   "categories": [
