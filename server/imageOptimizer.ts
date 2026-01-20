@@ -2,6 +2,7 @@ import sharp from 'sharp';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
+import { ObjectStorageService, ObjectNotFoundError } from './objectStorage';
 
 // In-memory cache for optimized images
 const imageCache = new Map<string, { buffer: Buffer; mimeType: string; timestamp: number }>();
@@ -17,7 +18,49 @@ const ALLOWED_BASE_DIRS = ['attached_assets'];
 // Security: allowed image extensions
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif'];
 
-// Security: validate and sanitize image path
+// Object storage service for cloud-stored images
+const objectStorageService = new ObjectStorageService();
+
+// Check if path is an object storage path
+export function isObjectStoragePath(imagePath: string): boolean {
+  if (!imagePath) return false;
+  const cleaned = imagePath.replace(/^\/+/, '');
+  return cleaned.startsWith('objects/');
+}
+
+// Fetch image buffer from object storage
+async function fetchFromObjectStorage(objectPath: string): Promise<Buffer | null> {
+  try {
+    // Ensure path starts with /objects/
+    const normalizedPath = objectPath.startsWith('/objects/') 
+      ? objectPath 
+      : `/objects/${objectPath.replace(/^objects\//, '')}`;
+    
+    const objectFile = await objectStorageService.getObjectEntityFile(normalizedPath);
+    
+    // Download the file to a buffer
+    const chunks: Buffer[] = [];
+    const stream = objectFile.createReadStream();
+    
+    return new Promise((resolve, reject) => {
+      stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+      stream.on('end', () => resolve(Buffer.concat(chunks)));
+      stream.on('error', (err: Error) => {
+        console.error('Error streaming from object storage:', err);
+        reject(err);
+      });
+    });
+  } catch (error) {
+    if (error instanceof ObjectNotFoundError) {
+      console.warn(`Object not found in storage: ${objectPath}`);
+      return null;
+    }
+    console.error('Error fetching from object storage:', error);
+    return null;
+  }
+}
+
+// Security: validate and sanitize image path (for local files only)
 export function validateImagePath(imagePath: string): string | null {
   if (!imagePath || typeof imagePath !== 'string') {
     return null;
@@ -104,33 +147,54 @@ export async function optimizeImage(
 ): Promise<{ buffer: Buffer; mimeType: string } | null> {
   const { width = 800, quality = 80, format = 'webp' } = options;
   
-  // Security: validate and sanitize the path
-  const validatedPath = validateImagePath(imagePath);
-  if (!validatedPath) {
-    return null;
-  }
-  
   // Normalize width to allowed values
   const normalizedWidth = getClosestWidth(width);
   
   // Validate quality bounds
   const boundedQuality = Math.max(10, Math.min(100, quality));
   
+  // Check if this is an object storage path
+  const isObjectPath = isObjectStoragePath(imagePath);
+  
+  // For local files, validate the path; for object storage, just clean it
+  let resolvedPath: string;
+  if (isObjectPath) {
+    resolvedPath = imagePath.replace(/^\/+/, '');
+  } else {
+    const validatedPath = validateImagePath(imagePath);
+    if (!validatedPath) {
+      return null;
+    }
+    resolvedPath = validatedPath;
+  }
+  
   // Check cache first
-  const cacheKey = getCacheKey(validatedPath, normalizedWidth, format, boundedQuality);
+  const cacheKey = getCacheKey(resolvedPath, normalizedWidth, format, boundedQuality);
   const cached = imageCache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     return { buffer: cached.buffer, mimeType: cached.mimeType };
   }
   
-  // Check if file exists
-  if (!fs.existsSync(validatedPath)) {
-    console.error(`Image not found: ${validatedPath}`);
-    return null;
-  }
-  
   try {
-    let sharpInstance = sharp(validatedPath);
+    let sourceBuffer: Buffer | null = null;
+    
+    if (isObjectPath) {
+      // Fetch from object storage
+      sourceBuffer = await fetchFromObjectStorage(resolvedPath);
+      if (!sourceBuffer) {
+        console.error(`Object storage image not found: ${resolvedPath}`);
+        return null;
+      }
+    } else {
+      // Check if local file exists
+      if (!fs.existsSync(resolvedPath)) {
+        console.error(`Image not found: ${resolvedPath}`);
+        return null;
+      }
+      sourceBuffer = fs.readFileSync(resolvedPath);
+    }
+    
+    let sharpInstance = sharp(sourceBuffer);
     
     // Get original metadata to check if resize is needed
     const metadata = await sharpInstance.metadata();

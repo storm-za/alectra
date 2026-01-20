@@ -26,6 +26,8 @@ function getOptimizedUrl(src: string, width: number, quality: number = 80): stri
   // Remove leading slash for the /img endpoint
   const cleanPath = src.startsWith('/') ? src.slice(1) : src;
   
+  // Handle object storage paths (e.g., /objects/uploads/uuid)
+  // These are now optimized through the /img endpoint
   return `/img/${cleanPath}?w=${width}&q=${quality}`;
 }
 
