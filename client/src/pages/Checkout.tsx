@@ -100,7 +100,7 @@ const STORES = {
   wonderboom: {
     id: "wonderboom",
     name: "Wonderboom Store",
-    address: "107A Dassiebos Ave, Wonderboom, Pretoria, 0182",
+    address: "Alectra Solutions, Wonderboom, Pretoria, 0182",
     mapsUrl: "https://maps.app.goo.gl/1YqjKqZ3dAQedFWc9",
     hours: "Mon-Sun: 08:00 - 16:45",
   },
