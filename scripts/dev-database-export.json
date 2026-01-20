@@ -4752,6 +4752,24 @@
       "stock": 100,
       "featured": false,
       "discontinued": false
+    },
+    {
+      "id": "843535e2-ec40-4fee-ba51-d25abb9b34f4",
+      "name": "4K Dual Screen Solar CCTV Surveillance Camera",
+      "slug": "4k-dual-screen-solar-cctv-camera",
+      "description": "Monitor your property with crystal-clear 4K Ultra HD resolution using this innovative dual-screen solar-powered surveillance camera – the ultimate wireless security solution for South African homes and businesses. This advanced AI-powered camera features two independent 8MP lenses providing 360° panoramic coverage, eliminating blind spots and capturing every angle simultaneously on a split-screen display. Powered entirely by an integrated high-efficiency solar panel with 8000mAh battery backup, it operates continuously even during load shedding or in remote locations without electrical access. The intelligent PIR human detection system reduces false alarms by distinguishing between people and animals, while instant push notifications alert you to any security events via the smartphone app. Features include full-color night vision for 24/7 detailed footage, two-way audio intercom for visitor communication, IP65 weatherproof rating for South African weather extremes, and support for both 4G SIM card and WiFi connectivity. Easy DIY installation with no wiring required – simply mount and connect to your phone. Perfect for driveways, farms, warehouses, construction sites, and anywhere reliable off-grid surveillance is needed. View live footage and playback recordings anytime, anywhere through the free mobile app.",
+      "price": "995.00",
+      "brand": "Fivestar",
+      "sku": "ALEC-0274-4K_DUAL_SCREEN_SOLAR_CCTV",
+      "categoryId": "3f18e986-168c-476f-a2d6-b8bc0e4e72bc",
+      "imageUrl": "attached_assets/products/4k-dual-screen-solar-cctv-camera.png",
+      "images": [
+        "attached_assets/products/4k-dual-screen-solar-cctv-camera.png",
+        "attached_assets/products/4k-dual-screen-solar-cctv-camera-2.jpg"
+      ],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
     }
   ],
   "categories": [
