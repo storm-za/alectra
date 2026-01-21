@@ -4,10 +4,15 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import { useCallback, useRef, useEffect } from "react";
 import { StarRating } from "@/components/StarRating";
 import { WishlistButton } from "@/components/WishlistButton";
-import { ProductImage } from "@/components/OptimizedImage";
+import { ProductImage, getOptimizedImageUrl } from "@/components/OptimizedImage";
 import { FREE_SHIPPING_PRODUCT_IDS, type Product } from "@shared/schema";
+import { queryClient } from "@/lib/queryClient";
+
+// Cache for preloaded images to avoid repeated allocations
+const preloadedImages = new Map<string, boolean>();
 
 interface ProductCardProps {
   product: Product;
@@ -23,14 +28,82 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   const hasFreeShipping = FREE_SHIPPING_PRODUCT_IDS.includes(product.id);
 
   const imageUrl = product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`;
+  const prefetchTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const isMountedRef = useRef(true);
+
+  // Cleanup on unmount to prevent memory leaks
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (prefetchTimeoutRef.current) {
+        clearTimeout(prefetchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Fetch rating data for this product
   const { data: ratingData } = useQuery<{ averageRating: number; totalReviews: number }>({
     queryKey: ["/api/products", product.slug, "rating"],
   });
 
+  // Prefetch product data and image on hover for instant navigation
+  const prefetchProduct = useCallback((e?: React.PointerEvent | React.MouseEvent) => {
+    // On touch devices, only prefetch on tap (not scroll)
+    // For pointer events, only respond to mouse (not touch which triggers on scroll)
+    if (e && 'pointerType' in e && e.pointerType === 'touch') {
+      return; // Skip touch-based hover events to avoid prefetch storms on scroll
+    }
+    
+    // Clear any existing timeout
+    if (prefetchTimeoutRef.current) {
+      clearTimeout(prefetchTimeoutRef.current);
+    }
+    
+    // Small delay to avoid prefetching on quick mouse passes
+    prefetchTimeoutRef.current = setTimeout(() => {
+      // Guard against unmounted component
+      if (!isMountedRef.current) return;
+      
+      // Prefetch product data
+      queryClient.prefetchQuery({
+        queryKey: ["/api/products", product.slug],
+        staleTime: 60000, // 1 minute
+      });
+      
+      // Prefetch reviews and rating
+      queryClient.prefetchQuery({
+        queryKey: ["/api/products", product.slug, "reviews"],
+        staleTime: 60000,
+      });
+      queryClient.prefetchQuery({
+        queryKey: ["/api/products", product.slug, "rating"],
+        staleTime: 60000,
+      });
+      
+      // Preload the main product image at large size (800px) - only if not already preloaded
+      const largeImageUrl = getOptimizedImageUrl(imageUrl, 800);
+      if (!preloadedImages.has(largeImageUrl)) {
+        preloadedImages.set(largeImageUrl, true);
+        const img = new Image();
+        img.src = largeImageUrl;
+      }
+    }, 100); // 100ms delay
+  }, [product.slug, imageUrl]);
+
+  const cancelPrefetch = useCallback(() => {
+    if (prefetchTimeoutRef.current) {
+      clearTimeout(prefetchTimeoutRef.current);
+    }
+  }, []);
+
   return (
-    <Card className="group overflow-hidden hover-elevate active-elevate-2 flex flex-col h-full" data-testid={`card-product-${product.id}`}>
+    <Card 
+      className="group overflow-hidden hover-elevate active-elevate-2 flex flex-col h-full" 
+      data-testid={`card-product-${product.id}`}
+      onPointerEnter={prefetchProduct}
+      onPointerLeave={cancelPrefetch}
+    >
       <div className="relative">
         <Link href={`/products/${product.slug}`}>
           <div className="relative aspect-square overflow-hidden bg-muted">

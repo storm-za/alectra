@@ -180,13 +180,53 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     return (
       <div className="min-h-screen bg-background">
         <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
-          <Skeleton className="h-8 w-32 mb-6" />
+          {/* Breadcrumb skeleton */}
+          <div className="flex items-center gap-2 mb-6">
+            <Skeleton className="h-4 w-12" />
+            <span className="text-muted-foreground">/</span>
+            <Skeleton className="h-4 w-24" />
+            <span className="text-muted-foreground">/</span>
+            <Skeleton className="h-4 w-40" />
+          </div>
+          
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <Skeleton className="h-96 w-full" />
+            {/* Image skeleton - matches aspect-square */}
+            <div>
+              <Skeleton className="aspect-square w-full rounded-lg" />
+              {/* Thumbnail skeletons */}
+              <div className="grid grid-cols-5 gap-2 mt-4">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="aspect-square rounded-md" />
+                ))}
+              </div>
+            </div>
+            
+            {/* Details skeleton */}
             <div className="space-y-4">
-              <Skeleton className="h-8 w-3/4" />
-              <Skeleton className="h-6 w-1/2" />
-              <Skeleton className="h-24 w-full" />
+              {/* Brand */}
+              <Skeleton className="h-4 w-24" />
+              {/* Title */}
+              <Skeleton className="h-10 w-full" />
+              {/* Rating */}
+              <Skeleton className="h-5 w-32" />
+              {/* Badge */}
+              <Skeleton className="h-6 w-20" />
+              {/* Price */}
+              <Skeleton className="h-12 w-40" />
+              {/* Stock status */}
+              <Skeleton className="h-5 w-24" />
+              {/* Quantity selector */}
+              <div className="flex items-center gap-4 pt-4">
+                <Skeleton className="h-10 w-32" />
+                <Skeleton className="h-10 flex-1" />
+              </div>
+              {/* Wishlist button */}
+              <Skeleton className="h-10 w-full" />
+              {/* Delivery info cards */}
+              <div className="space-y-3 pt-4">
+                <Skeleton className="h-16 w-full rounded-lg" />
+                <Skeleton className="h-16 w-full rounded-lg" />
+              </div>
             </div>
           </div>
         </div>
