@@ -3,9 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
 import { Link } from "wouter";
-import { useQuery } from "@tanstack/react-query";
 import { useCallback, useRef, useEffect } from "react";
-import { StarRating } from "@/components/StarRating";
 import { WishlistButton } from "@/components/WishlistButton";
 import { ProductImage, getOptimizedImageUrl } from "@/components/OptimizedImage";
 import { FREE_SHIPPING_PRODUCT_IDS, type Product } from "@shared/schema";
@@ -42,53 +40,35 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
     };
   }, []);
 
-  // Fetch rating data for this product
-  const { data: ratingData } = useQuery<{ averageRating: number; totalReviews: number }>({
-    queryKey: ["/api/products", product.slug, "rating"],
-  });
-
   // Prefetch product data and image on hover for instant navigation
   const prefetchProduct = useCallback((e?: React.PointerEvent | React.MouseEvent) => {
     // On touch devices, only prefetch on tap (not scroll)
-    // For pointer events, only respond to mouse (not touch which triggers on scroll)
     if (e && 'pointerType' in e && e.pointerType === 'touch') {
-      return; // Skip touch-based hover events to avoid prefetch storms on scroll
+      return;
     }
     
-    // Clear any existing timeout
     if (prefetchTimeoutRef.current) {
       clearTimeout(prefetchTimeoutRef.current);
     }
     
     // Small delay to avoid prefetching on quick mouse passes
     prefetchTimeoutRef.current = setTimeout(() => {
-      // Guard against unmounted component
       if (!isMountedRef.current) return;
       
-      // Prefetch product data
+      // Prefetch product data for instant navigation
       queryClient.prefetchQuery({
         queryKey: ["/api/products", product.slug],
-        staleTime: 60000, // 1 minute
-      });
-      
-      // Prefetch reviews and rating
-      queryClient.prefetchQuery({
-        queryKey: ["/api/products", product.slug, "reviews"],
-        staleTime: 60000,
-      });
-      queryClient.prefetchQuery({
-        queryKey: ["/api/products", product.slug, "rating"],
         staleTime: 60000,
       });
       
-      // Preload the main product image at large size (800px) - only if not already preloaded
+      // Preload the main product image at large size
       const largeImageUrl = getOptimizedImageUrl(imageUrl, 800);
       if (!preloadedImages.has(largeImageUrl)) {
         preloadedImages.set(largeImageUrl, true);
         const img = new Image();
         img.src = largeImageUrl;
       }
-    }, 100); // 100ms delay
+    }, 150);
   }, [product.slug, imageUrl]);
 
   const cancelPrefetch = useCallback(() => {
@@ -150,16 +130,6 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             {product.name}
           </h3>
         </Link>
-        {ratingData && ratingData.totalReviews > 0 && (
-          <div data-testid={`rating-${product.id}`}>
-            <StarRating
-              rating={ratingData.averageRating}
-              size="sm"
-              showNumber
-              totalReviews={ratingData.totalReviews}
-            />
-          </div>
-        )}
         <div className="flex flex-col sm:flex-row sm:items-baseline gap-0 sm:gap-2">
           <span className="text-lg sm:text-2xl font-bold text-foreground" data-testid={`text-price-${product.id}`}>
             R {displayPrice}
