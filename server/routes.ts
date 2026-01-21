@@ -8,6 +8,7 @@ import { hashPassword, verifyPassword, requireAuth } from "./auth";
 import { EmailService } from "./email";
 import bcrypt from "bcrypt";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import { apiCache, CACHE_TTL } from "./cache";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
@@ -668,7 +669,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Categories
   app.get("/api/categories", async (req, res) => {
     try {
+      const cacheKey = 'categories:all';
+      const cached = apiCache.get(cacheKey);
+      if (cached) {
+        res.set('X-Cache', 'HIT');
+        return res.json(cached);
+      }
+
       const categories = await storage.getAllCategories();
+      apiCache.set(cacheKey, categories, CACHE_TTL.CATEGORIES);
+      res.set('X-Cache', 'MISS');
       res.json(categories);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching categories: " + error.message });
@@ -677,10 +687,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/categories/id/:id", async (req, res) => {
     try {
+      const cacheKey = `category:id:${req.params.id}`;
+      const cached = apiCache.get(cacheKey);
+      if (cached) {
+        res.set('X-Cache', 'HIT');
+        return res.json(cached);
+      }
+
       const category = await storage.getCategoryById(req.params.id);
       if (!category) {
         return res.status(404).json({ message: "Category not found" });
       }
+      
+      apiCache.set(cacheKey, category, CACHE_TTL.CATEGORIES);
+      res.set('X-Cache', 'MISS');
       res.json(category);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching category: " + error.message });
@@ -689,10 +709,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/categories/:slug", async (req, res) => {
     try {
+      const cacheKey = `category:${req.params.slug}`;
+      const cached = apiCache.get(cacheKey);
+      if (cached) {
+        res.set('X-Cache', 'HIT');
+        return res.json(cached);
+      }
+
       const category = await storage.getCategoryBySlug(req.params.slug);
       if (!category) {
         return res.status(404).json({ message: "Category not found" });
       }
+      
+      apiCache.set(cacheKey, category, CACHE_TTL.CATEGORIES);
+      res.set('X-Cache', 'MISS');
       res.json(category);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching category: " + error.message });
@@ -793,10 +823,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/products/:slug", async (req, res) => {
     try {
+      const cacheKey = `product:${req.params.slug}`;
+      const cached = apiCache.get(cacheKey);
+      if (cached) {
+        res.set('X-Cache', 'HIT');
+        return res.json(cached);
+      }
+
       const product = await storage.getProductBySlug(req.params.slug);
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
+      
+      apiCache.set(cacheKey, product, CACHE_TTL.PRODUCT_DETAIL);
+      res.set('X-Cache', 'MISS');
       res.json(product);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching product: " + error.message });
@@ -806,11 +846,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Product Reviews
   app.get("/api/products/:slug/reviews", async (req, res) => {
     try {
+      const cacheKey = `reviews:${req.params.slug}`;
+      const cached = apiCache.get(cacheKey);
+      if (cached) {
+        res.set('X-Cache', 'HIT');
+        return res.json(cached);
+      }
+
       const product = await storage.getProductBySlug(req.params.slug);
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
       const reviews = await storage.getProductReviews(product.id);
+      
+      apiCache.set(cacheKey, reviews, CACHE_TTL.PRODUCT_REVIEWS);
+      res.set('X-Cache', 'MISS');
       res.json(reviews);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching reviews: " + error.message });
@@ -840,6 +890,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/products/:slug/rating", async (req, res) => {
     try {
+      const cacheKey = `rating:${req.params.slug}`;
+      const cached = apiCache.get(cacheKey);
+      if (cached) {
+        res.set('X-Cache', 'HIT');
+        return res.json(cached);
+      }
+
       const product = await storage.getProductBySlug(req.params.slug);
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
@@ -848,10 +905,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const averageRating = await storage.getAverageRating(product.id);
       const reviews = await storage.getProductReviews(product.id);
       
-      res.json({
+      const result = {
         averageRating,
         totalReviews: reviews.length,
-      });
+      };
+      
+      apiCache.set(cacheKey, result, CACHE_TTL.PRODUCT_RATING);
+      res.set('X-Cache', 'MISS');
+      res.json(result);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching rating: " + error.message });
     }
