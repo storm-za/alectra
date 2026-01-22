@@ -63,6 +63,8 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
                       src={getCategoryImage(category)!} 
                       alt={category.name}
                       loading="lazy"
+                      width={400}
+                      height={400}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   )}

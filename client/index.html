@@ -2,30 +2,33 @@
 <html lang="en-ZA">
   <head>
     <meta charset="UTF-8" />
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-KR4XVC8L');</script>
-    <!-- End Google Tag Manager -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     <link rel="icon" type="image/png" href="/attached_assets/alectra-logo-removebg-preview_1764271857150.png" />
     
-    <!-- Preconnect to critical third-party origins -->
+    <!-- Preconnect to critical third-party origins - must be first -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    
+    <!-- Preload critical font file directly for faster text rendering -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hiA.woff2" as="font" type="font/woff2" crossorigin>
     
     <!-- Preload LCP hero images for faster initial paint -->
     <link rel="preload" href="/attached_assets/optimized/hero-background-desktop.webp" as="image" type="image/webp" media="(min-width: 768px)">
     <link rel="preload" href="/attached_assets/optimized/hero-background-mobile.webp" as="image" type="image/webp" media="(max-width: 767px)">
     
-    <!-- Preload critical assets -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style">
-    
-    <!-- Load Inter font with swap for better FCP -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Inline critical font-face to prevent FOIT/FOUT and CLS -->
+    <style>
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400 700;
+        font-display: swap;
+        src: url(https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hiA.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      /* Reserve space for initial layout to prevent CLS */
+      html { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    </style>
     
     <title>Alectra Solutions - Security & Automation Products South Africa</title>
     <meta name="description" content="South African supplier of gate motors, electric fencing, CCTV, batteries and remotes. Centurion, Nemtek, Hikvision brands. Free delivery over R2500.">
@@ -159,13 +162,35 @@
     <!-- Defer non-critical third-party scripts -->
     <script defer src="https://js.paystack.co/v2/inline.js"></script>
     
-    <!-- Google Analytics - deferred to not block rendering -->
-    <script defer src="https://www.googletagmanager.com/gtag/js?id=GT-T5P8RL35"></script>
+    <!-- Google Tag Manager - deferred to not block rendering -->
+    <script>
+      // Defer GTM loading until after page load for better performance
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','GTM-KR4XVC8L');
+        }, 2000);
+      });
+    </script>
+    
+    <!-- Google Analytics - deferred and loaded after paint -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'GT-T5P8RL35');
+      // Defer loading GA script
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var s = document.createElement('script');
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=GT-T5P8RL35';
+          s.async = true;
+          document.body.appendChild(s);
+        }, 2500);
+      });
     </script>
   </body>
 </html>

@@ -12,10 +12,19 @@ export default function Hero() {
   return (
     <div className="relative">
       {/* Desktop Hero - md and up */}
-      <div 
-        className="hidden md:block relative min-h-[500px] bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroBackgroundDesktop})` }}
-      >
+      <div className="hidden md:block relative min-h-[500px]">
+        {/* LCP Hero Image - using img tag for better Lighthouse detection */}
+        <img 
+          src={heroBackgroundDesktop}
+          alt="Alectra Solutions - Security Equipment"
+          width={1920}
+          height={500}
+          loading="eager"
+          decoding="sync"
+          // @ts-ignore - fetchpriority is a valid HTML attribute
+          fetchpriority="high"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         <div className="absolute inset-0 flex items-center">
           <div className="max-w-7xl mx-auto px-8 lg:px-12 w-full">
             <div className="max-w-lg">
@@ -60,10 +69,19 @@ export default function Hero() {
       </div>
 
       {/* Mobile Hero - below md */}
-      <div 
-        className="md:hidden relative min-h-[400px] bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroBackgroundMobile})` }}
-      >
+      <div className="md:hidden relative min-h-[400px]">
+        {/* LCP Hero Image for mobile - using img tag for better Lighthouse detection */}
+        <img 
+          src={heroBackgroundMobile}
+          alt="Alectra Solutions - Security Equipment"
+          width={767}
+          height={400}
+          loading="eager"
+          decoding="sync"
+          // @ts-ignore - fetchpriority is a valid HTML attribute
+          fetchpriority="high"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         <div className="absolute inset-0 flex items-center">
           <div className="max-w-7xl mx-auto px-4 w-full">
             <div className="max-w-lg">
