@@ -15,9 +15,10 @@ const preloadedImages = new Map<string, boolean>();
 interface ProductCardProps {
   product: Product;
   onAddToCart: (product: Product) => void;
+  priority?: boolean; // For first visible products to load eagerly (LCP optimization)
 }
 
-export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
+export default function ProductCard({ product, onAddToCart, priority = false }: ProductCardProps) {
   const displayPrice = parseFloat(product.price).toFixed(2);
   const priceValue = parseFloat(product.price);
   const isDiscontinued = (product as any).discontinued === true || priceValue === 0;
@@ -91,6 +92,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
               src={imageUrl}
               alt={product.name}
               size="medium"
+              priority={priority}
               className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
             />
             {product.featured && (

@@ -1022,11 +1022,12 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
                     )}
                     {/* Products Grid */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                      {section.products.map((product) => (
+                      {section.products.map((product, index) => (
                         <ProductCard
                           key={product.id}
                           product={product}
                           onAddToCart={onAddToCart}
+                          priority={index < 4}
                         />
                       ))}
                     </div>
@@ -1036,11 +1037,12 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
             ) : (
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                  {products?.map((product) => (
+                  {products?.map((product, index) => (
                     <ProductCard
                       key={product.id}
                       product={product}
                       onAddToCart={onAddToCart}
+                      priority={index < 4}
                     />
                   ))}
                 </div>

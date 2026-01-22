@@ -122,19 +122,21 @@ export function ProductImage({
   className = '',
   size = 'medium',
   priority = false,
+  aspectRatio = '1/1',
 }: {
   src: string;
   alt: string;
   className?: string;
   size?: 'thumbnail' | 'small' | 'medium' | 'large' | 'full';
   priority?: boolean;
+  aspectRatio?: string;
 }) {
   const sizeConfig = {
-    thumbnail: { width: 100, sizes: '100px' },
-    small: { width: 200, sizes: '200px' },
-    medium: { width: 400, sizes: '(max-width: 640px) 50vw, 400px' },
-    large: { width: 800, sizes: '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 800px' },
-    full: { width: 1200, sizes: '100vw' },
+    thumbnail: { width: 100, height: 100, sizes: '100px' },
+    small: { width: 200, height: 200, sizes: '200px' },
+    medium: { width: 400, height: 400, sizes: '(max-width: 640px) 50vw, 400px' },
+    large: { width: 800, height: 800, sizes: '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 800px' },
+    full: { width: 1200, height: 1200, sizes: '100vw' },
   };
 
   const config = sizeConfig[size];
@@ -145,6 +147,7 @@ export function ProductImage({
       alt={alt}
       className={className}
       width={config.width}
+      height={config.height}
       sizes={config.sizes}
       priority={priority}
       quality={size === 'thumbnail' ? 70 : 80}
