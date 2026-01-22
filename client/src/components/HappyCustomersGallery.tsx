@@ -63,6 +63,8 @@ export function HappyCustomersGallery() {
                     <img
                       src={image.src}
                       alt={image.alt}
+                      width={300}
+                      height={400}
                       className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                       loading="lazy"
                     />

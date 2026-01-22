@@ -100,16 +100,18 @@ app.get('/img/*', async (req, res) => {
   }
 });
 
-// Serve static assets with aggressive caching for product images
+// Serve static assets with aggressive caching for product images (1 year)
 app.use('/attached_assets', express.static('attached_assets', {
-  maxAge: '7d', // 7 day browser cache
+  maxAge: '1y', // 1 year browser cache for Core Web Vitals
   etag: true,
   lastModified: true,
-  immutable: false,
+  immutable: true,
   setHeaders: (res, filePath) => {
-    // Longer cache for optimized images
-    if (filePath.includes('/optimized/')) {
-      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    // All static assets get 1 year immutable cache
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    // Add Vary header for content negotiation
+    if (filePath.match(/\.(jpg|jpeg|png|webp|avif|gif)$/i)) {
+      res.setHeader('Vary', 'Accept');
     }
   }
 }));

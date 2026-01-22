@@ -7,10 +7,11 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
-import WhatsAppButton from "@/components/WhatsAppButton";
 import MobileNav from "@/components/MobileNav";
 import { useToast } from "@/hooks/use-toast";
 import type { Product, CartItem, ProductVariant } from "@shared/schema";
+
+const WhatsAppButton = lazy(() => import("@/components/WhatsAppButton"));
 
 // Lazy load pages for code splitting - reduces initial bundle size
 const Home = lazy(() => import("@/pages/Home"));
@@ -285,7 +286,9 @@ function Router() {
       </main>
 
       <Footer />
-      <WhatsAppButton />
+      <Suspense fallback={null}>
+        <WhatsAppButton />
+      </Suspense>
       <MobileNav cartItemCount={cartItemCount} onCartClick={() => setCartOpen(true)} />
 
       <CartDrawer

@@ -1,13 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
+import { lazy, Suspense } from "react";
 import Hero from "@/components/Hero";
 import CategoryGrid from "@/components/CategoryGrid";
 import TrustedBrands from "@/components/TrustedBrands";
-import WhyChoose from "@/components/WhyChoose";
-import Testimonials from "@/components/Testimonials";
-import TradeBanner from "@/components/TradeBanner";
 import { SEO, createOrganizationStructuredData } from "@/components/SEO";
 import { Truck, ShieldCheck, Headphones } from "lucide-react";
 import type { Product, Category } from "@shared/schema";
+
+const WhyChoose = lazy(() => import("@/components/WhyChoose"));
+const Testimonials = lazy(() => import("@/components/Testimonials"));
+const TradeBanner = lazy(() => import("@/components/TradeBanner"));
 
 interface HomeProps {
   onAddToCart: (product: Product) => void;
@@ -66,9 +68,11 @@ export default function Home({ onAddToCart }: HomeProps) {
         categories={categoriesLoading ? [] : categories || []} 
       />
       <TrustedBrands />
-      <WhyChoose />
-      <TradeBanner />
-      <Testimonials />
+      <Suspense fallback={<div className="h-64" />}>
+        <WhyChoose />
+        <TradeBanner />
+        <Testimonials />
+      </Suspense>
     </div>
   );
 }

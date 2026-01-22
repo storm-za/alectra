@@ -148,6 +148,8 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
               <img 
                 src={Alectra__8__removebg_preview} 
                 alt="Alectra Solutions - The Security Shop" 
+                width={180}
+                height={64}
                 className="h-30 lg:h-24 w-auto object-contain"
               />
             </div>
