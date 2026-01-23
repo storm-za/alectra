@@ -84,17 +84,61 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold mb-4">Your Rights</h2>
+            <h2 className="text-2xl font-bold mb-4">POPIA Compliance</h2>
             <p className="text-muted-foreground mb-4">
-              Under South African law (POPIA - Protection of Personal Information Act), you have the right to:
+              Alectra Solutions is committed to complying with the Protection of Personal Information Act, 2013 (POPIA) 
+              of South Africa. POPIA regulates how we collect, store, use, and share your personal information.
+            </p>
+            <div className="bg-muted/50 p-4 rounded-lg mb-4">
+              <p className="text-sm text-muted-foreground">
+                <strong>Responsible Party:</strong> Alectra Solutions (Pty) Ltd<br />
+                <strong>Address:</strong> 107A Dassiebos Ave, Wonderboom, Pretoria, South Africa<br />
+                <strong>Information Officer Email:</strong> solutionsalectra@gmail.com
+              </p>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Your Rights Under POPIA</h2>
+            <p className="text-muted-foreground mb-4">
+              Under POPIA, you have the following rights regarding your personal information:
+            </p>
+            <ul className="list-disc list-inside text-muted-foreground space-y-2">
+              <li><strong>Right to Access:</strong> Request a copy of the personal information we hold about you</li>
+              <li><strong>Right to Correction:</strong> Request correction of any inaccurate or incomplete information</li>
+              <li><strong>Right to Deletion:</strong> Request deletion of your personal information (Right to be Forgotten)</li>
+              <li><strong>Right to Object:</strong> Object to the processing of your personal information</li>
+              <li><strong>Right to Withdraw Consent:</strong> Withdraw consent for marketing communications at any time</li>
+              <li><strong>Right to Data Portability:</strong> Request your data in a structured, commonly used format</li>
+              <li><strong>Right to Lodge a Complaint:</strong> Lodge a complaint with the Information Regulator</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold mb-4">How to Delete Your Account</h2>
+            <p className="text-muted-foreground mb-4">
+              In accordance with your POPIA rights, you can permanently delete your account and all associated personal data 
+              at any time. To do this:
+            </p>
+            <ol className="list-decimal list-inside text-muted-foreground space-y-2 mb-4">
+              <li>Log in to your account</li>
+              <li>Go to "My Account" → "Profile" tab</li>
+              <li>Scroll to the "Delete Account" section</li>
+              <li>Click "Delete My Account" and confirm</li>
+            </ol>
+            <p className="text-muted-foreground mb-4">
+              When you delete your account, the following will be permanently removed:
             </p>
             <ul className="list-disc list-inside text-muted-foreground space-y-1">
-              <li>Access your personal information</li>
-              <li>Correct inaccurate information</li>
-              <li>Request deletion of your information</li>
-              <li>Object to processing of your information</li>
-              <li>Withdraw consent for marketing communications</li>
+              <li>Your profile and login credentials</li>
+              <li>All saved addresses</li>
+              <li>Your wishlist items</li>
+              <li>Trade application (if applicable)</li>
             </ul>
+            <p className="text-muted-foreground mt-4 text-sm">
+              <strong>Note:</strong> Order history will be anonymized for business record-keeping purposes as required by 
+              tax and consumer protection laws, but all personal identifying information will be removed.
+            </p>
           </section>
 
           <section>

@@ -666,6 +666,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Account Deletion (POPIA Compliance - Right to be forgotten)
+  app.delete("/api/user/account", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      
+      // Delete all user data
+      const deleted = await storage.deleteUserAccount(userId);
+      
+      if (!deleted) {
+        return res.status(500).json({ message: "Failed to delete account" });
+      }
+
+      // Destroy the session
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('Error destroying session after account deletion:', err);
+        }
+      });
+
+      res.json({ message: "Account deleted successfully" });
+    } catch (error: any) {
+      console.error('Error deleting account:', error);
+      res.status(500).json({ message: "Failed to delete account: " + error.message });
+    }
+  });
+
   // Categories
   app.get("/api/categories", async (req, res) => {
     try {

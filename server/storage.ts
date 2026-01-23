@@ -77,6 +77,9 @@ export interface IStorage {
   removeFromWishlist(userId: string, productId: string): Promise<boolean>;
   isInWishlist(userId: string, productId: string): Promise<boolean>;
   getUserWishlistProductIds(userId: string): Promise<string[]>;
+
+  // Account Management (POPIA Compliance)
+  deleteUserAccount(userId: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -986,6 +989,46 @@ export class DatabaseStorage implements IStorage {
       .from(wishlistItems)
       .where(eq(wishlistItems.userId, userId));
     return items.map(item => item.productId);
+  }
+
+  // Account Management (POPIA Compliance)
+  async deleteUserAccount(userId: string): Promise<boolean> {
+    try {
+      // 1. Delete wishlist items
+      await db.delete(wishlistItems).where(eq(wishlistItems.userId, userId));
+
+      // 2. Delete user addresses
+      await db.delete(userAddresses).where(eq(userAddresses.userId, userId));
+
+      // 3. Delete trade applications
+      await db.delete(tradeApplications).where(eq(tradeApplications.userId, userId));
+
+      // 4. Anonymize orders (keep for business records but remove personal data)
+      await db
+        .update(orders)
+        .set({
+          userId: null,
+          customerName: 'Deleted User',
+          customerEmail: 'deleted@removed.local',
+          customerPhone: '0000000000',
+          deliveryAddress: null,
+          deliveryCity: null,
+          deliveryProvince: null,
+          deliveryPostalCode: null,
+          locationLatitude: null,
+          locationLongitude: null,
+          giftMessage: null,
+        })
+        .where(eq(orders.userId, userId));
+
+      // 5. Delete the user account
+      const result = await db.delete(users).where(eq(users.id, userId)).returning();
+      
+      return result.length > 0;
+    } catch (error) {
+      console.error('Error deleting user account:', error);
+      return false;
+    }
   }
 }
 

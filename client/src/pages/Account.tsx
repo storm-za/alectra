@@ -278,6 +278,87 @@ export default function Account({ onAddToCart }: AccountProps) {
               </Form>
             </CardContent>
           </Card>
+
+          {/* Danger Zone - Account Deletion (POPIA Compliance) */}
+          <Card className="mt-6 border-destructive/50">
+            <CardHeader>
+              <CardTitle className="text-destructive flex items-center gap-2">
+                <Trash2 className="h-5 w-5" />
+                Delete Account
+              </CardTitle>
+              <CardDescription>
+                Permanently delete your account and all associated data. This action cannot be undone.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                In accordance with the Protection of Personal Information Act (POPIA), you have the right to request deletion of your personal data. 
+                Deleting your account will remove your profile, saved addresses, wishlist items, and anonymize your order history.
+              </p>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="destructive" data-testid="button-delete-account">
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete My Account
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle className="text-destructive">Delete Account Permanently?</DialogTitle>
+                    <DialogDescription>
+                      This action cannot be undone. All your personal data will be permanently deleted including:
+                    </DialogDescription>
+                  </DialogHeader>
+                  <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 my-4">
+                    <li>Your profile and login credentials</li>
+                    <li>All saved addresses</li>
+                    <li>Your wishlist items</li>
+                    <li>Trade application (if applicable)</li>
+                  </ul>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Order history will be anonymized for business records but personal details will be removed.
+                  </p>
+                  <div className="flex gap-3 justify-end">
+                    <Button variant="outline" onClick={() => {}}>
+                      Cancel
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/user/account', { method: 'DELETE' });
+                          if (response.ok) {
+                            toast({
+                              title: "Account Deleted",
+                              description: "Your account has been permanently deleted.",
+                            });
+                            queryClient.clear();
+                            window.location.href = '/';
+                          } else {
+                            const data = await response.json();
+                            toast({
+                              title: "Error",
+                              description: data.message || "Failed to delete account",
+                              variant: "destructive",
+                            });
+                          }
+                        } catch (error) {
+                          toast({
+                            title: "Error",
+                            description: "Failed to delete account. Please try again.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      data-testid="button-confirm-delete-account"
+                    >
+                      Yes, Delete My Account
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="orders" className="mt-6">
