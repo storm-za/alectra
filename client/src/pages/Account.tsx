@@ -348,8 +348,8 @@ export default function Account({ onAddToCart }: AccountProps) {
                                 <p className="font-medium text-sm line-clamp-1" data-testid={`order-item-name-${item.id}`}>
                                   {item.productName || 'Unknown Product'}
                                 </p>
-                                <p className="text-xs text-muted-foreground">
-                                  Qty: {item.quantity} × R{item.priceAtPurchase}
+                                <p className="text-xs text-muted-foreground whitespace-nowrap">
+                                  Qty: {item.quantity} ×&nbsp;R&nbsp;{item.priceAtPurchase}
                                 </p>
                               </div>
                             </div>
@@ -361,7 +361,7 @@ export default function Account({ onAddToCart }: AccountProps) {
 
                       <div className="flex justify-between font-semibold">
                         <span>Total</span>
-                        <span data-testid={`total-${order.id}`}>R{order.total}</span>
+                        <span className="whitespace-nowrap" data-testid={`total-${order.id}`}>R&nbsp;{order.total}</span>
                       </div>
 
                       <div className="text-sm text-muted-foreground">

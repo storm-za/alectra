@@ -132,9 +132,9 @@ export default function ProductCard({ product, onAddToCart, priority = false }: 
             {product.name}
           </h3>
         </Link>
-        <div className="flex flex-col sm:flex-row sm:items-baseline gap-0 sm:gap-2">
-          <span className="text-lg sm:text-2xl font-bold text-foreground" data-testid={`text-price-${product.id}`}>
-            R {displayPrice}
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0">
+          <span className="text-lg sm:text-2xl font-bold text-foreground whitespace-nowrap" data-testid={`text-price-${product.id}`}>
+            R&nbsp;{displayPrice}
           </span>
           <span className="text-xs text-muted-foreground">VAT inc.</span>
         </div>

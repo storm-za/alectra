@@ -165,8 +165,8 @@ export default function Discover() {
                               {product.name}
                             </p>
                             <p className="text-xs text-muted-foreground mb-1" data-testid={`text-product-brand-${product.id}`}>{product.brand}</p>
-                            <p className="font-bold text-sm" data-testid={`text-product-price-${product.id}`}>
-                              R {(typeof product.price === 'number' ? product.price : Number(product.price) || 0).toFixed(2)}
+                            <p className="font-bold text-sm whitespace-nowrap" data-testid={`text-product-price-${product.id}`}>
+                              R&nbsp;{(typeof product.price === 'number' ? product.price : Number(product.price) || 0).toFixed(2)}
                             </p>
                           </div>
                         </CardContent>

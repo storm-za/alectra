@@ -113,8 +113,8 @@ export function FrequentlyBoughtTogether({ currentProductId, categorySlug }: Fre
                         {product.name}
                       </h3>
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-bold text-primary" data-testid="text-product-price">
-                          R{parseFloat(product.price).toFixed(2)}
+                        <span className="font-bold text-primary whitespace-nowrap" data-testid="text-product-price">
+                          R&nbsp;{parseFloat(product.price).toFixed(2)}
                         </span>
                         <ChevronRight className="h-4 w-4 text-muted-foreground" />
                       </div>

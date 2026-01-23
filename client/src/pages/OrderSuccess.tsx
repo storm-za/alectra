@@ -180,8 +180,8 @@ export default function OrderSuccess({ onClearCart }: OrderSuccessProps) {
               <Separator />
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Amount Paid</span>
-                <span className="font-bold text-lg text-primary" data-testid="text-amount-paid">
-                  R {displayAmount.toFixed(2)}
+                <span className="font-bold text-lg text-primary whitespace-nowrap" data-testid="text-amount-paid">
+                  R&nbsp;{displayAmount.toFixed(2)}
                 </span>
               </div>
             </div>

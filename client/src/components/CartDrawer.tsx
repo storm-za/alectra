@@ -139,8 +139,8 @@ export default function CartDrawer({
                               </Button>
                             </div>
                             
-                            <span className="font-bold" data-testid={`text-line-total-${itemKey}`}>
-                              R {lineTotal}
+                            <span className="font-bold whitespace-nowrap" data-testid={`text-line-total-${itemKey}`}>
+                              R&nbsp;{lineTotal}
                             </span>
                           </div>
                         </div>
@@ -166,11 +166,11 @@ export default function CartDrawer({
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span data-testid="text-subtotal">R {subtotal.toFixed(2)}</span>
+                  <span className="whitespace-nowrap" data-testid="text-subtotal">R&nbsp;{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">VAT (15%)</span>
-                  <span data-testid="text-vat">R {vat.toFixed(2)}</span>
+                  <span className="whitespace-nowrap" data-testid="text-vat">R&nbsp;{vat.toFixed(2)}</span>
                 </div>
               </div>
               
@@ -178,7 +178,7 @@ export default function CartDrawer({
               
               <div className="flex justify-between items-center">
                 <span className="font-semibold">Total</span>
-                <span className="text-xl font-bold" data-testid="text-total">R {total.toFixed(2)}</span>
+                <span className="text-xl font-bold whitespace-nowrap" data-testid="text-total">R&nbsp;{total.toFixed(2)}</span>
               </div>
 
               <div className="flex flex-col gap-2 pt-2">

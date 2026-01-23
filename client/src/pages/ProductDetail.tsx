@@ -417,8 +417,8 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                       <span className="text-sm text-muted-foreground">
                         Bring your empty cylinder, get a full one
                       </span>
-                      <span className="text-lg font-bold text-primary">
-                        R {lpGasPricing.exchange.toFixed(2)}
+                      <span className="text-lg font-bold text-primary whitespace-nowrap">
+                        R&nbsp;{lpGasPricing.exchange.toFixed(2)}
                       </span>
                     </Label>
                   </div>
@@ -435,8 +435,8 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                     >
                       <span className="font-semibold">New Cylinder</span>
                       <span className="text-sm text-muted-foreground">Cylinder, filled and ready</span>
-                      <span className="text-lg font-bold text-primary">
-                        R {lpGasPricing.new.toFixed(2)}
+                      <span className="text-lg font-bold text-primary whitespace-nowrap">
+                        R&nbsp;{lpGasPricing.new.toFixed(2)}
                       </span>
                     </Label>
                   </div>
@@ -468,8 +468,8 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                       <span className="text-sm text-muted-foreground">
                         Standard single garage door size
                       </span>
-                      <span className="text-lg font-bold text-primary">
-                        R {glosteelPricing['2450mm'].toFixed(2)}
+                      <span className="text-lg font-bold text-primary whitespace-nowrap">
+                        R&nbsp;{glosteelPricing['2450mm'].toFixed(2)}
                       </span>
                     </Label>
                   </div>
@@ -488,8 +488,8 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                       <span className="text-sm text-muted-foreground">
                         Wider single garage door size
                       </span>
-                      <span className="text-lg font-bold text-primary">
-                        R {glosteelPricing['2550mm'].toFixed(2)}
+                      <span className="text-lg font-bold text-primary whitespace-nowrap">
+                        R&nbsp;{glosteelPricing['2550mm'].toFixed(2)}
                       </span>
                     </Label>
                   </div>
@@ -535,7 +535,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                             >
                               {info.color}
                             </Badge>
-                            <span className="text-xs font-medium text-primary">R{info.price}</span>
+                            <span className="text-xs font-medium text-primary whitespace-nowrap">R&nbsp;{info.price}</span>
                           </button>
                         );
                       })}
@@ -613,9 +613,9 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             )}
 
             <div className="mb-8">
-              <div className="flex items-baseline gap-2 flex-wrap">
-                <span className="text-4xl font-bold" data-testid="text-product-price">
-                  R {displayPrice}
+              <div className="flex items-baseline gap-x-2 gap-y-0 flex-wrap">
+                <span className="text-4xl font-bold whitespace-nowrap" data-testid="text-product-price">
+                  R&nbsp;{displayPrice}
                 </span>
                 <span className="text-sm text-muted-foreground">VAT inc.</span>
                 {isLpGasCylinder && (
@@ -1102,7 +1102,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
           <div className="flex items-center gap-3 px-4 py-3 pr-24">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate">{product.name}</p>
-              <p className="text-lg font-bold text-primary">R {displayPrice}</p>
+              <p className="text-lg font-bold text-primary whitespace-nowrap">R&nbsp;{displayPrice}</p>
             </div>
             <Button
               size="lg"

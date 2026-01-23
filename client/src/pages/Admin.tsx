@@ -796,11 +796,11 @@ export default function Admin() {
                                       )}
                                       <div className="flex-1 min-w-0">
                                         <p className="font-medium text-sm line-clamp-1">{item.productName || 'Unknown Product'}</p>
-                                        <p className="text-xs text-muted-foreground">
-                                          Qty: {item.quantity} × R{item.priceAtPurchase}
+                                        <p className="text-xs text-muted-foreground whitespace-nowrap">
+                                          Qty: {item.quantity} ×&nbsp;R&nbsp;{item.priceAtPurchase}
                                         </p>
                                       </div>
-                                      <p className="text-sm font-medium">R{item.lineSubtotal}</p>
+                                      <p className="text-sm font-medium whitespace-nowrap">R&nbsp;{item.lineSubtotal}</p>
                                     </div>
                                   );
                                 })}

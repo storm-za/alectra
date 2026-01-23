@@ -155,8 +155,8 @@ export default function MyShop({ onAddToCart }: MyShopProps) {
                                   <p className="font-medium line-clamp-2" data-testid={`text-wishlist-name-${product.id}`}>
                                     {product.name}
                                   </p>
-                                  <p className="text-primary font-bold mt-1" data-testid={`text-wishlist-price-${product.id}`}>
-                                    R {parseFloat(product.price).toFixed(2)}
+                                  <p className="text-primary font-bold mt-1 whitespace-nowrap" data-testid={`text-wishlist-price-${product.id}`}>
+                                    R&nbsp;{parseFloat(product.price).toFixed(2)}
                                   </p>
                                 </Link>
                                 {isOutOfStock && (
@@ -320,7 +320,7 @@ export default function MyShop({ onAddToCart }: MyShopProps) {
                       <CardContent className="p-3">
                         <p className="text-xs text-muted-foreground line-clamp-1">{product.brand}</p>
                         <p className="font-medium text-sm line-clamp-2 leading-tight">{product.name}</p>
-                        <p className="text-primary font-bold mt-1">R {parseFloat(product.price).toFixed(2)}</p>
+                        <p className="text-primary font-bold mt-1 whitespace-nowrap">R&nbsp;{parseFloat(product.price).toFixed(2)}</p>
                       </CardContent>
                     </Link>
                   </Card>

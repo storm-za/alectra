@@ -632,7 +632,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                 <p className="text-sm font-medium line-clamp-1">{item.product.name}</p>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs text-muted-foreground">Qty: {item.quantity}</span>
-                  <span className="text-sm font-bold">R {lineTotal}</span>
+                  <span className="text-sm font-bold whitespace-nowrap">R&nbsp;{lineTotal}</span>
                 </div>
               </div>
             </div>
@@ -645,25 +645,25 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
           <span className="text-muted-foreground">Subtotal</span>
-          <span>R {totalVatInclusive.toFixed(2)}</span>
+          <span className="whitespace-nowrap">R&nbsp;{totalVatInclusive.toFixed(2)}</span>
         </div>
         {tradeDiscount > 0 && (
           <div className="flex justify-between text-primary">
             <span>Trade Discount</span>
-            <span>- R {tradeDiscount.toFixed(2)}</span>
+            <span className="whitespace-nowrap">-&nbsp;R&nbsp;{tradeDiscount.toFixed(2)}</span>
           </div>
         )}
         {discountCodeAmount > 0 && (
           <div className="flex justify-between text-green-600">
             <span>Discount</span>
-            <span>- R {discountCodeAmount.toFixed(2)}</span>
+            <span className="whitespace-nowrap">-&nbsp;R&nbsp;{discountCodeAmount.toFixed(2)}</span>
           </div>
         )}
         {deliveryMethod === "delivery" && (
           <div className="flex justify-between">
             <span className="text-muted-foreground">Shipping</span>
             <span className={shippingCost === 0 ? "text-green-600" : ""}>
-              {shippingCost === 0 ? "FREE" : `R ${shippingCost.toFixed(2)}`}
+              {shippingCost === 0 ? "FREE" : <>R&nbsp;{shippingCost.toFixed(2)}</>}
             </span>
           </div>
         )}
@@ -673,7 +673,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       
       <div className="flex justify-between items-baseline">
         <span className="font-semibold">Total</span>
-        <span className="text-xl font-bold text-primary">R {total.toFixed(2)}</span>
+        <span className="text-xl font-bold text-primary whitespace-nowrap">R&nbsp;{total.toFixed(2)}</span>
       </div>
     </div>
   );
@@ -1580,7 +1580,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                     ) : (
                       <>
                         <Lock className="h-5 w-5" />
-                        Pay R {total.toFixed(2)}
+                        Pay R&nbsp;{total.toFixed(2)}
                       </>
                     )}
                   </Button>
@@ -1613,7 +1613,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                   <span className="font-medium">{cartItems.length} item{cartItems.length !== 1 ? 's' : ''}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-lg font-bold text-primary">R {total.toFixed(2)}</span>
+                  <span className="text-lg font-bold text-primary whitespace-nowrap">R&nbsp;{total.toFixed(2)}</span>
                   {orderSummaryOpen ? <ChevronDown className="h-5 w-5" /> : <ChevronUp className="h-5 w-5" />}
                 </div>
               </button>
