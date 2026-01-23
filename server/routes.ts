@@ -2113,6 +2113,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // UPDATE PRODUCT NAME
+  app.patch("/api/admin/products/:slug/name", requireAdminAuth, async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const { name } = req.body;
+
+      if (!name || typeof name !== 'string' || name.trim().length === 0) {
+        return res.status(400).json({ message: "name is required and must be a non-empty string" });
+      }
+
+      const product = await storage.updateProductName(slug, name.trim());
+
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.json({ success: true, product });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // CREATE NEW PRODUCT
+  app.post("/api/admin/products", requireAdminAuth, async (req, res) => {
+    try {
+      const { name, price, description, brand, categoryId, imageUrl, images, stock, featured, discontinued, specifications, deliveryFee } = req.body;
+
+      if (!name || typeof name !== 'string' || name.trim().length === 0) {
+        return res.status(400).json({ message: "name is required" });
+      }
+      if (!price || isNaN(parseFloat(price))) {
+        return res.status(400).json({ message: "price is required and must be a valid number" });
+      }
+
+      // Generate slug from name with timestamp suffix to ensure uniqueness
+      const baseSlug = name.trim().toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .substring(0, 80);
+      const timestamp = Date.now().toString(36).toLowerCase();
+      const slug = `${baseSlug}-${timestamp}`;
+      
+      // Generate SKU
+      const skuTimestamp = Date.now().toString(36).toUpperCase();
+      const sku = `ALC-${skuTimestamp}`;
+
+      const newProduct = await storage.createProduct({
+        name: name.trim(),
+        slug,
+        description: description || '',
+        price: price.toString(),
+        brand: brand || 'Alectra',
+        sku,
+        categoryId: categoryId || null,
+        imageUrl: imageUrl || 'https://via.placeholder.com/400?text=No+Image',
+        images: images || [],
+        stock: stock !== undefined ? parseInt(stock) : 10,
+        featured: featured || false,
+        discontinued: discontinued || false,
+        specifications: specifications || null,
+        deliveryFee: deliveryFee || null,
+      });
+
+      res.status(201).json({ success: true, product: newProduct });
+    } catch (error: any) {
+      console.error("Error creating product:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // GET UPLOAD URL FOR PRODUCT IMAGES
   app.post("/api/admin/upload-url", async (req, res) => {
     try {

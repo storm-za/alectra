@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Search, Image, Plus, Trash2, ArrowLeft, CheckCircle, Save, Upload, Lock, FileText, FolderMinus, Package } from "lucide-react";
+import { Loader2, Search, Image, Plus, Trash2, ArrowLeft, CheckCircle, Save, Upload, Lock, FileText, FolderMinus, Package, Edit3, PlusCircle } from "lucide-react";
 import { Link } from "wouter";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Product, Category } from "@shared/schema";
@@ -45,8 +45,18 @@ export default function AdminProducts() {
   const [successMessage, setSuccessMessage] = useState("");
   const [description, setDescription] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState("images");
+  const [activeTab, setActiveTab] = useState("details");
   const [stockLevel, setStockLevel] = useState<number>(0);
+  const [productName, setProductName] = useState("");
+  
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [newProductName, setNewProductName] = useState("");
+  const [newProductPrice, setNewProductPrice] = useState("");
+  const [newProductDescription, setNewProductDescription] = useState("");
+  const [newProductBrand, setNewProductBrand] = useState("");
+  const [newProductCategoryId, setNewProductCategoryId] = useState<string | null>(null);
+  const [newProductImageUrl, setNewProductImageUrl] = useState("");
+  const [newProductStock, setNewProductStock] = useState("10");
 
   const { data: authStatus, isLoading: authLoading, refetch: refetchAuth } = useQuery<{ isAdmin: boolean }>({
     queryKey: ['/api/admin/check'],
@@ -167,6 +177,55 @@ export default function AdminProducts() {
     },
   });
 
+  const updateNameMutation = useMutation({
+    mutationFn: async ({ slug, name }: { slug: string; name: string }) => {
+      return apiRequest('PATCH', `/api/admin/products/${slug}/name`, { name });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/products'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+      setSuccessMessage("Product name updated successfully!");
+      setTimeout(() => {
+        setEditingProduct(null);
+        setSuccessMessage("");
+      }, 1500);
+    },
+  });
+
+  const createProductMutation = useMutation({
+    mutationFn: async (data: {
+      name: string;
+      price: string;
+      description: string;
+      brand: string;
+      categoryId: string | null;
+      imageUrl: string;
+      stock: number;
+    }) => {
+      return apiRequest('POST', '/api/admin/products', data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/products'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+      setSuccessMessage("Product created successfully!");
+      setCreateDialogOpen(false);
+      resetCreateForm();
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 3000);
+    },
+  });
+
+  const resetCreateForm = () => {
+    setNewProductName("");
+    setNewProductPrice("");
+    setNewProductDescription("");
+    setNewProductBrand("");
+    setNewProductCategoryId(null);
+    setNewProductImageUrl("");
+    setNewProductStock("10");
+  };
+
   const openEditor = (product: Product) => {
     setEditingProduct(product);
     setImageUrl(product.imageUrl);
@@ -175,8 +234,9 @@ export default function AdminProducts() {
     setSuccessMessage("");
     setDescription(product.description || "");
     setSelectedCategoryId(product.categoryId);
-    setActiveTab("images");
+    setActiveTab("details");
     setStockLevel(product.stock);
+    setProductName(product.name);
   };
 
   const addGalleryImage = () => {
@@ -228,6 +288,27 @@ export default function AdminProducts() {
     updateStockMutation.mutate({
       slug: editingProduct.slug,
       stock: stockLevel,
+    });
+  };
+
+  const handleSaveName = () => {
+    if (!editingProduct) return;
+    updateNameMutation.mutate({
+      slug: editingProduct.slug,
+      name: productName,
+    });
+  };
+
+  const handleCreateProduct = () => {
+    if (!newProductName.trim() || !newProductPrice.trim()) return;
+    createProductMutation.mutate({
+      name: newProductName.trim(),
+      price: newProductPrice.trim(),
+      description: newProductDescription.trim(),
+      brand: newProductBrand.trim() || 'Alectra',
+      categoryId: newProductCategoryId,
+      imageUrl: newProductImageUrl.trim() || 'https://via.placeholder.com/400?text=No+Image',
+      stock: parseInt(newProductStock) || 10,
     });
   };
 
@@ -307,18 +388,31 @@ export default function AdminProducts() {
           </Link>
         </div>
 
+        {successMessage && !editingProduct && (
+          <Alert className="mb-4 border-green-500/50 bg-green-50 dark:bg-green-950/20">
+            <CheckCircle className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-900 dark:text-green-100">
+              {successMessage}
+            </AlertDescription>
+          </Alert>
+        )}
+
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between gap-4">
             <CardTitle className="flex items-center gap-2">
-              <Image className="h-5 w-5" />
-              Product Image Editor
+              <Package className="h-5 w-5" />
+              Product Manager
             </CardTitle>
+            <Button onClick={() => setCreateDialogOpen(true)} data-testid="button-create-product">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Create Product
+            </Button>
           </CardHeader>
           <CardContent className="space-y-4">
             <Alert>
               <AlertDescription>
-                Search for a product, then click to edit its main image or add gallery images.
-                Changes are saved directly to the database.
+                Search for a product to edit its name, images, description, category, or stock.
+                Or create a new product using the button above.
               </AlertDescription>
             </Alert>
 
@@ -395,7 +489,11 @@ export default function AdminProducts() {
             )}
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-5">
+                <TabsTrigger value="details" className="flex items-center gap-2" data-testid="tab-details">
+                  <Edit3 className="h-4 w-4" />
+                  Details
+                </TabsTrigger>
                 <TabsTrigger value="images" className="flex items-center gap-2">
                   <Image className="h-4 w-4" />
                   Images
@@ -413,6 +511,57 @@ export default function AdminProducts() {
                   Stock
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="details" className="space-y-6 mt-4">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="productName">Product Name</Label>
+                    <Input
+                      id="productName"
+                      value={productName}
+                      onChange={(e) => setProductName(e.target.value)}
+                      placeholder="Enter product name..."
+                      data-testid="input-product-name"
+                    />
+                  </div>
+
+                  <div className="p-4 bg-muted rounded-lg space-y-2">
+                    <p className="text-sm font-medium">Product Info</p>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <span className="text-muted-foreground">SKU:</span>
+                      <span>{editingProduct?.sku}</span>
+                      <span className="text-muted-foreground">Slug:</span>
+                      <span>{editingProduct?.slug}</span>
+                      <span className="text-muted-foreground">Price:</span>
+                      <span>R{editingProduct?.price}</span>
+                      <span className="text-muted-foreground">Brand:</span>
+                      <span>{editingProduct?.brand}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setEditingProduct(null)}
+                    data-testid="button-cancel-name"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleSaveName}
+                    disabled={updateNameMutation.isPending || !productName.trim()}
+                    data-testid="button-save-name"
+                  >
+                    {updateNameMutation.isPending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="mr-2 h-4 w-4" />
+                    )}
+                    Save Name
+                  </Button>
+                </DialogFooter>
+              </TabsContent>
 
               <TabsContent value="images" className="space-y-6 mt-4">
                 <div className="space-y-2">
@@ -741,6 +890,142 @@ export default function AdminProducts() {
                 </DialogFooter>
               </TabsContent>
             </Tabs>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={createDialogOpen} onOpenChange={(open) => {
+          if (!open) {
+            resetCreateForm();
+          }
+          setCreateDialogOpen(open);
+        }}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <PlusCircle className="h-5 w-5" />
+                Create New Product
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="newProductName">Product Name *</Label>
+                <Input
+                  id="newProductName"
+                  value={newProductName}
+                  onChange={(e) => setNewProductName(e.target.value)}
+                  placeholder="Enter product name..."
+                  data-testid="input-new-product-name"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="newProductPrice">Price (Rands) *</Label>
+                <Input
+                  id="newProductPrice"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={newProductPrice}
+                  onChange={(e) => setNewProductPrice(e.target.value)}
+                  placeholder="0.00"
+                  data-testid="input-new-product-price"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="newProductBrand">Brand</Label>
+                <Input
+                  id="newProductBrand"
+                  value={newProductBrand}
+                  onChange={(e) => setNewProductBrand(e.target.value)}
+                  placeholder="Alectra (default)"
+                  data-testid="input-new-product-brand"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Category</Label>
+                <Select
+                  value={newProductCategoryId || "uncategorized"}
+                  onValueChange={(value) => setNewProductCategoryId(value === "uncategorized" ? null : value)}
+                >
+                  <SelectTrigger data-testid="select-new-product-category">
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="uncategorized">Uncategorized</SelectItem>
+                    {categories?.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="newProductDescription">Description</Label>
+                <Textarea
+                  id="newProductDescription"
+                  value={newProductDescription}
+                  onChange={(e) => setNewProductDescription(e.target.value)}
+                  placeholder="Enter product description..."
+                  rows={3}
+                  className="resize-none"
+                  data-testid="input-new-product-description"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="newProductImageUrl">Image URL</Label>
+                <Input
+                  id="newProductImageUrl"
+                  value={newProductImageUrl}
+                  onChange={(e) => setNewProductImageUrl(e.target.value)}
+                  placeholder="https://example.com/image.jpg (optional)"
+                  data-testid="input-new-product-image"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="newProductStock">Initial Stock</Label>
+                <Input
+                  id="newProductStock"
+                  type="number"
+                  min="0"
+                  value={newProductStock}
+                  onChange={(e) => setNewProductStock(e.target.value)}
+                  placeholder="10"
+                  data-testid="input-new-product-stock"
+                />
+              </div>
+            </div>
+
+            <DialogFooter className="mt-4">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setCreateDialogOpen(false);
+                  resetCreateForm();
+                }}
+                data-testid="button-cancel-create"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCreateProduct}
+                disabled={createProductMutation.isPending || !newProductName.trim() || !newProductPrice.trim()}
+                data-testid="button-submit-create"
+              >
+                {createProductMutation.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                )}
+                Create Product
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
