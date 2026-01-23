@@ -44,6 +44,12 @@ export interface IStorage {
   getProductReviews(productId: string): Promise<ProductReview[]>;
   createProductReview(review: InsertProductReview): Promise<ProductReview>;
   getAverageRating(productId: string): Promise<number>;
+  
+  // Admin Review Management
+  getAllReviews(): Promise<(ProductReview & { productName: string | null })[]>;
+  updateReviewStatus(reviewId: string, status: string): Promise<ProductReview | undefined>;
+  updateReview(reviewId: string, data: { comment?: string; rating?: number }): Promise<ProductReview | undefined>;
+  deleteReview(reviewId: string): Promise<boolean>;
 
   // Trade Applications
   createTradeApplication(userId: string, application: InsertTradeApplication): Promise<TradeApplication>;
@@ -720,7 +726,10 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(productReviews)
-      .where(eq(productReviews.productId, productId))
+      .where(and(
+        eq(productReviews.productId, productId),
+        eq(productReviews.status, 'approved')
+      ))
       .orderBy(desc(productReviews.createdAt));
   }
 
@@ -735,11 +744,59 @@ export class DatabaseStorage implements IStorage {
         avg: sql<number>`COALESCE(AVG(${productReviews.rating})::numeric(3,2), 0)`,
       })
       .from(productReviews)
-      .where(eq(productReviews.productId, productId));
+      .where(and(
+        eq(productReviews.productId, productId),
+        eq(productReviews.status, 'approved')
+      ));
     
     // PostgreSQL returns numeric as string, convert to number
     const avgValue = result[0]?.avg;
     return typeof avgValue === 'string' ? parseFloat(avgValue) : (avgValue || 0);
+  }
+
+  // Admin Review Management
+  async getAllReviews(): Promise<(ProductReview & { productName: string | null })[]> {
+    const result = await db
+      .select({
+        id: productReviews.id,
+        productId: productReviews.productId,
+        rating: productReviews.rating,
+        comment: productReviews.comment,
+        authorName: productReviews.authorName,
+        status: productReviews.status,
+        createdAt: productReviews.createdAt,
+        productName: products.name,
+      })
+      .from(productReviews)
+      .leftJoin(products, eq(productReviews.productId, products.id))
+      .orderBy(desc(productReviews.createdAt));
+    return result;
+  }
+
+  async updateReviewStatus(reviewId: string, status: string): Promise<ProductReview | undefined> {
+    const [updated] = await db
+      .update(productReviews)
+      .set({ status })
+      .where(eq(productReviews.id, reviewId))
+      .returning();
+    return updated;
+  }
+
+  async updateReview(reviewId: string, data: { comment?: string; rating?: number }): Promise<ProductReview | undefined> {
+    const [updated] = await db
+      .update(productReviews)
+      .set(data)
+      .where(eq(productReviews.id, reviewId))
+      .returning();
+    return updated;
+  }
+
+  async deleteReview(reviewId: string): Promise<boolean> {
+    const result = await db
+      .delete(productReviews)
+      .where(eq(productReviews.id, reviewId))
+      .returning();
+    return result.length > 0;
   }
 
   // Trade Applications

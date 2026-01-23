@@ -2371,6 +2371,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ============ ADMIN REVIEWS MANAGEMENT ============
+
+  // GET all reviews (with product names)
+  app.get("/api/admin/reviews", requireAdminAuth, async (req, res) => {
+    try {
+      const reviews = await storage.getAllReviews();
+      res.json(reviews);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // UPDATE review status (approve/reject)
+  app.patch("/api/admin/reviews/:id/status", requireAdminAuth, async (req, res) => {
+    try {
+      const { status } = req.body;
+      if (!['pending', 'approved', 'rejected'].includes(status)) {
+        return res.status(400).json({ message: "Invalid status. Must be 'pending', 'approved', or 'rejected'" });
+      }
+      
+      const updated = await storage.updateReviewStatus(req.params.id, status);
+      if (!updated) {
+        return res.status(404).json({ message: "Review not found" });
+      }
+      res.json(updated);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // UPDATE review content (edit comment/rating)
+  app.patch("/api/admin/reviews/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const { comment, rating } = req.body;
+      
+      if (rating !== undefined && (typeof rating !== 'number' || rating < 1 || rating > 5)) {
+        return res.status(400).json({ message: "Rating must be between 1 and 5" });
+      }
+      
+      const updateData: { comment?: string; rating?: number } = {};
+      if (comment !== undefined) updateData.comment = comment;
+      if (rating !== undefined) updateData.rating = rating;
+      
+      const updated = await storage.updateReview(req.params.id, updateData);
+      if (!updated) {
+        return res.status(404).json({ message: "Review not found" });
+      }
+      res.json(updated);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // DELETE review
+  app.delete("/api/admin/reviews/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const deleted = await storage.deleteReview(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Review not found" });
+      }
+      res.json({ message: "Review deleted successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // ============ DISCOUNT CODE VALIDATION (for checkout) ============
 
   // VALIDATE DISCOUNT CODE

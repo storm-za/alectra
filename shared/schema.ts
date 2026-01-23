@@ -103,6 +103,7 @@ export const productReviews = pgTable("product_reviews", {
   rating: integer("rating").notNull(),
   comment: text("comment"),
   authorName: text("author_name").notNull(),
+  status: text("status").notNull().default("pending"), // pending, approved, rejected
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
