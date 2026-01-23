@@ -304,10 +304,10 @@ export default function AdminProducts() {
     createProductMutation.mutate({
       name: newProductName.trim(),
       price: newProductPrice.trim(),
-      description: newProductDescription.trim(),
+      description: newProductDescription,
       brand: newProductBrand.trim() || 'Alectra',
       categoryId: newProductCategoryId,
-      imageUrl: newProductImageUrl.trim() || 'https://via.placeholder.com/400?text=No+Image',
+      imageUrl: newProductImageUrl || 'https://via.placeholder.com/400?text=No+Image',
       stock: parseInt(newProductStock) || 10,
     });
   };
@@ -978,14 +978,43 @@ export default function AdminProducts() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="newProductImageUrl">Image URL</Label>
-                <Input
-                  id="newProductImageUrl"
-                  value={newProductImageUrl}
-                  onChange={(e) => setNewProductImageUrl(e.target.value)}
-                  placeholder="https://example.com/image.jpg (optional)"
-                  data-testid="input-new-product-image"
-                />
+                <Label>Product Image</Label>
+                <div className="flex items-center gap-3">
+                  <ObjectUploader
+                    maxNumberOfFiles={1}
+                    maxFileSize={10485760}
+                    onGetUploadParameters={async () => {
+                      const res = await fetch('/api/admin/upload-url', { method: 'POST' });
+                      const data = await res.json();
+                      return { method: 'PUT' as const, url: data.uploadURL };
+                    }}
+                    onComplete={(result) => {
+                      if (result.successful && result.successful.length > 0) {
+                        const uploadUrl = result.successful[0].uploadURL;
+                        if (uploadUrl) {
+                          const url = new URL(uploadUrl);
+                          const objectPath = `/objects${url.pathname.split('/.private')[1]}`;
+                          setNewProductImageUrl(objectPath);
+                        }
+                      }
+                    }}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    {newProductImageUrl ? 'Change Image' : 'Upload Image'}
+                  </ObjectUploader>
+                </div>
+                {newProductImageUrl && (
+                  <div className="mt-2">
+                    <img 
+                      src={getImageUrl(newProductImageUrl)} 
+                      alt="Preview" 
+                      className="w-24 h-24 object-cover rounded border"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/96?text=Invalid+URL';
+                      }}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
