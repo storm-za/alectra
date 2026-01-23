@@ -36,6 +36,12 @@ Preferred communication style: Simple, everyday language.
 - **Security**: Bcrypt password verification, timing-safe comparison, rate limiting (5 attempts/min, 15-min lockout), IP-based rate tracking.
 - **Admin Endpoints**: For login, logout, status check, statistics, order summaries, and database seeding/clearing.
 
+### Review Moderation System
+- **Status Types**: `pending` (new reviews), `approved` (visible on site), `rejected` (hidden).
+- **Admin Management**: Reviews tab in admin dashboard with stats cards, status filtering, and full CRUD.
+- **Public Display**: Only approved reviews shown on product pages; average ratings calculated from approved reviews only.
+- **Security**: All review admin endpoints use requireAdminAuth middleware.
+
 ### Product Catalog and Migration
 - **Product Count**: 271 total products across 9 categories + 43 uncategorized.
 - **Migration Process**: Automated scraping from Shopify's public JSON API, normalized data export, local image storage, SKU generation, and batch insertion. Includes exact review imports.
