@@ -28,7 +28,11 @@ import {
   Package,
   Check,
   X,
-  Building2
+  Building2,
+  Star,
+  MessageSquare,
+  Trash2,
+  Edit
 } from "lucide-react";
 import { Link } from "wouter";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -365,6 +369,10 @@ export default function Admin() {
             <TabsTrigger value="tracking" data-testid="tab-tracking">
               <Mail className="mr-2 h-4 w-4" />
               Email & Tracking
+            </TabsTrigger>
+            <TabsTrigger value="reviews" data-testid="tab-reviews">
+              <Star className="mr-2 h-4 w-4" />
+              Reviews
             </TabsTrigger>
           </TabsList>
 
@@ -1005,8 +1013,379 @@ export default function Admin() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="reviews" className="space-y-6">
+            <ReviewsManagement />
+          </TabsContent>
         </Tabs>
       </div>
     </div>
+  );
+}
+
+// Reviews Management Component
+interface Review {
+  id: string;
+  productId: string;
+  rating: number;
+  comment: string | null;
+  authorName: string;
+  status: string;
+  createdAt: string;
+  productName: string | null;
+}
+
+function ReviewsManagement() {
+  const { toast } = useToast();
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
+  const [editComment, setEditComment] = useState("");
+  const [editRating, setEditRating] = useState(5);
+
+  const { data: reviews, isLoading, refetch } = useQuery<Review[]>({
+    queryKey: ['/api/admin/reviews'],
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const response = await apiRequest('PATCH', `/api/admin/reviews/${id}/status`, { status });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to update status');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/reviews'] });
+      toast({ title: "Status updated successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to update status", variant: "destructive" });
+    },
+  });
+
+  const updateReviewMutation = useMutation({
+    mutationFn: async ({ id, comment, rating }: { id: string; comment: string; rating: number }) => {
+      const response = await apiRequest('PATCH', `/api/admin/reviews/${id}`, { comment, rating });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to update review');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/reviews'] });
+      setEditingReview(null);
+      toast({ title: "Review updated successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to update review", variant: "destructive" });
+    },
+  });
+
+  const deleteReviewMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest('DELETE', `/api/admin/reviews/${id}`, {});
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to delete review');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/reviews'] });
+      toast({ title: "Review deleted successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to delete review", variant: "destructive" });
+    },
+  });
+
+  const filteredReviews = reviews?.filter(review => 
+    filterStatus === "all" ? true : review.status === filterStatus
+  ) || [];
+
+  const pendingCount = reviews?.filter(r => r.status === 'pending').length || 0;
+  const approvedCount = reviews?.filter(r => r.status === 'approved').length || 0;
+  const rejectedCount = reviews?.filter(r => r.status === 'rejected').length || 0;
+
+  const openEditDialog = (review: Review) => {
+    setEditingReview(review);
+    setEditComment(review.comment || "");
+    setEditRating(review.rating);
+  };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="py-8">
+          <div className="flex justify-center">
+            <Loader2 className="h-8 w-8 animate-spin" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pending</CardTitle>
+            <MessageSquare className="h-4 w-4 text-yellow-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{pendingCount}</div>
+            <p className="text-xs text-muted-foreground">Awaiting approval</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Approved</CardTitle>
+            <Check className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{approvedCount}</div>
+            <p className="text-xs text-muted-foreground">Visible to customers</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Rejected</CardTitle>
+            <X className="h-4 w-4 text-red-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{rejectedCount}</div>
+            <p className="text-xs text-muted-foreground">Not shown</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total</CardTitle>
+            <Star className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{reviews?.length || 0}</div>
+            <p className="text-xs text-muted-foreground">All reviews</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filter */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <CardTitle className="flex items-center gap-2">
+              <Star className="h-5 w-5" />
+              Review Moderation
+            </CardTitle>
+            <div className="flex gap-2">
+              <Button 
+                variant={filterStatus === "all" ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setFilterStatus("all")}
+              >
+                All
+              </Button>
+              <Button 
+                variant={filterStatus === "pending" ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setFilterStatus("pending")}
+              >
+                Pending ({pendingCount})
+              </Button>
+              <Button 
+                variant={filterStatus === "approved" ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setFilterStatus("approved")}
+              >
+                Approved
+              </Button>
+              <Button 
+                variant={filterStatus === "rejected" ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setFilterStatus("rejected")}
+              >
+                Rejected
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {filteredReviews.length === 0 ? (
+            <p className="text-muted-foreground text-center py-8">No reviews found</p>
+          ) : (
+            <div className="space-y-4">
+              {filteredReviews.map((review) => (
+                <div 
+                  key={review.id} 
+                  className={`border rounded-lg p-4 ${
+                    review.status === 'pending' ? 'border-yellow-500/50 bg-yellow-500/5' :
+                    review.status === 'rejected' ? 'border-red-500/50 bg-red-500/5' :
+                    'border-green-500/50 bg-green-500/5'
+                  }`}
+                  data-testid={`review-${review.id}`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <span className="font-semibold">{review.authorName}</span>
+                        <span className="text-muted-foreground">•</span>
+                        <div className="flex items-center">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star 
+                              key={star} 
+                              className={`h-4 w-4 ${star <= review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
+                            />
+                          ))}
+                        </div>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${
+                          review.status === 'pending' ? 'bg-yellow-500/20 text-yellow-600' :
+                          review.status === 'rejected' ? 'bg-red-500/20 text-red-600' :
+                          'bg-green-500/20 text-green-600'
+                        }`}>
+                          {review.status}
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-1">
+                        Product: <span className="font-medium text-foreground">{review.productName || 'Unknown'}</span>
+                      </p>
+                      <p className="text-sm whitespace-pre-wrap">{review.comment || "(No comment)"}</p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {new Date(review.createdAt).toLocaleDateString('en-ZA', { 
+                          year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+                        })}
+                      </p>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      {review.status === 'pending' && (
+                        <>
+                          <Button 
+                            size="sm" 
+                            onClick={() => updateStatusMutation.mutate({ id: review.id, status: 'approved' })}
+                            disabled={updateStatusMutation.isPending}
+                            data-testid={`button-approve-${review.id}`}
+                          >
+                            <Check className="h-4 w-4 mr-1" />
+                            Approve
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="destructive"
+                            onClick={() => updateStatusMutation.mutate({ id: review.id, status: 'rejected' })}
+                            disabled={updateStatusMutation.isPending}
+                            data-testid={`button-reject-${review.id}`}
+                          >
+                            <X className="h-4 w-4 mr-1" />
+                            Reject
+                          </Button>
+                        </>
+                      )}
+                      {review.status === 'approved' && (
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => updateStatusMutation.mutate({ id: review.id, status: 'rejected' })}
+                          disabled={updateStatusMutation.isPending}
+                        >
+                          Reject
+                        </Button>
+                      )}
+                      {review.status === 'rejected' && (
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => updateStatusMutation.mutate({ id: review.id, status: 'approved' })}
+                          disabled={updateStatusMutation.isPending}
+                        >
+                          Approve
+                        </Button>
+                      )}
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => openEditDialog(review)}
+                        data-testid={`button-edit-${review.id}`}
+                      >
+                        <Edit className="h-4 w-4 mr-1" />
+                        Edit
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => {
+                          if (confirm("Are you sure you want to delete this review?")) {
+                            deleteReviewMutation.mutate(review.id);
+                          }
+                        }}
+                        disabled={deleteReviewMutation.isPending}
+                        data-testid={`button-delete-${review.id}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Edit Review Dialog */}
+      {editingReview && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setEditingReview(null)}>
+          <div className="bg-background rounded-lg p-6 max-w-lg w-full mx-4" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-semibold mb-4">Edit Review</h3>
+            <div className="space-y-4">
+              <div>
+                <Label>Rating</Label>
+                <div className="flex gap-1 mt-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setEditRating(star)}
+                      className="focus:outline-none"
+                    >
+                      <Star 
+                        className={`h-8 w-8 cursor-pointer ${star <= editRating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300 hover:text-yellow-200'}`} 
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <Label>Comment</Label>
+                <textarea
+                  className="w-full mt-2 p-3 border rounded-md min-h-[100px] bg-background"
+                  value={editComment}
+                  onChange={(e) => setEditComment(e.target.value)}
+                  placeholder="Review comment..."
+                />
+              </div>
+              <div className="flex gap-2 justify-end">
+                <Button variant="outline" onClick={() => setEditingReview(null)}>
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={() => updateReviewMutation.mutate({ 
+                    id: editingReview.id, 
+                    comment: editComment, 
+                    rating: editRating 
+                  })}
+                  disabled={updateReviewMutation.isPending}
+                >
+                  {updateReviewMutation.isPending ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
