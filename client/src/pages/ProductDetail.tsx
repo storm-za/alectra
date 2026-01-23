@@ -804,36 +804,9 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                       dangerouslySetInnerHTML={{ __html: product.description }}
                     />
                   ) : (
-                    product.description.split('\n').map((paragraph, index) => {
-                      const trimmed = paragraph.trim();
-                      if (!trimmed) return null;
-                      
-                      // Check if it's a heading-like line (ends with colon and is short)
-                      if (trimmed.endsWith(':') && trimmed.length < 80) {
-                        return (
-                          <h4 key={index} className="text-base font-semibold text-foreground mt-4 mb-2 first:mt-0">
-                            {trimmed}
-                          </h4>
-                        );
-                      }
-                      
-                      // Check if it starts with a bullet point emoji or dash
-                      if (trimmed.match(/^[🔹✅📏💧⚡🔌🛡️📡🎥🧰⚙️🌩📻📍🔒•\-–—]/)) {
-                        return (
-                          <p key={index} className="text-sm text-muted-foreground pl-2 py-0.5 flex items-start gap-2">
-                            <span className="shrink-0">{trimmed.charAt(0)}</span>
-                            <span>{trimmed.slice(1).trim()}</span>
-                          </p>
-                        );
-                      }
-                      
-                      // Regular paragraph
-                      return (
-                        <p key={index} className="text-sm text-muted-foreground mb-3 last:mb-0">
-                          {trimmed}
-                        </p>
-                      );
-                    })
+                    <div className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                      {product.description.replace(/\r\n/g, '\n')}
+                    </div>
                   )}
                 </div>
               </TabsContent>

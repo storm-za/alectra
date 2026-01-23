@@ -965,14 +965,14 @@ export default function AdminProducts() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="newProductDescription">Description</Label>
+                <Label htmlFor="newProductDescription">Description (formatting preserved)</Label>
                 <Textarea
                   id="newProductDescription"
                   value={newProductDescription}
                   onChange={(e) => setNewProductDescription(e.target.value)}
-                  placeholder="Enter product description..."
-                  rows={3}
-                  className="resize-none"
+                  placeholder="Enter product description with line breaks, bullet points, etc..."
+                  rows={8}
+                  className="resize-y font-mono text-sm whitespace-pre-wrap"
                   data-testid="input-new-product-description"
                 />
               </div>
