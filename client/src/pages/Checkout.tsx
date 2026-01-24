@@ -1404,7 +1404,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                           ) : (
                             <span className="flex items-center gap-2">
                               <Lock className="h-4 w-4" />
-                              Complete Purchase · R&nbsp;{total.toFixed(2)}
+                              R&nbsp;{total.toFixed(2)} - Pay Now
                             </span>
                           )}
                         </Button>
