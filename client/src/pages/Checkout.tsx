@@ -123,7 +123,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   
   // Form and payment state
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("yoco");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paystack");
   const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [searchedAddress, setSearchedAddress] = useState<ParsedAddress | null>(null);
   const [discountCodeInput, setDiscountCodeInput] = useState("");
@@ -1388,34 +1388,6 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                     <CardContent className="space-y-3">
                       <Card
                         className={`cursor-pointer transition-all hover-elevate ${
-                          paymentMethod === "yoco"
-                            ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                            : "border-border"
-                        }`}
-                        onClick={() => setPaymentMethod("yoco")}
-                        data-testid="button-payment-yoco"
-                      >
-                        <CardContent className="p-4 flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-md overflow-hidden">
-                              <img src={yocoLogo} alt="Yoco" className="h-full w-full object-cover" />
-                            </div>
-                            <div className="text-left">
-                              <p className="font-semibold">Yoco</p>
-                              <p className="text-xs text-muted-foreground">Credit/Debit Card</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <SiVisa className="h-6 w-auto text-[#1434CB]" />
-                            <SiMastercard className="h-6 w-auto text-[#FF5F00]" />
-                            <img src={amexLogo} alt="American Express" className="h-6 w-auto rounded-sm" />
-                            <img src={googlePayLogo} alt="Google Pay" className="h-6 w-auto" />
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      <Card
-                        className={`cursor-pointer transition-all hover-elevate ${
                           paymentMethod === "paystack"
                             ? "border-primary bg-primary/5 ring-2 ring-primary/20"
                             : "border-border"
@@ -1441,6 +1413,34 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                           <div className="flex items-center gap-2">
                             <SiVisa className="h-6 w-auto text-[#1434CB]" />
                             <SiMastercard className="h-6 w-auto text-[#FF5F00]" />
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card
+                        className={`cursor-pointer transition-all hover-elevate ${
+                          paymentMethod === "yoco"
+                            ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                            : "border-border"
+                        }`}
+                        onClick={() => setPaymentMethod("yoco")}
+                        data-testid="button-payment-yoco"
+                      >
+                        <CardContent className="p-4 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-md overflow-hidden">
+                              <img src={yocoLogo} alt="Yoco" className="h-full w-full object-cover" />
+                            </div>
+                            <div className="text-left">
+                              <p className="font-semibold">Yoco</p>
+                              <p className="text-xs text-muted-foreground">Credit/Debit Card</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <SiVisa className="h-6 w-auto text-[#1434CB]" />
+                            <SiMastercard className="h-6 w-auto text-[#FF5F00]" />
+                            <img src={amexLogo} alt="American Express" className="h-6 w-auto rounded-sm" />
+                            <img src={googlePayLogo} alt="Google Pay" className="h-6 w-auto" />
                           </div>
                         </CardContent>
                       </Card>
