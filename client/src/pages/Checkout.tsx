@@ -828,28 +828,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       </div>
                     </div>
                   </div>
-                ) : (
-                  <div className="max-w-xl mx-auto">
-                    <Card className="border-dashed border-2 hover-elevate cursor-pointer" data-testid="card-sign-in-prompt">
-                      <Link href="/login">
-                        <CardContent className="p-4">
-                          <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                              <LogIn className="h-6 w-6 text-primary" />
-                            </div>
-                            <div className="flex-1">
-                              <p className="font-semibold">Sign in for faster checkout</p>
-                              <p className="text-sm text-muted-foreground">Your details will be auto-filled and you can track your orders</p>
-                            </div>
-                            <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                          </div>
-                        </CardContent>
-                      </Link>
-                    </Card>
-                    <Separator className="my-4" />
-                    <p className="text-center text-sm text-muted-foreground">Or continue as a guest below</p>
-                  </div>
-                )}
+                ) : null}
 
                 <Card className="max-w-xl mx-auto">
                   <CardContent className="p-6 space-y-4">
@@ -905,6 +884,12 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                     />
                   </CardContent>
                 </Card>
+
+                {!user && (
+                  <p className="text-center text-sm text-muted-foreground max-w-xl mx-auto">
+                    <Link href="/login" className="text-primary hover:underline">Sign in</Link> for faster checkout
+                  </p>
+                )}
 
                 <div className="flex justify-center gap-3 pt-4">
                   <Button variant="outline" size="lg" onClick={goToPreviousStep} className="gap-2" data-testid="button-back-step2">
