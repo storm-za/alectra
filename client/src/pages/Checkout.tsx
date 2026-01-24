@@ -1387,15 +1387,38 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                         </CardContent>
                       </Card>
 
-                      {/* Security badges */}
-                      <div className="flex items-center justify-center gap-4 pt-4 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Lock className="h-3.5 w-3.5" />
-                          <span>256-bit SSL</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Shield className="h-3.5 w-3.5" />
-                          <span>PCI Compliant</span>
+                      {/* Pay Button - Enterprise Style */}
+                      <div className="pt-4 space-y-3">
+                        <Button
+                          size="lg"
+                          onClick={handlePayment}
+                          disabled={createOrderMutation.isPending}
+                          className="w-full h-14 text-base font-semibold tracking-wide uppercase bg-gradient-to-r from-primary to-primary/90 hover:from-primary/95 hover:to-primary/85 shadow-lg hover:shadow-xl transition-all duration-200"
+                          data-testid="button-pay"
+                        >
+                          {createOrderMutation.isPending ? (
+                            <span className="flex items-center gap-2">
+                              <Loader2 className="h-5 w-5 animate-spin" />
+                              Processing Order...
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-2">
+                              <Lock className="h-4 w-4" />
+                              Complete Purchase · R&nbsp;{total.toFixed(2)}
+                            </span>
+                          )}
+                        </Button>
+                        
+                        {/* Security badges */}
+                        <div className="flex items-center justify-center gap-6 pt-2 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-1.5">
+                            <Lock className="h-3.5 w-3.5" />
+                            <span>256-bit SSL Encryption</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Shield className="h-3.5 w-3.5" />
+                            <span>PCI DSS Compliant</span>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -1506,27 +1529,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                   </Card>
                 </div>
 
-                <div className="flex flex-col items-center gap-3 pt-4 max-w-xl mx-auto">
-                  <Button
-                    size="lg"
-                    onClick={handlePayment}
-                    disabled={createOrderMutation.isPending}
-                    className="w-full h-14 text-lg font-bold shadow-xl gap-2"
-                    data-testid="button-pay"
-                  >
-                    {createOrderMutation.isPending ? (
-                      <>
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <Lock className="h-5 w-5" />
-                        Pay R&nbsp;{total.toFixed(2)}
-                      </>
-                    )}
-                  </Button>
-                  
+                <div className="flex justify-center pt-4">
                   <Button 
                     variant="outline" 
                     size="lg" 
@@ -1535,7 +1538,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                     data-testid="button-back-step4"
                   >
                     <ChevronLeft className="h-4 w-4" />
-                    Back
+                    Back to Address
                   </Button>
                 </div>
               </div>
