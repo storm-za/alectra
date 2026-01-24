@@ -974,6 +974,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                         )}
 
                         <div className="flex flex-col gap-4 max-w-xl mx-auto">
+                          {/* Location button hidden - may re-enable later
                           <Button
                             type="button"
                             size="lg"
@@ -987,17 +988,17 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                             <Navigation className="h-5 w-5" />
                             Use My Current Location
                           </Button>
+                          */}
                           
                           <Button
                             type="button"
-                            variant="outline"
                             size="lg"
                             onClick={() => setAddressEntryMode("manual")}
                             className="gap-3"
                             data-testid="button-enter-address"
                           >
                             <PenLine className="h-5 w-5" />
-                            Let Me Enter My Address
+                            Enter Your Address
                           </Button>
                         </div>
 
