@@ -885,7 +885,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                   </CardContent>
                 </Card>
 
-                {!user && (
+                {!user?.user && (
                   <p className="text-center text-sm text-muted-foreground max-w-xl mx-auto">
                     <Link href="/login" className="text-primary hover:underline">Sign in</Link> for faster checkout
                   </p>
