@@ -932,84 +932,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                 {/* Delivery Address Flow */}
                 {deliveryMethod === "delivery" && (
                   <>
-                    {!addressEntryMode ? (
-                      // Address entry mode selection
-                      <div className="space-y-6">
-                        <div className="text-center space-y-2">
-                          <h2 className="text-2xl font-bold">Choose Your Delivery Address</h2>
-                          <p className="text-muted-foreground">Your address allows for fast deliveries and relevant deals in your area</p>
-                        </div>
-
-                        {/* Saved addresses for logged in users */}
-                        {addresses && addresses.length > 0 && (
-                          <div className="max-w-xl mx-auto space-y-3">
-                            <Label className="text-sm font-medium">Your Saved Addresses</Label>
-                            {addresses.map((address) => (
-                              <Card
-                                key={address.id}
-                                className="cursor-pointer transition-all hover-elevate border-border"
-                                onClick={() => {
-                                  handleAddressSelect(address.id);
-                                  setCurrentStep(4);
-                                }}
-                                data-testid={`button-saved-address-${address.id}`}
-                              >
-                                <CardContent className="p-4 flex items-center gap-3">
-                                  <div className="h-10 w-10 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                    <MapPin className="h-5 w-5 text-primary" />
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="font-medium truncate">{address.addressLine}</p>
-                                    <p className="text-sm text-muted-foreground">{address.city}, {address.province}</p>
-                                  </div>
-                                  {address.isDefault && <Badge variant="secondary">Default</Badge>}
-                                </CardContent>
-                              </Card>
-                            ))}
-                            <div className="relative py-4">
-                              <Separator />
-                              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-4 text-sm text-muted-foreground">or add new</span>
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="flex flex-col gap-4 max-w-xl mx-auto">
-                          {/* Location button hidden - may re-enable later
-                          <Button
-                            type="button"
-                            size="lg"
-                            onClick={() => {
-                              setAddressEntryMode("location");
-                              handleShareLocation();
-                            }}
-                            className="gap-3"
-                            data-testid="button-use-location"
-                          >
-                            <Navigation className="h-5 w-5" />
-                            Use My Current Location
-                          </Button>
-                          */}
-                          
-                          <Button
-                            type="button"
-                            size="lg"
-                            onClick={() => setAddressEntryMode("manual")}
-                            className="gap-3"
-                            data-testid="button-enter-address"
-                          >
-                            <PenLine className="h-5 w-5" />
-                            Enter Your Address
-                          </Button>
-                        </div>
-
-                        <div className="flex justify-center pt-4">
-                          <Button variant="outline" size="lg" onClick={goToPreviousStep} className="gap-2" data-testid="button-back-step3">
-                            <ChevronLeft className="h-4 w-4" />
-                            Back
-                          </Button>
-                        </div>
-                      </div>
-                    ) : addressEntryMode === "location" ? (
+                    {addressEntryMode === "location" ? (
                       // Location-based address entry
                       <div className="space-y-6">
                         <div className="text-center space-y-2">
@@ -1166,12 +1089,45 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                         </div>
                       </div>
                     ) : (
-                      // Manual address entry
+                      // Manual address entry (shown directly)
                       <div className="space-y-6">
                         <div className="text-center space-y-2">
-                          <h2 className="text-2xl font-bold">Enter Your Address</h2>
-                          <p className="text-muted-foreground">Fill in your delivery details</p>
+                          <h2 className="text-2xl font-bold">Enter Your Delivery Address</h2>
+                          <p className="text-muted-foreground">Fill in your delivery details below</p>
                         </div>
+
+                        {/* Saved addresses for logged in users */}
+                        {addresses && addresses.length > 0 && (
+                          <div className="max-w-xl mx-auto space-y-3">
+                            <Label className="text-sm font-medium">Your Saved Addresses</Label>
+                            {addresses.map((address) => (
+                              <Card
+                                key={address.id}
+                                className="cursor-pointer transition-all hover-elevate border-border"
+                                onClick={() => {
+                                  handleAddressSelect(address.id);
+                                  setCurrentStep(4);
+                                }}
+                                data-testid={`button-saved-address-${address.id}`}
+                              >
+                                <CardContent className="p-4 flex items-center gap-3">
+                                  <div className="h-10 w-10 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    <MapPin className="h-5 w-5 text-primary" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-medium truncate">{address.addressLine}</p>
+                                    <p className="text-sm text-muted-foreground">{address.city}, {address.province}</p>
+                                  </div>
+                                  {address.isDefault && <Badge variant="secondary">Default</Badge>}
+                                </CardContent>
+                              </Card>
+                            ))}
+                            <div className="relative py-4">
+                              <Separator />
+                              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-4 text-sm text-muted-foreground">or enter new address</span>
+                            </div>
+                          </div>
+                        )}
 
                         <Card className="max-w-xl mx-auto">
                           <CardContent className="p-6 space-y-4">
@@ -1268,9 +1224,9 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                           <Button 
                             variant="outline" 
                             size="lg" 
-                            onClick={() => setAddressEntryMode(null)} 
+                            onClick={goToPreviousStep} 
                             className="gap-2"
-                            data-testid="button-back-manual"
+                            data-testid="button-back-step3"
                           >
                             <ChevronLeft className="h-4 w-4" />
                             Back
