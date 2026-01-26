@@ -91,6 +91,16 @@ Preferred communication style: Simple, everyday language.
 - **API Routes**: `GET /api/user/wishlist` (returns products), `GET /api/user/wishlist/ids` (returns product IDs for efficient button state), `POST/DELETE /api/user/wishlist/:productId`.
 - **Cache Management**: Query invalidation on add/remove updates both wishlist and wishlist IDs queries.
 
+### Frequently Bought Together (FBT) Admin System
+- **Database**: `frequently_bought_together` table stores product-to-related-product associations with sortOrder field for display ordering.
+- **Admin Management**: FBT tab in product edit dialog (AdminProducts.tsx) allows searching and selecting related products with drag-to-order functionality.
+- **API Endpoints**: 
+  - `GET /api/admin/products/:id/fbt` - Admin endpoint to fetch current FBT products for editing
+  - `POST /api/admin/products/:id/fbt` - Admin endpoint to save FBT product associations with ordering
+  - `GET /api/products/:id/fbt` - Public endpoint to fetch FBT products for product display
+- **Frontend Display**: FrequentlyBoughtTogether component prioritizes curated FBT products from admin settings, falling back to same-category products or featured products if none are curated.
+- **Data Integrity**: Unique constraint on (productId, relatedProductId) prevents duplicate associations.
+
 ### Image Optimization System
 - **Server-Side Optimization**: `/img/*` endpoint using Sharp library for on-demand image resizing and format conversion.
 - **Automatic Format Negotiation**: Serves WebP/AVIF based on browser Accept header (AVIF > WebP > JPEG fallback).
