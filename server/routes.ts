@@ -2261,6 +2261,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ============ FREQUENTLY BOUGHT TOGETHER ADMIN ENDPOINTS ============
+
+  // GET FBT products for a product
+  app.get("/api/admin/products/:id/fbt", requireAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const fbtProducts = await storage.getFBTProducts(id);
+      res.json(fbtProducts);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // SET FBT products for a product
+  app.post("/api/admin/products/:id/fbt", requireAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { relatedProductIds } = req.body;
+      
+      if (!Array.isArray(relatedProductIds)) {
+        return res.status(400).json({ message: "relatedProductIds must be an array" });
+      }
+      
+      await storage.setFBTProducts(id, relatedProductIds);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // PUBLIC endpoint - GET FBT products by product ID
+  app.get("/api/products/:id/fbt", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const fbtProducts = await storage.getFBTProducts(id);
+      res.json(fbtProducts);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // ============ DISCOUNT CODES ADMIN ENDPOINTS ============
 
   // GET ALL DISCOUNT CODES

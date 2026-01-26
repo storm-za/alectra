@@ -177,6 +177,17 @@ export const wishlistItems = pgTable("wishlist_items", {
 export type WishlistItem = typeof wishlistItems.$inferSelect;
 export type InsertWishlistItem = typeof wishlistItems.$inferInsert;
 
+export const frequentlyBoughtTogether = pgTable("frequently_bought_together", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  productId: varchar("product_id").notNull().references(() => products.id),
+  relatedProductId: varchar("related_product_id").notNull().references(() => products.id),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type FrequentlyBoughtTogether = typeof frequentlyBoughtTogether.$inferSelect;
+export type InsertFrequentlyBoughtTogether = typeof frequentlyBoughtTogether.$inferInsert;
+
 export const wishlistItemsRelations = relations(wishlistItems, ({ one }) => ({
   user: one(users, {
     fields: [wishlistItems.userId],

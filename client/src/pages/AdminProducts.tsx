@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Search, Image, Plus, Trash2, ArrowLeft, CheckCircle, Save, Upload, Lock, FileText, FolderMinus, Package, Edit3, PlusCircle } from "lucide-react";
+import { Loader2, Search, Image, Plus, Trash2, ArrowLeft, CheckCircle, Save, Upload, Lock, FileText, FolderMinus, Package, Edit3, PlusCircle, Link2, X } from "lucide-react";
 import { Link } from "wouter";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Product, Category } from "@shared/schema";
@@ -57,6 +57,9 @@ export default function AdminProducts() {
   const [newProductCategoryId, setNewProductCategoryId] = useState<string | null>(null);
   const [newProductImageUrl, setNewProductImageUrl] = useState("");
   const [newProductStock, setNewProductStock] = useState("10");
+  
+  const [fbtSearch, setFbtSearch] = useState("");
+  const [selectedFbtProducts, setSelectedFbtProducts] = useState<Product[]>([]);
 
   const { data: authStatus, isLoading: authLoading, refetch: refetchAuth } = useQuery<{ isAdmin: boolean }>({
     queryKey: ['/api/admin/check'],
@@ -216,6 +219,19 @@ export default function AdminProducts() {
     },
   });
 
+  const updateFbtMutation = useMutation({
+    mutationFn: async ({ productId, relatedProductIds }: { productId: string; relatedProductIds: string[] }) => {
+      return apiRequest('POST', `/api/admin/products/${productId}/fbt`, { relatedProductIds });
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/products', variables.productId, 'fbt'] });
+      setSuccessMessage("Frequently Bought Together updated successfully!");
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 2000);
+    },
+  });
+
   const resetCreateForm = () => {
     setNewProductName("");
     setNewProductPrice("");
@@ -226,7 +242,7 @@ export default function AdminProducts() {
     setNewProductStock("10");
   };
 
-  const openEditor = (product: Product) => {
+  const openEditor = async (product: Product) => {
     setEditingProduct(product);
     setImageUrl(product.imageUrl);
     setGalleryImages([...product.images]);
@@ -237,6 +253,20 @@ export default function AdminProducts() {
     setActiveTab("details");
     setStockLevel(product.stock);
     setProductName(product.name);
+    setFbtSearch("");
+    
+    // Fetch existing FBT products
+    try {
+      const res = await fetch(`/api/admin/products/${product.id}/fbt`);
+      if (res.ok) {
+        const fbtProducts = await res.json();
+        setSelectedFbtProducts(fbtProducts);
+      } else {
+        setSelectedFbtProducts([]);
+      }
+    } catch (error) {
+      setSelectedFbtProducts([]);
+    }
   };
 
   const addGalleryImage = () => {
@@ -489,7 +519,7 @@ export default function AdminProducts() {
             )}
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
+              <TabsList className="grid w-full grid-cols-6">
                 <TabsTrigger value="details" className="flex items-center gap-2" data-testid="tab-details">
                   <Edit3 className="h-4 w-4" />
                   Details
@@ -509,6 +539,10 @@ export default function AdminProducts() {
                 <TabsTrigger value="stock" className="flex items-center gap-2" data-testid="tab-stock">
                   <Package className="h-4 w-4" />
                   Stock
+                </TabsTrigger>
+                <TabsTrigger value="fbt" className="flex items-center gap-2" data-testid="tab-fbt">
+                  <Link2 className="h-4 w-4" />
+                  FBT
                 </TabsTrigger>
               </TabsList>
 
@@ -886,6 +920,151 @@ export default function AdminProducts() {
                       <Save className="mr-2 h-4 w-4" />
                     )}
                     Save Stock
+                  </Button>
+                </DialogFooter>
+              </TabsContent>
+
+              <TabsContent value="fbt" className="space-y-6 mt-4">
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Select products to show in the "Frequently Bought Together" section for this product.
+                  </p>
+
+                  {/* Search for products to add */}
+                  <div className="space-y-2">
+                    <Label>Search Products to Add</Label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        value={fbtSearch}
+                        onChange={(e) => setFbtSearch(e.target.value)}
+                        placeholder="Search by name, SKU, or slug..."
+                        className="pl-10"
+                        data-testid="input-fbt-search"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Search results */}
+                  {fbtSearch.trim() && (
+                    <div className="border rounded-lg max-h-48 overflow-y-auto">
+                      {allProducts
+                        ?.filter(p => {
+                          const searchLower = fbtSearch.toLowerCase();
+                          return (
+                            p.id !== editingProduct?.id &&
+                            !selectedFbtProducts.some(s => s.id === p.id) &&
+                            (p.name.toLowerCase().includes(searchLower) ||
+                              p.sku.toLowerCase().includes(searchLower) ||
+                              p.slug.toLowerCase().includes(searchLower))
+                          );
+                        })
+                        .slice(0, 10)
+                        .map((product) => (
+                          <div
+                            key={product.id}
+                            className="flex items-center gap-3 p-3 hover:bg-muted cursor-pointer border-b last:border-b-0"
+                            onClick={() => {
+                              setSelectedFbtProducts([...selectedFbtProducts, product]);
+                              setFbtSearch("");
+                            }}
+                            data-testid={`fbt-search-result-${product.id}`}
+                          >
+                            <img
+                              src={getImageUrl(product.imageUrl)}
+                              alt={product.name}
+                              className="w-10 h-10 object-contain rounded"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{product.name}</p>
+                              <p className="text-xs text-muted-foreground">{product.sku}</p>
+                            </div>
+                            <Plus className="h-4 w-4 text-primary" />
+                          </div>
+                        ))}
+                      {allProducts?.filter(p => {
+                        const searchLower = fbtSearch.toLowerCase();
+                        return (
+                          p.id !== editingProduct?.id &&
+                          !selectedFbtProducts.some(s => s.id === p.id) &&
+                          (p.name.toLowerCase().includes(searchLower) ||
+                            p.sku.toLowerCase().includes(searchLower) ||
+                            p.slug.toLowerCase().includes(searchLower))
+                        );
+                      }).length === 0 && (
+                        <p className="p-3 text-sm text-muted-foreground text-center">No products found</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Selected FBT products */}
+                  <div className="space-y-2">
+                    <Label>Selected Products ({selectedFbtProducts.length})</Label>
+                    {selectedFbtProducts.length === 0 ? (
+                      <p className="text-sm text-muted-foreground p-4 border rounded-lg text-center">
+                        No products selected. Search and add products above.
+                      </p>
+                    ) : (
+                      <div className="border rounded-lg divide-y">
+                        {selectedFbtProducts.map((product, index) => (
+                          <div
+                            key={product.id}
+                            className="flex items-center gap-3 p-3"
+                            data-testid={`fbt-selected-${product.id}`}
+                          >
+                            <span className="text-xs text-muted-foreground w-6">{index + 1}.</span>
+                            <img
+                              src={getImageUrl(product.imageUrl)}
+                              alt={product.name}
+                              className="w-10 h-10 object-contain rounded"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{product.name}</p>
+                              <p className="text-xs text-muted-foreground">R{product.price}</p>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                setSelectedFbtProducts(selectedFbtProducts.filter(p => p.id !== product.id));
+                              }}
+                              data-testid={`button-remove-fbt-${product.id}`}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setEditingProduct(null)}
+                    data-testid="button-cancel-fbt"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      if (editingProduct) {
+                        updateFbtMutation.mutate({
+                          productId: editingProduct.id,
+                          relatedProductIds: selectedFbtProducts.map(p => p.id),
+                        });
+                      }
+                    }}
+                    disabled={updateFbtMutation.isPending}
+                    data-testid="button-save-fbt"
+                  >
+                    {updateFbtMutation.isPending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="mr-2 h-4 w-4" />
+                    )}
+                    Save FBT
                   </Button>
                 </DialogFooter>
               </TabsContent>

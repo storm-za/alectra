@@ -1,4 +1,4 @@
-import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, blogPosts, sessionVisits, discountCodes, wishlistItems, FREE_SHIPPING_PRODUCT_IDS, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type BlogPost, type SessionVisit, type InsertSessionVisit, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type InsertBlogPost, type CreateOrderRequest, type DiscountCode, type InsertDiscountCode, type WishlistItem } from "@shared/schema";
+import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, blogPosts, sessionVisits, discountCodes, wishlistItems, frequentlyBoughtTogether, FREE_SHIPPING_PRODUCT_IDS, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type BlogPost, type SessionVisit, type InsertSessionVisit, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type InsertBlogPost, type CreateOrderRequest, type DiscountCode, type InsertDiscountCode, type WishlistItem } from "@shared/schema";
 import { db } from "./db";
 import { eq, sql, and, or, like, ilike, gte, lte, asc, desc, inArray } from "drizzle-orm";
 
@@ -86,6 +86,10 @@ export interface IStorage {
 
   // Account Management (POPIA Compliance)
   deleteUserAccount(userId: string): Promise<boolean>;
+
+  // Frequently Bought Together
+  getFBTProducts(productId: string): Promise<Product[]>;
+  setFBTProducts(productId: string, relatedProductIds: string[]): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1085,6 +1089,49 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Error deleting user account:', error);
       return false;
+    }
+  }
+
+  // Frequently Bought Together
+  async getFBTProducts(productId: string): Promise<Product[]> {
+    const fbtItems = await db
+      .select()
+      .from(frequentlyBoughtTogether)
+      .where(eq(frequentlyBoughtTogether.productId, productId))
+      .orderBy(asc(frequentlyBoughtTogether.sortOrder));
+    
+    if (fbtItems.length === 0) {
+      return [];
+    }
+    
+    const relatedProductIds = fbtItems.map(item => item.relatedProductId);
+    const relatedProducts = await db
+      .select()
+      .from(products)
+      .where(inArray(products.id, relatedProductIds));
+    
+    // Sort by the order in fbtItems
+    const productMap = new Map(relatedProducts.map(p => [p.id, p]));
+    return relatedProductIds
+      .map(id => productMap.get(id))
+      .filter((p): p is Product => p !== undefined);
+  }
+
+  async setFBTProducts(productId: string, relatedProductIds: string[]): Promise<void> {
+    // First delete all existing FBT relationships for this product
+    await db
+      .delete(frequentlyBoughtTogether)
+      .where(eq(frequentlyBoughtTogether.productId, productId));
+    
+    // Insert new FBT relationships with sort order
+    if (relatedProductIds.length > 0) {
+      const values = relatedProductIds.map((relatedId, index) => ({
+        productId: productId,
+        relatedProductId: relatedId,
+        sortOrder: index,
+      }));
+      
+      await db.insert(frequentlyBoughtTogether).values(values);
     }
   }
 }

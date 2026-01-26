@@ -25,7 +25,17 @@ interface ProductsResponse {
 }
 
 export function FrequentlyBoughtTogether({ currentProductId, categorySlug }: FrequentlyBoughtTogetherProps) {
-  // Fetch related products from same category
+  // First: Try to fetch curated FBT products from admin settings
+  const { data: curatedProducts, isLoading: curatedLoading } = useQuery<Product[]>({
+    queryKey: ['/api/products', currentProductId, 'fbt'],
+    queryFn: async () => {
+      const response = await fetch(`/api/products/${currentProductId}/fbt`);
+      if (!response.ok) throw new Error('Failed to fetch FBT products');
+      return response.json();
+    },
+  });
+  
+  // Fallback: Fetch related products from same category
   const { data: categoryData, isLoading: categoryLoading } = useQuery<ProductsResponse>({
     queryKey: ['/api/products', 'related', categorySlug],
     queryFn: async () => {
@@ -33,7 +43,7 @@ export function FrequentlyBoughtTogether({ currentProductId, categorySlug }: Fre
       if (!response.ok) throw new Error('Failed to fetch related products');
       return response.json();
     },
-    enabled: !!categorySlug,
+    enabled: !!categorySlug && (!curatedProducts || curatedProducts.length === 0),
   });
   
   // Fallback: fetch featured products if no category
@@ -44,16 +54,28 @@ export function FrequentlyBoughtTogether({ currentProductId, categorySlug }: Fre
       if (!response.ok) throw new Error('Failed to fetch featured products');
       return response.json();
     },
-    enabled: !categorySlug,
+    enabled: !categorySlug && (!curatedProducts || curatedProducts.length === 0),
   });
   
-  const isLoading = categorySlug ? categoryLoading : featuredLoading;
-  const relatedProducts = categorySlug ? (categoryData?.products || []) : (featuredData?.products || []);
-
-  // Filter out current product and limit to 6 items
-  const filteredProducts = relatedProducts
-    .filter(p => p.id !== currentProductId)
-    .slice(0, 6);
+  // Determine loading state and products to display
+  const isLoading = curatedLoading || 
+    ((!curatedProducts || curatedProducts.length === 0) && (categorySlug ? categoryLoading : featuredLoading));
+  
+  // Use curated products if available, otherwise fall back to category/featured
+  let filteredProducts: Product[] = [];
+  
+  if (curatedProducts && curatedProducts.length > 0) {
+    // Use curated products (already filtered by admin, no need to filter current product)
+    filteredProducts = curatedProducts.slice(0, 6);
+  } else if (categorySlug && categoryData?.products) {
+    filteredProducts = categoryData.products
+      .filter(p => p.id !== currentProductId)
+      .slice(0, 6);
+  } else if (featuredData?.products) {
+    filteredProducts = featuredData.products
+      .filter(p => p.id !== currentProductId)
+      .slice(0, 6);
+  }
 
   // Don't render if no related products found at all
   if (!isLoading && filteredProducts.length === 0) {
