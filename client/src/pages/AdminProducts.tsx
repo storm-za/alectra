@@ -48,6 +48,7 @@ export default function AdminProducts() {
   const [activeTab, setActiveTab] = useState("details");
   const [stockLevel, setStockLevel] = useState<number>(0);
   const [productName, setProductName] = useState("");
+  const [productPrice, setProductPrice] = useState("");
   
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [newProductName, setNewProductName] = useState("");
@@ -195,6 +196,21 @@ export default function AdminProducts() {
     },
   });
 
+  const updatePriceMutation = useMutation({
+    mutationFn: async ({ slug, price }: { slug: string; price: string }) => {
+      return apiRequest('PATCH', `/api/admin/products/${slug}/price`, { price });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/products'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+      setSuccessMessage("Product price updated successfully!");
+      setTimeout(() => {
+        setEditingProduct(null);
+        setSuccessMessage("");
+      }, 1500);
+    },
+  });
+
   const createProductMutation = useMutation({
     mutationFn: async (data: {
       name: string;
@@ -253,6 +269,7 @@ export default function AdminProducts() {
     setActiveTab("details");
     setStockLevel(product.stock);
     setProductName(product.name);
+    setProductPrice(product.price);
     setFbtSearch("");
     
     // Fetch existing FBT products
@@ -326,6 +343,16 @@ export default function AdminProducts() {
     updateNameMutation.mutate({
       slug: editingProduct.slug,
       name: productName,
+    });
+  };
+
+  const handleSavePrice = () => {
+    if (!editingProduct) return;
+    const price = parseFloat(productPrice);
+    if (isNaN(price) || price < 0) return;
+    updatePriceMutation.mutate({
+      slug: editingProduct.slug,
+      price: productPrice,
     });
   };
 
@@ -550,13 +577,60 @@ export default function AdminProducts() {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="productName">Product Name</Label>
-                    <Input
-                      id="productName"
-                      value={productName}
-                      onChange={(e) => setProductName(e.target.value)}
-                      placeholder="Enter product name..."
-                      data-testid="input-product-name"
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        id="productName"
+                        value={productName}
+                        onChange={(e) => setProductName(e.target.value)}
+                        placeholder="Enter product name..."
+                        className="flex-1"
+                        data-testid="input-product-name"
+                      />
+                      <Button
+                        onClick={handleSaveName}
+                        disabled={updateNameMutation.isPending || !productName.trim() || productName === editingProduct?.name}
+                        size="sm"
+                        data-testid="button-save-name"
+                      >
+                        {updateNameMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Save className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="productPrice">Price (R)</Label>
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R</span>
+                        <Input
+                          id="productPrice"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={productPrice}
+                          onChange={(e) => setProductPrice(e.target.value)}
+                          placeholder="0.00"
+                          className="pl-7"
+                          data-testid="input-product-price"
+                        />
+                      </div>
+                      <Button
+                        onClick={handleSavePrice}
+                        disabled={updatePriceMutation.isPending || !productPrice || parseFloat(productPrice) < 0 || productPrice === editingProduct?.price}
+                        size="sm"
+                        data-testid="button-save-price"
+                      >
+                        {updatePriceMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Save className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
 
                   <div className="p-4 bg-muted rounded-lg space-y-2">
@@ -566,8 +640,6 @@ export default function AdminProducts() {
                       <span>{editingProduct?.sku}</span>
                       <span className="text-muted-foreground">Slug:</span>
                       <span>{editingProduct?.slug}</span>
-                      <span className="text-muted-foreground">Price:</span>
-                      <span>R{editingProduct?.price}</span>
                       <span className="text-muted-foreground">Brand:</span>
                       <span>{editingProduct?.brand}</span>
                     </div>
@@ -578,21 +650,9 @@ export default function AdminProducts() {
                   <Button
                     variant="outline"
                     onClick={() => setEditingProduct(null)}
-                    data-testid="button-cancel-name"
+                    data-testid="button-cancel-details"
                   >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleSaveName}
-                    disabled={updateNameMutation.isPending || !productName.trim()}
-                    data-testid="button-save-name"
-                  >
-                    {updateNameMutation.isPending ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <Save className="mr-2 h-4 w-4" />
-                    )}
-                    Save Name
+                    Close
                   </Button>
                 </DialogFooter>
               </TabsContent>
