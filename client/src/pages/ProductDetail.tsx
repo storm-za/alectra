@@ -60,6 +60,67 @@ interface ProductDetailProps {
 // Form schema for review submission
 const reviewFormSchema = insertProductReviewSchema.omit({ productId: true });
 
+// Expandable description component with 7-line truncation
+function ExpandableDescription({ 
+  description, 
+  isExpanded, 
+  onToggle 
+}: { 
+  description: string; 
+  isExpanded: boolean; 
+  onToggle: () => void;
+}) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [needsTruncation, setNeedsTruncation] = useState(false);
+  const lineHeight = 24; // Approximate line height in pixels
+  const maxLines = 7;
+  const maxHeight = lineHeight * maxLines;
+  
+  useEffect(() => {
+    if (contentRef.current) {
+      const scrollHeight = contentRef.current.scrollHeight;
+      setNeedsTruncation(scrollHeight > maxHeight + 10);
+    }
+  }, [description]);
+  
+  const isHtml = description.includes('<') && description.includes('>');
+  const baseClasses = "text-sm text-muted-foreground leading-relaxed";
+  const htmlClasses = "[&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1 [&_li]:text-muted-foreground [&_p]:mb-3 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-foreground [&_h3]:mt-4 [&_h3]:mb-2 [&_h4]:text-base [&_h4]:font-semibold [&_h4]:text-foreground [&_h4]:mt-4 [&_h4]:mb-2 [&_strong]:text-foreground [&_strong]:font-medium";
+  
+  return (
+    <div className="prose prose-sm dark:prose-invert max-w-none">
+      <div className="relative">
+        <div
+          ref={contentRef}
+          className={`${baseClasses} ${isHtml ? htmlClasses : 'whitespace-pre-wrap'} overflow-hidden transition-all duration-300`}
+          style={{ 
+            maxHeight: !isExpanded && needsTruncation ? `${maxHeight}px` : 'none'
+          }}
+          dangerouslySetInnerHTML={isHtml ? { __html: description } : undefined}
+        >
+          {!isHtml && description.replace(/\r\n/g, '\n')}
+        </div>
+        
+        {needsTruncation && !isExpanded && (
+          <div 
+            className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-background to-transparent pointer-events-none"
+          />
+        )}
+      </div>
+      
+      {needsTruncation && (
+        <button
+          onClick={onToggle}
+          className="text-primary underline text-sm mt-2 hover:text-primary/80"
+          data-testid={isExpanded ? "button-read-less" : "button-read-more"}
+        >
+          {isExpanded ? 'show less' : 'read more...'}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const [, params] = useRoute("/products/:slug");
   const [quantity, setQuantity] = useState(1);
@@ -796,77 +857,11 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="description" className="mt-4">
-                <div className="prose prose-sm dark:prose-invert max-w-none">
-                  {/* Check if description contains HTML tags */}
-                  {product.description.includes('<') && product.description.includes('>') ? (
-                    (() => {
-                      const isLongHtml = product.description.length > 400;
-                      return (
-                        <div className="relative">
-                          <div 
-                            className={`text-sm text-muted-foreground [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1 [&_li]:text-muted-foreground [&_p]:mb-3 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-foreground [&_h3]:mt-4 [&_h3]:mb-2 [&_h4]:text-base [&_h4]:font-semibold [&_h4]:text-foreground [&_h4]:mt-4 [&_h4]:mb-2 [&_strong]:text-foreground [&_strong]:font-medium ${!isDescriptionExpanded && isLongHtml ? 'line-clamp-[7]' : ''}`}
-                            dangerouslySetInnerHTML={{ __html: product.description }}
-                          />
-                          {isLongHtml && !isDescriptionExpanded && (
-                            <button
-                              onClick={() => setIsDescriptionExpanded(true)}
-                              className="text-primary underline text-sm mt-1 hover:text-primary/80"
-                              data-testid="button-read-more"
-                            >
-                              read more...
-                            </button>
-                          )}
-                          {isLongHtml && isDescriptionExpanded && (
-                            <button
-                              onClick={() => setIsDescriptionExpanded(false)}
-                              className="text-primary underline text-sm mt-1 hover:text-primary/80"
-                              data-testid="button-read-less"
-                            >
-                              show less
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })()
-                  ) : (
-                    (() => {
-                      const lines = product.description.replace(/\r\n/g, '\n').split('\n');
-                      const isLong = lines.length > 7;
-                      const truncatedText = isLong && !isDescriptionExpanded 
-                        ? lines.slice(0, 7).join('\n')
-                        : product.description.replace(/\r\n/g, '\n');
-                      
-                      return (
-                        <div>
-                          <div className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
-                            {truncatedText}
-                            {isLong && !isDescriptionExpanded && (
-                              <>
-                                {' '}
-                                <button
-                                  onClick={() => setIsDescriptionExpanded(true)}
-                                  className="text-primary underline hover:text-primary/80 inline"
-                                  data-testid="button-read-more"
-                                >
-                                  read more...
-                                </button>
-                              </>
-                            )}
-                          </div>
-                          {isLong && isDescriptionExpanded && (
-                            <button
-                              onClick={() => setIsDescriptionExpanded(false)}
-                              className="text-primary underline text-sm mt-1 hover:text-primary/80"
-                              data-testid="button-read-less"
-                            >
-                              show less
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })()
-                  )}
-                </div>
+                <ExpandableDescription 
+                  description={product.description}
+                  isExpanded={isDescriptionExpanded}
+                  onToggle={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                />
               </TabsContent>
               <TabsContent value="reviews" className="mt-4">
                 {reviews.length === 0 ? (
