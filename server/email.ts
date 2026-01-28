@@ -1154,14 +1154,14 @@ export class EmailService {
             <td style="padding: 48px 20px;">
               <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
                 
-                <!-- Header Banner -->
+                <!-- Header with Logo -->
                 <tr>
-                  <td style="background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%); padding: 32px 40px; text-align: center;">
-                    <img src="https://alectra.co.za/attached_assets/alectra-logo_1763806823535.png" alt="Alectra Solutions" width="48" height="48" style="width: 48px; height: 48px; object-fit: contain; display: inline-block; margin-bottom: 12px;" />
-                    <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 600; letter-spacing: -0.025em;">
+                  <td style="background-color: #ffffff; padding: 32px 40px; text-align: center; border-bottom: 1px solid #e2e8f0;">
+                    <img src="https://alectra.co.za/attached_assets/alectra-logo_1763806823535.png" alt="Alectra Solutions" width="48" height="48" style="width: 48px; height: 48px; object-fit: contain; display: inline-block; margin-bottom: 16px;" />
+                    <h1 style="margin: 0; color: #111827; font-size: 22px; font-weight: 600; letter-spacing: -0.025em;">
                       Your Feedback Matters
                     </h1>
-                    <p style="margin: 8px 0 0 0; color: rgba(255, 255, 255, 0.85); font-size: 14px;">
+                    <p style="margin: 8px 0 0 0; color: #6b7280; font-size: 14px;">
                       Order #${data.orderReference}
                     </p>
                   </td>
@@ -1194,7 +1194,7 @@ export class EmailService {
                     <table role="presentation" style="width: 100%; margin-bottom: 32px;">
                       <tr>
                         <td style="text-align: center;">
-                          <a href="${googleReviewUrl}" style="display: inline-block; background-color: #1e3a5f; color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 6px; font-weight: 600; font-size: 15px; letter-spacing: 0.025em;">
+                          <a href="${googleReviewUrl}" style="display: inline-block; background-color: #f59e0b; color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 6px; font-weight: 600; font-size: 15px; letter-spacing: 0.025em;">
                             Write a Review
                           </a>
                         </td>
@@ -1214,7 +1214,7 @@ export class EmailService {
                     
                     <p style="margin: 0; color: #1e293b; font-size: 15px; line-height: 1.7;">
                       Kind regards,<br>
-                      <strong style="color: #1e3a5f;">The Alectra Solutions Team</strong>
+                      <strong>The Alectra Solutions Team</strong>
                     </p>
                   </td>
                 </tr>
@@ -1225,7 +1225,7 @@ export class EmailService {
                     <table role="presentation" style="width: 100%;">
                       <tr>
                         <td style="text-align: center;">
-                          <p style="margin: 0 0 8px 0; color: #1e3a5f; font-size: 14px; font-weight: 600;">
+                          <p style="margin: 0 0 8px 0; color: #111827; font-size: 14px; font-weight: 600;">
                             Alectra Solutions (PTY) LTD
                           </p>
                           <p style="margin: 0; color: #64748b; font-size: 13px; line-height: 1.6;">
