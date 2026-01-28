@@ -67,6 +67,17 @@ export interface PickupReadyEmailData {
   }>;
 }
 
+export interface ReviewRequestEmailData {
+  customerName: string;
+  customerEmail: string;
+  orderReference: string;
+  items: Array<{
+    productName: string;
+    quantity: number;
+    imageUrl?: string;
+  }>;
+}
+
 // Base URL for production - used for absolute image URLs in emails
 // Use the custom domain if available, otherwise fall back to Replit app URL
 const PRODUCTION_BASE_URL = "https://alectra.co.za";
@@ -219,6 +230,23 @@ export class EmailService {
       console.log(`Pickup ready notification email sent to ${data.customerEmail}`);
     } catch (error) {
       console.error("Failed to send pickup ready notification email:", error);
+      throw error;
+    }
+  }
+
+  async sendReviewRequest(data: ReviewRequestEmailData): Promise<void> {
+    const emailHtml = this.generateReviewRequestHtml(data);
+
+    try {
+      await this.transporter.sendMail({
+        from: `"Alectra Solutions" <${process.env.GMAIL_USER}>`,
+        to: data.customerEmail,
+        subject: `How was your order? We'd love your feedback! ⭐`,
+        html: emailHtml,
+      });
+      console.log(`Review request email sent to ${data.customerEmail}`);
+    } catch (error) {
+      console.error("Failed to send review request email:", error);
       throw error;
     }
   }
@@ -1073,6 +1101,130 @@ export class EmailService {
                   <td style="background-color: #1f2937; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
                     <p style="margin: 0; color: #9ca3af; font-size: 12px;">
                       Alectra Solutions Order System | Order placed: ${new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+  }
+
+  private generateReviewRequestHtml(data: ReviewRequestEmailData): string {
+    const firstName = data.customerName.split(' ')[0];
+    const googleReviewUrl = 'https://g.page/r/CSHI869sDbcaEAE/review';
+    
+    const itemsHtml = data.items.map(item => {
+      const imageUrl = getAbsoluteImageUrl(item.imageUrl);
+      return `
+        <tr>
+          <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+            <table role="presentation" style="width: 100%;">
+              <tr>
+                ${imageUrl ? `
+                <td style="width: 60px; vertical-align: top;">
+                  <img src="${imageUrl}" alt="${item.productName}" width="50" height="50" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;" />
+                </td>
+                ` : ''}
+                <td style="padding-left: ${imageUrl ? '12px' : '0'}; vertical-align: top;">
+                  <p style="margin: 0; font-weight: 500; color: #111827;">${item.productName}</p>
+                  <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 14px;">Qty: ${item.quantity}</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>We'd Love Your Feedback</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 40px 20px;">
+              <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                <!-- Header with logo -->
+                <tr>
+                  <td style="padding: 30px 30px 20px 30px;">
+                    <table role="presentation" style="width: 100%;">
+                      <tr>
+                        <td style="vertical-align: middle;">
+                          <img src="https://alectra.co.za/attached_assets/alectra-logo_1763806823535.png" alt="Alectra Solutions" width="40" height="40" style="width: 40px; height: 40px; object-fit: contain; display: block;" />
+                        </td>
+                        <td style="vertical-align: middle; padding-left: 12px;">
+                          <span style="font-size: 16px; font-weight: 600; color: #111827;">Alectra Solutions</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Main content -->
+                <tr>
+                  <td style="padding: 0 30px 30px 30px;">
+                    <h1 style="margin: 0 0 20px 0; color: #111827; font-size: 24px; font-weight: normal;">
+                      Hi ${firstName},
+                    </h1>
+                    
+                    <p style="margin: 0 0 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      Thank you for your recent order <strong>#${data.orderReference}</strong>! We hope you're enjoying your purchase.
+                    </p>
+                    
+                    <p style="margin: 0 0 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      Your feedback means the world to us. Would you take a moment to share your experience? It helps other customers make informed decisions and helps us continue to improve.
+                    </p>
+
+                    <!-- Products ordered -->
+                    <div style="background-color: #f9fafb; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+                      <h3 style="margin: 0 0 12px 0; color: #111827; font-size: 16px;">Products You Ordered:</h3>
+                      <table role="presentation" style="width: 100%;">
+                        ${itemsHtml}
+                      </table>
+                    </div>
+
+                    <!-- CTA Button -->
+                    <table role="presentation" style="width: 100%; margin-bottom: 24px;">
+                      <tr>
+                        <td style="text-align: center;">
+                          <a href="${googleReviewUrl}" style="display: inline-block; background-color: #f59e0b; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                            ⭐ Leave a Review
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <p style="margin: 0 0 20px 0; color: #6b7280; font-size: 14px; text-align: center;">
+                      It only takes a minute and means so much to our small business!
+                    </p>
+                    
+                    <p style="margin: 0 0 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      If you have any questions or need assistance with your order, feel free to reply to this email. We're always here to help!
+                    </p>
+                    
+                    <p style="margin: 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      Thank you for choosing Alectra Solutions!<br><br>
+                      Warm regards,<br>
+                      <strong>The Alectra Team</strong>
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td style="background-color: #f9fafb; padding: 20px 30px; border-radius: 0 0 8px 8px;">
+                    <p style="margin: 0; color: #9ca3af; font-size: 12px; text-align: center;">
+                      Alectra Solutions (PTY) LTD | Security & Automation Specialists<br>
+                      📞 012 566 3123 | 📧 solutionsalectra@gmail.com
                     </p>
                   </td>
                 </tr>

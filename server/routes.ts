@@ -552,6 +552,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin: Send review request email
+  app.post("/api/admin/orders/:orderId/review-request", requireAdminAuth, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      
+      // Get the order
+      const [order] = await db.select().from(orders).where(eq(orders.id, orderId));
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Get order items with product images
+      const items = await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
+      
+      // Get product images for each item
+      const itemsWithImages = await Promise.all(items.map(async (item) => {
+        if (item.productId) {
+          const [product] = await db.select({ imageUrl: products.imageUrl }).from(products).where(eq(products.id, item.productId));
+          return {
+            productName: item.productName || 'Product',
+            quantity: item.quantity,
+            imageUrl: product?.imageUrl || undefined
+          };
+        }
+        return {
+          productName: item.productName || 'Product',
+          quantity: item.quantity,
+          imageUrl: undefined
+        };
+      }));
+      
+      // Send review request email
+      const emailService = new EmailService();
+      await emailService.sendReviewRequest({
+        customerName: order.customerName,
+        customerEmail: order.customerEmail,
+        orderReference: order.paymentReference || order.id.slice(0, 8).toUpperCase(),
+        items: itemsWithImages
+      });
+      
+      res.json({ message: "Review request email sent successfully" });
+    } catch (error: any) {
+      console.error("Failed to send review request email:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // User Addresses (Protected)
   app.get("/api/user/addresses", requireAuth, async (req, res) => {
     try {

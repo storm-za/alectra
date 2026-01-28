@@ -257,6 +257,30 @@ export default function Admin() {
     }
   });
 
+  const sendReviewRequestMutation = useMutation({
+    mutationFn: async (orderId: string) => {
+      const response = await apiRequest('POST', `/api/admin/orders/${orderId}/review-request`, {});
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to send review request email');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Review Request Sent",
+        description: "Email asking for a review has been sent to the customer",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to Send",
+        description: error.message || "Failed to send review request email",
+        variant: "destructive",
+      });
+    }
+  });
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     loginMutation.mutate(password);
@@ -1001,6 +1025,20 @@ export default function Admin() {
                                   WhatsApp
                                 </Button>
                               </a>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => sendReviewRequestMutation.mutate(order.id)}
+                                disabled={sendReviewRequestMutation.isPending}
+                                data-testid={`button-review-request-${order.id}`}
+                              >
+                                {sendReviewRequestMutation.isPending ? (
+                                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                ) : (
+                                  <Star className="h-4 w-4 mr-2" />
+                                )}
+                                Request Review
+                              </Button>
                             </div>
                           </div>
                         )}
