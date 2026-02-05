@@ -45,6 +45,17 @@ export const products = pgTable("products", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const productVariants = pgTable("product_variants", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  productId: varchar("product_id").notNull().references(() => products.id),
+  name: text("name").notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  sku: text("sku"),
+  stock: integer("stock").notNull().default(0),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const orders = pgTable("orders", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id),
@@ -289,6 +300,11 @@ export const insertProductSchema = createInsertSchema(products).omit({
   createdAt: true,
 });
 
+export const insertProductVariantSchema = createInsertSchema(productVariants).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const insertOrderSchema = createInsertSchema(orders).omit({
   id: true,
   createdAt: true,
@@ -373,6 +389,9 @@ export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 
+export type ProductVariant = typeof productVariants.$inferSelect;
+export type InsertProductVariant = z.infer<typeof insertProductVariantSchema>;
+
 export type Order = typeof orders.$inferSelect;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 
@@ -402,12 +421,12 @@ export type TorsionSpringVariant =
   | '80kg-yellow-left' | '80kg-yellow-right'
   | '90kg-orange-left' | '90kg-orange-right'
   | '100kg-green-left' | '100kg-green-right';
-export type ProductVariant = LpGasVariant | GarageDoorSize | TorsionSpringVariant;
+export type CartVariantType = LpGasVariant | GarageDoorSize | TorsionSpringVariant;
 
 export type CartItem = {
   product: Product;
   quantity: number;
-  variant?: ProductVariant;
+  variant?: CartVariantType;
   variantPrice?: string;
 };
 
