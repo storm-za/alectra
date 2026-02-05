@@ -151,6 +151,23 @@ export const sessionVisits = pgTable("session_visits", {
 export type SessionVisit = typeof sessionVisits.$inferSelect;
 export type InsertSessionVisit = typeof sessionVisits.$inferInsert;
 
+export const abandonedCarts = pgTable("abandoned_carts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull(),
+  customerName: text("customer_name"),
+  customerPhone: text("customer_phone"),
+  cartItems: text("cart_items").notNull(), // JSON string of cart items
+  subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
+  reminderSent: boolean("reminder_sent").notNull().default(false),
+  reminderSentAt: timestamp("reminder_sent_at"),
+  converted: boolean("converted").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export type AbandonedCart = typeof abandonedCarts.$inferSelect;
+export type InsertAbandonedCart = typeof abandonedCarts.$inferInsert;
+
 export const discountTypeEnum = pgEnum("discount_type", ["free_shipping", "fixed_amount", "percentage"]);
 
 export const discountCodes = pgTable("discount_codes", {
