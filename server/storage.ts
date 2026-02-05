@@ -1,4 +1,4 @@
-import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, blogPosts, sessionVisits, discountCodes, wishlistItems, frequentlyBoughtTogether, abandonedCarts, FREE_SHIPPING_PRODUCT_IDS, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type BlogPost, type SessionVisit, type InsertSessionVisit, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type InsertBlogPost, type CreateOrderRequest, type DiscountCode, type InsertDiscountCode, type WishlistItem, type AbandonedCart } from "@shared/schema";
+import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, blogPosts, sessionVisits, discountCodes, wishlistItems, frequentlyBoughtTogether, abandonedCarts, productVariants, FREE_SHIPPING_PRODUCT_IDS, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type BlogPost, type SessionVisit, type InsertSessionVisit, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type InsertBlogPost, type CreateOrderRequest, type DiscountCode, type InsertDiscountCode, type WishlistItem, type AbandonedCart, type ProductVariant, type InsertProductVariant } from "@shared/schema";
 import { db } from "./db";
 import { eq, sql, and, or, like, ilike, gte, lte, asc, desc, inArray } from "drizzle-orm";
 
@@ -97,6 +97,13 @@ export interface IStorage {
   getAbandonedCartById(id: string): Promise<any | undefined>;
   markAbandonedCartReminderSent(id: string): Promise<void>;
   markAbandonedCartConverted(email: string): Promise<void>;
+
+  // Product Variants
+  getProductVariants(productId: string): Promise<ProductVariant[]>;
+  getProductVariant(id: string): Promise<ProductVariant | undefined>;
+  createProductVariant(variant: InsertProductVariant): Promise<ProductVariant>;
+  updateProductVariant(id: string, variant: Partial<InsertProductVariant>): Promise<ProductVariant | undefined>;
+  deleteProductVariant(id: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1234,6 +1241,43 @@ export class DatabaseStorage implements IStorage {
         updatedAt: new Date(),
       })
       .where(eq(abandonedCarts.email, email));
+  }
+
+  // Product Variants
+  async getProductVariants(productId: string): Promise<ProductVariant[]> {
+    return await db
+      .select()
+      .from(productVariants)
+      .where(eq(productVariants.productId, productId))
+      .orderBy(asc(productVariants.sortOrder));
+  }
+
+  async getProductVariant(id: string): Promise<ProductVariant | undefined> {
+    const [variant] = await db
+      .select()
+      .from(productVariants)
+      .where(eq(productVariants.id, id))
+      .limit(1);
+    return variant || undefined;
+  }
+
+  async createProductVariant(variant: InsertProductVariant): Promise<ProductVariant> {
+    const [created] = await db.insert(productVariants).values(variant).returning();
+    return created;
+  }
+
+  async updateProductVariant(id: string, variant: Partial<InsertProductVariant>): Promise<ProductVariant | undefined> {
+    const [updated] = await db
+      .update(productVariants)
+      .set(variant)
+      .where(eq(productVariants.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async deleteProductVariant(id: string): Promise<boolean> {
+    const result = await db.delete(productVariants).where(eq(productVariants.id, id));
+    return true;
   }
 }
 
