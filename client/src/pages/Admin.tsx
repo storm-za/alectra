@@ -1108,7 +1108,6 @@ export default function Admin() {
                                   size="sm" 
                                   onClick={() => sendAbandonedCartReminderMutation.mutate(order.id)}
                                   disabled={sendAbandonedCartReminderMutation.isPending}
-                                  className="bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-800"
                                   data-testid={`button-send-reminder-${order.id}`}
                                 >
                                   {sendAbandonedCartReminderMutation.isPending ? (
