@@ -2236,6 +2236,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // UPDATE PRODUCT STORE CODE
+  app.patch("/api/admin/products/:slug/store-code", requireAdminAuth, async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const { storeCode } = req.body;
+
+      const product = await storage.updateProductStoreCode(slug, storeCode?.trim() || null);
+
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.json({ success: true, product });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // CREATE NEW PRODUCT
   app.post("/api/admin/products", requireAdminAuth, async (req, res) => {
     try {

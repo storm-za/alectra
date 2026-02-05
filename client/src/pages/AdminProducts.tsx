@@ -49,6 +49,7 @@ export default function AdminProducts() {
   const [stockLevel, setStockLevel] = useState<number>(0);
   const [productName, setProductName] = useState("");
   const [productPrice, setProductPrice] = useState("");
+  const [storeCode, setStoreCode] = useState("");
   
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [newProductName, setNewProductName] = useState("");
@@ -211,6 +212,20 @@ export default function AdminProducts() {
     },
   });
 
+  const updateStoreCodeMutation = useMutation({
+    mutationFn: async ({ slug, storeCode }: { slug: string; storeCode: string }) => {
+      return apiRequest('PATCH', `/api/admin/products/${slug}/store-code`, { storeCode });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/products'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+      setSuccessMessage("Store code updated successfully!");
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 1500);
+    },
+  });
+
   const createProductMutation = useMutation({
     mutationFn: async (data: {
       name: string;
@@ -270,6 +285,7 @@ export default function AdminProducts() {
     setStockLevel(product.stock);
     setProductName(product.name);
     setProductPrice(product.price);
+    setStoreCode(product.storeCode || "");
     setFbtSearch("");
     
     // Fetch existing FBT products
@@ -353,6 +369,14 @@ export default function AdminProducts() {
     updatePriceMutation.mutate({
       slug: editingProduct.slug,
       price: productPrice,
+    });
+  };
+
+  const handleSaveStoreCode = () => {
+    if (!editingProduct) return;
+    updateStoreCodeMutation.mutate({
+      slug: editingProduct.slug,
+      storeCode: storeCode.trim(),
     });
   };
 
@@ -631,6 +655,33 @@ export default function AdminProducts() {
                         )}
                       </Button>
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="storeCode">Store Code (Internal Use)</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="storeCode"
+                        value={storeCode}
+                        onChange={(e) => setStoreCode(e.target.value)}
+                        placeholder="e.g. GA42, SM-001"
+                        className="flex-1"
+                        data-testid="input-store-code"
+                      />
+                      <Button
+                        onClick={handleSaveStoreCode}
+                        disabled={updateStoreCodeMutation.isPending || storeCode === (editingProduct?.storeCode || "")}
+                        size="sm"
+                        data-testid="button-save-store-code"
+                      >
+                        {updateStoreCodeMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Save className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Physical store product code for stock control</p>
                   </div>
 
                   <div className="p-4 bg-muted rounded-lg space-y-2">
