@@ -1,4 +1,4 @@
-import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, blogPosts, sessionVisits, discountCodes, wishlistItems, frequentlyBoughtTogether, FREE_SHIPPING_PRODUCT_IDS, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type BlogPost, type SessionVisit, type InsertSessionVisit, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type InsertBlogPost, type CreateOrderRequest, type DiscountCode, type InsertDiscountCode, type WishlistItem } from "@shared/schema";
+import { products, categories, orders, orderItems, users, userAddresses, productReviews, tradeApplications, blogPosts, sessionVisits, discountCodes, wishlistItems, frequentlyBoughtTogether, abandonedCarts, FREE_SHIPPING_PRODUCT_IDS, type Product, type Category, type Order, type OrderItem, type User, type UserAddress, type ProductReview, type TradeApplication, type BlogPost, type SessionVisit, type InsertSessionVisit, type InsertProduct, type InsertCategory, type InsertUser, type InsertUserAddress, type InsertProductReview, type InsertTradeApplication, type InsertBlogPost, type CreateOrderRequest, type DiscountCode, type InsertDiscountCode, type WishlistItem, type AbandonedCart } from "@shared/schema";
 import { db } from "./db";
 import { eq, sql, and, or, like, ilike, gte, lte, asc, desc, inArray } from "drizzle-orm";
 
@@ -90,6 +90,13 @@ export interface IStorage {
   // Frequently Bought Together
   getFBTProducts(productId: string): Promise<Product[]>;
   setFBTProducts(productId: string, relatedProductIds: string[]): Promise<void>;
+
+  // Abandoned Carts
+  saveAbandonedCart(data: { email: string; customerName?: string; customerPhone?: string; cartItems: string; subtotal: string }): Promise<any>;
+  getAbandonedCarts(): Promise<any[]>;
+  getAbandonedCartById(id: string): Promise<any | undefined>;
+  markAbandonedCartReminderSent(id: string): Promise<void>;
+  markAbandonedCartConverted(email: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1151,6 +1158,82 @@ export class DatabaseStorage implements IStorage {
       
       await db.insert(frequentlyBoughtTogether).values(values);
     }
+  }
+
+  // Abandoned Carts
+  async saveAbandonedCart(data: { email: string; customerName?: string; customerPhone?: string; cartItems: string; subtotal: string }): Promise<AbandonedCart> {
+    // Check if there's an existing abandoned cart for this email
+    const [existing] = await db
+      .select()
+      .from(abandonedCarts)
+      .where(and(eq(abandonedCarts.email, data.email), eq(abandonedCarts.converted, false)))
+      .limit(1);
+    
+    if (existing) {
+      // Update the existing cart
+      const [updated] = await db
+        .update(abandonedCarts)
+        .set({
+          customerName: data.customerName,
+          customerPhone: data.customerPhone,
+          cartItems: data.cartItems,
+          subtotal: data.subtotal,
+          updatedAt: new Date(),
+        })
+        .where(eq(abandonedCarts.id, existing.id))
+        .returning();
+      return updated;
+    }
+    
+    // Create new abandoned cart
+    const [cart] = await db
+      .insert(abandonedCarts)
+      .values({
+        email: data.email,
+        customerName: data.customerName,
+        customerPhone: data.customerPhone,
+        cartItems: data.cartItems,
+        subtotal: data.subtotal,
+      })
+      .returning();
+    return cart;
+  }
+
+  async getAbandonedCarts(): Promise<AbandonedCart[]> {
+    return db
+      .select()
+      .from(abandonedCarts)
+      .where(eq(abandonedCarts.converted, false))
+      .orderBy(desc(abandonedCarts.updatedAt));
+  }
+
+  async getAbandonedCartById(id: string): Promise<AbandonedCart | undefined> {
+    const [cart] = await db
+      .select()
+      .from(abandonedCarts)
+      .where(eq(abandonedCarts.id, id))
+      .limit(1);
+    return cart || undefined;
+  }
+
+  async markAbandonedCartReminderSent(id: string): Promise<void> {
+    await db
+      .update(abandonedCarts)
+      .set({
+        reminderSent: true,
+        reminderSentAt: new Date(),
+      })
+      .where(eq(abandonedCarts.id, id));
+  }
+
+  async markAbandonedCartConverted(email: string): Promise<void> {
+    await db
+      .update(abandonedCarts)
+      .set({
+        converted: true,
+        updatedAt: new Date(),
+      })
+      .where(eq(abandonedCarts.email, email));
   }
 }
 
