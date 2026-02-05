@@ -282,6 +282,30 @@ export default function Admin() {
     }
   });
 
+  const sendAbandonedCartReminderMutation = useMutation({
+    mutationFn: async (orderId: string) => {
+      const response = await apiRequest('POST', `/api/admin/orders/${orderId}/cart-reminder`, {});
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to send cart reminder email');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Reminder Sent",
+        description: "Checkout reminder email has been sent to the customer",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to Send",
+        description: error.message || "Failed to send cart reminder email",
+        variant: "destructive",
+      });
+    }
+  });
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     loginMutation.mutate(password);
@@ -803,6 +827,11 @@ export default function Admin() {
                                 }`}>
                                   {order.paymentStatus}
                                 </span>
+                                {order.paymentStatus === 'pending' && (
+                                  <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+                                    Potential
+                                  </span>
+                                )}
                                 {order.trackingLink && (
                                   <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
                                     Shipped
@@ -1073,6 +1102,23 @@ export default function Admin() {
                                 )}
                                 Request Review
                               </Button>
+                              {order.paymentStatus === 'pending' && (
+                                <Button 
+                                  variant="default" 
+                                  size="sm" 
+                                  onClick={() => sendAbandonedCartReminderMutation.mutate(order.id)}
+                                  disabled={sendAbandonedCartReminderMutation.isPending}
+                                  className="bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-800"
+                                  data-testid={`button-send-reminder-${order.id}`}
+                                >
+                                  {sendAbandonedCartReminderMutation.isPending ? (
+                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                  ) : (
+                                    <ShoppingCart className="h-4 w-4 mr-2" />
+                                  )}
+                                  Don't Forget to Check Out
+                                </Button>
+                              )}
                             </div>
                           </div>
                         )}

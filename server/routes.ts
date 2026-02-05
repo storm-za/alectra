@@ -600,6 +600,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Send cart reminder for pending orders (Admin)
+  app.post("/api/admin/orders/:orderId/cart-reminder", requireAdminAuth, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      
+      // Get the order
+      const [order] = await db.select().from(orders).where(eq(orders.id, orderId));
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      if (order.paymentStatus !== 'pending') {
+        return res.status(400).json({ message: "Cart reminder can only be sent for pending orders" });
+      }
+      
+      // Get order items with product images and prices
+      const items = await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
+      
+      // Get product images for each item
+      const itemsWithDetails = await Promise.all(items.map(async (item) => {
+        if (item.productId) {
+          const [product] = await db.select({ imageUrl: products.imageUrl }).from(products).where(eq(products.id, item.productId));
+          return {
+            productName: item.productName || 'Product',
+            quantity: item.quantity,
+            price: item.priceAtPurchase || '0',
+            imageUrl: product?.imageUrl || undefined
+          };
+        }
+        return {
+          productName: item.productName || 'Product',
+          quantity: item.quantity,
+          price: item.priceAtPurchase || '0',
+          imageUrl: undefined
+        };
+      }));
+      
+      // Send cart reminder email
+      const emailService = new EmailService();
+      await emailService.sendAbandonedCartReminder({
+        customerName: order.customerName || undefined,
+        customerEmail: order.customerEmail,
+        items: itemsWithDetails,
+        subtotal: order.subtotal || order.total
+      });
+      
+      res.json({ message: "Cart reminder email sent successfully" });
+    } catch (error: any) {
+      console.error("Failed to send cart reminder email:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Abandoned Cart Management (Admin)
   app.get("/api/admin/abandoned-carts", requireAdminAuth, async (req, res) => {
     try {
