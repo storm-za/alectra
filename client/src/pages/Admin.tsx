@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface VisitStats {
   totalVisits: number;
@@ -576,28 +577,61 @@ export default function Admin() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Monthly Traffic Trend</CardTitle>
-                <CardDescription>Daily visits for the current month</CardDescription>
+                <CardTitle>Daily Traffic Trend</CardTitle>
+                <CardDescription>Page visits for the current month</CardDescription>
               </CardHeader>
               <CardContent>
                 {monthlyStats && monthlyStats.length > 0 ? (
-                  <div className="space-y-2">
-                    {monthlyStats.map((day) => (
-                      <div key={day.date} className="flex items-center gap-4">
-                        <span className="text-sm text-muted-foreground w-24">
-                          {new Date(day.date).toLocaleDateString('en-ZA', { month: 'short', day: 'numeric' })}
-                        </span>
-                        <div className="flex-1 bg-muted rounded-full h-4 overflow-hidden">
-                          <div 
-                            className="h-full bg-primary transition-all"
-                            style={{ 
-                              width: `${Math.min((day.totalVisits / Math.max(...monthlyStats.map(d => d.totalVisits), 1)) * 100, 100)}%` 
-                            }}
-                          />
-                        </div>
-                        <span className="text-sm font-medium w-16 text-right">{day.totalVisits}</span>
-                      </div>
-                    ))}
+                  <div className="h-[300px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart
+                        data={monthlyStats.map(day => ({
+                          ...day,
+                          displayDate: new Date(day.date).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' })
+                        }))}
+                        margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                      >
+                        <defs>
+                          <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                        <XAxis 
+                          dataKey="displayDate" 
+                          tick={{ fontSize: 12 }}
+                          tickLine={false}
+                          axisLine={false}
+                          className="fill-muted-foreground"
+                        />
+                        <YAxis 
+                          tick={{ fontSize: 12 }}
+                          tickLine={false}
+                          axisLine={false}
+                          className="fill-muted-foreground"
+                          allowDecimals={false}
+                        />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: 'hsl(var(--card))', 
+                            border: '1px solid hsl(var(--border))',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                          }}
+                          labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600 }}
+                          formatter={(value: number) => [`${value} visits`, 'Total Visits']}
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="totalVisits"
+                          stroke="hsl(var(--primary))"
+                          strokeWidth={2}
+                          fillOpacity={1}
+                          fill="url(#colorVisits)"
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
                   </div>
                 ) : (
                   <p className="text-muted-foreground text-center py-8">No traffic data for this month</p>
