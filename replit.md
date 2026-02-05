@@ -101,6 +101,18 @@ Preferred communication style: Simple, everyday language.
 - **Frontend Display**: FrequentlyBoughtTogether component prioritizes curated FBT products from admin settings, falling back to same-category products or featured products if none are curated.
 - **Data Integrity**: Unique constraint on (productId, relatedProductId) prevents duplicate associations.
 
+### Product Variants System
+- **Database**: `product_variants` table stores variant data with fields: `id`, `productId`, `name`, `price`, `sku`, `stock`, `sortOrder`, `createdAt`.
+- **Purpose**: Allows products to have multiple variants (e.g., LP Gas cylinders in 9kg/19kg/48kg sizes, torsion springs in different tensions) each with their own price and stock level.
+- **Admin Management**: Variants tab in product edit dialog (AdminProducts.tsx) allows full CRUD operations on variants.
+- **API Endpoints**:
+  - `GET /api/admin/products/:productId/variants` - Admin endpoint to fetch variants for editing
+  - `POST /api/admin/products/:productId/variants` - Admin endpoint to create a new variant
+  - `PUT /api/admin/variants/:id` - Admin endpoint to update a variant
+  - `DELETE /api/admin/variants/:id` - Admin endpoint to delete a variant
+  - `GET /api/products/:productId/variants` - Public endpoint to fetch variants for product display
+- **Security**: All admin endpoints protected by requireAdminAuth middleware.
+
 ### Image Optimization System
 - **Server-Side Optimization**: `/img/*` endpoint using Sharp library for on-demand image resizing and format conversion.
 - **Automatic Format Negotiation**: Serves WebP/AVIF based on browser Accept header (AVIF > WebP > JPEG fallback).
