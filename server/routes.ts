@@ -600,6 +600,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Abandoned Cart Management (Admin)
+  app.get("/api/admin/abandoned-carts", requireAdminAuth, async (req, res) => {
+    try {
+      const carts = await storage.getAbandonedCarts();
+      res.json(carts);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/abandoned-carts/:id/send-reminder", requireAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const cart = await storage.getAbandonedCartById(id);
+      
+      if (!cart) {
+        return res.status(404).json({ message: "Abandoned cart not found" });
+      }
+
+      // Parse cart items from JSON
+      const cartItems = JSON.parse(cart.cartItems);
+      
+      // Send abandoned cart reminder email
+      const emailService = new EmailService();
+      await emailService.sendAbandonedCartReminder({
+        customerName: cart.customerName || undefined,
+        customerEmail: cart.email,
+        items: cartItems,
+        subtotal: cart.subtotal
+      });
+      
+      // Mark reminder as sent
+      await storage.markAbandonedCartReminderSent(id);
+      
+      res.json({ message: "Abandoned cart reminder sent successfully" });
+    } catch (error: any) {
+      console.error("Failed to send abandoned cart reminder:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Save abandoned cart (public - called from checkout when user provides email)
+  app.post("/api/abandoned-cart", async (req, res) => {
+    try {
+      const { email, customerName, customerPhone, cartItems, subtotal } = req.body;
+      
+      if (!email || !cartItems) {
+        return res.status(400).json({ message: "Email and cart items are required" });
+      }
+      
+      const cart = await storage.saveAbandonedCart({
+        email,
+        customerName,
+        customerPhone,
+        cartItems: typeof cartItems === 'string' ? cartItems : JSON.stringify(cartItems),
+        subtotal: subtotal || "0"
+      });
+      
+      res.json({ message: "Cart saved", id: cart.id });
+    } catch (error: any) {
+      console.error("Failed to save abandoned cart:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // User Addresses (Protected)
   app.get("/api/user/addresses", requireAuth, async (req, res) => {
     try {

@@ -78,6 +78,18 @@ export interface ReviewRequestEmailData {
   }>;
 }
 
+export interface AbandonedCartEmailData {
+  customerName?: string;
+  customerEmail: string;
+  items: Array<{
+    productName: string;
+    quantity: number;
+    price: string;
+    imageUrl?: string;
+  }>;
+  subtotal: string;
+}
+
 // Base URL for production - used for absolute image URLs in emails
 // Use the custom domain if available, otherwise fall back to Replit app URL
 const PRODUCTION_BASE_URL = "https://alectra.co.za";
@@ -247,6 +259,23 @@ export class EmailService {
       console.log(`Review request email sent to ${data.customerEmail}`);
     } catch (error) {
       console.error("Failed to send review request email:", error);
+      throw error;
+    }
+  }
+
+  async sendAbandonedCartReminder(data: AbandonedCartEmailData): Promise<void> {
+    const emailHtml = this.generateAbandonedCartHtml(data);
+
+    try {
+      await this.transporter.sendMail({
+        from: `"Alectra Solutions" <${process.env.GMAIL_USER}>`,
+        to: data.customerEmail,
+        subject: `${data.customerName ? data.customerName.split(' ')[0] + ', ' : ''}You're One Click Away! 🛒`,
+        html: emailHtml,
+      });
+      console.log(`Abandoned cart reminder email sent to ${data.customerEmail}`);
+    } catch (error) {
+      console.error("Failed to send abandoned cart reminder email:", error);
       throw error;
     }
   }
@@ -1245,6 +1274,198 @@ export class EmailService {
                   <td style="text-align: center;">
                     <p style="margin: 0; color: #94a3b8; font-size: 12px; line-height: 1.6;">
                       This email was sent regarding your order from Alectra Solutions.<br>
+                      &copy; ${new Date().getFullYear()} Alectra Solutions (PTY) LTD. All rights reserved.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+  }
+
+  private generateAbandonedCartHtml(data: AbandonedCartEmailData): string {
+    const firstName = data.customerName ? data.customerName.split(' ')[0] : 'there';
+    const checkoutUrl = 'https://alectra.co.za/checkout';
+    
+    const itemsHtml = data.items.map(item => {
+      const imageUrl = getAbsoluteImageUrl(item.imageUrl);
+      return `
+        <tr>
+          <td style="padding: 16px 0; border-bottom: 1px solid #e5e7eb;">
+            <table role="presentation" style="width: 100%;">
+              <tr>
+                ${imageUrl ? `
+                <td style="width: 80px; vertical-align: top;">
+                  <img src="${imageUrl}" alt="${item.productName}" width="70" height="70" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 1px solid #e5e7eb;" />
+                </td>
+                ` : ''}
+                <td style="padding-left: ${imageUrl ? '16px' : '0'}; vertical-align: top;">
+                  <p style="margin: 0; font-weight: 600; color: #111827; font-size: 15px; line-height: 1.4;">${item.productName}</p>
+                  <p style="margin: 6px 0 0 0; color: #6b7280; font-size: 14px;">Qty: ${item.quantity}</p>
+                </td>
+                <td style="vertical-align: top; text-align: right; white-space: nowrap;">
+                  <p style="margin: 0; font-weight: 600; color: #111827; font-size: 15px;">R&nbsp;${item.price}</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    // Partner brands logos
+    const brandLogos = [
+      { name: 'Centurion', url: 'https://alectra.co.za/attached_assets/centurion-logo_1770064820391.png' },
+      { name: 'Hikvision', url: 'https://alectra.co.za/attached_assets/hikvision-logo_1770064820392.png' },
+      { name: 'Hilook', url: 'https://alectra.co.za/attached_assets/hilook-logo_1770064820393.png' },
+      { name: 'ET Nice', url: 'https://alectra.co.za/attached_assets/et-nice-logo_1770064820394.png' },
+      { name: 'Nemtek', url: 'https://alectra.co.za/attached_assets/nemtek-logo_1770064820395.png' },
+      { name: 'IDS', url: 'https://alectra.co.za/attached_assets/ids-logo_1770064820396.png' },
+    ];
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Don't Forget to Complete Your Checkout!</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f8fafc;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 48px 20px;">
+              <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);">
+                
+                <!-- Header with Logo -->
+                <tr>
+                  <td style="background-color: #ffffff; padding: 32px 40px; text-align: center; border-bottom: 1px solid #e2e8f0;">
+                    <img src="https://alectra.co.za/attached_assets/alectra-logo_1763806823535.png" alt="Alectra Solutions" width="56" height="56" style="width: 56px; height: 56px; object-fit: contain; display: inline-block; margin-bottom: 16px;" />
+                    <h1 style="margin: 0; color: #111827; font-size: 28px; font-weight: 700; letter-spacing: -0.025em;">
+                      Alectra Solutions
+                    </h1>
+                  </td>
+                </tr>
+
+                <!-- Hero Banner -->
+                <tr>
+                  <td style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 40px 40px 48px 40px; text-align: center;">
+                    <h2 style="margin: 0 0 8px 0; color: #ffffff; font-size: 32px; font-weight: 700; line-height: 1.2;">
+                      Don't Forget to<br>Complete Your
+                    </h2>
+                    <p style="margin: 0; color: #fecaca; font-size: 36px; font-weight: 800; letter-spacing: -0.025em;">
+                      Checkout!
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Main Content -->
+                <tr>
+                  <td style="padding: 40px;">
+                    <p style="margin: 0 0 24px 0; color: #1e293b; font-size: 16px; line-height: 1.7;">
+                      Hi ${firstName},
+                    </p>
+                    
+                    <p style="margin: 0 0 32px 0; color: #475569; font-size: 15px; line-height: 1.7;">
+                      We noticed you left some items in your cart. Don't worry – we've saved them for you! Complete your purchase now to secure these quality security products.
+                    </p>
+
+                    <!-- Products Section -->
+                    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 24px; margin-bottom: 28px;">
+                      <h3 style="margin: 0 0 16px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Your Cart Items</h3>
+                      <table role="presentation" style="width: 100%;">
+                        ${itemsHtml}
+                      </table>
+                      
+                      <!-- Total -->
+                      <table role="presentation" style="width: 100%; margin-top: 16px; padding-top: 16px; border-top: 2px solid #e2e8f0;">
+                        <tr>
+                          <td style="font-size: 16px; font-weight: 600; color: #1e293b;">Subtotal</td>
+                          <td style="text-align: right; font-size: 18px; font-weight: 700; color: #111827; white-space: nowrap;">R&nbsp;${data.subtotal}</td>
+                        </tr>
+                      </table>
+                    </div>
+
+                    <!-- CTA Button -->
+                    <table role="presentation" style="width: 100%; margin-bottom: 32px;">
+                      <tr>
+                        <td style="text-align: center;">
+                          <a href="${checkoutUrl}" style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: #ffffff; text-decoration: none; padding: 18px 48px; border-radius: 8px; font-weight: 700; font-size: 16px; letter-spacing: 0.025em; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);">
+                            Continue Checkout
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <p style="margin: 0 0 28px 0; color: #64748b; font-size: 14px; text-align: center; line-height: 1.6;">
+                      Questions? Our team is here to help.<br>
+                      <a href="https://wa.me/27125663123" style="color: #dc2626; text-decoration: none; font-weight: 500;">Chat with us on WhatsApp</a>
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Our Brands Section -->
+                <tr>
+                  <td style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 24px 40px;">
+                    <p style="margin: 0; color: #ffffff; font-size: 16px; font-weight: 600; text-align: center;">Our Brands</p>
+                  </td>
+                </tr>
+
+                <!-- Brand Logos -->
+                <tr>
+                  <td style="background-color: #ffffff; padding: 32px 40px; text-align: center; border-bottom: 1px solid #e2e8f0;">
+                    <img src="https://alectra.co.za/attached_assets/alectra-logo_1763806823535.png" alt="Alectra Solutions" width="120" height="40" style="height: 40px; object-fit: contain; display: inline-block; margin-bottom: 24px;" />
+                    <p style="margin: 0 0 20px 0; color: #6b7280; font-size: 13px;">Trusted partners in security &amp; automation</p>
+                    <table role="presentation" style="width: 100%;">
+                      <tr>
+                        <td style="text-align: center; padding: 8px;">
+                          <span style="display: inline-block; margin: 4px 8px; color: #374151; font-size: 12px; font-weight: 600;">Centurion</span>
+                          <span style="display: inline-block; margin: 4px 8px; color: #374151; font-size: 12px; font-weight: 600;">Hikvision</span>
+                          <span style="display: inline-block; margin: 4px 8px; color: #374151; font-size: 12px; font-weight: 600;">HiLook</span>
+                          <span style="display: inline-block; margin: 4px 8px; color: #374151; font-size: 12px; font-weight: 600;">ET Nice</span>
+                          <span style="display: inline-block; margin: 4px 8px; color: #374151; font-size: 12px; font-weight: 600;">Nemtek</span>
+                          <span style="display: inline-block; margin: 4px 8px; color: #374151; font-size: 12px; font-weight: 600;">IDS</span>
+                        </td>
+                      </tr>
+                    </table>
+                    <p style="margin: 20px 0 0 0; color: #dc2626; font-size: 13px; font-weight: 500;">We bring the Best Brands to your Door!</p>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 28px 40px;">
+                    <table role="presentation" style="width: 100%;">
+                      <tr>
+                        <td style="text-align: center;">
+                          <p style="margin: 0 0 8px 0; color: #111827; font-size: 14px; font-weight: 600;">
+                            Alectra Solutions (PTY) LTD
+                          </p>
+                          <p style="margin: 0 0 12px 0; color: #64748b; font-size: 13px; line-height: 1.6;">
+                            Security &amp; Automation Specialists<br>
+                            107A Dassiebos Ave, Wonderboom, Pretoria<br>
+                            Tel: 012 566 3123 | Email: solutionsalectra@gmail.com
+                          </p>
+                          <p style="margin: 0; color: #94a3b8; font-size: 12px;">
+                            <a href="https://alectra.co.za" style="color: #94a3b8; text-decoration: none;">alectra.co.za</a>
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Legal Footer -->
+              <table role="presentation" style="max-width: 600px; margin: 24px auto 0 auto;">
+                <tr>
+                  <td style="text-align: center;">
+                    <p style="margin: 0; color: #94a3b8; font-size: 12px; line-height: 1.6;">
+                      No longer interested? Simply ignore this email.<br>
                       &copy; ${new Date().getFullYear()} Alectra Solutions (PTY) LTD. All rights reserved.
                     </p>
                   </td>
