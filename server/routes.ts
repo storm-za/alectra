@@ -2514,6 +2514,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ============ PRODUCT VARIANTS ADMIN ENDPOINTS ============
+
+  // GET variants for a product
+  app.get("/api/admin/products/:productId/variants", requireAdminAuth, async (req, res) => {
+    try {
+      const { productId } = req.params;
+      const variants = await storage.getProductVariants(productId);
+      res.json(variants);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // CREATE variant for a product
+  app.post("/api/admin/products/:productId/variants", requireAdminAuth, async (req, res) => {
+    try {
+      const { productId } = req.params;
+      const { name, price, sku, stock, sortOrder } = req.body;
+
+      if (!name || price === undefined) {
+        return res.status(400).json({ message: "Name and price are required" });
+      }
+
+      const variant = await storage.createProductVariant({
+        productId,
+        name,
+        price: String(price),
+        sku: sku || null,
+        stock: stock ?? 0,
+        sortOrder: sortOrder ?? 0,
+      });
+
+      res.status(201).json(variant);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // UPDATE variant
+  app.put("/api/admin/variants/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { name, price, sku, stock, sortOrder } = req.body;
+
+      const updates: any = {};
+      if (name !== undefined) updates.name = name;
+      if (price !== undefined) updates.price = String(price);
+      if (sku !== undefined) updates.sku = sku;
+      if (stock !== undefined) updates.stock = stock;
+      if (sortOrder !== undefined) updates.sortOrder = sortOrder;
+
+      const variant = await storage.updateProductVariant(id, updates);
+      if (!variant) {
+        return res.status(404).json({ message: "Variant not found" });
+      }
+
+      res.json(variant);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // DELETE variant
+  app.delete("/api/admin/variants/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const success = await storage.deleteProductVariant(id);
+      if (!success) {
+        return res.status(404).json({ message: "Variant not found" });
+      }
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // PUBLIC endpoint - GET variants for a product
+  app.get("/api/products/:productId/variants", async (req, res) => {
+    try {
+      const { productId } = req.params;
+      const variants = await storage.getProductVariants(productId);
+      res.json(variants);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // ============ DISCOUNT CODES ADMIN ENDPOINTS ============
 
   // GET ALL DISCOUNT CODES
