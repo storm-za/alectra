@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -182,15 +182,23 @@ export default function Admin() {
     retry: false
   });
 
-  const startOfMonth = new Date();
-  startOfMonth.setDate(1);
-  startOfMonth.setHours(0, 0, 0, 0);
-  const endOfMonth = new Date();
+  const { monthStartStr, monthEndStr } = useMemo(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const start = new Date(Date.UTC(year, month, 1, 0, 0, 0, 0));
+    const lastDay = new Date(year, month + 1, 0).getDate();
+    const end = new Date(Date.UTC(year, month, lastDay, 23, 59, 59, 999));
+    return {
+      monthStartStr: start.toISOString(),
+      monthEndStr: end.toISOString()
+    };
+  }, []);
 
   const { data: monthlyStats } = useQuery<DailyStats[]>({
-    queryKey: ['/api/admin/stats/range', startOfMonth.toISOString(), endOfMonth.toISOString()],
+    queryKey: ['/api/admin/stats/range', monthStartStr, monthEndStr],
     queryFn: async () => {
-      const response = await fetch(`/api/admin/stats/range?startDate=${startOfMonth.toISOString()}&endDate=${endOfMonth.toISOString()}`);
+      const response = await fetch(`/api/admin/stats/range?startDate=${monthStartStr}&endDate=${monthEndStr}`);
       if (response.status === 401) {
         refetchAuth();
         throw new Error('Session expired');
