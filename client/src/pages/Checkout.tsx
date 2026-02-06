@@ -630,6 +630,15 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
               <img src={imageUrl} alt={item.product.name} className="w-12 h-12 object-cover rounded-md bg-muted" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium line-clamp-1">{item.product.name}</p>
+                {item.variant && (
+                  <p className="text-xs text-muted-foreground">
+                    {item.variant === 'exchange' ? 'Exchange' : 
+                     item.variant === 'new' ? 'New Cylinder' :
+                     /^\d{4}mm-(smooth|woodgrain)$/.test(item.variant as string)
+                       ? `${(item.variant as string).split('-')[0]} / ${(item.variant as string).split('-')[1] === 'smooth' ? 'Smooth' : 'Woodgrain'}`
+                       : String(item.variant)}
+                  </p>
+                )}
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs text-muted-foreground">Qty: {item.quantity}</span>
                   <span className="text-sm font-bold whitespace-nowrap">R&nbsp;{lineTotal}</span>

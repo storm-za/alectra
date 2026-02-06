@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import MobileNav from "@/components/MobileNav";
 import { useToast } from "@/hooks/use-toast";
-import type { Product, CartItem, ProductVariant } from "@shared/schema";
+import type { Product, CartItem, CartVariantType } from "@shared/schema";
 
 const WhatsAppButton = lazy(() => import("@/components/WhatsAppButton"));
 
@@ -137,7 +137,7 @@ function Router() {
     saveCartToStorage(cartItems);
   }, [cartItems]);
 
-  const addToCart = (product: Product, quantity: number = 1, variant?: ProductVariant, variantPrice?: string) => {
+  const addToCart = (product: Product, quantity: number = 1, variant?: CartVariantType, variantPrice?: string) => {
     setCartItems((items) => {
       // For products with variants (LP Gas, Glosteel doors), match by product ID AND variant type
       const existingItem = items.find((item) => 
@@ -163,7 +163,7 @@ function Router() {
     setCartOpen(true);
   };
 
-  const updateQuantity = (productId: string, quantity: number, variant?: ProductVariant) => {
+  const updateQuantity = (productId: string, quantity: number, variant?: CartVariantType) => {
     setCartItems((items) =>
       items.map((item) =>
         item.product.id === productId && item.variant === variant 
@@ -173,7 +173,7 @@ function Router() {
     );
   };
 
-  const removeItem = (productId: string, variant?: ProductVariant) => {
+  const removeItem = (productId: string, variant?: CartVariantType) => {
     setCartItems((items) => items.filter((item) => 
       !(item.product.id === productId && item.variant === variant)
     ));

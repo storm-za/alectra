@@ -47,14 +47,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductReviewSchema, LP_GAS_PRICING, LP_GAS_CYLINDER_IDS, GLOSTEEL_PRICING, GLOSTEEL_DOOR_IDS, TORSION_SPRING_VARIANTS, TORSION_SPRING_PRODUCT_ID } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import type { Product, ProductReview, InsertProductReview, LpGasVariant, GarageDoorSize, TorsionSpringVariant, ProductVariant } from "@shared/schema";
+import type { Product, ProductReview, InsertProductReview, LpGasVariant, GarageDoorSize, GarageDoorFinish, GarageDoorVariant, TorsionSpringVariant, CartVariantType } from "@shared/schema";
 import { z } from "zod";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { ProductImage, getOptimizedImageUrl } from "@/components/OptimizedImage";
 
 interface ProductDetailProps {
-  onAddToCart: (product: Product, quantity: number, variant?: ProductVariant, variantPrice?: string) => void;
+  onAddToCart: (product: Product, quantity: number, variant?: CartVariantType, variantPrice?: string) => void;
 }
 
 // Form schema for review submission
@@ -131,6 +131,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const [selectedRating, setSelectedRating] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<LpGasVariant>('exchange');
   const [selectedDoorSize, setSelectedDoorSize] = useState<GarageDoorSize>('2450mm');
+  const [selectedDoorFinish, setSelectedDoorFinish] = useState<GarageDoorFinish | ''>('');
   const [selectedTorsionSpring, setSelectedTorsionSpring] = useState<TorsionSpringVariant>('45kg-green-left');
   const [showStickyAddToCart, setShowStickyAddToCart] = useState(false);
   const addToCartButtonRef = useRef<HTMLButtonElement>(null);
@@ -555,6 +556,51 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                     </Label>
                   </div>
                 </RadioGroup>
+
+                <h3 className="text-sm font-medium mb-3 mt-4">Select Finish:</h3>
+                <RadioGroup
+                  value={selectedDoorFinish}
+                  onValueChange={(value) => setSelectedDoorFinish(value as GarageDoorFinish)}
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                >
+                  <div className="relative">
+                    <RadioGroupItem
+                      value="smooth"
+                      id="finish-smooth"
+                      className="peer sr-only"
+                      data-testid="radio-finish-smooth"
+                    />
+                    <Label
+                      htmlFor="finish-smooth"
+                      className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
+                    >
+                      <span className="font-semibold">Smooth</span>
+                      <span className="text-sm text-muted-foreground">
+                        Clean, flat panel finish
+                      </span>
+                    </Label>
+                  </div>
+                  <div className="relative">
+                    <RadioGroupItem
+                      value="woodgrain"
+                      id="finish-woodgrain"
+                      className="peer sr-only"
+                      data-testid="radio-finish-woodgrain"
+                    />
+                    <Label
+                      htmlFor="finish-woodgrain"
+                      className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
+                    >
+                      <span className="font-semibold">Woodgrain</span>
+                      <span className="text-sm text-muted-foreground">
+                        Textured wood-look finish
+                      </span>
+                    </Label>
+                  </div>
+                </RadioGroup>
+                {selectedDoorFinish === '' && (
+                  <p className="text-xs text-destructive mt-2" data-testid="text-finish-required">Please select a finish before adding to cart</p>
+                )}
               </div>
             )}
 
@@ -685,9 +731,16 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                   </Badge>
                 )}
                 {isGlosteelDoor && (
-                  <Badge variant="secondary" className="ml-2">
-                    {selectedDoorSize}
-                  </Badge>
+                  <>
+                    <Badge variant="secondary" className="ml-2">
+                      {selectedDoorSize}
+                    </Badge>
+                    {selectedDoorFinish && (
+                      <Badge variant="secondary" className="ml-1">
+                        {selectedDoorFinish === 'smooth' ? 'Smooth' : 'Woodgrain'}
+                      </Badge>
+                    )}
+                  </>
                 )}
                 {isTorsionSpring && torsionSpringInfo && (
                   <Badge variant="secondary" className="ml-2">
@@ -726,12 +779,14 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 ref={addToCartButtonRef}
                 size="lg"
                 className="flex-1"
-                disabled={isOutOfStock}
+                disabled={isOutOfStock || (isGlosteelDoor && selectedDoorFinish === '')}
                 onClick={() => {
                   if (isLpGasCylinder && lpGasPricing) {
                     onAddToCart(product, quantity, selectedVariant, displayPrice);
                   } else if (isGlosteelDoor && glosteelPricing) {
-                    onAddToCart(product, quantity, selectedDoorSize, displayPrice);
+                    if (!selectedDoorFinish) return;
+                    const doorVariant = `${selectedDoorSize}-${selectedDoorFinish}` as GarageDoorVariant;
+                    onAddToCart(product, quantity, doorVariant, displayPrice);
                   } else if (isTorsionSpring && torsionSpringInfo) {
                     onAddToCart(product, quantity, selectedTorsionSpring, displayPrice);
                   } else {
@@ -1160,11 +1215,14 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             <Button
               size="lg"
               className="shrink-0"
+              disabled={isGlosteelDoor && selectedDoorFinish === ''}
               onClick={() => {
                 if (isLpGasCylinder && lpGasPricing) {
                   onAddToCart(product, quantity, selectedVariant, displayPrice);
                 } else if (isGlosteelDoor && glosteelPricing) {
-                  onAddToCart(product, quantity, selectedDoorSize, displayPrice);
+                  if (!selectedDoorFinish) return;
+                  const doorVariant = `${selectedDoorSize}-${selectedDoorFinish}` as GarageDoorVariant;
+                  onAddToCart(product, quantity, doorVariant, displayPrice);
                 } else if (isTorsionSpring && torsionSpringInfo) {
                   onAddToCart(product, quantity, selectedTorsionSpring, displayPrice);
                 } else {

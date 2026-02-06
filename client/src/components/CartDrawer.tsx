@@ -6,15 +6,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Minus, Plus, X, ShoppingCart, Trash2, ShieldCheck, Truck } from "lucide-react";
 import { Link } from "wouter";
 import { ProductImage } from "@/components/OptimizedImage";
-import type { CartItem, ProductVariant, TorsionSpringVariant } from "@shared/schema";
+import type { CartItem, CartVariantType, TorsionSpringVariant } from "@shared/schema";
 import { TORSION_SPRING_VARIANTS } from "@shared/schema";
 
 interface CartDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   items: CartItem[];
-  onUpdateQuantity: (productId: string, quantity: number, variant?: ProductVariant) => void;
-  onRemoveItem: (productId: string, variant?: ProductVariant) => void;
+  onUpdateQuantity: (productId: string, quantity: number, variant?: CartVariantType) => void;
+  onRemoveItem: (productId: string, variant?: CartVariantType) => void;
 }
 
 // Helper to get unique key for cart item
@@ -107,8 +107,9 @@ export default function CartDrawer({
                               <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
                                 {item.variant === 'exchange' ? 'Exchange' : 
                                  item.variant === 'new' ? 'New Cylinder' :
-                                 item.variant === '2450mm' || item.variant === '2550mm' ? item.variant :
-                                 TORSION_SPRING_VARIANTS[item.variant as TorsionSpringVariant] 
+                                 /^\d{4}mm-(smooth|woodgrain)$/.test(item.variant as string) 
+                                   ? `${(item.variant as string).split('-')[0]} / ${(item.variant as string).split('-')[1] === 'smooth' ? 'Smooth' : 'Woodgrain'}`
+                                   : TORSION_SPRING_VARIANTS[item.variant as TorsionSpringVariant] 
                                    ? `${TORSION_SPRING_VARIANTS[item.variant as TorsionSpringVariant].weight} ${TORSION_SPRING_VARIANTS[item.variant as TorsionSpringVariant].winding === 'left' ? 'Left' : 'Right'}`
                                    : item.variant}
                               </Badge>

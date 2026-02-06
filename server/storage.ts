@@ -400,6 +400,10 @@ export class DatabaseStorage implements IStorage {
             displayName = `${product.name} (Exchange)`;
           } else if (item.variant === 'new') {
             displayName = `${product.name} (New Cylinder)`;
+          } else if (/^\d{4}mm-(smooth|woodgrain)$/.test(item.variant)) {
+            const [size, finish] = item.variant.split('-');
+            const finishLabel = finish === 'smooth' ? 'Smooth' : 'Woodgrain';
+            displayName = `${product.name} (${size}, ${finishLabel})`;
           } else if (item.variant === '2450mm' || item.variant === '2550mm') {
             displayName = `${product.name} (${item.variant})`;
           } else if (item.variant.includes('kg-') && (item.variant.endsWith('-left') || item.variant.endsWith('-right'))) {
