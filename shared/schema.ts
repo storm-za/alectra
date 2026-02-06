@@ -412,6 +412,8 @@ export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
 
 export type LpGasVariant = 'exchange' | 'new';
 export type GarageDoorSize = '2450mm' | '2550mm';
+export type GarageDoorFinish = 'smooth' | 'woodgrain';
+export type GarageDoorVariant = `${GarageDoorSize}-${GarageDoorFinish}`;
 export type TorsionSpringVariant = 
   | '45kg-green-left' | '45kg-green-right'
   | '50kg-beige-left' | '50kg-beige-right'
@@ -421,7 +423,7 @@ export type TorsionSpringVariant =
   | '80kg-yellow-left' | '80kg-yellow-right'
   | '90kg-orange-left' | '90kg-orange-right'
   | '100kg-green-left' | '100kg-green-right';
-export type CartVariantType = LpGasVariant | GarageDoorSize | TorsionSpringVariant;
+export type CartVariantType = LpGasVariant | GarageDoorVariant | TorsionSpringVariant;
 
 export type CartItem = {
   product: Product;
