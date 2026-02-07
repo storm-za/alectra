@@ -178,7 +178,7 @@ export default function Footer() {
             </div>
             <div>
               <h4 className="text-white font-semibold mb-2">Menlyn Store</h4>
-              <p>Mon-Sun: 08:00 - 16:45</p>
+              <p>Mon-Sat: 08:00 - 16:45</p>
               <p>012 566 3123</p>
             </div>
           </div>
