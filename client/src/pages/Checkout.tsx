@@ -562,6 +562,27 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       setCurrentStep(2);
       window.scrollTo(0, 0);
     } else if (currentStep === 2 && canProceedFromStep2a) {
+      const formData = form.getValues();
+      const subtotal = cartItems.reduce((sum, item) => {
+        const price = item.variantPrice ? parseFloat(item.variantPrice) : parseFloat(item.product.price);
+        return sum + price * item.quantity;
+      }, 0);
+      fetch("/api/abandoned-cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.customerEmail,
+          customerName: formData.customerName,
+          customerPhone: formData.customerPhone,
+          cartItems: cartItems.map(item => ({
+            name: item.product.name,
+            quantity: item.quantity,
+            price: item.variantPrice || item.product.price,
+            variant: item.variant || null,
+          })),
+          subtotal: subtotal.toFixed(2),
+        }),
+      }).catch(() => {});
       setCurrentStep(3);
       if (deliveryMethod === "delivery") {
         setAddressEntryMode(null);
