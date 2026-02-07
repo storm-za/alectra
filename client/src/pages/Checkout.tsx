@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 const LocationPicker = lazy(() => import("@/components/LocationPicker"));
-import AddressSearch, { type ParsedAddress } from "@/components/AddressSearch";
+import { type ParsedAddress } from "@/components/AddressSearch";
 import {
   Form,
   FormControl,
@@ -134,6 +134,13 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   // Payment SDK readiness and processing states
   const [paystackReady, setPaystackReady] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
+  // Inline address autocomplete state
+  const [addressSuggestions, setAddressSuggestions] = useState<Array<{ place_id: number; display_name: string; address: any; lat: string; lon: string }>>([]);
+  const [showAddressSuggestions, setShowAddressSuggestions] = useState(false);
+  const [isSearchingAddress, setIsSearchingAddress] = useState(false);
+  const addressDebounceRef = useRef<NodeJS.Timeout>();
+  const addressDropdownRef = useRef<HTMLDivElement>(null);
 
   // Check Paystack SDK readiness on mount
   useEffect(() => {
@@ -308,6 +315,95 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
     form.setValue("locationLongitude", parsedAddress.longitude.toString());
     setLocationStatus("success");
   };
+
+  const provinceMap: Record<string, string> = {
+    "Gauteng": "Gauteng",
+    "Western Cape": "Western Cape",
+    "KwaZulu-Natal": "KwaZulu-Natal",
+    "Eastern Cape": "Eastern Cape",
+    "Free State": "Free State",
+    "Limpopo": "Limpopo",
+    "Mpumalanga": "Mpumalanga",
+    "Northern Cape": "Northern Cape",
+    "North West": "North West",
+    "North-West": "North West",
+  };
+
+  const searchAddressInline = useCallback(async (query: string) => {
+    if (query.length < 3) {
+      setAddressSuggestions([]);
+      setShowAddressSuggestions(false);
+      return;
+    }
+    setIsSearchingAddress(true);
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?` +
+        new URLSearchParams({
+          q: query,
+          format: "json",
+          addressdetails: "1",
+          countrycodes: "za",
+          limit: "5",
+        }),
+        { headers: { "Accept-Language": "en" } }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setAddressSuggestions(data);
+        setShowAddressSuggestions(data.length > 0);
+      }
+    } catch {
+      setAddressSuggestions([]);
+    } finally {
+      setIsSearchingAddress(false);
+    }
+  }, []);
+
+  const handleAddressInputChange = useCallback((value: string) => {
+    form.setValue("deliveryAddress", value);
+    if (addressDebounceRef.current) clearTimeout(addressDebounceRef.current);
+    if (value.length >= 3) {
+      addressDebounceRef.current = setTimeout(() => searchAddressInline(value), 400);
+    } else {
+      setAddressSuggestions([]);
+      setShowAddressSuggestions(false);
+    }
+  }, [searchAddressInline, form]);
+
+  const handleSuggestionSelect = useCallback((result: any) => {
+    const addr = result.address;
+    const houseNumber = addr.house_number || "";
+    const road = addr.road || "";
+    const suburb = addr.suburb || "";
+    const streetParts = [houseNumber, road].filter(Boolean);
+    const streetAddress = streetParts.length > 0
+      ? streetParts.join(" ") + (suburb ? `, ${suburb}` : "")
+      : suburb || result.display_name.split(",")[0];
+    const city = addr.city || addr.town || addr.village || addr.municipality || "";
+    const rawProvince = addr.state || "";
+    const province = provinceMap[rawProvince] || rawProvince;
+    const postalCode = addr.postcode || "";
+
+    form.setValue("deliveryAddress", streetAddress);
+    form.setValue("deliveryCity", city);
+    form.setValue("deliveryProvince", province);
+    form.setValue("deliveryPostalCode", postalCode);
+    form.setValue("locationLatitude", result.lat);
+    form.setValue("locationLongitude", result.lon);
+    setShowAddressSuggestions(false);
+    setAddressSuggestions([]);
+  }, [form]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (addressDropdownRef.current && !addressDropdownRef.current.contains(e.target as Node)) {
+        setShowAddressSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleMapLocationChange = async (lat: number, lng: number) => {
     form.setValue("locationLatitude", lat.toString());
@@ -1146,17 +1242,6 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
 
                         <Card className="max-w-xl mx-auto">
                           <CardContent className="p-6 space-y-4">
-                            <div className="bg-card rounded-xl border p-4 mb-4">
-                              <p className="text-sm font-medium mb-2 flex items-center gap-2">
-                                <Search className="h-4 w-4" />
-                                Search for your address
-                              </p>
-                              <AddressSearch
-                                onAddressSelect={handleSearchAddressSelect}
-                                placeholder="Start typing your address..."
-                              />
-                            </div>
-
                             <FormField
                               control={form.control}
                               name="deliveryAddress"
@@ -1166,9 +1251,42 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                                     <Home className="h-4 w-4 text-muted-foreground" />
                                     Street Address
                                   </FormLabel>
-                                  <FormControl>
-                                    <Textarea placeholder="123 Main Street, Apartment 4B" {...field} data-testid="input-address" className="min-h-[80px]" />
-                                  </FormControl>
+                                  <div className="relative" ref={addressDropdownRef}>
+                                    <FormControl>
+                                      <div className="relative">
+                                        <Input
+                                          placeholder="Start typing your address..."
+                                          value={field.value}
+                                          onChange={(e) => handleAddressInputChange(e.target.value)}
+                                          onFocus={() => addressSuggestions.length > 0 && setShowAddressSuggestions(true)}
+                                          data-testid="input-address"
+                                          autoComplete="off"
+                                        />
+                                        {isSearchingAddress && (
+                                          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+                                        )}
+                                      </div>
+                                    </FormControl>
+                                    {showAddressSuggestions && addressSuggestions.length > 0 && (
+                                      <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-lg shadow-lg overflow-hidden">
+                                        <ul className="py-1 max-h-64 overflow-y-auto">
+                                          {addressSuggestions.map((result) => (
+                                            <li key={result.place_id}>
+                                              <button
+                                                type="button"
+                                                className="w-full px-3 py-2.5 text-left hover-elevate flex items-start gap-3 transition-colors"
+                                                onClick={() => handleSuggestionSelect(result)}
+                                                data-testid={`button-address-suggestion-${result.place_id}`}
+                                              >
+                                                <MapPin className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
+                                                <span className="text-sm leading-tight line-clamp-2">{result.display_name}</span>
+                                              </button>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                    )}
+                                  </div>
                                   <FormMessage />
                                 </FormItem>
                               )}
