@@ -371,28 +371,53 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
     }
   }, [searchAddressInline, form]);
 
-  const handleSuggestionSelect = useCallback((result: any) => {
+  const handleSuggestionSelect = useCallback(async (result: any) => {
     const addr = result.address;
-    const houseNumber = addr.house_number || "";
     const road = addr.road || "";
     const suburb = addr.suburb || "";
+    const city = addr.city || addr.town || addr.village || addr.municipality || "";
+    const rawProvince = addr.state || "";
+    const province = provinceMap[rawProvince] || rawProvince;
+
+    const currentInput = form.getValues("deliveryAddress") || "";
+    const userHouseNumber = currentInput.match(/^(\d+[A-Za-z]?\s)/)?.[1]?.trim() || "";
+    const apiHouseNumber = addr.house_number || "";
+    const houseNumber = apiHouseNumber || userHouseNumber;
+
     const streetParts = [houseNumber, road].filter(Boolean);
     const streetAddress = streetParts.length > 0
       ? streetParts.join(" ") + (suburb ? `, ${suburb}` : "")
       : suburb || result.display_name.split(",")[0];
-    const city = addr.city || addr.town || addr.village || addr.municipality || "";
-    const rawProvince = addr.state || "";
-    const province = provinceMap[rawProvince] || rawProvince;
-    const postalCode = addr.postcode || "";
 
     form.setValue("deliveryAddress", streetAddress);
     form.setValue("deliveryCity", city);
     form.setValue("deliveryProvince", province);
-    form.setValue("deliveryPostalCode", postalCode);
     form.setValue("locationLatitude", result.lat);
     form.setValue("locationLongitude", result.lon);
     setShowAddressSuggestions(false);
     setAddressSuggestions([]);
+
+    let postalCode = addr.postcode || "";
+    if (!postalCode || postalCode.length < 4) {
+      try {
+        const reverseRes = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?` +
+          new URLSearchParams({
+            lat: result.lat,
+            lon: result.lon,
+            format: "json",
+            addressdetails: "1",
+            zoom: "18",
+          }),
+          { headers: { "Accept-Language": "en" } }
+        );
+        if (reverseRes.ok) {
+          const reverseData = await reverseRes.json();
+          postalCode = reverseData.address?.postcode || postalCode;
+        }
+      } catch {}
+    }
+    form.setValue("deliveryPostalCode", postalCode);
   }, [form]);
 
   useEffect(() => {
