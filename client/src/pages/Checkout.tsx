@@ -397,27 +397,32 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
     setShowAddressSuggestions(false);
     setAddressSuggestions([]);
 
-    let postalCode = addr.postcode || "";
-    if (!postalCode || postalCode.length < 4) {
-      try {
-        const reverseRes = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?` +
-          new URLSearchParams({
-            lat: result.lat,
-            lon: result.lon,
-            format: "json",
-            addressdetails: "1",
-            zoom: "18",
-          }),
-          { headers: { "Accept-Language": "en" } }
-        );
-        if (reverseRes.ok) {
-          const reverseData = await reverseRes.json();
-          postalCode = reverseData.address?.postcode || postalCode;
+    form.setValue("deliveryPostalCode", "");
+    try {
+      const reverseRes = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?` +
+        new URLSearchParams({
+          lat: result.lat,
+          lon: result.lon,
+          format: "json",
+          addressdetails: "1",
+          zoom: "18",
+        }),
+        { headers: { "Accept-Language": "en" } }
+      );
+      if (reverseRes.ok) {
+        const reverseData = await reverseRes.json();
+        const reversePostal = reverseData.address?.postcode || "";
+        form.setValue("deliveryPostalCode", reversePostal);
+        if (!reversePostal) {
+          form.setValue("deliveryPostalCode", addr.postcode || "");
         }
-      } catch {}
+      } else {
+        form.setValue("deliveryPostalCode", addr.postcode || "");
+      }
+    } catch {
+      form.setValue("deliveryPostalCode", addr.postcode || "");
     }
-    form.setValue("deliveryPostalCode", postalCode);
   }, [form]);
 
   useEffect(() => {
