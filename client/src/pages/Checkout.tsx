@@ -398,31 +398,6 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
     setAddressSuggestions([]);
 
     form.setValue("deliveryPostalCode", "");
-    try {
-      const reverseRes = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?` +
-        new URLSearchParams({
-          lat: result.lat,
-          lon: result.lon,
-          format: "json",
-          addressdetails: "1",
-          zoom: "18",
-        }),
-        { headers: { "Accept-Language": "en" } }
-      );
-      if (reverseRes.ok) {
-        const reverseData = await reverseRes.json();
-        const reversePostal = reverseData.address?.postcode || "";
-        form.setValue("deliveryPostalCode", reversePostal);
-        if (!reversePostal) {
-          form.setValue("deliveryPostalCode", addr.postcode || "");
-        }
-      } else {
-        form.setValue("deliveryPostalCode", addr.postcode || "");
-      }
-    } catch {
-      form.setValue("deliveryPostalCode", addr.postcode || "");
-    }
   }, [form]);
 
   useEffect(() => {
@@ -1373,8 +1348,11 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                                   <FormItem>
                                     <FormLabel>Postal Code</FormLabel>
                                     <FormControl>
-                                      <Input placeholder="0001" {...field} data-testid="input-postal-code" />
+                                      <Input placeholder="e.g. 0182" {...field} data-testid="input-postal-code" />
                                     </FormControl>
+                                    {!field.value && (
+                                      <p className="text-xs text-amber-600 dark:text-amber-400">Please enter your postal code</p>
+                                    )}
                                     <FormMessage />
                                   </FormItem>
                                 )}
