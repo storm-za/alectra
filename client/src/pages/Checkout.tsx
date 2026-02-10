@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, lazy, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -6,10 +6,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-
-const LocationPicker = lazy(() => import("@/components/LocationPicker"));
-import { type ParsedAddress } from "@/components/AddressSearch";
 import {
   Form,
   FormControl,
@@ -30,7 +26,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { FREE_SHIPPING_PRODUCT_IDS, TORSION_SPRING_VARIANTS, type CartItem, type UserAddress, type PaystackVerifyResponse, type TorsionSpringVariant } from "@shared/schema";
-import { MapPin, BadgePercent, User, Mail, Phone, Home, Shield, Lock, Truck, CreditCard, ShoppingCart, Navigation, Check, Loader2, Search, PenLine, Tag, ChevronLeft, ChevronRight, Building2, ExternalLink, Star, ChevronDown, ChevronUp, LogIn, UserCheck } from "lucide-react";
+import { MapPin, BadgePercent, User, Shield, Lock, Truck, CreditCard, ShoppingCart, Check, Loader2, Search, PenLine, Tag, ChevronLeft, ChevronRight, Building2, ExternalLink, Star, ChevronDown, ChevronUp, LogIn, UserCheck } from "lucide-react";
 import { SiVisa, SiMastercard } from "react-icons/si";
 import yocoLogo from "@assets/yoco-logo_1768669914726.jpg";
 import paystackLogo from "@assets/Paystack-mark-white-twitter_1768669952658.png";
@@ -47,10 +43,13 @@ import {
 const checkoutSchema = z.object({
   deliveryMethod: z.enum(["delivery", "pickup"]),
   pickupStore: z.string().optional(),
-  customerName: z.string().min(2, "Name must be at least 2 characters"),
+  customerFirstName: z.string().min(1, "First name is required"),
+  customerLastName: z.string().min(1, "Last name is required"),
+  customerCompany: z.string().optional(),
   customerEmail: z.string().email("Invalid email address"),
   customerPhone: z.string().min(10, "Invalid phone number"),
   deliveryAddress: z.string().optional(),
+  deliveryApartment: z.string().optional(),
   deliveryCity: z.string().optional(),
   deliveryProvince: z.string().optional(),
   deliveryPostalCode: z.string().optional(),
@@ -85,8 +84,6 @@ interface CheckoutProps {
 
 type PaymentMethod = "paystack" | "yoco";
 
-type AddressEntryMode = "location" | "manual" | null;
-
 interface AppliedDiscount {
   id: string;
   code: string;
@@ -119,13 +116,10 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   
   // Wizard step state
   const [currentStep, setCurrentStep] = useState(1);
-  const [addressEntryMode, setAddressEntryMode] = useState<AddressEntryMode>(null);
   
   // Form and payment state
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paystack");
-  const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [searchedAddress, setSearchedAddress] = useState<ParsedAddress | null>(null);
   const [discountCodeInput, setDiscountCodeInput] = useState("");
   const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(null);
   const [discountError, setDiscountError] = useState<string | null>(null);
@@ -134,13 +128,6 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   // Payment SDK readiness and processing states
   const [paystackReady, setPaystackReady] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-
-  // Inline address autocomplete state
-  const [addressSuggestions, setAddressSuggestions] = useState<Array<{ place_id: number; display_name: string; address: any; lat: string; lon: string }>>([]);
-  const [showAddressSuggestions, setShowAddressSuggestions] = useState(false);
-  const [isSearchingAddress, setIsSearchingAddress] = useState(false);
-  const addressDebounceRef = useRef<NodeJS.Timeout>();
-  const addressDropdownRef = useRef<HTMLDivElement>(null);
 
   // Check Paystack SDK readiness on mount
   useEffect(() => {
@@ -191,10 +178,13 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
     defaultValues: {
       deliveryMethod: "delivery",
       pickupStore: "",
-      customerName: user?.user?.name || "",
+      customerFirstName: "",
+      customerLastName: "",
+      customerCompany: "",
       customerEmail: user?.user?.email || "",
       customerPhone: user?.user?.phone || "",
       deliveryAddress: "",
+      deliveryApartment: "",
       deliveryCity: "",
       deliveryProvince: "",
       deliveryPostalCode: "",
@@ -206,10 +196,13 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
     values: user?.user ? {
       deliveryMethod: "delivery",
       pickupStore: "",
-      customerName: user.user.name,
+      customerFirstName: user.user.name?.split(" ")[0] || "",
+      customerLastName: user.user.name?.split(" ").slice(1).join(" ") || "",
+      customerCompany: "",
       customerEmail: user.user.email,
       customerPhone: user.user.phone || "",
       deliveryAddress: "",
+      deliveryApartment: "",
       deliveryCity: "",
       deliveryProvince: "",
       deliveryPostalCode: "",
@@ -223,77 +216,6 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const deliveryMethod = form.watch("deliveryMethod");
   const pickupStore = form.watch("pickupStore");
 
-  // Reverse geocode coordinates to get address details
-  const reverseGeocode = async (lat: number, lng: number) => {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`,
-        { headers: { 'User-Agent': 'AlectraSolutions/1.0' } }
-      );
-      const data = await response.json();
-      
-      if (data && data.address) {
-        const addr = data.address;
-        // Build street address from components
-        const houseNumber = addr.house_number || '';
-        const road = addr.road || addr.street || '';
-        const streetAddress = houseNumber ? `${houseNumber} ${road}`.trim() : road;
-        
-        const city = addr.city || addr.town || addr.village || addr.suburb || addr.municipality || '';
-        const province = addr.state || addr.province || '';
-        const postalCode = addr.postcode || '';
-        
-        form.setValue("deliveryAddress", streetAddress || data.display_name?.split(',')[0] || '');
-        form.setValue("deliveryCity", city);
-        form.setValue("deliveryProvince", province);
-        form.setValue("deliveryPostalCode", postalCode);
-      }
-    } catch (error) {
-      console.error("Reverse geocoding failed:", error);
-    }
-  };
-
-  const handleShareLocation = () => {
-    if (!navigator.geolocation) {
-      toast({
-        title: "Location not supported",
-        description: "Your browser doesn't support location sharing",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLocationStatus("loading");
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        form.setValue("locationLatitude", lat.toString());
-        form.setValue("locationLongitude", lng.toString());
-        setLocationStatus("success");
-        
-        // Reverse geocode to pre-fill address fields
-        await reverseGeocode(lat, lng);
-        
-        toast({
-          title: "Location detected",
-          description: "Your address has been filled in. Adjust the pin or edit the fields if needed.",
-        });
-      },
-      (error) => {
-        setLocationStatus("idle");
-        let title = "Location unavailable";
-        let message = "Could not detect your location.";
-        if (error.code === error.PERMISSION_DENIED) {
-          title = "Permission needed";
-          message = "Please allow location access in your browser.";
-        }
-        toast({ title, description: message, variant: "destructive" });
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
-    );
-  };
-
   const handleAddressSelect = (addressId: string) => {
     setSelectedAddressId(addressId);
     const address = addresses?.find((a) => a.id === addressId);
@@ -303,118 +225,6 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       form.setValue("deliveryProvince", address.province);
       form.setValue("deliveryPostalCode", address.postalCode);
     }
-  };
-
-  const handleSearchAddressSelect = (parsedAddress: ParsedAddress) => {
-    setSearchedAddress(parsedAddress);
-    form.setValue("deliveryAddress", parsedAddress.streetAddress);
-    form.setValue("deliveryCity", parsedAddress.city);
-    form.setValue("deliveryProvince", parsedAddress.province);
-    form.setValue("deliveryPostalCode", parsedAddress.postalCode);
-    form.setValue("locationLatitude", parsedAddress.latitude.toString());
-    form.setValue("locationLongitude", parsedAddress.longitude.toString());
-    setLocationStatus("success");
-  };
-
-  const provinceMap: Record<string, string> = {
-    "Gauteng": "Gauteng",
-    "Western Cape": "Western Cape",
-    "KwaZulu-Natal": "KwaZulu-Natal",
-    "Eastern Cape": "Eastern Cape",
-    "Free State": "Free State",
-    "Limpopo": "Limpopo",
-    "Mpumalanga": "Mpumalanga",
-    "Northern Cape": "Northern Cape",
-    "North West": "North West",
-    "North-West": "North West",
-  };
-
-  const searchAddressInline = useCallback(async (query: string) => {
-    if (query.length < 3) {
-      setAddressSuggestions([]);
-      setShowAddressSuggestions(false);
-      return;
-    }
-    setIsSearchingAddress(true);
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?` +
-        new URLSearchParams({
-          q: query,
-          format: "json",
-          addressdetails: "1",
-          countrycodes: "za",
-          limit: "5",
-        }),
-        { headers: { "Accept-Language": "en" } }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setAddressSuggestions(data);
-        setShowAddressSuggestions(data.length > 0);
-      }
-    } catch {
-      setAddressSuggestions([]);
-    } finally {
-      setIsSearchingAddress(false);
-    }
-  }, []);
-
-  const handleAddressInputChange = useCallback((value: string) => {
-    form.setValue("deliveryAddress", value);
-    if (addressDebounceRef.current) clearTimeout(addressDebounceRef.current);
-    if (value.length >= 3) {
-      addressDebounceRef.current = setTimeout(() => searchAddressInline(value), 400);
-    } else {
-      setAddressSuggestions([]);
-      setShowAddressSuggestions(false);
-    }
-  }, [searchAddressInline, form]);
-
-  const handleSuggestionSelect = useCallback(async (result: any) => {
-    const addr = result.address;
-    const road = addr.road || "";
-    const suburb = addr.suburb || "";
-    const city = addr.city || addr.town || addr.village || addr.municipality || "";
-    const rawProvince = addr.state || "";
-    const province = provinceMap[rawProvince] || rawProvince;
-
-    const currentInput = form.getValues("deliveryAddress") || "";
-    const userHouseNumber = currentInput.match(/^(\d+[A-Za-z]?\s)/)?.[1]?.trim() || "";
-    const apiHouseNumber = addr.house_number || "";
-    const houseNumber = apiHouseNumber || userHouseNumber;
-
-    const streetParts = [houseNumber, road].filter(Boolean);
-    const streetAddress = streetParts.length > 0
-      ? streetParts.join(" ") + (suburb ? `, ${suburb}` : "")
-      : suburb || result.display_name.split(",")[0];
-
-    form.setValue("deliveryAddress", streetAddress);
-    form.setValue("deliveryCity", city);
-    form.setValue("deliveryProvince", province);
-    form.setValue("locationLatitude", result.lat);
-    form.setValue("locationLongitude", result.lon);
-    setShowAddressSuggestions(false);
-    setAddressSuggestions([]);
-
-    form.setValue("deliveryPostalCode", "");
-  }, [form]);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (addressDropdownRef.current && !addressDropdownRef.current.contains(e.target as Node)) {
-        setShowAddressSuggestions(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleMapLocationChange = async (lat: number, lng: number) => {
-    form.setValue("locationLatitude", lat.toString());
-    form.setValue("locationLongitude", lng.toString());
-    // Reverse geocode to update address fields when pin is moved
-    await reverseGeocode(lat, lng);
   };
 
   const validateDiscountMutation = useMutation({
@@ -469,8 +279,14 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   const createOrderMutation = useMutation({
     mutationFn: async (data: CheckoutFormData) => {
       setIsProcessingPayment(true);
+      const fullName = `${data.customerFirstName} ${data.customerLastName}`.trim();
+      const fullAddress = data.deliveryApartment 
+        ? `${data.deliveryAddress}, ${data.deliveryApartment}` 
+        : data.deliveryAddress;
       const orderData = {
         ...data,
+        customerName: fullName,
+        deliveryAddress: fullAddress,
         items: cartItems.map((item) => ({
           productId: item.product.id,
           quantity: item.quantity,
@@ -644,25 +460,31 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
 
   // Step validation
   const canProceedFromStep1 = !!deliveryMethod;
-  const canProceedFromStep2a = form.watch("customerName")?.length >= 2 && 
+  
+  const contactValid = form.watch("customerFirstName")?.length >= 1 && 
+    form.watch("customerLastName")?.length >= 1 &&
     form.watch("customerEmail")?.includes("@") && 
     form.watch("customerPhone")?.length >= 10;
   
-  const canProceedFromStep2bDelivery = !!(
+  const deliveryAddressValid = !!(
     form.watch("deliveryAddress") && 
     form.watch("deliveryCity") && 
     form.watch("deliveryProvince") && 
     form.watch("deliveryPostalCode")
   );
   
-  const canProceedFromStep2bPickup = !!pickupStore;
+  const pickupValid = !!pickupStore;
+
+  const canProceedFromStep2 = contactValid && (
+    deliveryMethod === "delivery" ? deliveryAddressValid : pickupValid
+  );
 
   // Navigation handlers
   const goToNextStep = () => {
     if (currentStep === 1 && canProceedFromStep1) {
       setCurrentStep(2);
       window.scrollTo(0, 0);
-    } else if (currentStep === 2 && canProceedFromStep2a) {
+    } else if (currentStep === 2 && canProceedFromStep2) {
       const formData = form.getValues();
       const subtotal = cartItems.reduce((sum, item) => {
         const price = item.variantPrice ? parseFloat(item.variantPrice) : parseFloat(item.product.price);
@@ -673,7 +495,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: formData.customerEmail,
-          customerName: formData.customerName,
+          customerName: `${formData.customerFirstName} ${formData.customerLastName}`.trim(),
           customerPhone: formData.customerPhone,
           cartItems: cartItems.map(item => ({
             name: item.product.name,
@@ -685,27 +507,13 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
         }),
       }).catch(() => {});
       setCurrentStep(3);
-      if (deliveryMethod === "delivery") {
-        setAddressEntryMode(null);
-      }
       window.scrollTo(0, 0);
-    } else if (currentStep === 3) {
-      if (deliveryMethod === "delivery" && canProceedFromStep2bDelivery) {
-        setCurrentStep(4);
-        window.scrollTo(0, 0);
-      } else if (deliveryMethod === "pickup" && canProceedFromStep2bPickup) {
-        setCurrentStep(4);
-        window.scrollTo(0, 0);
-      }
     }
   };
 
   const goToPreviousStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
-      if (currentStep === 3) {
-        setAddressEntryMode(null);
-      }
       window.scrollTo(0, 0);
     }
   };
@@ -718,7 +526,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
   // Progress indicator
   const ProgressIndicator = () => (
     <div className="flex items-center justify-center gap-2 py-4">
-      {[1, 2, 3, 4].map((step) => (
+      {[1, 2, 3].map((step) => (
         <div key={step} className="flex items-center gap-2">
           <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
             currentStep === step 
@@ -729,7 +537,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
           }`}>
             {currentStep > step ? <Check className="h-5 w-5" /> : step}
           </div>
-          {step < 4 && (
+          {step < 3 && (
             <div className={`w-8 h-1 rounded-full ${currentStep > step ? "bg-green-500" : "bg-muted"}`} />
           )}
         </div>
@@ -938,15 +746,18 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
               </div>
             )}
 
-            {/* Step 2: Contact Information */}
+            {/* Step 2: Contact & Address/Store */}
             {currentStep === 2 && (
               <div className="space-y-6 animate-in fade-in duration-300" data-testid="step-contact">
                 <div className="text-center space-y-2">
-                  <h2 className="text-2xl font-bold">Contact Information</h2>
-                  <p className="text-muted-foreground">We'll use this to send order updates</p>
+                  <h2 className="text-2xl font-bold">Your Details</h2>
+                  <p className="text-muted-foreground">
+                    {deliveryMethod === "delivery" 
+                      ? "Contact info and delivery address" 
+                      : "Contact info and pickup store"}
+                  </p>
                 </div>
 
-                {/* Sign In Prompt / Logged In Indicator */}
                 {user?.user ? (
                   <div className="max-w-xl mx-auto">
                     <div className="flex items-center gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg">
@@ -963,17 +774,40 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
 
                 <Card className="max-w-xl mx-auto">
                   <CardContent className="p-6 space-y-4">
+                    <div className="grid grid-cols-2 gap-3">
+                      <FormField
+                        control={form.control}
+                        name="customerFirstName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input placeholder="First name" {...field} data-testid="input-first-name" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="customerLastName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input placeholder="Last name" {...field} data-testid="input-last-name" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
                     <FormField
                       control={form.control}
-                      name="customerName"
+                      name="customerCompany"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-muted-foreground" />
-                            Full Name
-                          </FormLabel>
                           <FormControl>
-                            <Input placeholder="John Doe" {...field} data-testid="input-name" />
+                            <Input placeholder="Company (optional)" {...field} data-testid="input-company" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -985,12 +819,8 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       name="customerEmail"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center gap-2">
-                            <Mail className="h-4 w-4 text-muted-foreground" />
-                            Email Address
-                          </FormLabel>
                           <FormControl>
-                            <Input type="email" placeholder="john@example.com" {...field} data-testid="input-email" />
+                            <Input type="email" placeholder="Email" {...field} data-testid="input-email" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -1002,17 +832,185 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                       name="customerPhone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center gap-2">
-                            <Phone className="h-4 w-4 text-muted-foreground" />
-                            Phone Number
-                          </FormLabel>
                           <FormControl>
-                            <Input placeholder="0123456789" {...field} data-testid="input-phone" />
+                            <Input placeholder="Phone" {...field} data-testid="input-phone" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
+
+                    {deliveryMethod === "delivery" && (
+                      <>
+                        <Separator className="my-2" />
+
+                        {addresses && addresses.length > 0 && (
+                          <div className="space-y-3">
+                            <Label className="text-sm font-medium">Your Saved Addresses</Label>
+                            {addresses.map((address) => (
+                              <Card
+                                key={address.id}
+                                className="cursor-pointer transition-all hover-elevate border-border"
+                                onClick={() => handleAddressSelect(address.id)}
+                                data-testid={`button-saved-address-${address.id}`}
+                              >
+                                <CardContent className="p-3 flex items-center gap-3">
+                                  <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    <MapPin className="h-4 w-4 text-primary" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-medium text-sm truncate">{address.addressLine}</p>
+                                    <p className="text-xs text-muted-foreground">{address.city}, {address.province}</p>
+                                  </div>
+                                  {address.isDefault && <Badge variant="secondary">Default</Badge>}
+                                </CardContent>
+                              </Card>
+                            ))}
+                            <div className="relative py-3">
+                              <Separator />
+                              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-4 text-xs text-muted-foreground">or enter new address</span>
+                            </div>
+                          </div>
+                        )}
+
+                        <FormField
+                          control={form.control}
+                          name="deliveryAddress"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input placeholder="Address" {...field} data-testid="input-address" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="deliveryApartment"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input placeholder="Apartment, suite, etc. (optional)" {...field} data-testid="input-apartment" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <FormField
+                            control={form.control}
+                            name="deliveryCity"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Input placeholder="City" {...field} data-testid="input-city" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="deliveryProvince"
+                            render={({ field }) => (
+                              <FormItem>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger data-testid="select-province">
+                                      <SelectValue placeholder="Province" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="Gauteng" data-testid="select-item-gauteng">Gauteng</SelectItem>
+                                    <SelectItem value="Western Cape" data-testid="select-item-western-cape">Western Cape</SelectItem>
+                                    <SelectItem value="KwaZulu-Natal" data-testid="select-item-kwazulu-natal">KwaZulu-Natal</SelectItem>
+                                    <SelectItem value="Eastern Cape" data-testid="select-item-eastern-cape">Eastern Cape</SelectItem>
+                                    <SelectItem value="Free State" data-testid="select-item-free-state">Free State</SelectItem>
+                                    <SelectItem value="Limpopo" data-testid="select-item-limpopo">Limpopo</SelectItem>
+                                    <SelectItem value="Mpumalanga" data-testid="select-item-mpumalanga">Mpumalanga</SelectItem>
+                                    <SelectItem value="Northern Cape" data-testid="select-item-northern-cape">Northern Cape</SelectItem>
+                                    <SelectItem value="North West" data-testid="select-item-north-west">North West</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="deliveryPostalCode"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Input placeholder="Postal code" {...field} data-testid="input-postal-code" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {deliveryMethod === "pickup" && (
+                      <>
+                        <Separator className="my-2" />
+                        <Label className="text-sm font-medium flex items-center gap-2">
+                          <Building2 className="h-4 w-4 text-muted-foreground" />
+                          Choose Pickup Store
+                        </Label>
+                        <div className="space-y-3">
+                          {Object.values(STORES).map((store) => (
+                            <Card
+                              key={store.id}
+                              className={`relative cursor-pointer transition-all duration-200 hover-elevate ${
+                                pickupStore === store.id
+                                  ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                                  : "border-border"
+                              }`}
+                              onClick={() => form.setValue("pickupStore", store.id)}
+                              data-testid={`button-store-${store.id}`}
+                            >
+                              <CardContent className="p-4">
+                                {pickupStore === store.id && (
+                                  <div className="absolute top-3 right-3 h-6 w-6 rounded-full bg-primary flex items-center justify-center">
+                                    <Check className="h-4 w-4 text-primary-foreground" />
+                                  </div>
+                                )}
+                                <div className="flex items-start gap-3">
+                                  <div className={`h-10 w-10 rounded-md flex items-center justify-center flex-shrink-0 ${
+                                    pickupStore === store.id ? "bg-primary/10" : "bg-muted"
+                                  }`}>
+                                    <Building2 className={`h-5 w-5 ${pickupStore === store.id ? "text-primary" : "text-muted-foreground"}`} />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <h3 className="font-bold">{store.name}</h3>
+                                    <p className="text-sm text-muted-foreground mt-0.5">{store.address}</p>
+                                    <p className="text-xs text-muted-foreground mt-1">{store.hours}</p>
+                                    <a
+                                      href={store.mapsUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline mt-2"
+                                      data-testid={`link-directions-${store.id}`}
+                                    >
+                                      <ExternalLink className="h-3.5 w-3.5" />
+                                      Get Directions
+                                    </a>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -1030,7 +1028,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                   <Button 
                     size="lg" 
                     onClick={goToNextStep} 
-                    disabled={!canProceedFromStep2a}
+                    disabled={!canProceedFromStep2}
                     className="gap-2 px-8"
                     data-testid="button-next-step2"
                   >
@@ -1041,433 +1039,8 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
               </div>
             )}
 
-            {/* Step 3: Address/Store Selection */}
+            {/* Step 3: Payment */}
             {currentStep === 3 && (
-              <div className="space-y-6 animate-in fade-in duration-300" data-testid="step-address">
-                
-                {/* Delivery Address Flow */}
-                {deliveryMethod === "delivery" && (
-                  <>
-                    {addressEntryMode === "location" ? (
-                      // Location-based address entry
-                      <div className="space-y-6">
-                        <div className="text-center space-y-2">
-                          <h2 className="text-2xl font-bold">Let's Find Your Address</h2>
-                          <p className="text-muted-foreground">Adjust the pin to your exact delivery location</p>
-                        </div>
-
-                        {locationStatus === "loading" && (
-                          <div className="flex items-center justify-center py-12">
-                            <div className="text-center space-y-4">
-                              <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-                              <p className="text-muted-foreground">Detecting your location...</p>
-                            </div>
-                          </div>
-                        )}
-
-                        {locationStatus === "success" && form.watch("locationLatitude") && (
-                          <div className="space-y-4 max-w-xl mx-auto">
-                            <div className="rounded-2xl overflow-hidden border shadow-lg">
-                              <Suspense fallback={
-                                <div className="w-full h-[300px] bg-muted/50 flex items-center justify-center">
-                                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                                </div>
-                              }>
-                                <LocationPicker
-                                  latitude={parseFloat(form.watch("locationLatitude") || "0")}
-                                  longitude={parseFloat(form.watch("locationLongitude") || "0")}
-                                  onLocationChange={handleMapLocationChange}
-                                />
-                              </Suspense>
-                            </div>
-
-                            {/* Editable address fields pre-filled from location */}
-                            <Card>
-                              <CardContent className="p-4 space-y-4">
-                                <p className="text-sm text-muted-foreground flex items-center gap-2">
-                                  <MapPin className="h-4 w-4" />
-                                  Drag the pin above to adjust, or edit the fields below
-                                </p>
-                                
-                                <FormField
-                                  control={form.control}
-                                  name="deliveryAddress"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel className="flex items-center gap-2">
-                                        <Home className="h-4 w-4 text-muted-foreground" />
-                                        Street Address
-                                      </FormLabel>
-                                      <FormControl>
-                                        <Textarea placeholder="123 Main Street" {...field} data-testid="input-address-location" className="min-h-[60px]" />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                  <FormField
-                                    control={form.control}
-                                    name="deliveryCity"
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>City</FormLabel>
-                                        <FormControl>
-                                          <Input placeholder="Pretoria" {...field} data-testid="input-city-location" />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-
-                                  <FormField
-                                    control={form.control}
-                                    name="deliveryProvince"
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>Province</FormLabel>
-                                        <Select onValueChange={field.onChange} value={field.value}>
-                                          <FormControl>
-                                            <SelectTrigger data-testid="select-province-location">
-                                              <SelectValue placeholder="Select" />
-                                            </SelectTrigger>
-                                          </FormControl>
-                                          <SelectContent>
-                                            <SelectItem value="Gauteng">Gauteng</SelectItem>
-                                            <SelectItem value="Western Cape">Western Cape</SelectItem>
-                                            <SelectItem value="KwaZulu-Natal">KwaZulu-Natal</SelectItem>
-                                            <SelectItem value="Eastern Cape">Eastern Cape</SelectItem>
-                                            <SelectItem value="Free State">Free State</SelectItem>
-                                            <SelectItem value="Limpopo">Limpopo</SelectItem>
-                                            <SelectItem value="Mpumalanga">Mpumalanga</SelectItem>
-                                            <SelectItem value="Northern Cape">Northern Cape</SelectItem>
-                                            <SelectItem value="North West">North West</SelectItem>
-                                          </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-
-                                  <FormField
-                                    control={form.control}
-                                    name="deliveryPostalCode"
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>Postal Code</FormLabel>
-                                        <FormControl>
-                                          <Input placeholder="0001" {...field} data-testid="input-postal-code-location" />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-                                </div>
-                              </CardContent>
-                            </Card>
-                          </div>
-                        )}
-
-                        {(locationStatus === "idle" || locationStatus === "error") && (
-                          <div className="flex flex-col items-center gap-4 py-8">
-                            <Button onClick={handleShareLocation} size="lg" className="gap-2" data-testid="button-retry-location">
-                              <Navigation className="h-5 w-5" />
-                              Try Again
-                            </Button>
-                            <Button variant="ghost" onClick={() => setAddressEntryMode("manual")} className="text-primary underline-offset-4 hover:underline" data-testid="button-switch-manual">
-                              Enter address manually instead
-                            </Button>
-                          </div>
-                        )}
-
-                        <div className="flex justify-center gap-3 pt-4">
-                          <Button 
-                            variant="outline" 
-                            size="lg" 
-                            onClick={() => setAddressEntryMode(null)} 
-                            className="gap-2"
-                            data-testid="button-back-address-mode"
-                          >
-                            <ChevronLeft className="h-4 w-4" />
-                            Back
-                          </Button>
-                          <Button 
-                            size="lg" 
-                            onClick={goToNextStep}
-                            disabled={!canProceedFromStep2bDelivery}
-                            className="gap-2 px-8"
-                            data-testid="button-next-step3-location"
-                          >
-                            Next
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      // Manual address entry (shown directly)
-                      <div className="space-y-6">
-                        <div className="text-center space-y-2">
-                          <h2 className="text-2xl font-bold">Enter Your Delivery Address</h2>
-                          <p className="text-muted-foreground">Fill in your delivery details below</p>
-                        </div>
-
-                        {/* Saved addresses for logged in users */}
-                        {addresses && addresses.length > 0 && (
-                          <div className="max-w-xl mx-auto space-y-3">
-                            <Label className="text-sm font-medium">Your Saved Addresses</Label>
-                            {addresses.map((address) => (
-                              <Card
-                                key={address.id}
-                                className="cursor-pointer transition-all hover-elevate border-border"
-                                onClick={() => {
-                                  handleAddressSelect(address.id);
-                                  setCurrentStep(4);
-                                }}
-                                data-testid={`button-saved-address-${address.id}`}
-                              >
-                                <CardContent className="p-4 flex items-center gap-3">
-                                  <div className="h-10 w-10 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                    <MapPin className="h-5 w-5 text-primary" />
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="font-medium truncate">{address.addressLine}</p>
-                                    <p className="text-sm text-muted-foreground">{address.city}, {address.province}</p>
-                                  </div>
-                                  {address.isDefault && <Badge variant="secondary">Default</Badge>}
-                                </CardContent>
-                              </Card>
-                            ))}
-                            <div className="relative py-4">
-                              <Separator />
-                              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-4 text-sm text-muted-foreground">or enter new address</span>
-                            </div>
-                          </div>
-                        )}
-
-                        <Card className="max-w-xl mx-auto">
-                          <CardContent className="p-6 space-y-4">
-                            <FormField
-                              control={form.control}
-                              name="deliveryAddress"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="flex items-center gap-2">
-                                    <Home className="h-4 w-4 text-muted-foreground" />
-                                    Street Address
-                                  </FormLabel>
-                                  <div className="relative" ref={addressDropdownRef}>
-                                    <FormControl>
-                                      <div className="relative">
-                                        <Input
-                                          placeholder="Start typing your address..."
-                                          value={field.value}
-                                          onChange={(e) => handleAddressInputChange(e.target.value)}
-                                          onFocus={() => addressSuggestions.length > 0 && setShowAddressSuggestions(true)}
-                                          data-testid="input-address"
-                                          autoComplete="off"
-                                        />
-                                        {isSearchingAddress && (
-                                          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
-                                        )}
-                                      </div>
-                                    </FormControl>
-                                    {showAddressSuggestions && addressSuggestions.length > 0 && (
-                                      <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-lg shadow-lg overflow-hidden">
-                                        <ul className="py-1 max-h-64 overflow-y-auto">
-                                          {addressSuggestions.map((result) => (
-                                            <li key={result.place_id}>
-                                              <button
-                                                type="button"
-                                                className="w-full px-3 py-2.5 text-left hover-elevate flex items-start gap-3 transition-colors"
-                                                onClick={() => handleSuggestionSelect(result)}
-                                                data-testid={`button-address-suggestion-${result.place_id}`}
-                                              >
-                                                <MapPin className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
-                                                <span className="text-sm leading-tight line-clamp-2">{result.display_name}</span>
-                                              </button>
-                                            </li>
-                                          ))}
-                                        </ul>
-                                      </div>
-                                    )}
-                                  </div>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                              <FormField
-                                control={form.control}
-                                name="deliveryCity"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>City</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="Pretoria" {...field} data-testid="input-city" />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-
-                              <FormField
-                                control={form.control}
-                                name="deliveryProvince"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Province</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                      <FormControl>
-                                        <SelectTrigger data-testid="select-province">
-                                          <SelectValue placeholder="Select" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent>
-                                        <SelectItem value="Gauteng" data-testid="select-item-gauteng">Gauteng</SelectItem>
-                                        <SelectItem value="Western Cape" data-testid="select-item-western-cape">Western Cape</SelectItem>
-                                        <SelectItem value="KwaZulu-Natal" data-testid="select-item-kwazulu-natal">KwaZulu-Natal</SelectItem>
-                                        <SelectItem value="Eastern Cape" data-testid="select-item-eastern-cape">Eastern Cape</SelectItem>
-                                        <SelectItem value="Free State" data-testid="select-item-free-state">Free State</SelectItem>
-                                        <SelectItem value="Limpopo" data-testid="select-item-limpopo">Limpopo</SelectItem>
-                                        <SelectItem value="Mpumalanga" data-testid="select-item-mpumalanga">Mpumalanga</SelectItem>
-                                        <SelectItem value="Northern Cape" data-testid="select-item-northern-cape">Northern Cape</SelectItem>
-                                        <SelectItem value="North West" data-testid="select-item-north-west">North West</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-
-                              <FormField
-                                control={form.control}
-                                name="deliveryPostalCode"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Postal Code</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="e.g. 0182" {...field} data-testid="input-postal-code" />
-                                    </FormControl>
-                                    {!field.value && (
-                                      <p className="text-xs text-amber-600 dark:text-amber-400">Please enter your postal code</p>
-                                    )}
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                          </CardContent>
-                        </Card>
-
-                        <div className="flex justify-center gap-3 pt-4">
-                          <Button 
-                            variant="outline" 
-                            size="lg" 
-                            onClick={goToPreviousStep} 
-                            className="gap-2"
-                            data-testid="button-back-step3"
-                          >
-                            <ChevronLeft className="h-4 w-4" />
-                            Back
-                          </Button>
-                          <Button 
-                            size="lg" 
-                            onClick={goToNextStep}
-                            disabled={!canProceedFromStep2bDelivery}
-                            className="gap-2 px-8"
-                            data-testid="button-next-step3-delivery"
-                          >
-                            Next
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </>
-                )}
-
-                {/* Pickup Store Selection */}
-                {deliveryMethod === "pickup" && (
-                  <div className="space-y-6">
-                    <div className="text-center space-y-2">
-                      <h2 className="text-2xl font-bold">Choose Your Pickup Store</h2>
-                      <p className="text-muted-foreground">Select the store most convenient for you</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-4 max-w-xl mx-auto">
-                      {Object.values(STORES).map((store) => (
-                        <Card
-                          key={store.id}
-                          className={`relative cursor-pointer transition-all duration-200 hover-elevate ${
-                            pickupStore === store.id
-                              ? "border-primary bg-primary/5 shadow-lg ring-2 ring-primary/20"
-                              : "border-border"
-                          }`}
-                          onClick={() => form.setValue("pickupStore", store.id)}
-                          data-testid={`button-store-${store.id}`}
-                        >
-                          <CardContent className="p-5">
-                            {pickupStore === store.id && (
-                              <div className="absolute top-4 right-4 h-6 w-6 rounded-full bg-primary flex items-center justify-center">
-                                <Check className="h-4 w-4 text-primary-foreground" />
-                              </div>
-                            )}
-                            
-                            <div className="flex items-start gap-4">
-                              <div className={`h-12 w-12 rounded-md flex items-center justify-center flex-shrink-0 ${
-                                pickupStore === store.id ? "bg-primary/10" : "bg-muted"
-                              }`}>
-                                <Building2 className={`h-6 w-6 ${pickupStore === store.id ? "text-primary" : "text-muted-foreground"}`} />
-                              </div>
-                              
-                              <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-lg">{store.name}</h3>
-                                <p className="text-sm text-muted-foreground mt-1">{store.address}</p>
-                                <p className="text-xs text-muted-foreground mt-2">{store.hours}</p>
-                                
-                                <a
-                                  href={store.mapsUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline mt-3"
-                                  data-testid={`link-directions-${store.id}`}
-                                >
-                                  <ExternalLink className="h-4 w-4" />
-                                  Get Directions
-                                </a>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-
-                    <div className="flex justify-center gap-3 pt-4">
-                      <Button variant="outline" size="lg" onClick={goToPreviousStep} className="gap-2" data-testid="button-back-step3-pickup">
-                        <ChevronLeft className="h-4 w-4" />
-                        Back
-                      </Button>
-                      <Button 
-                        size="lg" 
-                        onClick={goToNextStep}
-                        disabled={!canProceedFromStep2bPickup}
-                        className="gap-2 px-8"
-                        data-testid="button-next-step3-pickup"
-                      >
-                        Next
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Step 4: Payment */}
-            {currentStep === 4 && (
               <div className="space-y-6 animate-in fade-in duration-300" data-testid="step-payment">
                 <div className="text-center space-y-2">
                   <h2 className="text-2xl font-bold">Payment Method</h2>
@@ -1598,7 +1171,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                             <User className="h-3.5 w-3.5" />
                             Contact
                           </Label>
-                          <p className="text-sm font-medium" data-testid="text-summary-name">{form.watch("customerName")}</p>
+                          <p className="text-sm font-medium" data-testid="text-summary-name">{form.watch("customerFirstName")} {form.watch("customerLastName")}</p>
                           <p className="text-sm text-muted-foreground" data-testid="text-summary-email">{form.watch("customerEmail")}</p>
                           <p className="text-sm text-muted-foreground" data-testid="text-summary-phone">{form.watch("customerPhone")}</p>
                         </div>
@@ -1694,7 +1267,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
                     data-testid="button-back-step4"
                   >
                     <ChevronLeft className="h-4 w-4" />
-                    Back to Address
+                    Back
                   </Button>
                 </div>
               </div>
@@ -1704,7 +1277,7 @@ export default function Checkout({ cartItems, onClearCart }: CheckoutProps) {
       </div>
 
       {/* Mobile Order Summary (Collapsible at bottom) */}
-      {currentStep < 4 && (
+      {currentStep < 3 && (
         <div className="lg:hidden sticky bottom-0 bg-card border-t shadow-2xl">
           <Collapsible open={orderSummaryOpen} onOpenChange={setOrderSummaryOpen}>
             <CollapsibleTrigger asChild>

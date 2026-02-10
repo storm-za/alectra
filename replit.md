@@ -62,16 +62,17 @@ Preferred communication style: Simple, everyday language.
 - **Christmas Theme**: Currently disabled (post-December 2025). Theme files preserved at `client/src/components/ChristmasTheme.tsx` and `client/src/styles/christmas-theme.css` for future seasonal re-activation.
 
 ### Checkout Wizard
-- **Architecture**: 4-step wizard with modern, mobile-first UX designed for conversion optimization.
+- **Architecture**: 3-step wizard with modern, mobile-first UX designed for conversion optimization.
 - **Step 1 - Method Selection**: Choose between Delivery (nationwide via The Courier Guy) or Pickup (Pretoria stores).
-- **Step 2 - Contact Information**: Full name, email, phone fields with validation.
-- **Step 3 - Address/Store**: 
-  - For Delivery: "Use My Current Location" (GPS + interactive map) or "Let Me Enter My Address" (manual form with address search via Nominatim API).
-  - For Pickup: Select between Wonderboom Store (107A Dassiebos Ave) or Hatfield Store (1234 Burnett St) with Google Maps directions.
-- **Step 4 - Payment**: Select Yoco or Paystack, apply discount codes, view order summary, and complete payment.
-- **UI Components**: Uses shadcn Card components with hover-elevate patterns for selection cards; 4-step progress indicator at top.
+- **Step 2 - Your Details**: Combined contact info + address/store in one step. Placeholder-only input style (no labels above fields).
+  - Contact fields: First name, Last name (side-by-side), Company (optional), Email, Phone.
+  - For Delivery: Address, Apartment/suite (optional), City, Province (dropdown), Postal code. Plain text inputs only (no autocomplete).
+  - For Pickup: Select between Wonderboom Store or Hatfield Store with Google Maps directions.
+- **Step 3 - Payment**: Select Yoco or Paystack, apply discount codes, view order summary, and complete payment.
+- **UI Components**: Uses shadcn Card components with hover-elevate patterns for selection cards; 3-step progress indicator at top.
 - **Features**: Trust banner with security messaging, collapsible mobile order summary, WhatsApp support button.
-- **Validation**: Zod schema requires address fields for delivery, pickup store for pickup; contact fields always required.
+- **Validation**: Zod schema requires address fields for delivery, pickup store for pickup; contact fields (first name, last name, email, phone) always required.
+- **Name Handling**: First name and last name are combined into `customerName` when creating orders and abandoned cart entries.
 
 ### Discount Code System
 - **Types**: Three discount types supported: `free_shipping` (applies to shipping cost), `fixed_amount` (direct rand deduction), `percentage` (0-100% of subtotal).
