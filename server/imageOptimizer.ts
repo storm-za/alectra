@@ -6,7 +6,7 @@ import { ObjectStorageService, ObjectNotFoundError } from './objectStorage';
 
 // In-memory cache for optimized images
 const imageCache = new Map<string, { buffer: Buffer; mimeType: string; timestamp: number }>();
-const CACHE_MAX_SIZE = 100; // Max number of images to cache in memory
+const CACHE_MAX_SIZE = 500; // Max number of images to cache in memory
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
 // Allowed image sizes for security (prevent arbitrary size attacks)
@@ -242,6 +242,32 @@ export async function optimizeImage(
     console.error(`Error optimizing image ${imagePath}:`, error);
     return null;
   }
+}
+
+export async function warmImageCache(): Promise<void> {
+  const productsDir = 'attached_assets/products';
+  if (!fs.existsSync(productsDir)) return;
+  
+  const files = fs.readdirSync(productsDir).filter(f => 
+    /\.(jpg|jpeg|png|webp|gif)$/i.test(f)
+  );
+  
+  console.log(`Warming image cache for ${files.length} product images (400px WebP for cards)...`);
+  let warmed = 0;
+  
+  const batchSize = 10;
+  for (let i = 0; i < files.length; i += batchSize) {
+    const batch = files.slice(i, i + batchSize);
+    await Promise.all(batch.map(async (file) => {
+      try {
+        const imagePath = `${productsDir}/${file}`;
+        await optimizeImage(imagePath, { width: 400, quality: 80, format: 'webp' });
+        warmed++;
+      } catch {}
+    }));
+  }
+  
+  console.log(`Image cache warmed: ${warmed} product card images ready`);
 }
 
 // Helper to parse Accept header for best format

@@ -5,7 +5,7 @@ import compression from "compression";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { getMetaForPath, injectMetaTags, getProductLinksForCategory, injectProductLinks } from "./seo";
-import { optimizeImage, getBestImageFormat } from "./imageOptimizer";
+import { optimizeImage, getBestImageFormat, warmImageCache } from "./imageOptimizer";
 import { renderProductSSR } from "./productSSR";
 
 const app = express();
@@ -284,5 +284,6 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    warmImageCache().catch(err => console.error('Image cache warmup error:', err));
   });
 })();

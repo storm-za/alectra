@@ -15,24 +15,38 @@ interface OptimizedImageProps {
 
 const PLACEHOLDER_IMAGE = '/attached_assets/placeholder.png';
 
+function getStaticWebpPath(src: string): string | null {
+  const cleaned = src.replace(/^\//, '');
+  if (cleaned.startsWith('attached_assets/products/')) {
+    const fileName = cleaned.split('/').pop() || '';
+    const baseName = fileName.replace(/\.[^.]+$/, '');
+    return `/attached_assets/optimized/products/${baseName}.webp`;
+  }
+  return null;
+}
+
 function getOptimizedUrl(src: string, width: number, quality: number = 80): string {
   if (!src) return PLACEHOLDER_IMAGE;
   
-  // Skip optimization for external URLs (Shopify CDN, etc.)
   if (src.startsWith('http://') || src.startsWith('https://')) {
     return src;
   }
   
-  // Remove leading slash for the /img endpoint
-  const cleanPath = src.startsWith('/') ? src.slice(1) : src;
+  const staticPath = getStaticWebpPath(src);
+  if (staticPath) {
+    return staticPath;
+  }
   
-  // Handle object storage paths (e.g., /objects/uploads/uuid)
-  // These are now optimized through the /img endpoint
+  const cleanPath = src.startsWith('/') ? src.slice(1) : src;
   return `/img/${cleanPath}?w=${width}&q=${quality}`;
 }
 
 function generateSrcSet(src: string, quality: number = 80): string {
   if (!src || src.startsWith('http://') || src.startsWith('https://')) {
+    return '';
+  }
+  
+  if (getStaticWebpPath(src)) {
     return '';
   }
   
@@ -156,5 +170,7 @@ export function ProductImage({
 }
 
 export function getOptimizedImageUrl(src: string, width: number = 800): string {
+  const staticPath = getStaticWebpPath(src);
+  if (staticPath) return staticPath;
   return getOptimizedUrl(src, width);
 }
