@@ -132,6 +132,16 @@ export async function renderProductSSR(slug: string, templateHtml: string): Prom
 
     let html = templateHtml;
 
+    html = html.replace(/<!-- Preload LCP hero images[^>]*>[\s\S]*?<link rel="preload"[^>]*hero-background-mobile[^>]*>/m, '');
+    html = html.replace(/<link rel="preload"[^>]*hero-background-desktop[^>]*>\s*/g, '');
+    html = html.replace(/<link rel="preload"[^>]*hero-background-mobile[^>]*>\s*/g, '');
+
+    const optimizedImgPath = `/img/${product.imageUrl.replace(/^\//, "")}?w=600&q=80`;
+    html = html.replace(
+      /<link rel="preload" href="https:\/\/fonts\.gstatic\.com/,
+      `<link rel="preload" href="${optimizedImgPath}" as="image" fetchpriority="high">\n    <link rel="preload" href="https://fonts.gstatic.com`
+    );
+
     html = html.replace(/<title>[^<]*<\/title>/, `<title>${escapeHtml(title)}</title>`);
     html = html.replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${escapeHtml(description)}">`);
     html = html.replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${canonical}">`);
@@ -146,8 +156,6 @@ export async function renderProductSSR(slug: string, templateHtml: string): Prom
 
     const productJsonLd = buildProductJsonLd(product, reviewData);
     html = html.replace("</head>", `<script type="application/ld+json">${productJsonLd}</script>\n  </head>`);
-
-    html = html.replace("</head>", `<link rel="preload" href="/img/${product.imageUrl.replace(/^\//, "")}?w=600&q=80" as="image">\n  </head>`);
 
     const ssrProductContent = buildProductHtml(product);
     const ssrDataScript = `<script>window.__SSR_PRODUCT__=${JSON.stringify(product).replace(/</g, "\\u003c")};window.__SSR_REVIEW_DATA__=${JSON.stringify(reviewData || null)};</script>`;
