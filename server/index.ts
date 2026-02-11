@@ -6,6 +6,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { getMetaForPath, injectMetaTags, getProductLinksForCategory, injectProductLinks } from "./seo";
 import { optimizeImage, getBestImageFormat } from "./imageOptimizer";
+import { renderProductSSR } from "./productSSR";
 
 const app = express();
 
@@ -157,13 +158,47 @@ app.use((req, res, next) => {
     throw err;
   });
 
+  // Product Page SSR - serve fully rendered HTML for /products/:slug
+  // This runs before the generic SSR meta middleware and Vite catch-all
+  app.get("/products/:slug", async (req: Request, res: Response, next: NextFunction) => {
+    const slug = req.params.slug;
+    if (!slug || slug.startsWith("api") || slug.match(/\.(js|css|map|json)$/)) {
+      return next();
+    }
+
+    try {
+      const fs = await import("fs");
+      const pathModule = await import("path");
+      let templateHtml: string;
+
+      if (app.get("env") === "development") {
+        const clientTemplate = pathModule.default.resolve(import.meta.dirname, "..", "client", "index.html");
+        templateHtml = await fs.promises.readFile(clientTemplate, "utf-8");
+      } else {
+        const distPath = pathModule.default.resolve(import.meta.dirname, "public");
+        const indexPath = pathModule.default.resolve(distPath, "index.html");
+        templateHtml = await fs.promises.readFile(indexPath, "utf-8");
+      }
+
+      const ssrHtml = await renderProductSSR(slug, templateHtml);
+      if (!ssrHtml) {
+        return next();
+      }
+
+      res.status(200).set({ "Content-Type": "text/html" }).send(ssrHtml);
+    } catch (error) {
+      console.error("Product SSR route error:", error);
+      next();
+    }
+  });
+
   // SSR Meta Tag Injection Middleware
   // Intercepts HTML responses and injects dynamic SEO meta tags for crawlers
   app.use((req: Request, res: Response, next: NextFunction) => {
-    // Skip API routes and static assets completely - don't wrap res.end at all
     if (req.path.startsWith('/api') || 
         req.path.startsWith('/attached_assets') ||
         req.path.startsWith('/feeds') ||
+        req.path.match(/^\/products\/[^\/]+$/) ||
         req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|webp|map)$/)) {
       return next();
     }

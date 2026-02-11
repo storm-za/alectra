@@ -47,6 +47,15 @@ Preferred communication style: Simple, everyday language.
 - **Migration Process**: Automated scraping from Shopify's public JSON API, normalized data export, local image storage, SKU generation, and batch insertion. Includes exact review imports.
 - **Data Quality**: VAT-inclusive prices, local image storage, truncated descriptions, brand detection, and default stock levels.
 
+### Product Page SSR (Server-Side Rendering)
+- **Purpose**: Pre-renders product detail pages (`/products/:slug`) on the server for faster LCP, better Core Web Vitals, and full SEO visibility for Google Shopping ads.
+- **Architecture**: Express route in `server/index.ts` intercepts `/products/:slug` before Vite's catch-all. Reads the `client/index.html` template, fetches product data from DB, and injects pre-rendered HTML content, meta tags, structured data, and `window.__SSR_PRODUCT__` data.
+- **Renderer**: `server/productSSR.ts` handles HTML generation including product image (with preload), breadcrumbs, name, price, stock status, description, and trust badges.
+- **Client Hydration**: `client/src/main.tsx` checks for `window.__SSR_PRODUCT__` and seeds React Query cache to prevent double API fetch. SSR HTML is removed before React renders.
+- **Meta Tags**: Title, description, canonical, Open Graph (including `og:type=product`), Twitter Card, and Schema.org Product JSON-LD are all set server-side in the HTML `<head>`.
+- **Scope**: Only product detail pages use full SSR. All other pages use the existing SPA + SSR meta injection middleware (`server/seo.ts`).
+- **Fallback**: If product not found or SSR fails, falls back to normal SPA rendering.
+
 ### Google Merchant Center Integration
 - **Google Shopping Product Feed**: Dynamic RSS 2.0 feed generated from the live database, excluding discontinued/out-of-stock items, updated hourly.
 - **Attributes**: Includes standard Google Shopping attributes like `g:id`, `g:title`, `g:price`, `g:availability`, `g:brand`, `g:product_type`, `g:google_product_category`.
