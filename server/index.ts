@@ -158,47 +158,13 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // Product Page SSR - serve fully rendered HTML for /products/:slug
-  // This runs before the generic SSR meta middleware and Vite catch-all
-  app.get("/products/:slug", async (req: Request, res: Response, next: NextFunction) => {
-    const slug = req.params.slug;
-    if (!slug || slug.startsWith("api") || slug.match(/\.(js|css|map|json)$/)) {
-      return next();
-    }
-
-    try {
-      const fs = await import("fs");
-      const pathModule = await import("path");
-      let templateHtml: string;
-
-      if (app.get("env") === "development") {
-        const clientTemplate = pathModule.default.resolve(import.meta.dirname, "..", "client", "index.html");
-        templateHtml = await fs.promises.readFile(clientTemplate, "utf-8");
-      } else {
-        const distPath = pathModule.default.resolve(import.meta.dirname, "public");
-        const indexPath = pathModule.default.resolve(distPath, "index.html");
-        templateHtml = await fs.promises.readFile(indexPath, "utf-8");
-      }
-
-      const ssrHtml = await renderProductSSR(slug, templateHtml);
-      if (!ssrHtml) {
-        return next();
-      }
-
-      res.status(200).set({ "Content-Type": "text/html" }).send(ssrHtml);
-    } catch (error) {
-      console.error("Product SSR route error:", error);
-      next();
-    }
-  });
-
   // SSR Meta Tag Injection Middleware
   // Intercepts HTML responses and injects dynamic SEO meta tags for crawlers
+  // For product pages, also injects pre-rendered HTML content and hydration data
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.path.startsWith('/api') || 
         req.path.startsWith('/attached_assets') ||
         req.path.startsWith('/feeds') ||
-        req.path.match(/^\/products\/[^\/]+$/) ||
         req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|webp|map)$/)) {
       return next();
     }
@@ -229,22 +195,44 @@ app.use((req, res, next) => {
       const htmlBuffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, encoding);
       
       const requestPath = req.originalUrl || req.path;
+      const productMatch = requestPath.split('?')[0].match(/^\/products\/([^\/]+)$/);
       
-      Promise.all([
-        getMetaForPath(requestPath),
-        getProductLinksForCategory(requestPath)
-      ])
-        .then(([meta, productLinksHtml]) => {
-          let html = htmlBuffer.toString('utf-8');
-          html = injectMetaTags(html, meta);
-          html = injectProductLinks(html, productLinksHtml);
-          res.setHeader('content-length', Buffer.byteLength(html, 'utf-8'));
-          originalEnd(html, 'utf-8', callback);
-        })
-        .catch(e => {
-          console.error('SSR injection error:', e);
-          originalEnd(htmlBuffer, encoding, callback);
-        });
+      if (productMatch) {
+        renderProductSSR(productMatch[1], htmlBuffer.toString('utf-8'))
+          .then(ssrHtml => {
+            if (ssrHtml) {
+              res.setHeader('content-length', Buffer.byteLength(ssrHtml, 'utf-8'));
+              originalEnd(ssrHtml, 'utf-8', callback);
+            } else {
+              return getMetaForPath(requestPath).then(meta => {
+                let html = htmlBuffer.toString('utf-8');
+                html = injectMetaTags(html, meta);
+                res.setHeader('content-length', Buffer.byteLength(html, 'utf-8'));
+                originalEnd(html, 'utf-8', callback);
+              });
+            }
+          })
+          .catch(e => {
+            console.error('Product SSR error:', e);
+            originalEnd(htmlBuffer, encoding, callback);
+          });
+      } else {
+        Promise.all([
+          getMetaForPath(requestPath),
+          getProductLinksForCategory(requestPath)
+        ])
+          .then(([meta, productLinksHtml]) => {
+            let html = htmlBuffer.toString('utf-8');
+            html = injectMetaTags(html, meta);
+            html = injectProductLinks(html, productLinksHtml);
+            res.setHeader('content-length', Buffer.byteLength(html, 'utf-8'));
+            originalEnd(html, 'utf-8', callback);
+          })
+          .catch(e => {
+            console.error('SSR injection error:', e);
+            originalEnd(htmlBuffer, encoding, callback);
+          });
+      }
       
       return res;
     } as typeof res.end;
