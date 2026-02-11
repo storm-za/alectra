@@ -1,7 +1,21 @@
 import { storage } from "./storage";
 import type { Product } from "@shared/schema";
+import path from "path";
+import fs from "fs";
 
 const BASE_URL = "https://alectra.co.za";
+
+function getOptimizedImagePath(imageUrl: string): string {
+  const cleaned = imageUrl.replace(/^\//, "");
+  if (cleaned.startsWith("attached_assets/products/")) {
+    const baseName = path.parse(cleaned).name;
+    const optimizedPath = `attached_assets/optimized/products/${baseName}.webp`;
+    if (fs.existsSync(optimizedPath)) {
+      return `/${optimizedPath}`;
+    }
+  }
+  return `/img/${cleaned}?w=600&q=80`;
+}
 
 function escapeHtml(str: string): string {
   return str
@@ -28,9 +42,9 @@ function formatPrice(price: string): string {
 function buildProductHtml(product: Product): string {
   const cleanDesc = stripHtml(product.description);
   const truncatedDesc = cleanDesc.length > 300 ? cleanDesc.substring(0, 297) + "..." : cleanDesc;
-  const imageUrl = getImageUrl(product.imageUrl);
-  const galleryImages = product.imageGallery || [];
+  const galleryImages = product.images || [];
   const inStock = product.stock > 0;
+  const optimizedSrc = getOptimizedImagePath(product.imageUrl);
 
   return `
     <div id="ssr-product-content" style="max-width:800px;margin:0 auto;padding:16px;font-family:'Inter',system-ui,sans-serif;">
@@ -42,7 +56,7 @@ function buildProductHtml(product: Product): string {
       <div style="display:flex;gap:24px;flex-wrap:wrap;">
         <div style="flex:1;min-width:280px;max-width:400px;">
           <img 
-            src="/img/${product.imageUrl.replace(/^\//, "")}?w=600&q=80" 
+            src="${optimizedSrc}" 
             alt="${escapeHtml(product.name)}" 
             width="600" 
             height="600" 
@@ -52,7 +66,7 @@ function buildProductHtml(product: Product): string {
           />
           ${galleryImages.length > 0 ? `
           <div style="display:flex;gap:8px;margin-top:8px;overflow-x:auto;">
-            ${galleryImages.slice(0, 4).map(img => `
+            ${galleryImages.slice(0, 4).map((img: string) => `
               <img src="/img/${img.replace(/^\//, "")}?w=100&q=60" alt="${escapeHtml(product.name)}" width="80" height="80" style="width:80px;height:80px;object-fit:cover;border-radius:4px;background:#f5f5f5;" loading="lazy" />
             `).join("")}
           </div>` : ""}
@@ -136,10 +150,10 @@ export async function renderProductSSR(slug: string, templateHtml: string): Prom
     html = html.replace(/<link rel="preload"[^>]*hero-background-desktop[^>]*>\s*/g, '');
     html = html.replace(/<link rel="preload"[^>]*hero-background-mobile[^>]*>\s*/g, '');
 
-    const optimizedImgPath = `/img/${product.imageUrl.replace(/^\//, "")}?w=600&q=80`;
+    const optimizedImgPath = getOptimizedImagePath(product.imageUrl);
     html = html.replace(
       /<link rel="preload" href="https:\/\/fonts\.gstatic\.com/,
-      `<link rel="preload" href="${optimizedImgPath}" as="image" fetchpriority="high">\n    <link rel="preload" href="https://fonts.gstatic.com`
+      `<link rel="preload" href="${optimizedImgPath}" as="image" type="image/webp" fetchpriority="high">\n    <link rel="preload" href="https://fonts.gstatic.com`
     );
 
     html = html.replace(/<title>[^<]*<\/title>/, `<title>${escapeHtml(title)}</title>`);
