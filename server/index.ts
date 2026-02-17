@@ -8,6 +8,14 @@ import { getMetaForPath, injectMetaTags, getProductLinksForCategory, injectProdu
 import { optimizeImage, getBestImageFormat, warmImageCache } from "./imageOptimizer";
 import { renderProductSSR } from "./productSSR";
 
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception (kept alive):', err.message);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled Rejection (kept alive):', reason);
+});
+
 const app = express();
 
 // Enable GZIP/Brotli compression for all responses
@@ -50,6 +58,9 @@ app.use(
     store: new PgStore({
       conString: process.env.DATABASE_URL,
       createTableIfMissing: true,
+      errorLog: (err: Error) => {
+        console.error('Session store error:', err.message);
+      },
     }),
     secret: process.env.SESSION_SECRET || "alectra-solutions-secret-key-change-in-production",
     resave: false,
@@ -154,8 +165,10 @@ app.use((req, res, next) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
-    res.status(status).json({ message });
-    throw err;
+    console.error('Express error:', err.message || err);
+    if (!res.headersSent) {
+      res.status(status).json({ message });
+    }
   });
 
   // SSR Meta Tag Injection Middleware
