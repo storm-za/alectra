@@ -69,6 +69,8 @@ export default function AdminProducts() {
   const [newVariantSku, setNewVariantSku] = useState("");
   const [newVariantStock, setNewVariantStock] = useState("0");
   const [editingVariant, setEditingVariant] = useState<ProductVariant | null>(null);
+  const [selectedVariantForImage, setSelectedVariantForImage] = useState<string>("");
+  const [variantImageUrl, setVariantImageUrl] = useState<string>("");
 
   const { data: authStatus, isLoading: authLoading, refetch: refetchAuth } = useQuery<{ isAdmin: boolean }>({
     queryKey: ['/api/admin/check'],
@@ -287,14 +289,26 @@ export default function AdminProducts() {
   });
 
   const updateVariantMutation = useMutation({
-    mutationFn: async ({ id, name, price, sku, stock }: { id: string; name: string; price: string; sku: string; stock: number }) => {
-      const response = await apiRequest('PUT', `/api/admin/variants/${id}`, { name, price: parseFloat(price), sku: sku || null, stock });
+    mutationFn: async ({ id, name, price, sku, stock, image }: { id: string; name: string; price: string; sku: string; stock: number; image?: string }) => {
+      const response = await apiRequest('PUT', `/api/admin/variants/${id}`, { name, price: parseFloat(price), sku: sku || null, stock, ...(image !== undefined ? { image } : {}) });
       return response.json();
     },
     onSuccess: (updatedVariant) => {
       setVariants(variants.map(v => v.id === updatedVariant.id ? updatedVariant : v));
       setEditingVariant(null);
       setSuccessMessage("Variant updated successfully!");
+      setTimeout(() => setSuccessMessage(""), 2000);
+    },
+  });
+
+  const updateVariantImageMutation = useMutation({
+    mutationFn: async ({ id, image }: { id: string; image: string | null }) => {
+      const response = await apiRequest('PUT', `/api/admin/variants/${id}`, { image });
+      return response.json();
+    },
+    onSuccess: (updatedVariant) => {
+      setVariants(variants.map(v => v.id === updatedVariant.id ? updatedVariant : v));
+      setSuccessMessage("Variant image updated!");
       setTimeout(() => setSuccessMessage(""), 2000);
     },
   });
@@ -332,6 +346,8 @@ export default function AdminProducts() {
     setStockLevel(product.stock);
     setProductName(product.name);
     setProductPrice(product.price);
+    setSelectedVariantForImage("");
+    setVariantImageUrl("");
     setStoreCode(product.storeCode || "");
     setFbtSearch("");
     setNewVariantName("");
@@ -898,6 +914,125 @@ export default function AdminProducts() {
                     ))}
                   </div>
                 </div>
+
+                {variants.length > 0 && (
+                  <div className="space-y-3 pt-4 border-t">
+                    <Label>Variant Images</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Set a specific image for each variant. When a customer selects a variant, this image will be shown.
+                    </p>
+                    <Select
+                      value={selectedVariantForImage}
+                      onValueChange={(val) => {
+                        setSelectedVariantForImage(val);
+                        const v = variants.find(v => v.id === val);
+                        setVariantImageUrl(v?.image || "");
+                      }}
+                    >
+                      <SelectTrigger data-testid="select-variant-for-image">
+                        <SelectValue placeholder="Select a variant..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {variants.map((v) => (
+                          <SelectItem key={v.id} value={v.id} data-testid={`select-variant-image-${v.id}`}>
+                            {v.name} {v.image ? "(has image)" : ""}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {selectedVariantForImage && (
+                      <div className="space-y-3 p-4 border rounded-lg bg-muted/20">
+                        <div className="flex items-center gap-2">
+                          <Label className="text-sm font-medium">
+                            Image for: {variants.find(v => v.id === selectedVariantForImage)?.name}
+                          </Label>
+                        </div>
+                        <div className="flex gap-2">
+                          <Input
+                            value={variantImageUrl}
+                            onChange={(e) => setVariantImageUrl(e.target.value)}
+                            placeholder="Image URL or upload..."
+                            className="flex-1"
+                            data-testid="input-variant-image-url"
+                          />
+                          <ObjectUploader
+                            maxNumberOfFiles={1}
+                            maxFileSize={10485760}
+                            onGetUploadParameters={async () => {
+                              const res = await fetch('/api/admin/upload-url', { method: 'POST' });
+                              const data = await res.json();
+                              return { method: 'PUT' as const, url: data.uploadURL };
+                            }}
+                            onComplete={(result) => {
+                              if (result.successful && result.successful.length > 0) {
+                                const uploadUrl = result.successful[0].uploadURL;
+                                if (uploadUrl) {
+                                  const url = new URL(uploadUrl);
+                                  const objectPath = `/objects${url.pathname.split('/.private')[1]}`;
+                                  setVariantImageUrl(objectPath);
+                                }
+                              }
+                            }}
+                          >
+                            <Upload className="h-4 w-4 mr-2" />
+                            Upload
+                          </ObjectUploader>
+                        </div>
+                        {variantImageUrl && (
+                          <div className="mt-2">
+                            <img
+                              src={getImageUrl(variantImageUrl)}
+                              alt="Variant preview"
+                              className="w-32 h-32 object-cover rounded border"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/128?text=Invalid+URL';
+                              }}
+                            />
+                          </div>
+                        )}
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              updateVariantImageMutation.mutate({
+                                id: selectedVariantForImage,
+                                image: variantImageUrl || null,
+                              });
+                            }}
+                            disabled={updateVariantImageMutation.isPending}
+                            data-testid="button-save-variant-image"
+                          >
+                            {updateVariantImageMutation.isPending ? (
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                              <Save className="mr-2 h-4 w-4" />
+                            )}
+                            Save Variant Image
+                          </Button>
+                          {variantImageUrl && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setVariantImageUrl("");
+                                updateVariantImageMutation.mutate({
+                                  id: selectedVariantForImage,
+                                  image: null,
+                                });
+                              }}
+                              disabled={updateVariantImageMutation.isPending}
+                              data-testid="button-remove-variant-image"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Remove
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <DialogFooter>
                   <Button

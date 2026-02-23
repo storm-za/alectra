@@ -47,7 +47,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductReviewSchema, LP_GAS_PRICING, LP_GAS_CYLINDER_IDS, GLOSTEEL_PRICING, GLOSTEEL_DOOR_IDS, TORSION_SPRING_VARIANTS, TORSION_SPRING_PRODUCT_ID } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import type { Product, ProductReview, InsertProductReview, LpGasVariant, GarageDoorSize, GarageDoorFinish, GarageDoorVariant, TorsionSpringVariant, CartVariantType } from "@shared/schema";
+import type { Product, ProductReview, InsertProductReview, LpGasVariant, GarageDoorSize, GarageDoorFinish, GarageDoorVariant, TorsionSpringVariant, CartVariantType, ProductVariant } from "@shared/schema";
 import { z } from "zod";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -133,6 +133,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const [selectedDoorSize, setSelectedDoorSize] = useState<GarageDoorSize>('2450mm');
   const [selectedDoorFinish, setSelectedDoorFinish] = useState<GarageDoorFinish | ''>('');
   const [selectedTorsionSpring, setSelectedTorsionSpring] = useState<TorsionSpringVariant>('45kg-green-left');
+  const [selectedDbVariant, setSelectedDbVariant] = useState<string | null>(null);
   const [showStickyAddToCart, setShowStickyAddToCart] = useState(false);
   const addToCartButtonRef = useRef<HTMLButtonElement>(null);
   const { toast } = useToast();
@@ -156,6 +157,11 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const { data: category } = useQuery<{ id: string; name: string; slug: string }>({
     queryKey: [`/api/categories/id/${product?.categoryId}`],
     enabled: !!product?.categoryId,
+  });
+
+  const { data: dbVariants = [] } = useQuery<ProductVariant[]>({
+    queryKey: ['/api/products', product?.id, 'variants'],
+    enabled: !!product?.id,
   });
 
   const form = useForm<z.infer<typeof reviewFormSchema>>({
@@ -237,6 +243,35 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
       }
     }
   }, [product?.id]);
+
+  useEffect(() => {
+    if (dbVariants.length > 0) {
+      const fixUrl = (url: string) => {
+        if (url.startsWith('http://') || url.startsWith('https://')) return url;
+        if (url.startsWith('/objects')) return url;
+        return url.startsWith('/') ? url : `/${url}`;
+      };
+      const preloadImages = () => {
+        dbVariants.forEach((v) => {
+          if (v.image) {
+            const img = new Image();
+            img.src = fixUrl(v.image);
+          }
+        });
+      };
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(preloadImages);
+      } else {
+        setTimeout(preloadImages, 100);
+      }
+    }
+  }, [dbVariants]);
+
+  useEffect(() => {
+    if (selectedDbVariant) {
+      setSelectedImage(0);
+    }
+  }, [selectedDbVariant]);
 
   if (isLoading) {
     return (
@@ -320,6 +355,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   // Check if this is a torsion spring with variant pricing
   const isTorsionSpring = product.id === TORSION_SPRING_PRODUCT_ID;
   const torsionSpringInfo = isTorsionSpring ? TORSION_SPRING_VARIANTS[selectedTorsionSpring] : null;
+  const selectedDbVariantData = selectedDbVariant ? dbVariants.find(v => v.id === selectedDbVariant) : null;
   
   // Calculate display price based on variant for LP Gas cylinders, Glosteel doors, or Torsion Springs
   const getDisplayPrice = () => {
@@ -332,6 +368,9 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     if (torsionSpringInfo) {
       return torsionSpringInfo.price.toFixed(2);
     }
+    if (selectedDbVariantData) {
+      return parseFloat(selectedDbVariantData.price).toFixed(2);
+    }
     return parseFloat(product.price).toFixed(2);
   };
   
@@ -341,14 +380,21 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const isLowStock = product.stock > 0 && product.stock <= 5 && !isDiscontinued;
   const isOutOfStock = product.stock === 0 || isDiscontinued;
   
-  // Ensure all image URLs start with / and remove duplicates
-  const fixImageUrl = (url: string) => url.startsWith('/') ? url : `/${url}`;
+  // Ensure all image URLs are properly formatted
+  const fixImageUrl = (url: string) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.startsWith('/objects')) return url;
+    return url.startsWith('/') ? url : `/${url}`;
+  };
   const allImages = [product.imageUrl, ...(product.images || [])].map(fixImageUrl);
   const baseImages = Array.from(new Set(allImages)); // Remove duplicates
   
   // For torsion springs, use variant-specific image if available
   const currentVariantImage = isTorsionSpring && torsionSpringInfo?.image ? torsionSpringInfo.image : null;
-  const images = currentVariantImage ? [currentVariantImage, ...baseImages.filter(img => img !== currentVariantImage)] : baseImages;
+  const dbVariantImage = selectedDbVariantData?.image ? fixImageUrl(selectedDbVariantData.image) : null;
+  const activeVariantImage = dbVariantImage || currentVariantImage;
+  const images = activeVariantImage ? [activeVariantImage, ...baseImages.filter(img => img !== activeVariantImage)] : baseImages;
 
   // Create SEO-friendly description
   const seoDescription = product.description.length > 160 
@@ -719,6 +765,36 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
               </div>
             )}
 
+            {dbVariants.length > 0 && !isTorsionSpring && (
+              <div className="mb-6">
+                <h3 className="text-sm font-medium mb-3">Select Option:</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {dbVariants.map((v) => (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => setSelectedDbVariant(selectedDbVariant === v.id ? null : v.id)}
+                      className={`flex flex-col items-center gap-1 rounded-md border-2 p-3 transition-colors ${
+                        selectedDbVariant === v.id ? 'border-primary bg-primary/5' : 'border-muted hover:bg-accent'
+                      }`}
+                      data-testid={`button-variant-${v.id}`}
+                    >
+                      {v.image && (
+                        <img
+                          src={fixImageUrl(v.image)}
+                          alt={v.name}
+                          className="w-12 h-12 object-cover rounded"
+                        />
+                      )}
+                      <span className="text-sm font-semibold">{v.name}</span>
+                      <span className="text-xs font-medium text-primary whitespace-nowrap">R&nbsp;{parseFloat(v.price).toFixed(2)}</span>
+                      {v.stock <= 0 && <span className="text-xs text-destructive">Out of stock</span>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="mb-8">
               <div className="flex items-baseline gap-x-2 gap-y-0 flex-wrap">
                 <span className="text-4xl font-bold whitespace-nowrap" data-testid="text-product-price">
@@ -789,6 +865,8 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                     onAddToCart(product, quantity, doorVariant, displayPrice);
                   } else if (isTorsionSpring && torsionSpringInfo) {
                     onAddToCart(product, quantity, selectedTorsionSpring, displayPrice);
+                  } else if (selectedDbVariantData) {
+                    onAddToCart(product, quantity, selectedDbVariantData.name as any, displayPrice);
                   } else {
                     onAddToCart(product, quantity);
                   }
@@ -1225,6 +1303,8 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                   onAddToCart(product, quantity, doorVariant, displayPrice);
                 } else if (isTorsionSpring && torsionSpringInfo) {
                   onAddToCart(product, quantity, selectedTorsionSpring, displayPrice);
+                } else if (selectedDbVariantData) {
+                  onAddToCart(product, quantity, selectedDbVariantData.name as any, displayPrice);
                 } else {
                   onAddToCart(product, quantity);
                 }

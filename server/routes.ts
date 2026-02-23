@@ -2531,7 +2531,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/products/:productId/variants", requireAdminAuth, async (req, res) => {
     try {
       const { productId } = req.params;
-      const { name, price, sku, stock, sortOrder } = req.body;
+      const { name, price, sku, stock, sortOrder, image } = req.body;
 
       if (!name || price === undefined) {
         return res.status(400).json({ message: "Name and price are required" });
@@ -2544,6 +2544,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sku: sku || null,
         stock: stock ?? 0,
         sortOrder: sortOrder ?? 0,
+        image: image || null,
       });
 
       res.status(201).json(variant);
@@ -2556,7 +2557,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/variants/:id", requireAdminAuth, async (req, res) => {
     try {
       const { id } = req.params;
-      const { name, price, sku, stock, sortOrder } = req.body;
+      const { name, price, sku, stock, sortOrder, image } = req.body;
 
       const updates: any = {};
       if (name !== undefined) updates.name = name;
@@ -2564,6 +2565,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (sku !== undefined) updates.sku = sku;
       if (stock !== undefined) updates.stock = stock;
       if (sortOrder !== undefined) updates.sortOrder = sortOrder;
+      if (image !== undefined) updates.image = image || null;
 
       const variant = await storage.updateProductVariant(id, updates);
       if (!variant) {
