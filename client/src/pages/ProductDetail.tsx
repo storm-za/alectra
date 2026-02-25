@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useRoute, Link } from "wouter";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -273,6 +273,40 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     }
   }, [selectedDbVariant]);
 
+  // Auto-select first DB variant for torsion spring products when variants load
+  useEffect(() => {
+    if (product?.id === TORSION_SPRING_PRODUCT_ID && dbVariants.length > 0 && !selectedDbVariant) {
+      const sorted = [...dbVariants].sort((a, b) => (a.sortOrder ?? 99) - (b.sortOrder ?? 99));
+      setSelectedDbVariant(sorted[0].id);
+    }
+  }, [product?.id, dbVariants, selectedDbVariant]);
+
+  // Parse DB variants into weight groups for the torsion spring two-level UI
+  const torsionDbGroups = useMemo(() => {
+    if (!product || product.id !== TORSION_SPRING_PRODUCT_ID || dbVariants.length === 0) return null;
+    const colorCssMap: Record<string, string> = {
+      'Green': 'green', 'Beige': '#c8a96b', 'Blue': '#3b82f6', 'Blue/White': '#3b82f6',
+      'White': '#9ca3af', 'Red': '#ef4444', 'Orange': '#f97316', 'Brown': '#92400e', 'Yellow': '#ca8a04',
+    };
+    const groups: Record<string, { weightColor: string; weight: string; color: string; colorCss: string; left?: ProductVariant; right?: ProductVariant }> = {};
+    for (const v of dbVariants) {
+      const match = v.name.match(/^(.+?)\s+-\s+(Left|Right)/i);
+      if (!match) continue;
+      const weightColor = match[1].trim();
+      const winding = match[2].toLowerCase();
+      const weightMatch = weightColor.match(/^(\d+kg)\s+(.+)$/);
+      if (!weightMatch) continue;
+      const weight = weightMatch[1];
+      const color = weightMatch[2];
+      if (!groups[weightColor]) {
+        groups[weightColor] = { weightColor, weight, color, colorCss: colorCssMap[color] || '#888' };
+      }
+      if (winding === 'left') groups[weightColor].left = v;
+      else groups[weightColor].right = v;
+    }
+    return Object.values(groups);
+  }, [product?.id, dbVariants]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -365,17 +399,17 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     if (glosteelPricing) {
       return glosteelPricing[selectedDoorSize].toFixed(2);
     }
+    if (selectedDbVariantData) {
+      return parseFloat(selectedDbVariantData.price as string).toFixed(2);
+    }
     if (torsionSpringInfo) {
       return torsionSpringInfo.price.toFixed(2);
-    }
-    if (selectedDbVariantData) {
-      return parseFloat(selectedDbVariantData.price).toFixed(2);
     }
     return parseFloat(product.price).toFixed(2);
   };
   
   const displayPrice = getDisplayPrice();
-  const priceValue = lpGasPricing ? lpGasPricing[selectedVariant] : (glosteelPricing ? glosteelPricing[selectedDoorSize] : (torsionSpringInfo ? torsionSpringInfo.price : parseFloat(product.price)));
+  const priceValue = lpGasPricing ? lpGasPricing[selectedVariant] : (glosteelPricing ? glosteelPricing[selectedDoorSize] : (selectedDbVariantData ? parseFloat(selectedDbVariantData.price as string) : (torsionSpringInfo ? torsionSpringInfo.price : parseFloat(product.price))));
   const isDiscontinued = (product as any).discontinued === true || priceValue === 0;
   const isLowStock = product.stock > 0 && product.stock <= 5 && !isDiscontinued;
   const isOutOfStock = product.stock === 0 || isDiscontinued;
@@ -650,12 +684,108 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
               </div>
             )}
 
-            {/* Torsion Spring Variant Selector */}
-            {isTorsionSpring && (
+            {/* Torsion Spring Variant Selector — DB-driven when variants are in database */}
+            {isTorsionSpring && torsionDbGroups && torsionDbGroups.length > 0 && (
               <div className="mb-6">
                 <h3 className="text-sm font-medium mb-3">Select Spring Specification:</h3>
                 <div className="space-y-4">
-                  {/* Weight/Color Selection */}
+                  {/* Weight/Color from DB */}
+                  <div>
+                    <Label className="text-xs text-muted-foreground mb-2 block">Weight & Color</Label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {torsionDbGroups.map((group) => {
+                        const currentWinding = selectedDbVariantData?.name.includes('Right') ? 'right' : 'left';
+                        const targetVariant = currentWinding === 'left' ? group.left : group.right;
+                        const isSelected = selectedDbVariantData && (
+                          selectedDbVariantData.id === group.left?.id || selectedDbVariantData.id === group.right?.id
+                        );
+                        const displayVariant = group.left || group.right;
+                        return (
+                          <button
+                            key={group.weightColor}
+                            type="button"
+                            onClick={() => {
+                              const pick = targetVariant || group.left || group.right;
+                              if (pick) setSelectedDbVariant(pick.id);
+                            }}
+                            className={`flex flex-col items-center gap-1 rounded-md border-2 p-3 transition-colors ${
+                              isSelected ? 'border-primary bg-primary/5' : 'border-muted hover:bg-accent'
+                            }`}
+                            data-testid={`button-spring-${group.weight}`}
+                          >
+                            <span className="text-sm font-semibold">{group.weight}</span>
+                            <Badge
+                              variant="outline"
+                              className="text-xs"
+                              style={{ borderColor: group.colorCss, color: group.colorCss }}
+                            >
+                              {group.color}
+                            </Badge>
+                            <span className="text-xs font-medium text-primary whitespace-nowrap">
+                              R&nbsp;{parseFloat((displayVariant?.price ?? '0') as string).toFixed(0)}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Winding Direction from DB */}
+                  <div>
+                    <Label className="text-xs text-muted-foreground mb-2 block">Winding Direction</Label>
+                    <RadioGroup
+                      value={selectedDbVariantData?.name.includes('Right') ? 'right' : 'left'}
+                      onValueChange={(value) => {
+                        const currentGroup = torsionDbGroups.find(g =>
+                          g.left?.id === selectedDbVariantData?.id || g.right?.id === selectedDbVariantData?.id
+                        );
+                        if (currentGroup) {
+                          const pick = value === 'left' ? currentGroup.left : currentGroup.right;
+                          if (pick) setSelectedDbVariant(pick.id);
+                        }
+                      }}
+                      className="grid grid-cols-2 gap-3"
+                    >
+                      <div className="relative">
+                        <RadioGroupItem value="left" id="winding-left" className="peer sr-only" data-testid="radio-winding-left" />
+                        <Label htmlFor="winding-left" className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold">Left-Wound</span>
+                            <Badge className="bg-red-500 text-white text-xs">Red Cone</Badge>
+                          </div>
+                          <span className="text-sm text-muted-foreground">Installed on the right side of center bracket</span>
+                        </Label>
+                      </div>
+                      <div className="relative">
+                        <RadioGroupItem value="right" id="winding-right" className="peer sr-only" data-testid="radio-winding-right" />
+                        <Label htmlFor="winding-right" className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold">Right-Wound</span>
+                            <Badge className="bg-black text-white text-xs">Black Cone</Badge>
+                          </div>
+                          <span className="text-sm text-muted-foreground">Installed on the left side of center bracket</span>
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  {/* Selected summary */}
+                  {selectedDbVariantData && (
+                    <Alert className="border-primary/50 bg-primary/5">
+                      <AlertDescription className="text-sm">
+                        <strong>Selected:</strong> {selectedDbVariantData.name}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Fallback: hardcoded torsion spring UI when not yet in DB */}
+            {isTorsionSpring && (!torsionDbGroups || torsionDbGroups.length === 0) && (
+              <div className="mb-6">
+                <h3 className="text-sm font-medium mb-3">Select Spring Specification:</h3>
+                <div className="space-y-4">
                   <div>
                     <Label className="text-xs text-muted-foreground mb-2 block">Weight & Color</Label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -664,95 +794,45 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                         const info = TORSION_SPRING_VARIANTS[leftVariant];
                         const isSelected = selectedTorsionSpring.startsWith(`${weight}-`);
                         return (
-                          <button
-                            key={weight}
-                            type="button"
+                          <button key={weight} type="button"
                             onClick={() => {
                               const currentWinding = selectedTorsionSpring.endsWith('-left') ? 'left' : 'right';
-                              const newVariant = `${weight}-${info.colorCode}-${currentWinding}` as TorsionSpringVariant;
-                              setSelectedTorsionSpring(newVariant);
+                              setSelectedTorsionSpring(`${weight}-${info.colorCode}-${currentWinding}` as TorsionSpringVariant);
                             }}
-                            className={`flex flex-col items-center gap-1 rounded-md border-2 p-3 transition-colors ${
-                              isSelected ? 'border-primary bg-primary/5' : 'border-muted hover:bg-accent'
-                            }`}
+                            className={`flex flex-col items-center gap-1 rounded-md border-2 p-3 transition-colors ${isSelected ? 'border-primary bg-primary/5' : 'border-muted hover:bg-accent'}`}
                             data-testid={`button-spring-${weight}`}
                           >
                             <span className="text-sm font-semibold">{weight}</span>
-                            <Badge 
-                              variant="outline" 
-                              className="text-xs"
-                              style={{ 
-                                borderColor: info.colorCode === 'bluewhite' ? '#3b82f6' : info.colorCode,
-                                color: info.colorCode === 'bluewhite' ? '#3b82f6' : (info.colorCode === 'white' || info.colorCode === 'yellow' || info.colorCode === 'beige' ? '#000' : info.colorCode)
-                              }}
-                            >
-                              {info.color}
-                            </Badge>
+                            <Badge variant="outline" className="text-xs" style={{ borderColor: info.colorCode === 'bluewhite' ? '#3b82f6' : info.colorCode, color: info.colorCode === 'bluewhite' ? '#3b82f6' : (info.colorCode === 'white' || info.colorCode === 'yellow' || info.colorCode === 'beige' ? '#000' : info.colorCode) }}>{info.color}</Badge>
                             <span className="text-xs font-medium text-primary whitespace-nowrap">R&nbsp;{info.price}</span>
                           </button>
                         );
                       })}
                     </div>
                   </div>
-                  
-                  {/* Winding Direction Selection */}
                   <div>
                     <Label className="text-xs text-muted-foreground mb-2 block">Winding Direction</Label>
-                    <RadioGroup
-                      value={selectedTorsionSpring.endsWith('-left') ? 'left' : 'right'}
+                    <RadioGroup value={selectedTorsionSpring.endsWith('-left') ? 'left' : 'right'}
                       onValueChange={(value) => {
-                        const currentParts = selectedTorsionSpring.split('-');
-                        const weight = currentParts[0];
-                        const color = currentParts[1];
-                        const newVariant = `${weight}-${color}-${value}` as TorsionSpringVariant;
-                        setSelectedTorsionSpring(newVariant);
-                      }}
-                      className="grid grid-cols-2 gap-3"
-                    >
+                        const parts = selectedTorsionSpring.split('-');
+                        setSelectedTorsionSpring(`${parts[0]}-${parts[1]}-${value}` as TorsionSpringVariant);
+                      }} className="grid grid-cols-2 gap-3">
                       <div className="relative">
-                        <RadioGroupItem
-                          value="left"
-                          id="winding-left"
-                          className="peer sr-only"
-                          data-testid="radio-winding-left"
-                        />
-                        <Label
-                          htmlFor="winding-left"
-                          className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold">Left-Wound</span>
-                            <Badge className="bg-red-500 text-white text-xs">Red Cone</Badge>
-                          </div>
-                          <span className="text-sm text-muted-foreground">
-                            Installed on the right side of center bracket
-                          </span>
+                        <RadioGroupItem value="left" id="winding-left" className="peer sr-only" data-testid="radio-winding-left" />
+                        <Label htmlFor="winding-left" className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer">
+                          <div className="flex items-center gap-2"><span className="font-semibold">Left-Wound</span><Badge className="bg-red-500 text-white text-xs">Red Cone</Badge></div>
+                          <span className="text-sm text-muted-foreground">Installed on the right side of center bracket</span>
                         </Label>
                       </div>
                       <div className="relative">
-                        <RadioGroupItem
-                          value="right"
-                          id="winding-right"
-                          className="peer sr-only"
-                          data-testid="radio-winding-right"
-                        />
-                        <Label
-                          htmlFor="winding-right"
-                          className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold">Right-Wound</span>
-                            <Badge className="bg-black text-white text-xs">Black Cone</Badge>
-                          </div>
-                          <span className="text-sm text-muted-foreground">
-                            Installed on the left side of center bracket
-                          </span>
+                        <RadioGroupItem value="right" id="winding-right" className="peer sr-only" data-testid="radio-winding-right" />
+                        <Label htmlFor="winding-right" className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer">
+                          <div className="flex items-center gap-2"><span className="font-semibold">Right-Wound</span><Badge className="bg-black text-white text-xs">Black Cone</Badge></div>
+                          <span className="text-sm text-muted-foreground">Installed on the left side of center bracket</span>
                         </Label>
                       </div>
                     </RadioGroup>
                   </div>
-                  
-                  {/* Selected Variant Description */}
                   {torsionSpringInfo && (
                     <Alert className="border-primary/50 bg-primary/5">
                       <AlertDescription className="text-sm">
@@ -818,7 +898,12 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                     )}
                   </>
                 )}
-                {isTorsionSpring && torsionSpringInfo && (
+                {isTorsionSpring && selectedDbVariantData && (
+                  <Badge variant="secondary" className="ml-2">
+                    {selectedDbVariantData.name}
+                  </Badge>
+                )}
+                {isTorsionSpring && !selectedDbVariantData && torsionSpringInfo && (
                   <Badge variant="secondary" className="ml-2">
                     {torsionSpringInfo.weight} {torsionSpringInfo.winding === 'left' ? 'Left' : 'Right'}
                   </Badge>
@@ -863,10 +948,10 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                     if (!selectedDoorFinish) return;
                     const doorVariant = `${selectedDoorSize}-${selectedDoorFinish}` as GarageDoorVariant;
                     onAddToCart(product, quantity, doorVariant, displayPrice);
-                  } else if (isTorsionSpring && torsionSpringInfo) {
-                    onAddToCart(product, quantity, selectedTorsionSpring, displayPrice);
                   } else if (selectedDbVariantData) {
                     onAddToCart(product, quantity, selectedDbVariantData.name as any, displayPrice);
+                  } else if (isTorsionSpring && torsionSpringInfo) {
+                    onAddToCart(product, quantity, selectedTorsionSpring, displayPrice);
                   } else {
                     onAddToCart(product, quantity);
                   }
@@ -1301,10 +1386,10 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                   if (!selectedDoorFinish) return;
                   const doorVariant = `${selectedDoorSize}-${selectedDoorFinish}` as GarageDoorVariant;
                   onAddToCart(product, quantity, doorVariant, displayPrice);
-                } else if (isTorsionSpring && torsionSpringInfo) {
-                  onAddToCart(product, quantity, selectedTorsionSpring, displayPrice);
                 } else if (selectedDbVariantData) {
                   onAddToCart(product, quantity, selectedDbVariantData.name as any, displayPrice);
+                } else if (isTorsionSpring && torsionSpringInfo) {
+                  onAddToCart(product, quantity, selectedTorsionSpring, displayPrice);
                 } else {
                   onAddToCart(product, quantity);
                 }
