@@ -68,6 +68,8 @@ export default function AdminProducts() {
   const [newVariantPrice, setNewVariantPrice] = useState("");
   const [newVariantSku, setNewVariantSku] = useState("");
   const [newVariantStock, setNewVariantStock] = useState("0");
+  const [newVariantImage, setNewVariantImage] = useState("");
+  const [showAddVariantForm, setShowAddVariantForm] = useState(false);
   const [editingVariant, setEditingVariant] = useState<ProductVariant | null>(null);
   const [selectedVariantForImage, setSelectedVariantForImage] = useState<string>("");
   const [variantImageUrl, setVariantImageUrl] = useState<string>("");
@@ -273,8 +275,8 @@ export default function AdminProducts() {
   });
 
   const createVariantMutation = useMutation({
-    mutationFn: async ({ productId, name, price, sku, stock }: { productId: string; name: string; price: string; sku: string; stock: number }) => {
-      const response = await apiRequest('POST', `/api/admin/products/${productId}/variants`, { name, price: parseFloat(price), sku: sku || null, stock });
+    mutationFn: async ({ productId, name, price, sku, stock, image }: { productId: string; name: string; price: string; sku: string; stock: number; image?: string }) => {
+      const response = await apiRequest('POST', `/api/admin/products/${productId}/variants`, { name, price: parseFloat(price), sku: sku || null, stock, image: image || null });
       return response.json();
     },
     onSuccess: (newVariant) => {
@@ -283,6 +285,8 @@ export default function AdminProducts() {
       setNewVariantPrice("");
       setNewVariantSku("");
       setNewVariantStock("0");
+      setNewVariantImage("");
+      setShowAddVariantForm(false);
       setSuccessMessage("Variant created successfully!");
       setTimeout(() => setSuccessMessage(""), 2000);
     },
@@ -1239,214 +1243,383 @@ export default function AdminProducts() {
                 </DialogFooter>
               </TabsContent>
 
-              <TabsContent value="variants" className="space-y-6 mt-4">
-                <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    Add product variants (e.g., different sizes, weights, or configurations) with their own prices and stock.
-                  </p>
+              <TabsContent value="variants" className="mt-4">
+                {/* Helper: image picker grid used in both add and edit forms */}
+                {(() => {
+                  const allProductImages = [
+                    ...(imageUrl ? [imageUrl] : []),
+                    ...galleryImages,
+                  ].filter(Boolean);
 
-                  {/* Add new variant form */}
-                  <div className="p-4 border rounded-lg space-y-4 bg-muted/20">
-                    <h4 className="font-medium text-sm">Add New Variant</h4>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <Label htmlFor="variantName" className="text-xs">Name</Label>
-                        <Input
-                          id="variantName"
-                          value={newVariantName}
-                          onChange={(e) => setNewVariantName(e.target.value)}
-                          placeholder="e.g., 9kg, Large, Blue"
-                          data-testid="input-variant-name"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label htmlFor="variantPrice" className="text-xs">Price (R)</Label>
-                        <Input
-                          id="variantPrice"
-                          type="number"
-                          step="0.01"
-                          value={newVariantPrice}
-                          onChange={(e) => setNewVariantPrice(e.target.value)}
-                          placeholder="0.00"
-                          data-testid="input-variant-price"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label htmlFor="variantSku" className="text-xs">SKU (optional)</Label>
-                        <Input
-                          id="variantSku"
-                          value={newVariantSku}
-                          onChange={(e) => setNewVariantSku(e.target.value)}
-                          placeholder="PROD-VAR-001"
-                          data-testid="input-variant-sku"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label htmlFor="variantStock" className="text-xs">Stock</Label>
-                        <Input
-                          id="variantStock"
-                          type="number"
-                          value={newVariantStock}
-                          onChange={(e) => setNewVariantStock(e.target.value)}
-                          placeholder="0"
-                          data-testid="input-variant-stock"
-                        />
-                      </div>
-                    </div>
-                    <Button
-                      size="sm"
-                      disabled={!newVariantName.trim() || !newVariantPrice || createVariantMutation.isPending}
-                      onClick={() => {
-                        if (editingProduct) {
-                          createVariantMutation.mutate({
-                            productId: editingProduct.id,
-                            name: newVariantName,
-                            price: newVariantPrice,
-                            sku: newVariantSku,
-                            stock: parseInt(newVariantStock) || 0
-                          });
-                        }
-                      }}
-                      data-testid="button-add-variant"
-                    >
-                      {createVariantMutation.isPending ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      ) : (
-                        <Plus className="mr-2 h-4 w-4" />
-                      )}
-                      Add Variant
-                    </Button>
-                  </div>
-
-                  {/* List of existing variants */}
-                  <div className="space-y-2">
-                    <Label>Existing Variants ({variants.length})</Label>
-                    {variants.length === 0 ? (
-                      <p className="text-sm text-muted-foreground p-4 border rounded-lg text-center">
-                        No variants added. Add variants above.
-                      </p>
-                    ) : (
-                      <div className="border rounded-lg divide-y">
-                        {variants.map((variant) => (
-                          <div
-                            key={variant.id}
-                            className="p-3"
-                            data-testid={`variant-item-${variant.id}`}
-                          >
-                            {editingVariant?.id === variant.id ? (
-                              <div className="space-y-3">
-                                <div className="grid grid-cols-2 gap-3">
-                                  <div className="space-y-1">
-                                    <Label className="text-xs">Name</Label>
-                                    <Input
-                                      value={editingVariant.name}
-                                      onChange={(e) => setEditingVariant({ ...editingVariant, name: e.target.value })}
-                                      data-testid={`input-edit-variant-name-${variant.id}`}
-                                    />
-                                  </div>
-                                  <div className="space-y-1">
-                                    <Label className="text-xs">Price (R)</Label>
-                                    <Input
-                                      type="number"
-                                      step="0.01"
-                                      value={editingVariant.price}
-                                      onChange={(e) => setEditingVariant({ ...editingVariant, price: e.target.value })}
-                                      data-testid={`input-edit-variant-price-${variant.id}`}
-                                    />
-                                  </div>
-                                  <div className="space-y-1">
-                                    <Label className="text-xs">SKU</Label>
-                                    <Input
-                                      value={editingVariant.sku || ""}
-                                      onChange={(e) => setEditingVariant({ ...editingVariant, sku: e.target.value })}
-                                      data-testid={`input-edit-variant-sku-${variant.id}`}
-                                    />
-                                  </div>
-                                  <div className="space-y-1">
-                                    <Label className="text-xs">Stock</Label>
-                                    <Input
-                                      type="number"
-                                      value={editingVariant.stock}
-                                      onChange={(e) => setEditingVariant({ ...editingVariant, stock: parseInt(e.target.value) || 0 })}
-                                      data-testid={`input-edit-variant-stock-${variant.id}`}
-                                    />
-                                  </div>
-                                </div>
-                                <div className="flex gap-2">
-                                  <Button
-                                    size="sm"
-                                    onClick={() => {
-                                      updateVariantMutation.mutate({
-                                        id: editingVariant.id,
-                                        name: editingVariant.name,
-                                        price: editingVariant.price,
-                                        sku: editingVariant.sku || "",
-                                        stock: editingVariant.stock
-                                      });
-                                    }}
-                                    disabled={updateVariantMutation.isPending}
-                                    data-testid={`button-save-variant-${variant.id}`}
-                                  >
-                                    {updateVariantMutation.isPending ? (
-                                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    ) : (
-                                      <Save className="mr-2 h-4 w-4" />
-                                    )}
-                                    Save
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => setEditingVariant(null)}
-                                    data-testid={`button-cancel-edit-variant-${variant.id}`}
-                                  >
-                                    Cancel
-                                  </Button>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="flex items-center justify-between gap-3">
-                                <div className="flex-1 min-w-0">
-                                  <p className="font-medium">{variant.name}</p>
-                                  <p className="text-sm text-muted-foreground">
-                                    <span className="whitespace-nowrap">R&nbsp;{variant.price}</span>
-                                    {variant.sku && <span className="ml-2">SKU: {variant.sku}</span>}
-                                    <span className="ml-2">Stock: {variant.stock}</span>
-                                  </p>
-                                </div>
-                                <div className="flex gap-1">
-                                  <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    onClick={() => setEditingVariant(variant)}
-                                    data-testid={`button-edit-variant-${variant.id}`}
-                                  >
-                                    <Edit3 className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    onClick={() => {
-                                      if (confirm("Delete this variant?")) {
-                                        deleteVariantMutation.mutate(variant.id);
-                                      }
-                                    }}
-                                    disabled={deleteVariantMutation.isPending}
-                                    data-testid={`button-delete-variant-${variant.id}`}
-                                  >
-                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                  </Button>
-                                </div>
-                              </div>
-                            )}
+                  const VariantImagePicker = ({
+                    value,
+                    onChange,
+                    testPrefix,
+                  }: {
+                    value: string;
+                    onChange: (v: string) => void;
+                    testPrefix: string;
+                  }) => (
+                    <div className="space-y-2">
+                      <Label className="text-xs font-medium">Image</Label>
+                      {allProductImages.length > 0 && (
+                        <div className="space-y-1">
+                          <p className="text-xs text-muted-foreground">Select from product images</p>
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              type="button"
+                              onClick={() => onChange("")}
+                              className={`w-14 h-14 rounded border-2 flex items-center justify-center text-xs text-muted-foreground transition-colors ${
+                                value === "" ? "border-primary bg-primary/10" : "border-border hover:border-muted-foreground"
+                              }`}
+                              data-testid={`${testPrefix}-no-image`}
+                            >
+                              None
+                            </button>
+                            {allProductImages.map((img, i) => (
+                              <button
+                                key={i}
+                                type="button"
+                                onClick={() => onChange(img)}
+                                className={`w-14 h-14 rounded border-2 overflow-hidden transition-colors ${
+                                  value === img ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-muted-foreground"
+                                }`}
+                                data-testid={`${testPrefix}-gallery-${i}`}
+                              >
+                                <img
+                                  src={getImageUrl(img)}
+                                  alt=""
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                />
+                              </button>
+                            ))}
                           </div>
-                        ))}
+                        </div>
+                      )}
+                      <div className="flex gap-2 items-center">
+                        <Input
+                          value={value}
+                          onChange={(e) => onChange(e.target.value)}
+                          placeholder="Or paste image URL..."
+                          className="flex-1 text-xs"
+                          data-testid={`${testPrefix}-url`}
+                        />
+                        <ObjectUploader
+                          maxNumberOfFiles={1}
+                          maxFileSize={10485760}
+                          onGetUploadParameters={async () => {
+                            const res = await fetch('/api/admin/upload-url', { method: 'POST' });
+                            const data = await res.json();
+                            return { method: 'PUT' as const, url: data.uploadURL };
+                          }}
+                          onComplete={(result) => {
+                            if (result.successful && result.successful.length > 0) {
+                              const uploadUrl = result.successful[0].uploadURL;
+                              if (uploadUrl) {
+                                const url = new URL(uploadUrl);
+                                const objectPath = `/objects${url.pathname.split('/.private')[1]}`;
+                                onChange(objectPath);
+                              }
+                            }
+                          }}
+                        >
+                          <Upload className="h-4 w-4 mr-1" />
+                          Upload
+                        </ObjectUploader>
                       </div>
-                    )}
-                  </div>
-                </div>
+                      {value && (
+                        <img
+                          src={getImageUrl(value)}
+                          alt="Preview"
+                          className="w-20 h-20 object-cover rounded border"
+                          onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/80?text=Invalid'; }}
+                        />
+                      )}
+                    </div>
+                  );
 
-                <DialogFooter>
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-muted-foreground">
+                          {variants.length} variant{variants.length !== 1 ? "s" : ""}
+                        </p>
+                        {!showAddVariantForm && (
+                          <Button
+                            size="sm"
+                            onClick={() => { setShowAddVariantForm(true); setEditingVariant(null); }}
+                            data-testid="button-show-add-variant"
+                          >
+                            <Plus className="h-4 w-4 mr-1" />
+                            Add variant
+                          </Button>
+                        )}
+                      </div>
+
+                      {/* Variant table */}
+                      {variants.length > 0 && (
+                        <div className="border rounded-lg overflow-hidden">
+                          {/* Table header */}
+                          <div className="grid grid-cols-[48px_1fr_100px_110px_80px_80px] gap-2 px-3 py-2 bg-muted/50 border-b text-xs font-medium text-muted-foreground">
+                            <span>Image</span>
+                            <span>Name</span>
+                            <span>Price</span>
+                            <span>SKU</span>
+                            <span>Stock</span>
+                            <span></span>
+                          </div>
+
+                          {variants.map((variant) => (
+                            <div key={variant.id} data-testid={`variant-item-${variant.id}`}>
+                              {/* Row view */}
+                              {editingVariant?.id !== variant.id && (
+                                <div className="grid grid-cols-[48px_1fr_100px_110px_80px_80px] gap-2 px-3 py-2 items-center border-b last:border-b-0 hover:bg-muted/20 transition-colors">
+                                  <div className="w-10 h-10 rounded border overflow-hidden bg-muted flex-shrink-0">
+                                    {variant.image ? (
+                                      <img
+                                        src={getImageUrl(variant.image)}
+                                        alt=""
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center">
+                                        <Image className="h-4 w-4 text-muted-foreground/40" />
+                                      </div>
+                                    )}
+                                  </div>
+                                  <span className="text-sm font-medium truncate">{variant.name}</span>
+                                  <span className="text-sm whitespace-nowrap">R&nbsp;{parseFloat(variant.price as string).toFixed(2)}</span>
+                                  <span className="text-xs text-muted-foreground truncate">{variant.sku || "—"}</span>
+                                  <span className="text-sm">{variant.stock}</span>
+                                  <div className="flex gap-1 justify-end">
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      onClick={() => { setEditingVariant({ ...variant, price: String(variant.price) }); setShowAddVariantForm(false); }}
+                                      data-testid={`button-edit-variant-${variant.id}`}
+                                    >
+                                      <Edit3 className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      onClick={() => {
+                                        if (confirm(`Delete variant "${variant.name}"?`)) {
+                                          deleteVariantMutation.mutate(variant.id);
+                                        }
+                                      }}
+                                      disabled={deleteVariantMutation.isPending}
+                                      data-testid={`button-delete-variant-${variant.id}`}
+                                    >
+                                      <Trash2 className="h-4 w-4 text-destructive" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Inline edit panel */}
+                              {editingVariant?.id === variant.id && (
+                                <div className="p-4 bg-muted/20 border-b space-y-4" data-testid={`variant-edit-panel-${variant.id}`}>
+                                  <div className="flex items-center justify-between">
+                                    <h4 className="font-medium text-sm">Editing: {variant.name}</h4>
+                                    <Button size="icon" variant="ghost" onClick={() => setEditingVariant(null)}>
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+
+                                  <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                      <Label className="text-xs">Name</Label>
+                                      <Input
+                                        value={editingVariant.name}
+                                        onChange={(e) => setEditingVariant({ ...editingVariant, name: e.target.value })}
+                                        data-testid={`input-edit-variant-name-${variant.id}`}
+                                      />
+                                    </div>
+                                    <div className="space-y-1">
+                                      <Label className="text-xs">Price (R)</Label>
+                                      <Input
+                                        type="number"
+                                        step="0.01"
+                                        value={editingVariant.price}
+                                        onChange={(e) => setEditingVariant({ ...editingVariant, price: e.target.value })}
+                                        data-testid={`input-edit-variant-price-${variant.id}`}
+                                      />
+                                    </div>
+                                    <div className="space-y-1">
+                                      <Label className="text-xs">SKU (optional)</Label>
+                                      <Input
+                                        value={editingVariant.sku || ""}
+                                        onChange={(e) => setEditingVariant({ ...editingVariant, sku: e.target.value })}
+                                        data-testid={`input-edit-variant-sku-${variant.id}`}
+                                      />
+                                    </div>
+                                    <div className="space-y-1">
+                                      <Label className="text-xs">Stock</Label>
+                                      <Input
+                                        type="number"
+                                        value={editingVariant.stock}
+                                        onChange={(e) => setEditingVariant({ ...editingVariant, stock: parseInt(e.target.value) || 0 })}
+                                        data-testid={`input-edit-variant-stock-${variant.id}`}
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <VariantImagePicker
+                                    value={editingVariant.image || ""}
+                                    onChange={(v) => setEditingVariant({ ...editingVariant, image: v })}
+                                    testPrefix={`edit-variant-img-${variant.id}`}
+                                  />
+
+                                  <div className="flex gap-2 pt-1">
+                                    <Button
+                                      size="sm"
+                                      onClick={() => {
+                                        updateVariantMutation.mutate({
+                                          id: editingVariant.id,
+                                          name: editingVariant.name,
+                                          price: String(editingVariant.price),
+                                          sku: editingVariant.sku || "",
+                                          stock: editingVariant.stock,
+                                          image: editingVariant.image || "",
+                                        });
+                                      }}
+                                      disabled={updateVariantMutation.isPending}
+                                      data-testid={`button-save-variant-${variant.id}`}
+                                    >
+                                      {updateVariantMutation.isPending ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                      ) : (
+                                        <Save className="mr-2 h-4 w-4" />
+                                      )}
+                                      Save changes
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => setEditingVariant(null)}
+                                      data-testid={`button-cancel-edit-variant-${variant.id}`}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {variants.length === 0 && !showAddVariantForm && (
+                        <div className="border rounded-lg p-8 text-center text-sm text-muted-foreground">
+                          No variants yet. Click "Add variant" to get started.
+                        </div>
+                      )}
+
+                      {/* Add variant form */}
+                      {showAddVariantForm && (
+                        <div className="border rounded-lg p-4 space-y-4 bg-muted/20" data-testid="variant-add-form">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-medium text-sm">New Variant</h4>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => { setShowAddVariantForm(false); setNewVariantName(""); setNewVariantPrice(""); setNewVariantSku(""); setNewVariantStock("0"); setNewVariantImage(""); }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                              <Label className="text-xs">Name *</Label>
+                              <Input
+                                value={newVariantName}
+                                onChange={(e) => setNewVariantName(e.target.value)}
+                                placeholder="e.g., 9kg, Large, Blue"
+                                data-testid="input-variant-name"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs">Price (R) *</Label>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                value={newVariantPrice}
+                                onChange={(e) => setNewVariantPrice(e.target.value)}
+                                placeholder="0.00"
+                                data-testid="input-variant-price"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs">SKU (optional)</Label>
+                              <Input
+                                value={newVariantSku}
+                                onChange={(e) => setNewVariantSku(e.target.value)}
+                                placeholder="PROD-VAR-001"
+                                data-testid="input-variant-sku"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs">Stock</Label>
+                              <Input
+                                type="number"
+                                value={newVariantStock}
+                                onChange={(e) => setNewVariantStock(e.target.value)}
+                                placeholder="0"
+                                data-testid="input-variant-stock"
+                              />
+                            </div>
+                          </div>
+
+                          <VariantImagePicker
+                            value={newVariantImage}
+                            onChange={setNewVariantImage}
+                            testPrefix="new-variant-img"
+                          />
+
+                          <div className="flex gap-2 pt-1">
+                            <Button
+                              size="sm"
+                              disabled={!newVariantName.trim() || !newVariantPrice || createVariantMutation.isPending}
+                              onClick={() => {
+                                if (editingProduct) {
+                                  createVariantMutation.mutate({
+                                    productId: editingProduct.id,
+                                    name: newVariantName,
+                                    price: newVariantPrice,
+                                    sku: newVariantSku,
+                                    stock: parseInt(newVariantStock) || 0,
+                                    image: newVariantImage,
+                                  });
+                                }
+                              }}
+                              data-testid="button-add-variant"
+                            >
+                              {createVariantMutation.isPending ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              ) : (
+                                <Plus className="mr-2 h-4 w-4" />
+                              )}
+                              Add variant
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => { setShowAddVariantForm(false); setNewVariantName(""); setNewVariantPrice(""); setNewVariantSku(""); setNewVariantStock("0"); setNewVariantImage(""); }}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                <DialogFooter className="mt-6">
                   <Button
                     variant="outline"
                     onClick={() => setEditingProduct(null)}
