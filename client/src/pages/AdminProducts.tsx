@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Search, Image, Plus, Trash2, ArrowLeft, CheckCircle, Save, Upload, Lock, FileText, FolderMinus, Package, Edit3, PlusCircle, Link2, X } from "lucide-react";
+import { Loader2, Search, Image, Plus, Trash2, ArrowLeft, CheckCircle, Save, Upload, Lock, FileText, FolderMinus, Package, Edit3, PlusCircle, Link2, X, ChevronUp, ChevronDown } from "lucide-react";
 import { Link } from "wouter";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Product, Category, ProductVariant } from "@shared/schema";
@@ -275,8 +275,8 @@ export default function AdminProducts() {
   });
 
   const createVariantMutation = useMutation({
-    mutationFn: async ({ productId, name, price, sku, stock, image }: { productId: string; name: string; price: string; sku: string; stock: number; image?: string }) => {
-      const response = await apiRequest('POST', `/api/admin/products/${productId}/variants`, { name, price: parseFloat(price), sku: sku || null, stock, image: image || null });
+    mutationFn: async ({ productId, name, price, sku, stock, image, sortOrder }: { productId: string; name: string; price: string; sku: string; stock: number; image?: string; sortOrder: number }) => {
+      const response = await apiRequest('POST', `/api/admin/products/${productId}/variants`, { name, price: parseFloat(price), sku: sku || null, stock, image: image || null, sortOrder });
       return response.json();
     },
     onSuccess: (newVariant) => {
@@ -327,6 +327,26 @@ export default function AdminProducts() {
       setTimeout(() => setSuccessMessage(""), 2000);
     },
   });
+
+  const moveVariant = async (index: number, direction: 'up' | 'down') => {
+    const swapIdx = direction === 'up' ? index - 1 : index + 1;
+    if (swapIdx < 0 || swapIdx >= variants.length) return;
+    const a = variants[index];
+    const b = variants[swapIdx];
+    const aOrder = a.sortOrder ?? index;
+    const bOrder = b.sortOrder ?? swapIdx;
+    const updated = variants.map((v, i) => {
+      if (i === index) return { ...v, sortOrder: bOrder };
+      if (i === swapIdx) return { ...v, sortOrder: aOrder };
+      return v;
+    });
+    updated.sort((x, y) => (x.sortOrder ?? 0) - (y.sortOrder ?? 0));
+    setVariants(updated);
+    await Promise.all([
+      apiRequest('PUT', `/api/admin/variants/${a.id}`, { sortOrder: bOrder }),
+      apiRequest('PUT', `/api/admin/variants/${b.id}`, { sortOrder: aOrder }),
+    ]);
+  };
 
   const resetCreateForm = () => {
     setNewProductName("");
@@ -1361,20 +1381,21 @@ export default function AdminProducts() {
                       {variants.length > 0 && (
                         <div className="border rounded-lg overflow-hidden">
                           {/* Table header */}
-                          <div className="grid grid-cols-[48px_1fr_100px_110px_80px_80px] gap-2 px-3 py-2 bg-muted/50 border-b text-xs font-medium text-muted-foreground">
+                          <div className="grid grid-cols-[48px_1fr_100px_110px_80px_32px_80px] gap-2 px-3 py-2 bg-muted/50 border-b text-xs font-medium text-muted-foreground">
                             <span>Image</span>
                             <span>Name</span>
                             <span>Price</span>
                             <span>SKU</span>
                             <span>Stock</span>
                             <span></span>
+                            <span></span>
                           </div>
 
-                          {variants.map((variant) => (
+                          {variants.map((variant, variantIndex) => (
                             <div key={variant.id} data-testid={`variant-item-${variant.id}`}>
                               {/* Row view */}
                               {editingVariant?.id !== variant.id && (
-                                <div className="grid grid-cols-[48px_1fr_100px_110px_80px_80px] gap-2 px-3 py-2 items-center border-b last:border-b-0 hover:bg-muted/20 transition-colors">
+                                <div className="grid grid-cols-[48px_1fr_100px_110px_80px_32px_80px] gap-2 px-3 py-2 items-center border-b last:border-b-0 hover:bg-muted/20 transition-colors">
                                   <div className="w-10 h-10 rounded border overflow-hidden bg-muted flex-shrink-0">
                                     {variant.image ? (
                                       <img
@@ -1393,6 +1414,24 @@ export default function AdminProducts() {
                                   <span className="text-sm whitespace-nowrap">R&nbsp;{parseFloat(variant.price as string).toFixed(2)}</span>
                                   <span className="text-xs text-muted-foreground truncate">{variant.sku || "—"}</span>
                                   <span className="text-sm">{variant.stock}</span>
+                                  <div className="flex flex-col items-center gap-0">
+                                    <button
+                                      onClick={() => moveVariant(variantIndex, 'up')}
+                                      disabled={variantIndex === 0}
+                                      className="p-0.5 rounded text-muted-foreground hover:text-foreground disabled:opacity-20 disabled:cursor-not-allowed"
+                                      data-testid={`button-variant-up-${variant.id}`}
+                                    >
+                                      <ChevronUp className="h-3.5 w-3.5" />
+                                    </button>
+                                    <button
+                                      onClick={() => moveVariant(variantIndex, 'down')}
+                                      disabled={variantIndex === variants.length - 1}
+                                      className="p-0.5 rounded text-muted-foreground hover:text-foreground disabled:opacity-20 disabled:cursor-not-allowed"
+                                      data-testid={`button-variant-down-${variant.id}`}
+                                    >
+                                      <ChevronDown className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
                                   <div className="flex gap-1 justify-end">
                                     <Button
                                       size="icon"
@@ -1593,6 +1632,7 @@ export default function AdminProducts() {
                                     sku: newVariantSku,
                                     stock: parseInt(newVariantStock) || 0,
                                     image: newVariantImage,
+                                    sortOrder: variants.length + 1,
                                   });
                                 }
                               }}
