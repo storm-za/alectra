@@ -277,7 +277,8 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   useEffect(() => {
     if (product?.id === TORSION_SPRING_PRODUCT_ID && dbVariants.length > 0 && !selectedDbVariant) {
       const sorted = [...dbVariants].sort((a, b) => (a.sortOrder ?? 99) - (b.sortOrder ?? 99));
-      setSelectedDbVariant(sorted[0].id);
+      const firstInStock = sorted.find(v => (v.stock ?? 0) > 0) ?? sorted[0];
+      setSelectedDbVariant(firstInStock.id);
     }
   }, [product?.id, dbVariants, selectedDbVariant]);
 
@@ -411,8 +412,10 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const displayPrice = getDisplayPrice();
   const priceValue = lpGasPricing ? lpGasPricing[selectedVariant] : (glosteelPricing ? glosteelPricing[selectedDoorSize] : (selectedDbVariantData ? parseFloat(selectedDbVariantData.price as string) : (torsionSpringInfo ? torsionSpringInfo.price : parseFloat(product.price))));
   const isDiscontinued = (product as any).discontinued === true || priceValue === 0;
-  const isLowStock = product.stock > 0 && product.stock <= 5 && !isDiscontinued;
-  const isOutOfStock = product.stock === 0 || isDiscontinued;
+  const variantStock = selectedDbVariantData != null ? selectedDbVariantData.stock : null;
+  const effectiveStock = variantStock != null ? variantStock : product.stock;
+  const isLowStock = effectiveStock > 0 && effectiveStock <= 5 && !isDiscontinued;
+  const isOutOfStock = effectiveStock === 0 || isDiscontinued;
   
   // Ensure all image URLs are properly formatted
   const fixImageUrl = (url: string) => {
@@ -700,15 +703,20 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                           selectedDbVariantData.id === group.left?.id || selectedDbVariantData.id === group.right?.id
                         );
                         const displayVariant = group.left || group.right;
+                        const groupFullyOos = (group.left?.stock ?? 0) === 0 && (group.right?.stock ?? 0) === 0;
                         return (
                           <button
                             key={group.weightColor}
                             type="button"
+                            disabled={groupFullyOos}
                             onClick={() => {
-                              const pick = targetVariant || group.left || group.right;
+                              const preferred = targetVariant && (targetVariant.stock ?? 0) > 0 ? targetVariant : null;
+                              const fallback = (group.left && (group.left.stock ?? 0) > 0) ? group.left : ((group.right && (group.right.stock ?? 0) > 0) ? group.right : (targetVariant || group.left || group.right));
+                              const pick = preferred || fallback;
                               if (pick) setSelectedDbVariant(pick.id);
                             }}
                             className={`flex flex-col items-center gap-1 rounded-md border-2 p-3 transition-colors ${
+                              groupFullyOos ? 'border-muted opacity-40 cursor-not-allowed line-through' :
                               isSelected ? 'border-primary bg-primary/5' : 'border-muted hover:bg-accent'
                             }`}
                             data-testid={`button-spring-${group.weight}`}
@@ -717,13 +725,15 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                             <Badge
                               variant="outline"
                               className="text-xs"
-                              style={{ borderColor: group.colorCss, color: group.colorCss }}
+                              style={groupFullyOos ? {} : { borderColor: group.colorCss, color: group.colorCss }}
                             >
-                              {group.color}
+                              {groupFullyOos ? 'Out of stock' : group.color}
                             </Badge>
-                            <span className="text-xs font-medium text-primary whitespace-nowrap">
-                              R&nbsp;{parseFloat((displayVariant?.price ?? '0') as string).toFixed(0)}
-                            </span>
+                            {!groupFullyOos && (
+                              <span className="text-xs font-medium text-primary whitespace-nowrap">
+                                R&nbsp;{parseFloat((displayVariant?.price ?? '0') as string).toFixed(0)}
+                              </span>
+                            )}
                           </button>
                         );
                       })}
@@ -733,40 +743,47 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                   {/* Winding Direction from DB */}
                   <div>
                     <Label className="text-xs text-muted-foreground mb-2 block">Winding Direction</Label>
-                    <RadioGroup
-                      value={selectedDbVariantData?.name.includes('Right') ? 'right' : 'left'}
-                      onValueChange={(value) => {
-                        const currentGroup = torsionDbGroups.find(g =>
-                          g.left?.id === selectedDbVariantData?.id || g.right?.id === selectedDbVariantData?.id
-                        );
-                        if (currentGroup) {
-                          const pick = value === 'left' ? currentGroup.left : currentGroup.right;
-                          if (pick) setSelectedDbVariant(pick.id);
-                        }
-                      }}
-                      className="grid grid-cols-2 gap-3"
-                    >
-                      <div className="relative">
-                        <RadioGroupItem value="left" id="winding-left" className="peer sr-only" data-testid="radio-winding-left" />
-                        <Label htmlFor="winding-left" className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold">Left-Wound</span>
-                            <Badge className="bg-red-500 text-white text-xs">Red Cone</Badge>
+                    {(() => {
+                      const currentGroup = torsionDbGroups.find(g =>
+                        g.left?.id === selectedDbVariantData?.id || g.right?.id === selectedDbVariantData?.id
+                      );
+                      const leftOos = (currentGroup?.left?.stock ?? 0) === 0;
+                      const rightOos = (currentGroup?.right?.stock ?? 0) === 0;
+                      return (
+                        <RadioGroup
+                          value={selectedDbVariantData?.name.includes('Right') ? 'right' : 'left'}
+                          onValueChange={(value) => {
+                            if (!currentGroup) return;
+                            const pick = value === 'left' ? currentGroup.left : currentGroup.right;
+                            if (pick) setSelectedDbVariant(pick.id);
+                          }}
+                          className="grid grid-cols-2 gap-3"
+                        >
+                          <div className="relative">
+                            <RadioGroupItem value="left" id="winding-left" className="peer sr-only" disabled={leftOos} data-testid="radio-winding-left" />
+                            <Label htmlFor="winding-left" className={`flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 peer-data-[state=checked]:border-primary ${leftOos ? 'opacity-40 cursor-not-allowed' : 'hover:bg-accent hover:text-accent-foreground cursor-pointer'}`}>
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold">Left-Wound</span>
+                                <Badge className="bg-red-500 text-white text-xs">Red Cone</Badge>
+                                {leftOos && <Badge variant="secondary" className="text-xs">Out of stock</Badge>}
+                              </div>
+                              <span className="text-sm text-muted-foreground">Installed on the right side of center bracket</span>
+                            </Label>
                           </div>
-                          <span className="text-sm text-muted-foreground">Installed on the right side of center bracket</span>
-                        </Label>
-                      </div>
-                      <div className="relative">
-                        <RadioGroupItem value="right" id="winding-right" className="peer sr-only" data-testid="radio-winding-right" />
-                        <Label htmlFor="winding-right" className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold">Right-Wound</span>
-                            <Badge className="bg-black text-white text-xs">Black Cone</Badge>
+                          <div className="relative">
+                            <RadioGroupItem value="right" id="winding-right" className="peer sr-only" disabled={rightOos} data-testid="radio-winding-right" />
+                            <Label htmlFor="winding-right" className={`flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 peer-data-[state=checked]:border-primary ${rightOos ? 'opacity-40 cursor-not-allowed' : 'hover:bg-accent hover:text-accent-foreground cursor-pointer'}`}>
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold">Right-Wound</span>
+                                <Badge className="bg-black text-white text-xs">Black Cone</Badge>
+                                {rightOos && <Badge variant="secondary" className="text-xs">Out of stock</Badge>}
+                              </div>
+                              <span className="text-sm text-muted-foreground">Installed on the left side of center bracket</span>
+                            </Label>
                           </div>
-                          <span className="text-sm text-muted-foreground">Installed on the left side of center bracket</span>
-                        </Label>
-                      </div>
-                    </RadioGroup>
+                        </RadioGroup>
+                      );
+                    })()}
                   </div>
 
                   {/* Selected summary */}
