@@ -331,20 +331,13 @@ export default function AdminProducts() {
   const moveVariant = async (index: number, direction: 'up' | 'down') => {
     const swapIdx = direction === 'up' ? index - 1 : index + 1;
     if (swapIdx < 0 || swapIdx >= variants.length) return;
-    const a = variants[index];
-    const b = variants[swapIdx];
-    const aOrder = a.sortOrder ?? index;
-    const bOrder = b.sortOrder ?? swapIdx;
-    const updated = variants.map((v, i) => {
-      if (i === index) return { ...v, sortOrder: bOrder };
-      if (i === swapIdx) return { ...v, sortOrder: aOrder };
-      return v;
-    });
-    updated.sort((x, y) => (x.sortOrder ?? 0) - (y.sortOrder ?? 0));
-    setVariants(updated);
+    const reordered = [...variants];
+    [reordered[index], reordered[swapIdx]] = [reordered[swapIdx], reordered[index]];
+    const withOrders = reordered.map((v, i) => ({ ...v, sortOrder: i + 1 }));
+    setVariants(withOrders);
     await Promise.all([
-      apiRequest('PUT', `/api/admin/variants/${a.id}`, { sortOrder: bOrder }),
-      apiRequest('PUT', `/api/admin/variants/${b.id}`, { sortOrder: aOrder }),
+      apiRequest('PUT', `/api/admin/variants/${withOrders[index].id}`, { sortOrder: withOrders[index].sortOrder }),
+      apiRequest('PUT', `/api/admin/variants/${withOrders[swapIdx].id}`, { sortOrder: withOrders[swapIdx].sortOrder }),
     ]);
   };
 
