@@ -13,7 +13,12 @@ const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 const ALLOWED_WIDTHS = [50, 100, 150, 200, 300, 400, 500, 600, 800, 1000, 1200, 1600, 2000];
 
 // Security: allowed base directories for images
-const ALLOWED_BASE_DIRS = ['attached_assets'];
+const ALLOWED_BASE_DIRS = ['attached_assets', 'images'];
+
+// Path remapping: logical path prefix → actual filesystem prefix
+const PATH_REMAPS: Record<string, string> = {
+  'images/': 'client/public/images/',
+};
 
 // Security: allowed image extensions
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif'];
@@ -186,12 +191,20 @@ export async function optimizeImage(
         return null;
       }
     } else {
+      // Apply path remapping for directories that live outside cwd root
+      let fsPath = resolvedPath;
+      for (const [logicalPrefix, fsPrefix] of Object.entries(PATH_REMAPS)) {
+        if (resolvedPath.startsWith(logicalPrefix)) {
+          fsPath = fsPrefix + resolvedPath.slice(logicalPrefix.length);
+          break;
+        }
+      }
       // Check if local file exists
-      if (!fs.existsSync(resolvedPath)) {
-        console.error(`Image not found: ${resolvedPath}`);
+      if (!fs.existsSync(fsPath)) {
+        console.error(`Image not found: ${fsPath}`);
         return null;
       }
-      sourceBuffer = fs.readFileSync(resolvedPath);
+      sourceBuffer = fs.readFileSync(fsPath);
     }
     
     let sharpInstance = sharp(sourceBuffer);
