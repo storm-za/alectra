@@ -3273,6 +3273,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
+      // Migrate torsion spring variants (insert if product exists but has no variants)
+      let variantsCreated = 0;
+      try {
+        const torsionSlug = 'torsion-spring-garage-door';
+        const allProds = await storage.getAllProducts();
+        const torsionProduct = allProds.find((p: any) => p.slug === torsionSlug);
+        if (torsionProduct) {
+          const existingVariants = await storage.getProductVariants(torsionProduct.id);
+          if (existingVariants.length === 0) {
+            const torsionVariants = [
+              { name: '45kg Green - Left (Red Cone)',   price: 289, sku: 'TORS-45KG-GRN-L', stock: 50, sortOrder: 1,  image: '/images/torsion-springs/45kg-green.webp' },
+              { name: '45kg Green - Right (Black Cone)',price: 289, sku: 'TORS-45KG-GRN-R', stock: 50, sortOrder: 2,  image: '/images/torsion-springs/45kg-green.webp' },
+              { name: '50kg Beige - Left (Red Cone)',   price: 295, sku: 'TORS-50KG-BGE-L', stock: 50, sortOrder: 3,  image: '/images/torsion-springs/50kg-beige.webp' },
+              { name: '50kg Beige - Right (Black Cone)',price: 295, sku: 'TORS-50KG-BGE-R', stock: 50, sortOrder: 4,  image: '/images/torsion-springs/50kg-beige.webp' },
+              { name: '60kg Blue - Left (Red Cone)',    price: 335, sku: 'TORS-60KG-BLU-L', stock: 50, sortOrder: 5,  image: '/images/torsion-springs/60kg-blue.webp' },
+              { name: '60kg Blue - Right (Black Cone)', price: 335, sku: 'TORS-60KG-BLU-R', stock: 50, sortOrder: 6,  image: '/images/torsion-springs/60kg-blue.webp' },
+              { name: '65kg Blue/White - Left (Red Cone)',    price: 365, sku: 'TORS-65KG-BW-L', stock: 50, sortOrder: 7,  image: '/images/torsion-springs/65kg-blue-white.webp' },
+              { name: '65kg Blue/White - Right (Black Cone)', price: 365, sku: 'TORS-65KG-BW-R', stock: 50, sortOrder: 8,  image: '/images/torsion-springs/65kg-blue-white.webp' },
+              { name: '70kg White - Left (Red Cone)',   price: 389, sku: 'TORS-70KG-WHT-L', stock: 50, sortOrder: 9,  image: '/images/torsion-springs/70kg-white.webp' },
+              { name: '70kg White - Right (Black Cone)',price: 389, sku: 'TORS-70KG-WHT-R', stock: 50, sortOrder: 10, image: '/images/torsion-springs/70kg-white.webp' },
+              { name: '75kg Red - Left (Red Cone)',     price: 420, sku: 'TORS-75KG-RED-L', stock: 50, sortOrder: 11, image: '/images/torsion-springs/75kg-red.webp' },
+              { name: '75kg Red - Right (Black Cone)',  price: 420, sku: 'TORS-75KG-RED-R', stock: 50, sortOrder: 12, image: '/images/torsion-springs/75kg-red.webp' },
+              { name: '80kg Orange - Left (Red Cone)',  price: 490, sku: 'TORS-80KG-ORG-L', stock: 50, sortOrder: 13, image: '/images/torsion-springs/80kg-orange.webp' },
+              { name: '80kg Orange - Right (Black Cone)',price:490, sku: 'TORS-80KG-ORG-R', stock: 50, sortOrder: 14, image: '/images/torsion-springs/80kg-orange.webp' },
+              { name: '90kg Brown - Left (Red Cone)',   price: 670, sku: 'TORS-90KG-BRN-L', stock: 50, sortOrder: 15, image: '/images/torsion-springs/90kg-brown.webp' },
+              { name: '90kg Brown - Right (Black Cone)',price: 670, sku: 'TORS-90KG-BRN-R', stock: 50, sortOrder: 16, image: '/images/torsion-springs/90kg-brown.webp' },
+            ];
+            for (const v of torsionVariants) {
+              try {
+                await storage.createProductVariant({ productId: torsionProduct.id, ...v });
+                variantsCreated++;
+              } catch (e) { /* skip */ }
+            }
+          }
+        }
+      } catch (e) {
+        console.log('Variant migration error:', e);
+      }
+
       // Seed blog posts (3 SEO articles)
       const blogPosts = [
         {
@@ -3336,6 +3375,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (productsCreated > 0) changes.push(`${productsCreated} products`);
       if (reviewsCreated > 0) changes.push(`${reviewsCreated} reviews`);
       if (blogPostsCreated > 0) changes.push(`${blogPostsCreated} blog posts`);
+      if (variantsCreated > 0) changes.push(`${variantsCreated} torsion spring variants`);
 
       const message = changes.length > 0 
         ? `Successfully added: ${changes.join(', ')}!`
