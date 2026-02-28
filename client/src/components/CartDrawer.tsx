@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Minus, Plus, X, ShoppingCart, Trash2, ShieldCheck, Truck } from "lucide-react";
+import { Minus, Plus, X, ShoppingCart, Trash2, ShieldCheck, Truck, PartyPopper } from "lucide-react";
 import { Link } from "wouter";
 import { ProductImage } from "@/components/OptimizedImage";
 import type { CartItem, CartVariantType, TorsionSpringVariant } from "@shared/schema";
@@ -34,6 +34,8 @@ export default function CartDrawer({
   onUpdateQuantity,
   onRemoveItem,
 }: CartDrawerProps) {
+  const FREE_SHIPPING_THRESHOLD = 2500;
+
   const total = items.reduce((sum, item) => {
     const price = getItemPrice(item);
     return sum + price * item.quantity;
@@ -41,6 +43,9 @@ export default function CartDrawer({
 
   const vat = total * (15 / 115);
   const subtotal = total - vat;
+  const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - total);
+  const progress = Math.min(100, (total / FREE_SHIPPING_THRESHOLD) * 100);
+  const hasUnlockedFreeShipping = total >= FREE_SHIPPING_THRESHOLD;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -150,6 +155,76 @@ export default function CartDrawer({
                   </Card>
                 );
               })}
+            </div>
+
+            {/* Free shipping progress */}
+            <div
+              className="px-4 py-3 border-t"
+              style={{
+                background: hasUnlockedFreeShipping
+                  ? "linear-gradient(135deg, rgba(21,128,61,0.12) 0%, rgba(22,163,74,0.07) 100%)"
+                  : "linear-gradient(135deg, rgba(37,99,235,0.07) 0%, rgba(29,78,216,0.04) 100%)",
+                borderColor: hasUnlockedFreeShipping ? "rgba(21,128,61,0.25)" : "rgba(37,99,235,0.12)",
+              }}
+              data-testid="free-shipping-progress"
+            >
+              {hasUnlockedFreeShipping ? (
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="flex-shrink-0 flex items-center justify-center rounded-full"
+                    style={{ width: 32, height: 32, background: "rgba(21,128,61,0.15)" }}
+                  >
+                    <PartyPopper className="h-4 w-4" style={{ color: "#16a34a" }} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold" style={{ color: "#15803d" }}>
+                      You've unlocked FREE delivery!
+                    </p>
+                    <p className="text-xs" style={{ color: "#166534" }}>
+                      Enjoy free nationwide delivery on this order.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <Truck className="h-3.5 w-3.5 text-primary" />
+                      <span className="text-xs font-semibold text-foreground">You're almost there!</span>
+                    </div>
+                    <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+                      R&nbsp;{remaining.toFixed(2)} away
+                    </span>
+                  </div>
+
+                  <div className="relative h-2.5 rounded-full overflow-hidden bg-muted">
+                    <div
+                      className="absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out"
+                      style={{
+                        width: `${progress}%`,
+                        background: "linear-gradient(90deg, #2563eb 0%, #1d4ed8 60%, #7c3aed 100%)",
+                        boxShadow: progress > 5 ? "0 0 8px rgba(37,99,235,0.45)" : "none",
+                      }}
+                      data-testid="free-shipping-bar"
+                    />
+                    <div
+                      className="absolute inset-y-0 left-0 rounded-full"
+                      style={{
+                        width: `${progress}%`,
+                        background:
+                          "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%)",
+                        backgroundSize: "200% 100%",
+                        animation: progress > 0 && progress < 100 ? "shimmer 2s infinite" : "none",
+                      }}
+                    />
+                  </div>
+
+                  <p className="text-xs text-muted-foreground" data-testid="free-shipping-message">
+                    Add&nbsp;<span className="font-semibold text-foreground whitespace-nowrap">R&nbsp;{remaining.toFixed(2)}</span>&nbsp;more for{" "}
+                    <span className="font-semibold text-primary">FREE delivery</span>
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="border-t bg-muted/30 px-6 py-4 space-y-4">
