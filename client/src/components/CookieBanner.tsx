@@ -44,11 +44,13 @@ export default function CookieBanner() {
       <style>{`
         @media (max-width: 639px) {
           .cookie-inner { padding: 10px 14px !important; gap: 10px !important; }
-          .cookie-icon { display: none !important; }
-          .cookie-title { font-size: 13px !important; }
-          .cookie-sub { display: none !important; }
-          .cookie-btn-decline { padding: 6px 12px !important; font-size: 12px !important; }
-          .cookie-btn-accept { padding: 6px 14px !important; font-size: 12px !important; }
+          .cookie-icon-wrap { width: 32px !important; height: 32px !important; }
+          .cookie-icon-wrap svg:first-child { width: 28px !important; height: 28px !important; }
+          .cookie-icon-wrap svg:last-child { width: 15px !important; height: 15px !important; }
+          .cookie-title { font-size: 12px !important; margin-bottom: 1px !important; }
+          .cookie-sub { font-size: 11px !important; }
+          .cookie-btn-decline { padding: 5px 11px !important; font-size: 12px !important; }
+          .cookie-btn-accept { padding: 5px 13px !important; font-size: 12px !important; }
         }
       `}</style>
       <div
@@ -65,9 +67,7 @@ export default function CookieBanner() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "14px", flex: 1, minWidth: 0 }}>
-          <div className="cookie-icon">
-            <AnimatedCookieLock />
-          </div>
+          <AnimatedCookieLock />
           <div style={{ minWidth: 0 }}>
             <p className="cookie-title" style={{ color: "#f1f5f9", fontSize: "14px", fontWeight: 600, margin: 0, marginBottom: "2px" }}>
               Accept cookies?
@@ -141,7 +141,7 @@ export default function CookieBanner() {
 
 function AnimatedCookieLock() {
   return (
-    <div style={{ position: "relative", width: "44px", height: "44px", flexShrink: 0 }}>
+    <div className="cookie-icon-wrap" style={{ position: "relative", width: "44px", height: "44px", flexShrink: 0 }}>
       <style>{`
         @keyframes cookieBob {
           0%, 100% { transform: translateY(0) rotate(-4deg); }
