@@ -41,7 +41,18 @@ export default function CookieBanner() {
       aria-label="Cookie consent"
       data-testid="cookie-banner"
     >
+      <style>{`
+        @media (max-width: 639px) {
+          .cookie-inner { padding: 10px 14px !important; gap: 10px !important; }
+          .cookie-icon { display: none !important; }
+          .cookie-title { font-size: 13px !important; }
+          .cookie-sub { display: none !important; }
+          .cookie-btn-decline { padding: 6px 12px !important; font-size: 12px !important; }
+          .cookie-btn-accept { padding: 6px 14px !important; font-size: 12px !important; }
+        }
+      `}</style>
       <div
+        className="cookie-inner"
         style={{
           background: "rgba(15, 23, 42, 0.97)",
           backdropFilter: "blur(12px)",
@@ -50,18 +61,19 @@ export default function CookieBanner() {
           display: "flex",
           alignItems: "center",
           gap: "16px",
-          flexWrap: "wrap",
           justifyContent: "space-between",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "14px", flex: 1, minWidth: 0 }}>
-          <AnimatedCookieLock />
+          <div className="cookie-icon">
+            <AnimatedCookieLock />
+          </div>
           <div style={{ minWidth: 0 }}>
-            <p style={{ color: "#f1f5f9", fontSize: "14px", fontWeight: 600, margin: 0, marginBottom: "2px" }}>
-              We use cookies to improve your experience
+            <p className="cookie-title" style={{ color: "#f1f5f9", fontSize: "14px", fontWeight: 600, margin: 0, marginBottom: "2px" }}>
+              Accept cookies?
             </p>
-            <p style={{ color: "#94a3b8", fontSize: "12px", margin: 0, lineHeight: 1.4 }}>
-              Analytics cookies help us understand how you use our site.{" "}
+            <p className="cookie-sub" style={{ color: "#94a3b8", fontSize: "12px", margin: 0, lineHeight: 1.4 }}>
+              We use cookies to improve your experience.{" "}
               <a href="/privacy" style={{ color: "#60a5fa", textDecoration: "underline" }}>
                 Cookie policy
               </a>
@@ -72,6 +84,7 @@ export default function CookieBanner() {
         <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
           <button
             onClick={() => dismiss("declined")}
+            className="cookie-btn-decline"
             style={{
               background: "transparent",
               border: "1px solid rgba(255,255,255,0.15)",
@@ -97,6 +110,7 @@ export default function CookieBanner() {
           </button>
           <button
             onClick={() => dismiss("accepted")}
+            className="cookie-btn-accept"
             style={{
               background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
               border: "none",
