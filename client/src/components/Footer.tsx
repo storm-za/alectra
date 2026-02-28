@@ -5,6 +5,7 @@ import { Facebook, Instagram, Mail } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { resetConsent } from "@/lib/cookieConsent";
 
 export default function Footer() {
   const { toast } = useToast();
@@ -187,8 +188,18 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-slate-800 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="text-sm">
-              © {new Date().getFullYear()} Alectra Solutions. All rights reserved.
+            <div className="flex items-center gap-3 text-sm flex-wrap">
+              <span>© {new Date().getFullYear()} Alectra Solutions. All rights reserved.</span>
+              <span className="text-slate-700">|</span>
+              <Link href="/privacy" className="hover:text-white transition-colors text-xs">Privacy Policy</Link>
+              <span className="text-slate-700">|</span>
+              <button
+                onClick={() => { resetConsent(); window.location.reload(); }}
+                className="hover:text-white transition-colors text-xs cursor-pointer bg-transparent border-none text-slate-300 p-0"
+                data-testid="button-cookie-settings"
+              >
+                Cookie Settings
+              </button>
             </div>
             
             <div className="flex items-center gap-4">

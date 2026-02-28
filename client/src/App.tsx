@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useState, useEffect, lazy, Suspense } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CookieBanner from "@/components/CookieBanner";
 import CartDrawer from "@/components/CartDrawer";
 import MobileNav from "@/components/MobileNav";
 import { useToast } from "@/hooks/use-toast";
@@ -308,6 +309,7 @@ export default function App() {
       <TooltipProvider>
         <Router />
         <Toaster />
+        <CookieBanner />
       </TooltipProvider>
     </QueryClientProvider>
   );
