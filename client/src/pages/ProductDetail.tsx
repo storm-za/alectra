@@ -996,12 +996,6 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 ref={addToCartButtonRef}
                 size="lg"
                 className="flex-1 font-semibold tracking-wide gap-2"
-                style={(!isOutOfStock && !isDiscontinued) ? {
-                  background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 65%, #1e40af 100%)',
-                  boxShadow: '0 4px 16px rgba(37,99,235,0.38), 0 1px 3px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.12)',
-                  border: 'none',
-                  color: '#ffffff',
-                } : undefined}
                 disabled={isOutOfStock || (isGlosteelDoor && selectedDoorFinish === '')}
                 onClick={() => {
                   if (isLpGasCylinder && lpGasPricing) {
@@ -1082,9 +1076,9 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                   </div>
                   
                   {/* Pickup option - shown on all products */}
-                  <Alert className="border-blue-500/50 bg-blue-50 dark:bg-blue-950/20">
-                    <Store className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                    <AlertDescription className="text-blue-900 dark:text-blue-100">
+                  <Alert className="border-primary/50 bg-primary/5">
+                    <Store className="h-4 w-4 text-primary" />
+                    <AlertDescription>
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <span>
                           <strong>Pickup Available:</strong> Collect from our Wonderboom shop at Alectra Solutions, Wonderboom, Pretoria, 0182.
@@ -1093,7 +1087,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                           href="https://maps.app.goo.gl/St2UUGxF41jjHXKa6" 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline font-medium whitespace-nowrap"
+                          className="inline-flex items-center gap-1 text-primary hover:underline font-medium whitespace-nowrap"
                           data-testid="link-get-directions"
                         >
                           <MapPin className="h-3 w-3" />
@@ -1453,7 +1447,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             <div
               style={{
                 height: 1,
-                background: 'linear-gradient(90deg, transparent 0%, rgba(37,99,235,0.35) 30%, rgba(37,99,235,0.35) 70%, transparent 100%)',
+                background: 'linear-gradient(90deg, transparent 0%, rgba(255,153,0,0.45) 30%, rgba(255,153,0,0.45) 70%, transparent 100%)',
               }}
             />
             <div
