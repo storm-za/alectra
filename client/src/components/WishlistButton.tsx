@@ -10,9 +10,10 @@ interface WishlistButtonProps {
   className?: string;
   size?: "sm" | "default" | "lg" | "icon";
   showLabel?: boolean;
+  imageOverlay?: boolean;
 }
 
-export function WishlistButton({ productId, className, size = "icon", showLabel = false }: WishlistButtonProps) {
+export function WishlistButton({ productId, className, size = "icon", showLabel = false, imageOverlay = false }: WishlistButtonProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -97,13 +98,41 @@ export function WishlistButton({ productId, className, size = "icon", showLabel 
         className={cn("gap-2", className)}
         data-testid={`button-wishlist-${productId}`}
       >
-        <Heart 
+        <Heart
           className={cn(
             "h-4 w-4 transition-colors",
             isInWishlist && "fill-current"
-          )} 
+          )}
         />
         {isInWishlist ? "Saved" : "Save"}
+      </Button>
+    );
+  }
+
+  if (imageOverlay) {
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={handleClick}
+        disabled={isPending}
+        style={{
+          background: isInWishlist ? 'rgba(239,68,68,0.15)' : 'rgba(0,0,0,0.28)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          border: isInWishlist ? '1px solid rgba(239,68,68,0.35)' : '1px solid rgba(255,255,255,0.22)',
+          boxShadow: '0 2px 12px rgba(0,0,0,0.22)',
+        }}
+        className={cn("rounded-full transition-all duration-200", className)}
+        data-testid={`button-wishlist-${productId}`}
+        aria-label={isInWishlist ? "Remove from wishlist" : "Save to wishlist"}
+      >
+        <Heart
+          className={cn(
+            "h-5 w-5 transition-all duration-200",
+            isInWishlist ? "fill-red-500 text-red-500 scale-110" : "text-white"
+          )}
+        />
       </Button>
     );
   }
@@ -121,11 +150,11 @@ export function WishlistButton({ productId, className, size = "icon", showLabel 
       )}
       data-testid={`button-wishlist-${productId}`}
     >
-      <Heart 
+      <Heart
         className={cn(
           "h-5 w-5 transition-colors",
           isInWishlist && "fill-current"
-        )} 
+        )}
       />
     </Button>
   );

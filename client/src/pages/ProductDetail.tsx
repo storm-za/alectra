@@ -512,14 +512,19 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Images */}
           <div>
-            <div className="aspect-square mb-4 bg-muted rounded-lg overflow-hidden">
-              <ProductImage
-                src={images[selectedImage]}
-                alt={product.name}
-                size="large"
-                priority={selectedImage === 0}
-                className="w-full h-full object-contain"
-              />
+            <div className="relative mb-4">
+              <div className="aspect-square bg-muted rounded-lg overflow-hidden">
+                <ProductImage
+                  src={images[selectedImage]}
+                  alt={product.name}
+                  size="large"
+                  priority={selectedImage === 0}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="absolute bottom-3 right-3 z-10">
+                <WishlistButton productId={product.id} imageOverlay />
+              </div>
             </div>
             {images.length > 1 && (
               <div className="grid grid-cols-5 gap-2">
@@ -1019,7 +1024,6 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 {isDiscontinued ? "Discontinued" : isOutOfStock ? "Out of Stock" : "Add to Cart"}
               </Button>
 
-              <WishlistButton productId={product.id} showLabel size="lg" />
             </div>
 
             {/* Delivery Information */}
