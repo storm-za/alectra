@@ -990,7 +990,13 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
               <Button
                 ref={addToCartButtonRef}
                 size="lg"
-                className="flex-1"
+                className="flex-1 font-semibold tracking-wide gap-2"
+                style={(!isOutOfStock && !isDiscontinued) ? {
+                  background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 65%, #1e40af 100%)',
+                  boxShadow: '0 4px 16px rgba(37,99,235,0.38), 0 1px 3px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.12)',
+                  border: 'none',
+                  color: '#ffffff',
+                } : undefined}
                 disabled={isOutOfStock || (isGlosteelDoor && selectedDoorFinish === '')}
                 onClick={() => {
                   if (isLpGasCylinder && lpGasPricing) {
@@ -1009,7 +1015,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 }}
                 data-testid="button-add-to-cart"
               >
-                <ShoppingCart className="h-5 w-5 mr-2" />
+                <ShoppingCart className="h-5 w-5" />
                 {isDiscontinued ? "Discontinued" : isOutOfStock ? "Out of Stock" : "Add to Cart"}
               </Button>
 
