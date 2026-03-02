@@ -291,3 +291,10 @@
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
+
+/* Lift WhatsApp button when sticky add-to-cart bar is active */
+@media (max-width: 767px) {
+  .sticky-bar-visible #whatsapp-floating {
+    bottom: 152px;
+  }
+}

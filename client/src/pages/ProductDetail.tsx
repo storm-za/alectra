@@ -225,6 +225,17 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     };
   }, [product]);
 
+  // Lift WhatsApp button when sticky bar is active
+  useEffect(() => {
+    const shouldShow = showStickyAddToCart && !isOutOfStock;
+    if (shouldShow) {
+      document.body.classList.add('sticky-bar-visible');
+    } else {
+      document.body.classList.remove('sticky-bar-visible');
+    }
+    return () => document.body.classList.remove('sticky-bar-visible');
+  }, [showStickyAddToCart, isOutOfStock]);
+
   // Preload all torsion spring variant images for instant switching
   useEffect(() => {
     if (product?.id === TORSION_SPRING_PRODUCT_ID) {
@@ -1382,43 +1393,100 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
       </div>
 
       {/* Sticky Add to Cart Bar - Mobile Only */}
-      {showStickyAddToCart && !isOutOfStock && (
-        <div 
-          className="fixed bottom-0 left-0 right-0 md:hidden z-40 bg-background/95 backdrop-blur-sm border-t shadow-lg animate-in slide-in-from-bottom-4 duration-300"
-          data-testid="sticky-add-to-cart-bar"
-        >
-          <div className="flex items-center gap-3 px-4 py-3 pr-24">
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate">{product.name}</p>
-              <p className="text-lg font-bold text-primary whitespace-nowrap">R&nbsp;{displayPrice}</p>
-            </div>
-            <Button
-              size="lg"
-              className="shrink-0"
-              disabled={isGlosteelDoor && selectedDoorFinish === ''}
-              onClick={() => {
-                if (isLpGasCylinder && lpGasPricing) {
-                  onAddToCart(product, quantity, selectedVariant, displayPrice);
-                } else if (isGlosteelDoor && glosteelPricing) {
-                  if (!selectedDoorFinish) return;
-                  const doorVariant = `${selectedDoorSize}-${selectedDoorFinish}` as GarageDoorVariant;
-                  onAddToCart(product, quantity, doorVariant, displayPrice);
-                } else if (selectedDbVariantData) {
-                  onAddToCart(product, quantity, selectedDbVariantData.name as any, displayPrice);
-                } else if (isTorsionSpring && torsionSpringInfo) {
-                  onAddToCart(product, quantity, selectedTorsionSpring, displayPrice);
-                } else {
-                  onAddToCart(product, quantity);
-                }
+      {(() => {
+        const stickyImage = dbVariantImage || (currentVariantImage ? fixImageUrl(currentVariantImage) : null) || fixImageUrl(product.imageUrl);
+        const stickyVariantLabel = isLpGasCylinder
+          ? (selectedVariant === 'exchange' ? 'Exchange' : 'New Cylinder')
+          : isGlosteelDoor && selectedDoorFinish
+          ? `${selectedDoorSize} · ${selectedDoorFinish === 'smooth' ? 'Smooth' : 'Woodgrain'}`
+          : selectedDbVariantData
+          ? selectedDbVariantData.name
+          : isTorsionSpring && torsionSpringInfo
+          ? `${torsionSpringInfo.weight} · ${torsionSpringInfo.winding === 'left' ? 'Left' : 'Right'} wind`
+          : null;
+        const isBarVisible = showStickyAddToCart && !isOutOfStock;
+        return (
+          <div
+            className="fixed left-0 right-0 md:hidden z-40"
+            style={{
+              bottom: 64,
+              transform: isBarVisible ? 'translateY(0)' : 'translateY(calc(100% + 4px))',
+              transition: 'transform 0.38s cubic-bezier(0.22, 1, 0.36, 1)',
+              pointerEvents: isBarVisible ? 'auto' : 'none',
+            }}
+            data-testid="sticky-add-to-cart-bar"
+          >
+            {/* Top glow line */}
+            <div
+              style={{
+                height: 1,
+                background: 'linear-gradient(90deg, transparent 0%, rgba(37,99,235,0.35) 30%, rgba(37,99,235,0.35) 70%, transparent 100%)',
               }}
-              data-testid="button-sticky-add-to-cart"
+            />
+            <div
+              className="bg-background/[0.97] backdrop-blur-xl border-t border-border/60"
+              style={{
+                boxShadow: '0 -8px 32px -4px rgba(0,0,0,0.10)',
+              }}
             >
-              <ShoppingCart className="h-5 w-5 mr-2" />
-              Add to Cart
-            </Button>
+              <div className="flex items-center gap-3 px-4 py-3">
+                {/* Product thumbnail */}
+                <div className="w-11 h-11 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-border/50">
+                  <ProductImage
+                    src={stickyImage}
+                    alt={product.name}
+                    size="small"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                {/* Name + price */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold truncate leading-tight" data-testid="sticky-product-name">
+                    {product.name}
+                  </p>
+                  <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                    <span className="text-base font-bold text-primary whitespace-nowrap" data-testid="sticky-product-price">
+                      R&nbsp;{displayPrice}
+                    </span>
+                    {stickyVariantLabel && (
+                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
+                        {stickyVariantLabel}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+
+                {/* Add to Cart button */}
+                <Button
+                  size="lg"
+                  className="shrink-0 gap-1.5 px-5"
+                  disabled={isGlosteelDoor && selectedDoorFinish === ''}
+                  onClick={() => {
+                    if (isLpGasCylinder && lpGasPricing) {
+                      onAddToCart(product, quantity, selectedVariant, displayPrice);
+                    } else if (isGlosteelDoor && glosteelPricing) {
+                      if (!selectedDoorFinish) return;
+                      const doorVariant = `${selectedDoorSize}-${selectedDoorFinish}` as GarageDoorVariant;
+                      onAddToCart(product, quantity, doorVariant, displayPrice);
+                    } else if (selectedDbVariantData) {
+                      onAddToCart(product, quantity, selectedDbVariantData.name as any, displayPrice);
+                    } else if (isTorsionSpring && torsionSpringInfo) {
+                      onAddToCart(product, quantity, selectedTorsionSpring, displayPrice);
+                    } else {
+                      onAddToCart(product, quantity);
+                    }
+                  }}
+                  data-testid="button-sticky-add-to-cart"
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  Add
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }

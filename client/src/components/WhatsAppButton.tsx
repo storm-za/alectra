@@ -10,7 +10,9 @@ export default function WhatsAppButton() {
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-20 right-6 lg:bottom-6 z-50 flex items-center justify-center w-14 h-14 bg-green-500 text-white rounded-full shadow-lg transition-all duration-300"
+      id="whatsapp-floating"
+      className="fixed bottom-20 right-6 lg:bottom-6 z-50 flex items-center justify-center w-14 h-14 bg-green-500 text-white rounded-full shadow-lg"
+      style={{ transition: 'bottom 0.38s cubic-bezier(0.22, 1, 0.36, 1)' }}
       aria-label="Chat with us on WhatsApp"
       data-testid="button-whatsapp-chat"
     >
