@@ -225,17 +225,6 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     };
   }, [product]);
 
-  // Lift WhatsApp button when sticky bar is active
-  useEffect(() => {
-    const shouldShow = showStickyAddToCart && !isOutOfStock;
-    if (shouldShow) {
-      document.body.classList.add('sticky-bar-visible');
-    } else {
-      document.body.classList.remove('sticky-bar-visible');
-    }
-    return () => document.body.classList.remove('sticky-bar-visible');
-  }, [showStickyAddToCart, isOutOfStock]);
-
   // Preload all torsion spring variant images for instant switching
   useEffect(() => {
     if (product?.id === TORSION_SPRING_PRODUCT_ID) {
@@ -318,6 +307,40 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     }
     return Object.values(groups);
   }, [product?.id, dbVariants]);
+
+  // Lift WhatsApp button when sticky bar is active — placed before early returns to satisfy Rules of Hooks
+  useEffect(() => {
+    if (!showStickyAddToCart || !product) {
+      document.body.classList.remove('sticky-bar-visible');
+      return () => document.body.classList.remove('sticky-bar-visible');
+    }
+    // Compute isOutOfStock inline (mirrors logic after early returns)
+    const isLpGas = LP_GAS_CYLINDER_IDS.includes(product.id);
+    const lpPricing = isLpGas ? LP_GAS_PRICING[product.id] : null;
+    const isGlosteel = GLOSTEEL_DOOR_IDS.includes(product.id);
+    const gloPricing = isGlosteel ? GLOSTEEL_PRICING[product.id] : null;
+    const springInfo = product.id === TORSION_SPRING_PRODUCT_ID ? TORSION_SPRING_VARIANTS[selectedTorsionSpring] : null;
+    const varData = selectedDbVariant ? dbVariants.find(v => v.id === selectedDbVariant) ?? null : null;
+    const priceVal = lpPricing
+      ? lpPricing[selectedVariant]
+      : gloPricing
+      ? gloPricing[selectedDoorSize]
+      : varData
+      ? parseFloat(varData.price as string)
+      : springInfo
+      ? springInfo.price
+      : parseFloat(product.price);
+    const disc = (product as any).discontinued === true || priceVal === 0;
+    const varStock = varData?.stock ?? null;
+    const effStock = varStock != null ? varStock : product.stock;
+    const oos = effStock === 0 || disc;
+    if (!oos) {
+      document.body.classList.add('sticky-bar-visible');
+    } else {
+      document.body.classList.remove('sticky-bar-visible');
+    }
+    return () => document.body.classList.remove('sticky-bar-visible');
+  }, [showStickyAddToCart, product, selectedDbVariant, dbVariants, selectedVariant, selectedDoorSize, selectedTorsionSpring]);
 
   if (isLoading) {
     return (
@@ -427,7 +450,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const effectiveStock = variantStock != null ? variantStock : product.stock;
   const isLowStock = effectiveStock > 0 && effectiveStock <= 5 && !isDiscontinued;
   const isOutOfStock = effectiveStock === 0 || isDiscontinued;
-  
+
   // Ensure all image URLs are properly formatted
   const fixImageUrl = (url: string) => {
     if (!url) return '';
