@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { GasArticlesCarousel } from "@/components/GasArticlesCarousel";
 import type { Product, Category } from "@shared/schema";
 
 // Brand banners for gate-motors category
@@ -1125,19 +1126,22 @@ export default function CategoryPage({ onAddToCart, slug: propSlug }: CategoryPa
 
             {/* Buying Guide Content */}
             {currentBuyingGuide && (
-              <div className="mt-8 prose prose-sm max-w-none text-muted-foreground" data-testid="buying-guide">
-                <h3 className="text-lg font-semibold text-foreground">{currentBuyingGuide.title}</h3>
-                <p>{currentBuyingGuide.content}</p>
-                <ul className="list-disc pl-5 space-y-2">
-                  {currentBuyingGuide.points.map((point, index) => (
-                    <li key={index} dangerouslySetInnerHTML={{ __html: point }} />
-                  ))}
-                </ul>
-                <p className="mt-4">
-                  <strong>Need help choosing?</strong> Contact us at <a href="mailto:alectraglobal@gmail.com" className="text-primary hover:underline">alectraglobal@gmail.com</a> for 
-                  personalized recommendations.
-                </p>
-              </div>
+              <>
+                <div className="mt-8 prose prose-sm max-w-none text-muted-foreground" data-testid="buying-guide">
+                  <h3 className="text-lg font-semibold text-foreground">{currentBuyingGuide.title}</h3>
+                  <p>{currentBuyingGuide.content}</p>
+                  <ul className="list-disc pl-5 space-y-2">
+                    {currentBuyingGuide.points.map((point, index) => (
+                      <li key={index} dangerouslySetInnerHTML={{ __html: point }} />
+                    ))}
+                  </ul>
+                  <p className="mt-4">
+                    <strong>Need help choosing?</strong> Contact us at <a href="mailto:alectraglobal@gmail.com" className="text-primary hover:underline">alectraglobal@gmail.com</a> for 
+                    personalized recommendations.
+                  </p>
+                </div>
+                {slug === 'lp-gas-exchange' && <GasArticlesCarousel />}
+              </>
             )}
           </div>
         )}

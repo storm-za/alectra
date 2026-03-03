@@ -137,6 +137,50 @@ export async function getMetaForPath(path: string): Promise<SEOMeta> {
     }
   }
 
+  // Gas blog pages: /blogs/gas/:slug
+  const gasBlogMatch = cleanPath.match(/^\/blogs\/gas\/(.+)$/);
+  if (gasBlogMatch) {
+    const slug = decodeURIComponent(gasBlogMatch[1]);
+    try {
+      const post = await storage.getBlogPostBySlug(slug);
+      if (post) {
+        const cleanContent = stripHtml(post.content);
+        const title = `${post.title} | ${SITE_NAME}`;
+        const description = truncateDescription(post.metaDescription || post.excerpt || cleanContent);
+        const imageUrl = post.imageUrl.startsWith('http') ? post.imageUrl : `${BASE_URL}${post.imageUrl}`;
+        const structuredData = JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": post.title,
+          "description": description,
+          "datePublished": post.publishedAt,
+          "dateModified": post.updatedAt || post.publishedAt,
+          "author": { "@type": "Organization", "name": SITE_NAME, "url": BASE_URL },
+          "publisher": { "@type": "Organization", "name": SITE_NAME, "url": BASE_URL, "logo": { "@type": "ImageObject", "url": DEFAULT_IMAGE } },
+          "image": imageUrl,
+          "mainEntityOfPage": { "@type": "WebPage", "@id": `${BASE_URL}/blogs/gas/${encodeURIComponent(slug)}` },
+          "url": `${BASE_URL}/blogs/gas/${encodeURIComponent(slug)}`
+        });
+        return {
+          title,
+          description,
+          canonical: `${BASE_URL}/blogs/gas/${encodeURIComponent(slug)}`,
+          ogTitle: title,
+          ogDescription: description,
+          ogUrl: `${BASE_URL}/blogs/gas/${encodeURIComponent(slug)}`,
+          ogImage: imageUrl,
+          ogType: "article",
+          twitterTitle: title,
+          twitterDescription: description,
+          twitterImage: imageUrl,
+          structuredData
+        };
+      }
+    } catch (e) {
+      console.error("Error fetching gas blog post for SEO:", e);
+    }
+  }
+
   // Blog pages: /blogs/about-alectra-solutions/:slug
   const blogMatch = cleanPath.match(/^\/blogs\/about-alectra-solutions\/(.+)$/);
   if (blogMatch) {

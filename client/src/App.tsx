@@ -35,6 +35,7 @@ const Returns = lazy(() => import("@/pages/Returns"));
 const Privacy = lazy(() => import("@/pages/Privacy"));
 const Blog = lazy(() => import("@/pages/Blog"));
 const BlogPost = lazy(() => import("@/pages/BlogPost"));
+const GasBlogPost = lazy(() => import("@/pages/GasBlogPost"));
 const Search = lazy(() => import("@/pages/Search"));
 const AdminSeed = lazy(() => import("@/pages/AdminSeed"));
 const Admin = lazy(() => import("@/pages/Admin"));
@@ -256,6 +257,9 @@ function Router() {
             </Route>
             <Route path="/blogs/about-alectra-solutions/:slug">
               <BlogPost />
+            </Route>
+            <Route path="/blogs/gas/:slug">
+              <GasBlogPost />
             </Route>
             <Route path="/search">
               <Search onAddToCart={addToCart} />
