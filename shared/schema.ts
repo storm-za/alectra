@@ -444,7 +444,7 @@ export const LP_GAS_CYLINDER_IDS = Object.keys(LP_GAS_PRICING);
 
 // Glosteel Garage Door size pricing configuration
 export const GLOSTEEL_PRICING: Record<string, { '2450mm': number; '2550mm': number }> = {
-  '9a5b69aa-7d98-4563-84a1-f5ea3068866f': { '2450mm': 1899, '2550mm': 2299 },  // African Cream
+  '9a5b69aa-7d98-4563-84a1-f5ea3068866f': { '2450mm': 1999, '2550mm': 2299 },  // African Cream
   '8ba7234a-099a-49aa-b30f-623b314bc9c2': { '2450mm': 1899, '2550mm': 2299 },  // Charcoal Grey
   '4bc37862-e715-4d3a-b374-f88e15a7fdcd': { '2450mm': 1899, '2550mm': 2299 },  // Safari Brown
 };
