@@ -488,21 +488,39 @@ export class DatabaseStorage implements IStorage {
       
       // Calculate shipping cost with priority hierarchy:
       // 1. If pickup is selected → R0
-      // 2. If cart has products with custom delivery fees → use highest custom fee (heavy items like Glosteel)
+      // 2. If cart has products with custom delivery fees → sum (fee × qty) per item (heavy items like Glosteel)
       // 3. If cart contains FREE shipping products → R0 (promotion)
       // 4. If cart contains 48KG LP Gas → R0 (special promotion)
       // 5. If cart contains other LP Gas products → R50 (Pretoria only delivery)
       // 6. If order total ≥ R2500 → R0
       // 7. Otherwise → R110 standard delivery fee
+
+      // Glosteel door slugs - hardcoded fallback so shipping applies even when delivery_fee column is not set in DB
+      const GLOSTEEL_DOOR_SLUGS = [
+        'glosteel-garage-door-safari-brown',
+        'glosteel-garage-door',
+        'glosteel-garage-door-african-cream',
+      ];
+      const GLOSTEEL_DOOR_SHIPPING = 1900;
+
       let shippingCost = 110;
       
       if (request.deliveryMethod === "pickup") {
         shippingCost = 0;
       } else {
-        // Check for custom delivery fees (e.g., heavy items like Glosteel garage doors) - takes priority
-        const customDeliveryFees = fetchedProducts
-          .filter(p => p.deliveryFee !== null && p.deliveryFee !== undefined)
-          .map(p => parseFloat(p.deliveryFee as string));
+        // Check for custom delivery fees — quantity-aware: sum (fee × qty) across all items
+        // Priority: explicit delivery_fee column first, then Glosteel slug-based fallback
+        let customDeliveryTotal = 0;
+        for (const item of request.items) {
+          const product = productMap.get(item.productId);
+          if (!product) continue;
+          if (product.deliveryFee !== null && product.deliveryFee !== undefined && parseFloat(product.deliveryFee as string) > 0) {
+            customDeliveryTotal += parseFloat(product.deliveryFee as string) * item.quantity;
+          } else if (GLOSTEEL_DOOR_SLUGS.includes(product.slug)) {
+            // Fallback: apply hardcoded Glosteel shipping if delivery_fee is not set in DB
+            customDeliveryTotal += GLOSTEEL_DOOR_SHIPPING * item.quantity;
+          }
+        }
         
         // Check if cart contains products with FREE shipping promotion
         const hasFreeShippingProduct = fetchedProducts.some(p => FREE_SHIPPING_PRODUCT_IDS.includes(p.id));
@@ -520,8 +538,8 @@ export class DatabaseStorage implements IStorage {
         
         if (hasFreeShippingDiscountCode) {
           shippingCost = 0; // Free shipping discount code applied
-        } else if (customDeliveryFees.length > 0) {
-          shippingCost = Math.max(...customDeliveryFees); // Heavy items take priority
+        } else if (customDeliveryTotal > 0) {
+          shippingCost = customDeliveryTotal; // Custom per-item delivery fees (e.g. Glosteel garage doors)
         } else if (hasFreeShippingProduct) {
           shippingCost = 0; // FREE shipping promotion for specific products
         } else if (has48kgLPGas) {
