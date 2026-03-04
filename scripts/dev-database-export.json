@@ -290,23 +290,6 @@
       "discontinued": false
     },
     {
-      "id": "4bc37862-e715-4d3a-b374-f88e15a7fdcd",
-      "name": "Glosteel Garage Door Safari Brown",
-      "slug": "glosteel-garage-door-safari-brown",
-      "description": "Classic Safari Brown Glosteel door providing warm, natural aesthetics. The brown finish blends with traditional South African home styles.\n\nKey Features:\n- Safari Brown color\n- Steel sectional panels\n- Weather-resistant finish\n- Multiple sizes\n- Quality construction\n\nPairs beautifully with face brick and natural stone facades.\n\nApplications: Traditional homes, bush lodges, game farms.",
-      "price": "1899.00",
-      "brand": "Glosteel",
-      "sku": "ALEC-0095-GLOSTEEL_GARAGE_DOOR_SAFARI_BR",
-      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
-      "imageUrl": "attached_assets/products/glosteel-garage-door-safari-brown.jpg",
-      "images": [
-        "attached_assets/products/glosteel-garage-door-safari-brown.jpg"
-      ],
-      "stock": 100,
-      "featured": false,
-      "discontinued": false
-    },
-    {
       "id": "86eeeca6-c091-4452-9418-9b3030892b4e",
       "name": "DTS Expert Gate Motor + Battery",
       "slug": "dts-expert-gate-motor-battery",
@@ -403,23 +386,6 @@
       "imageUrl": "attached_assets/products/e-t-roll-up-advance-garage-door-motor-kit.jpg",
       "images": [
         "attached_assets/products/e-t-roll-up-advance-garage-door-motor-kit.jpg"
-      ],
-      "stock": 100,
-      "featured": false,
-      "discontinued": false
-    },
-    {
-      "id": "8ba7234a-099a-49aa-b30f-623b314bc9c2",
-      "name": "Glosteel Garage Door Charcoal Grey",
-      "slug": "glosteel-garage-door",
-      "description": "Modern Glosteel sectional door in sophisticated Charcoal Grey. Contemporary finish popular for modern home designs.\n\nKey Features:\n- Charcoal Grey finish\n- Premium steel construction\n- Sectional operation\n- Insulated panels\n- Durable coating\n\nAvailable in standard and custom sizes to fit your opening.\n\nApplications: Modern homes, contemporary architecture, commercial properties.",
-      "price": "1899.00",
-      "brand": "Glosteel",
-      "sku": "ALEC-0069-GLOSTEEL_GARAGE_DOOR",
-      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
-      "imageUrl": "attached_assets/products/glosteel-garage-door.jpg",
-      "images": [
-        "attached_assets/products/glosteel-garage-door.jpg"
       ],
       "stock": 100,
       "featured": false,
@@ -783,23 +749,6 @@
       "discontinued": false
     },
     {
-      "id": "8bc95451-a1de-43bd-b855-7eb116f2e87d",
-      "name": "12V 1.4Ah Battery",
-      "slug": "12v-1-4ah-battery",
-      "description": "Compact 12V 1.4Ah sealed lead-acid battery for smaller backup power applications. Ideal for alarm panels and small electronic devices.\n\nKey Features:\n- 12V 1.4Ah capacity\n- Sealed lead-acid (SLA) construction\n- Maintenance-free operation\n- Compact dimensions\n- Rechargeable\n\nPerfect for alarm systems, small UPS units, and electronic equipment requiring reliable backup power.\n\nApplications: Alarm panels, emergency lighting, small electronic devices.",
-      "price": "135.00",
-      "brand": "EPS",
-      "sku": "ALEC-0002-12V_1_4AH_BATTERY",
-      "categoryId": "4a2a1b8c-5003-4758-a893-9cfec30316b3",
-      "imageUrl": "attached_assets/products/12v-1-4ah-battery.png",
-      "images": [
-        "attached_assets/products/12v-1-4ah-battery.png"
-      ],
-      "stock": 95,
-      "featured": false,
-      "discontinued": false
-    },
-    {
       "id": "619fec8b-24c4-4609-a7ff-6cedd8ce5fbd",
       "name": "Custom amount",
       "slug": "custom-amount",
@@ -826,6 +775,23 @@
       "imageUrl": "https://cdn.shopify.com/s/files/1/0653/9640/8365/files/digidoor-remotes-icon.jpg?v=1732102124",
       "images": [],
       "stock": 100,
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "8bc95451-a1de-43bd-b855-7eb116f2e87d",
+      "name": "12V 1.4Ah Battery",
+      "slug": "12v-1-4ah-battery",
+      "description": "Compact 12V 1.4Ah sealed lead-acid battery for smaller backup power applications. Ideal for alarm panels and small electronic devices.\n\nKey Features:\n- 12V 1.4Ah capacity\n- Sealed lead-acid (SLA) construction\n- Maintenance-free operation\n- Compact dimensions\n- Rechargeable\n\nPerfect for alarm systems, small UPS units, and electronic equipment requiring reliable backup power.\n\nApplications: Alarm panels, emergency lighting, small electronic devices.",
+      "price": "135.00",
+      "brand": "EPS",
+      "sku": "ALEC-0002-12V_1_4AH_BATTERY",
+      "categoryId": "4a2a1b8c-5003-4758-a893-9cfec30316b3",
+      "imageUrl": "attached_assets/products/12v-1-4ah-battery.png",
+      "images": [
+        "attached_assets/products/12v-1-4ah-battery.png"
+      ],
+      "stock": 93,
       "featured": false,
       "discontinued": false
     },
@@ -926,23 +892,6 @@
       "imageUrl": "attached_assets/products/centurion-d3-smart-full-kit-no-anti-theft-bracket.jpg",
       "images": [
         "attached_assets/products/centurion-d3-smart-full-kit-no-anti-theft-bracket.jpg"
-      ],
-      "stock": 100,
-      "featured": false,
-      "discontinued": false
-    },
-    {
-      "id": "41de5b57-36b0-4c1d-bc09-aa66a2fbfc6d",
-      "name": "Centurion D3 Smart Gate Motor (No remotes included)",
-      "slug": "centurion-d3-smart-gate-motor",
-      "description": "Entry-level Centurion sliding gate motor for residential gates up to 350kg. Smart features at an affordable price.\n\nKey Features:\n- 350kg gate capacity\n- 24V DC operation\n- Battery backup (5+ cycles)\n- SMART configuration\n- MyCentsys app capable\n\nPerfect starter motor for residential installations.\n\nNote: Remotes sold separately.\n\nApplications: Small residential gates, townhouses.",
-      "price": "4399.00",
-      "brand": "Centurion",
-      "sku": "ALEC-0011-CENTURION_D3_SMART_GATE_MOTOR",
-      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
-      "imageUrl": "attached_assets/products/centurion-d3-smart-gate-motor.jpg",
-      "images": [
-        "attached_assets/products/centurion-d3-smart-gate-motor.jpg"
       ],
       "stock": 100,
       "featured": false,
@@ -2921,23 +2870,6 @@
       "discontinued": false
     },
     {
-      "id": "9a5b69aa-7d98-4563-84a1-f5ea3068866f",
-      "name": "Glosteel Garage Door African Cream",
-      "slug": "glosteel-garage-door-african-cream",
-      "description": "Premium Glosteel sectional garage door in elegant African Cream finish. South African quality with attractive natural color.\n\nKey Features:\n- African Cream color\n- Sectional design\n- High-quality steel panels\n- Insulated construction\n- Multiple size options\n\nAvailable Sizes:\n- 2450mm standard\n- 2755mm\n- 3055mm\n- Custom sizes available\n\nThe warm cream finish complements both modern and traditional architecture.\n\nApplications: Residential homes, estates, townhouse complexes.",
-      "price": "1899.00",
-      "brand": "Glosteel",
-      "sku": "ALEC-0096-GLOSTEEL_GARAGE_DOOR_AFRICAN_C",
-      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
-      "imageUrl": "attached_assets/products/glosteel-garage-door-african-cream.jpg",
-      "images": [
-        "attached_assets/products/glosteel-garage-door-african-cream.jpg"
-      ],
-      "stock": 100,
-      "featured": false,
-      "discontinued": false
-    },
-    {
       "id": "d34c422b-ccf9-4388-8caf-3e74ee271331",
       "name": "E.T DC BLUE ADVANCED PICO MOTOR BUNDLE",
       "slug": "e-t-dc-blue-advanced-pico-motor",
@@ -3550,23 +3482,6 @@
       "discontinued": false
     },
     {
-      "id": "cf2a6b47-74da-44f0-a6f6-be0faf699f77",
-      "name": "100×100×70 mm Waterproof PVC Electrical Junction Box",
-      "slug": "100-100-70-mm-waterproof-pvc-electrical-junction-box",
-      "description": "Protect your electrical connections from dust, rain, and impact with the 100×100×70 mm Waterproof Outdoor PVC Junction Box — the ideal weatherproof solution for installers working outdoors or in high-moisture areas. Perfect for: Outdoor lighting CCTV installations Solar setups Gate motors Pool pumps Garden electrics ✅ Key Features: 📏 Size : 100 mm × 100 mm × 70 mm — compact yet spacious for multiple wiring connections. 💧 IP65 Waterproof Rating : Fully sealed to protect from dust and strong wat",
-      "price": "36.00",
-      "brand": "Alectra Solutions",
-      "sku": "ALEC-0122-100_100_70_MM_WATERPROOF_PVC_E",
-      "categoryId": null,
-      "imageUrl": "attached_assets/products/100-100-70-mm-waterproof-pvc-electrical-junction-box.png",
-      "images": [
-        "attached_assets/products/100-100-70-mm-waterproof-pvc-electrical-junction-box.png"
-      ],
-      "stock": 0,
-      "featured": false,
-      "discontinued": true
-    },
-    {
       "id": "bd43cb1d-f52e-45d3-a507-b04a67828943",
       "name": "Gate Motor Lithium Battery 12.8V 7Ah",
       "slug": "12-8v-7ah-lithium-battery",
@@ -3628,6 +3543,23 @@
       "categoryId": null,
       "imageUrl": "https://cdn.shopify.com/s/files/1/0653/9640/8365/files/Duraslide-Remotes.jpg?v=1732102129",
       "images": [],
+      "stock": 0,
+      "featured": false,
+      "discontinued": true
+    },
+    {
+      "id": "cf2a6b47-74da-44f0-a6f6-be0faf699f77",
+      "name": "100×100×70 mm Waterproof PVC Electrical Junction Box",
+      "slug": "100-100-70-mm-waterproof-pvc-electrical-junction-box",
+      "description": "Protect your electrical connections from dust, rain, and impact with the 100×100×70 mm Waterproof Outdoor PVC Junction Box — the ideal weatherproof solution for installers working outdoors or in high-moisture areas. Perfect for: Outdoor lighting CCTV installations Solar setups Gate motors Pool pumps Garden electrics ✅ Key Features: 📏 Size : 100 mm × 100 mm × 70 mm — compact yet spacious for multiple wiring connections. 💧 IP65 Waterproof Rating : Fully sealed to protect from dust and strong wat",
+      "price": "38.00",
+      "brand": "Alectra Solutions",
+      "sku": "ALEC-0122-100_100_70_MM_WATERPROOF_PVC_E",
+      "categoryId": null,
+      "imageUrl": "attached_assets/products/100-100-70-mm-waterproof-pvc-electrical-junction-box.png",
+      "images": [
+        "attached_assets/products/100-100-70-mm-waterproof-pvc-electrical-junction-box.png"
+      ],
       "stock": 0,
       "featured": false,
       "discontinued": true
@@ -4789,6 +4721,74 @@
       "stock": 100,
       "featured": false,
       "discontinued": false
+    },
+    {
+      "id": "41de5b57-36b0-4c1d-bc09-aa66a2fbfc6d",
+      "name": "Centurion D3 Smart Gate Motor (No remotes included)",
+      "slug": "centurion-d3-smart-gate-motor",
+      "description": "Entry-level Centurion sliding gate motor for residential gates up to 350kg. Smart features at an affordable price.\n\nKey Features:\n- 350kg gate capacity\n- 24V DC operation\n- Battery backup (5+ cycles)\n- SMART configuration\n- MyCentsys app capable\n\nPerfect starter motor for residential installations.\n\nNote: Remotes sold separately.\n\nApplications: Small residential gates, townhouses.",
+      "price": "4399.00",
+      "brand": "Centurion",
+      "sku": "ALEC-0011-CENTURION_D3_SMART_GATE_MOTOR",
+      "categoryId": "eb021d93-d355-4bb7-9674-84e6167a8253",
+      "imageUrl": "attached_assets/products/centurion-d3-smart-gate-motor.jpg",
+      "images": [
+        "attached_assets/products/centurion-d3-smart-gate-motor.jpg"
+      ],
+      "stock": 98,
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "8ba7234a-099a-49aa-b30f-623b314bc9c2",
+      "name": "Glosteel Garage Door Charcoal Grey",
+      "slug": "glosteel-garage-door",
+      "description": "Modern Glosteel sectional door in sophisticated Charcoal Grey. Contemporary finish popular for modern home designs.\n\nKey Features:\n- Charcoal Grey finish\n- Premium steel construction\n- Sectional operation\n- Insulated panels\n- Durable coating\n\nAvailable in standard and custom sizes to fit your opening.\n\nApplications: Modern homes, contemporary architecture, commercial properties.",
+      "price": "1899.00",
+      "brand": "Glosteel",
+      "sku": "ALEC-0069-GLOSTEEL_GARAGE_DOOR",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
+      "imageUrl": "attached_assets/products/glosteel-garage-door.jpg",
+      "images": [
+        "attached_assets/products/glosteel-garage-door.jpg"
+      ],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "9a5b69aa-7d98-4563-84a1-f5ea3068866f",
+      "name": "Glosteel Garage Door African Cream",
+      "slug": "glosteel-garage-door-african-cream",
+      "description": "Premium Glosteel sectional garage door in elegant African Cream finish. South African quality with attractive natural color.\n\nKey Features:\n- African Cream color\n- Sectional design\n- High-quality steel panels\n- Insulated construction\n- Multiple size options\n\nAvailable Sizes:\n- 2450mm standard\n- 2755mm\n- 3055mm\n- Custom sizes available\n\nThe warm cream finish complements both modern and traditional architecture.\n\nApplications: Residential homes, estates, townhouse complexes.",
+      "price": "1999.00",
+      "brand": "Glosteel",
+      "sku": "ALEC-0096-GLOSTEEL_GARAGE_DOOR_AFRICAN_C",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
+      "imageUrl": "attached_assets/products/glosteel-garage-door-african-cream.jpg",
+      "images": [
+        "attached_assets/products/glosteel-garage-door-african-cream.jpg"
+      ],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
+    },
+    {
+      "id": "4bc37862-e715-4d3a-b374-f88e15a7fdcd",
+      "name": "Glosteel Garage Door Safari Brown",
+      "slug": "glosteel-garage-door-safari-brown",
+      "description": "Classic Safari Brown Glosteel door providing warm, natural aesthetics. The brown finish blends with traditional South African home styles.\n\nKey Features:\n- Safari Brown color\n- Steel sectional panels\n- Weather-resistant finish\n- Multiple sizes\n- Quality construction\n\nPairs beautifully with face brick and natural stone facades.\n\nApplications: Traditional homes, bush lodges, game farms.",
+      "price": "1899.00",
+      "brand": "Glosteel",
+      "sku": "ALEC-0095-GLOSTEEL_GARAGE_DOOR_SAFARI_BR",
+      "categoryId": "9a538922-574f-4579-a29a-c202d5fe4595",
+      "imageUrl": "attached_assets/products/glosteel-garage-door-safari-brown.jpg",
+      "images": [
+        "attached_assets/products/glosteel-garage-door-safari-brown.jpg"
+      ],
+      "stock": 100,
+      "featured": false,
+      "discontinued": false
     }
   ],
   "categories": [
@@ -5573,9 +5573,33 @@
         "compliance"
       ],
       "metaDescription": "Complete electric fence maintenance checklist for South African homeowners. Monthly, seasonal, and annual tasks to keep your security fence working safely."
+    },
+    {
+      "title": "LP Gas Price Increase South Africa – March 2026: What Pretoria Residents Need to Know",
+      "slug": "lp-gas-price-increase-march-2026",
+      "excerpt": "The Department of Mineral and Petroleum Resources has confirmed a 23 cents per kilogram increase in the maximum retail price for LP Gas, effective 4 March 2026. Here is what it means for Gauteng and Pretoria households.",
+      "content": "## LP Gas Price Increase South Africa – March 2026\n\nThe Department of Mineral and Petroleum Resources, through CEF (SOC) Ltd, has confirmed that the **maximum retail price for LP Gas increases by 23 cents per kilogram**, effective **Wednesday, 4 March 2026**. This adjustment affects all South African households and businesses that rely on LP Gas for cooking, heating, and commercial use.\n\n---\n\n## What Are the New LP Gas Prices in March 2026?\n\nAs of 4 March 2026, the maximum retail prices for LP Gas per kilogram are:\n\n| Zone | Province / Area | Maximum Retail Price (per kg, VAT inc.) |\n|------|-----------------|-----------------------------------------|\n| Zone 9C – Inland | Gauteng, Pretoria, Johannesburg | **R34.97** |\n| Zone 1A – Coast | KwaZulu-Natal, Western Cape, Eastern Cape | **R31.72** |\n| Saldanha – Western Cape | Saldanha Bay area | **R33.84** |\n\nThese prices are the **maximum retail prices inclusive of VAT** for the period **4 March 2026 to 31 March 2026**, as set by the Department of Mineral and Petroleum Resources.\n\n---\n\n## How Much Is a Gas Cylinder in Gauteng? (March 2026)\n\nUsing the maximum inland retail price of **R34.97 per kilogram** (Zone 9C – Gauteng):\n\n- **9kg LP Gas cylinder:** approximately **R314.73** *(9 × R34.97)*\n- **19kg LP Gas cylinder:** approximately **R664.43** *(19 × R34.97)*\n- **48kg LP Gas cylinder:** approximately **R1,678.56** *(48 × R34.97)*\n\n> **Note:** These figures are calculated from the official maximum retail price. Actual prices at your supplier may vary. [View Alectra Solutions' current LP Gas pricing →](/category/lp-gas-exchange)\n\n---\n\n## Why Did LP Gas Prices Increase?\n\nSouth Africa's fuel prices – including LP Gas – are adjusted monthly based on a government-regulated mechanism. The March 2026 increase is driven by two main economic factors:\n\n### 1. Rising International LP Gas Prices\n\nThe average international product price for LP Gas increased during the review period (30 January to 26 February 2026). Global energy markets, supply constraints, and seasonal demand all contribute to these international benchmark prices, which directly feed into South Africa's Basic Fuel Price calculations.\n\n### 2. Rand/US Dollar Exchange Rate\n\nWhile the rand strengthened against the US dollar during the review period – averaging **R15.9959 per dollar** compared to **R16.3054** in the prior period – this improvement was not sufficient to offset the rise in international commodity prices. The stronger rand did reduce the contribution to fuel prices by approximately 17 cents per litre on petrol, but global price movements still resulted in a net increase for LP Gas.\n\n### 3. Maximum Refinery Gate Price\n\nThe maximum refinery gate price for LP Gas is set at **R11,470.61 per metric ton** (636.619 cents per litre), excluding VAT, for the period 4 March to 31 March 2026. For LP Gas imported through the Port of Saldanha Bay, the rate is **R13,076.49 per metric ton**.\n\n---\n\n## All March 2026 Fuel Price Changes at a Glance\n\nThe same pricing cycle that adjusts LP Gas also affects other fuel types. Here is a summary of all changes effective 4 March 2026 in Gauteng:\n\n| Fuel Type | Change (from 4 March 2026) |\n|-----------|----------------------------|\n| Petrol 93 ULP & LRP | +20 cents per litre |\n| Petrol 95 ULP & LRP | +20 cents per litre |\n| Diesel 0.05% Sulphur | +62 cents per litre (wholesale) |\n| Diesel 0.005% Sulphur | +65 cents per litre (wholesale) |\n| Illuminating Paraffin (wholesale) | +44 cents per litre |\n| Illuminating Paraffin (SMNRP) | +58 cents per litre |\n| **LP Gas** | **+23 cents per kilogram** |\n\nThe **Slate Levy** on petrol and diesel remains at **0.00 cents per litre** from 4 March 2026, meaning no additional slate levy surcharge applies this month.\n\n---\n\n## LP Gas vs. Electricity: Is Gas Still the Better Choice?\n\nDespite the March 2026 price increase, LP Gas continues to offer compelling advantages over electricity for many South African households:\n\n**For cooking:**\nA standard 9kg gas cylinder typically lasts a household of four **two to three months** when used daily for cooking. At the maximum retail price of R314.73 for a 9kg cylinder, this works out to roughly R105–R157 per month – a cost that competes favourably with the electricity units required for equivalent cooking time on a standard electric stove.\n\n**For water heating:**\nGas geysers heat water on demand and do not store hot water, eliminating standby losses. With South Africa's electricity tariffs increasing annually, gas water heating remains one of the most cost-effective options for medium to large households.\n\n**For energy security:**\nLoad shedding and Eskom supply interruptions continue to affect South African households. LP Gas provides a **completely independent energy source** that is unaffected by grid outages. No inverter, no solar panels, no backup battery required – just a certified gas cylinder and a compatible appliance.\n\n---\n\n## LP Gas Safety Tips for South African Homes\n\nWith rising gas usage across South Africa, safety cannot be overstated. Always follow these guidelines:\n\n1. **Use SABS-certified cylinders and equipment only.** All cylinders must carry a valid certification date stamp. Expired cylinders should be exchanged for fresh, inspected stock immediately.\n2. **Store cylinders upright, outdoors or in ventilated spaces.** Never store LP Gas cylinders inside a building, in an enclosed garage, or in a basement.\n3. **Test for leaks before use.** Apply soapy water to all connections (regulator, hose, and appliance inlet). Bubbles indicate a leak. Never test with an open flame.\n4. **Replace hoses and regulators on schedule.** Rubber hoses should be replaced every five years; regulators every ten years, or sooner if cracked, discoloured, or damaged.\n5. **Install a gas detector.** A dedicated LP Gas detector will alert you to leaks before gas accumulates to dangerous concentrations.\n6. **Keep cylinders away from heat sources.** Maintain a minimum distance of one metre from stoves, hot water systems, and direct sunlight exposure.\n7. **Only use a registered LPG installer** for fixed gas installations, including gas geysers and built-in hobs.\n\n---\n\n## Get LP Gas Delivered in Pretoria\n\nAlectra Solutions offers a convenient, same-day LP Gas cylinder **exchange and delivery service** throughout Pretoria. Our service includes:\n\n- **9kg and 19kg LP Gas cylinders** for household and commercial use\n- **Certified, inspected cylinders** – every cylinder we supply meets SABS standards\n- **Same-day delivery** for orders placed before 12:00\n- **Next-business-day delivery** for orders placed after 12:00\n- **Flat R50 delivery fee** within the Pretoria delivery area\n- **No upfront deposit** when you exchange an empty cylinder\n\nGas prices in South Africa are reviewed and published monthly by the Department of Mineral and Petroleum Resources. We update our pricing in line with official government announcements to ensure you always pay a fair, regulated price.\n\n[Order LP Gas online →](/category/lp-gas-exchange) | [Contact us at alectraglobal@gmail.com](mailto:alectraglobal@gmail.com)\n\n---\n\n*Sources: CEF (SOC) Ltd Media Statement, released 27 February 2026 on behalf of the Department of Mineral and Petroleum Resources. Price changes effective 4 March 2026. All prices quoted in South African Rand (ZAR) and are inclusive of VAT unless otherwise stated.*",
+      "author": "Alectra Solutions",
+      "imageUrl": "/img/attached_assets/products/9kg-exchange.png",
+      "tags": [
+        "gas",
+        "lp-gas",
+        "price-update",
+        "South Africa",
+        "Pretoria",
+        "Gauteng"
+      ],
+      "metaDescription": "LP Gas maximum retail price increases by 23 cents/kg from 4 March 2026. Gauteng Zone 9C price: R34.97/kg. 9kg cylinder ≈ R314.73. Learn what drives the increase and how to manage your gas costs in Pretoria."
     }
   ],
   "reviews": [
+    {
+      "productSlug": "nail-in-anchors-6x60mm-100-pack",
+      "authorName": "Francois Venter",
+      "rating": 4,
+      "comment": "",
+      "createdAt": "2025-11-20T19:16:20.107Z"
+    },
     {
       "productSlug": "centurion-nova-4-button-remote",
       "authorName": "Nomvula Mabaso",
@@ -5962,83 +5986,6 @@
       "createdAt": "2025-11-29T19:40:10.901Z"
     },
     {
-      "productSlug": "centurion-d3-smart-sliding-gate-motor",
-      "authorName": "Sibonela",
-      "rating": 5,
-      "comment": "Very very excited. Got it today, only 3 days I waited. Thank you Alectra!",
-      "createdAt": "2025-11-29T19:44:02.631Z"
-    },
-    {
-      "productSlug": "centurion-d3-smart-sliding-gate-motor",
-      "authorName": "Ryno Myburgh",
-      "rating": 5,
-      "comment": "Delivery was fast. Overall good experience.",
-      "createdAt": "2025-11-29T19:45:02.033Z"
-    },
-    {
-      "productSlug": "nemtek-compression-spring-1-silver-5kg-black-50-box",
-      "authorName": "Michael Smith",
-      "rating": 5,
-      "comment": "Excellent spring quality. Made tensioning the fence easy.",
-      "createdAt": "2025-06-15T19:16:20.101Z"
-    },
-    {
-      "productSlug": "nemtek-compression-spring-1-silver-5kg-black-50-box",
-      "authorName": "Lerato Zungu",
-      "rating": 5,
-      "comment": "Quality speaks for itself here.",
-      "createdAt": "2025-09-11T19:16:20.101Z"
-    },
-    {
-      "productSlug": "nemtek-compression-spring-1-silver-5kg-black-50-box",
-      "authorName": "Ntombi Steyn",
-      "rating": 4,
-      "comment": "Working well for me.",
-      "createdAt": "2025-09-07T19:16:20.101Z"
-    },
-    {
-      "productSlug": "16-channel-advanced-cctv-camera-kit",
-      "authorName": "Maria Ngcobo",
-      "rating": 5,
-      "comment": "Best camera I've owned. The image quality is outstanding.",
-      "createdAt": "2025-09-15T19:16:20.101Z"
-    },
-    {
-      "productSlug": "16-channel-advanced-cctv-camera-kit",
-      "authorName": "Willem du Plessis",
-      "rating": 4,
-      "comment": "Pretty happy with this purchase.",
-      "createdAt": "2024-12-08T19:16:20.101Z"
-    },
-    {
-      "productSlug": "16-channel-advanced-cctv-camera-kit",
-      "authorName": "Henk van der Merwe",
-      "rating": 5,
-      "comment": "Money well spent on this one.",
-      "createdAt": "2025-07-26T19:16:20.101Z"
-    },
-    {
-      "productSlug": "dts-expert-gate-motor-battery",
-      "authorName": "Hannelie van Zyl",
-      "rating": 5,
-      "comment": "Motor handles my industrial gate perfectly. Very impressed.",
-      "createdAt": "2025-01-01T19:16:20.101Z"
-    },
-    {
-      "productSlug": "dts-expert-gate-motor-battery",
-      "authorName": "Lwazi du Plessis",
-      "rating": 4,
-      "comment": "Good purchase. Would buy from Alectra again.",
-      "createdAt": "2025-05-17T19:16:20.101Z"
-    },
-    {
-      "productSlug": "dts-expert-gate-motor-battery",
-      "authorName": "Thabo Nkosi",
-      "rating": 3,
-      "comment": "Okay purchase. Meets basic requirements.",
-      "createdAt": "2025-01-08T19:16:20.101Z"
-    },
-    {
       "productSlug": "dts-expert-gate-motor-battery",
       "authorName": "Andries Kruger",
       "rating": 4,
@@ -6093,13 +6040,6 @@
       "rating": 5,
       "comment": "Excellent junction box. Keeps connections dry and safe.",
       "createdAt": "2025-10-12T19:16:20.101Z"
-    },
-    {
-      "productSlug": "pvc-junction-box-3-way-20mm",
-      "authorName": "Jabu Cele",
-      "rating": 3,
-      "comment": "It's okay. Gets the job done.",
-      "createdAt": "2025-02-11T19:16:20.101Z"
     },
     {
       "productSlug": "pvc-junction-box-3-way-20mm",
@@ -6198,6 +6138,13 @@
       "rating": 5,
       "comment": "Impressed with how well this works.",
       "createdAt": "2025-06-26T19:16:20.102Z"
+    },
+    {
+      "productSlug": "centurion-d3-smart-sliding-gate-motor",
+      "authorName": "Sibonela",
+      "rating": 5,
+      "comment": "Very very excited. Got it today, only 3 days I waited. Thank you Alectra!",
+      "createdAt": "2025-11-29T19:44:02.631Z"
     },
     {
       "productSlug": "centurion-g-ultra-gsm-smart-switch",
@@ -6478,6 +6425,13 @@
       "rating": 4,
       "comment": "Good value for money spent.",
       "createdAt": "2025-11-03T19:16:20.102Z"
+    },
+    {
+      "productSlug": "centurion-d3-smart-sliding-gate-motor",
+      "authorName": "Ryno Myburgh",
+      "rating": 5,
+      "comment": "Delivery was fast. Overall good experience.",
+      "createdAt": "2025-11-29T19:45:02.033Z"
     },
     {
       "productSlug": "stainless-steel-tension-springs-with-limiters-50-pack",
@@ -7558,13 +7512,6 @@
       "createdAt": "2025-02-09T19:16:20.104Z"
     },
     {
-      "productSlug": "hilook-2mp-hybrid-dual-light-camera",
-      "authorName": "Puleng Mabaso",
-      "rating": 3,
-      "comment": "Acceptable for basic use.",
-      "createdAt": "2025-11-20T19:16:20.104Z"
-    },
-    {
       "productSlug": "hilook-2mp-full-colour-vu-bullet-camera",
       "authorName": "Ernst Mthembu",
       "rating": 5,
@@ -7647,6 +7594,13 @@
       "rating": 4,
       "comment": "Good DVR. Recording works well.",
       "createdAt": "2025-05-19T19:16:20.104Z"
+    },
+    {
+      "productSlug": "hilook-2mp-hybrid-dual-light-camera",
+      "authorName": "Puleng Mabaso",
+      "rating": 5,
+      "comment": "",
+      "createdAt": "2025-11-20T19:16:20.104Z"
     },
     {
       "productSlug": "hilook-4-channel-turbo-hd-dvr-with-built-in-320gb-hdd",
@@ -8242,6 +8196,13 @@
       "rating": 4,
       "comment": "Good value for money spent. ",
       "createdAt": "2025-11-07T19:16:20.105Z"
+    },
+    {
+      "productSlug": "nemtek-compression-spring-1-silver-5kg-black-50-box",
+      "authorName": "Michael Smith",
+      "rating": 5,
+      "comment": "Excellent spring quality. Made tensioning the fence easy.",
+      "createdAt": "2025-06-15T19:16:20.101Z"
     },
     {
       "productSlug": "andowl-q-a129-solar-wifi-security-camera",
@@ -9554,13 +9515,6 @@
     },
     {
       "productSlug": "nail-in-anchors-6x60mm-100-pack",
-      "authorName": "Francois Venter",
-      "rating": 4,
-      "comment": " Good stuff. Minor improvements possible.",
-      "createdAt": "2025-11-20T19:16:20.107Z"
-    },
-    {
-      "productSlug": "nail-in-anchors-6x60mm-100-pack",
       "authorName": "Cornelia Tshabalala",
       "rating": 4,
       "comment": " Does what it says on the box.",
@@ -9735,6 +9689,69 @@
       "createdAt": "2025-05-25T19:16:20.107Z"
     },
     {
+      "productSlug": "nemtek-compression-spring-1-silver-5kg-black-50-box",
+      "authorName": "Lerato Zungu",
+      "rating": 5,
+      "comment": "Quality speaks for itself here.",
+      "createdAt": "2025-09-11T19:16:20.101Z"
+    },
+    {
+      "productSlug": "nemtek-compression-spring-1-silver-5kg-black-50-box",
+      "authorName": "Ntombi Steyn",
+      "rating": 4,
+      "comment": "Working well for me.",
+      "createdAt": "2025-09-07T19:16:20.101Z"
+    },
+    {
+      "productSlug": "16-channel-advanced-cctv-camera-kit",
+      "authorName": "Maria Ngcobo",
+      "rating": 5,
+      "comment": "Best camera I've owned. The image quality is outstanding.",
+      "createdAt": "2025-09-15T19:16:20.101Z"
+    },
+    {
+      "productSlug": "16-channel-advanced-cctv-camera-kit",
+      "authorName": "Willem du Plessis",
+      "rating": 4,
+      "comment": "Pretty happy with this purchase.",
+      "createdAt": "2024-12-08T19:16:20.101Z"
+    },
+    {
+      "productSlug": "16-channel-advanced-cctv-camera-kit",
+      "authorName": "Henk van der Merwe",
+      "rating": 5,
+      "comment": "Money well spent on this one.",
+      "createdAt": "2025-07-26T19:16:20.101Z"
+    },
+    {
+      "productSlug": "dts-expert-gate-motor-battery",
+      "authorName": "Hannelie van Zyl",
+      "rating": 5,
+      "comment": "Motor handles my industrial gate perfectly. Very impressed.",
+      "createdAt": "2025-01-01T19:16:20.101Z"
+    },
+    {
+      "productSlug": "dts-expert-gate-motor-battery",
+      "authorName": "Lwazi du Plessis",
+      "rating": 4,
+      "comment": "Good purchase. Would buy from Alectra again.",
+      "createdAt": "2025-05-17T19:16:20.101Z"
+    },
+    {
+      "productSlug": "dts-expert-gate-motor-battery",
+      "authorName": "Thabo Nkosi",
+      "rating": 3,
+      "comment": "Okay purchase. Meets basic requirements.",
+      "createdAt": "2025-01-08T19:16:20.101Z"
+    },
+    {
+      "productSlug": "pvc-junction-box-3-way-20mm",
+      "authorName": "Jabu Cele",
+      "rating": 3,
+      "comment": "It's okay. Gets the job done.",
+      "createdAt": "2025-02-11T19:16:20.101Z"
+    },
+    {
       "productSlug": "centurion-g-speak-ultra-4-button",
       "authorName": "Antoinette Louw",
       "rating": 4,
@@ -9894,6 +9911,13 @@
       "rating": 5,
       "comment": " Great value. Works perfectly.",
       "createdAt": "2025-09-06T19:16:20.107Z"
+    },
+    {
+      "productSlug": "centurion-d2-sliding-gate-motor",
+      "authorName": "Susan Mkhize",
+      "rating": 3,
+      "comment": " Acceptable for basic use.",
+      "createdAt": "2025-04-16T19:16:20.108Z"
     },
     {
       "productSlug": "lifting-cables-torsion",
@@ -10188,13 +10212,6 @@
       "rating": 4,
       "comment": "Happy with this gate motor. Smooth operation. ",
       "createdAt": "2025-01-20T19:16:20.108Z"
-    },
-    {
-      "productSlug": "centurion-d2-sliding-gate-motor",
-      "authorName": "Susan Mkhize",
-      "rating": 3,
-      "comment": " Acceptable for basic use.",
-      "createdAt": "2025-04-16T19:16:20.108Z"
     },
     {
       "productSlug": "centurion-d2-sliding-gate-motor",
