@@ -356,11 +356,13 @@ export class DatabaseStorage implements IStorage {
     return await db.transaction(async (tx) => {
       // 1. Fetch all products and validate stock
       const productIds = request.items.map(item => item.productId);
+      const uniqueProductIds = [...new Set(productIds)];
       const fetchedProducts = await tx.select().from(products).where(
-        inArray(products.id, productIds)
+        inArray(products.id, uniqueProductIds)
       );
 
-      if (fetchedProducts.length !== request.items.length) {
+      // Compare against unique IDs — same product can appear multiple times with different variants
+      if (fetchedProducts.length !== uniqueProductIds.length) {
         throw new Error("One or more products not found");
       }
 
