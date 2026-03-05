@@ -3323,6 +3323,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log('Variant migration error:', e);
       }
 
+      // Seed Glosteel garage door variants (Door Size + Finish groups)
+      try {
+        const glosteelDoorConfigs = [
+          {
+            slug: 'glosteel-garage-door',
+            price2450: '1899', price2550: '2299',
+          },
+          {
+            slug: 'glosteel-garage-door-african-cream',
+            price2450: '1999', price2550: '2299',
+          },
+          {
+            slug: 'glosteel-garage-door-safari-brown',
+            price2450: '1899', price2550: '2299',
+          },
+        ];
+        const allProds2 = await storage.getAllProducts();
+        for (const config of glosteelDoorConfigs) {
+          const glosteelProduct = allProds2.find((p: any) => p.slug === config.slug);
+          if (!glosteelProduct) continue;
+          const existingVars = await storage.getProductVariants(glosteelProduct.id);
+          if (existingVars.length === 0) {
+            const glosteelVariants = [
+              { name: '2450mm Width', price: config.price2450, stock: 10, sortOrder: 1, groupLabel: 'Door Size', description: 'Standard single garage door size' },
+              { name: '2550mm Width', price: config.price2550, stock: 10, sortOrder: 2, groupLabel: 'Door Size', description: 'Wider single garage door size' },
+              { name: 'Smooth',      price: '0', stock: 10, sortOrder: 3, groupLabel: 'Finish', description: 'Clean, flat panel finish' },
+              { name: 'Woodgrain',   price: '0', stock: 10, sortOrder: 4, groupLabel: 'Finish', description: 'Textured wood-look finish' },
+            ];
+            for (const v of glosteelVariants) {
+              try {
+                await storage.createProductVariant({ productId: glosteelProduct.id, ...v });
+                variantsCreated++;
+              } catch (e) { /* skip */ }
+            }
+          }
+        }
+      } catch (e) {
+        console.log('Glosteel variant migration error:', e);
+      }
+
       // Seed blog posts (3 SEO articles)
       const blogPosts = [
         {
