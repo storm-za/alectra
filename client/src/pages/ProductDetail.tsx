@@ -134,6 +134,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   const [selectedDoorFinish, setSelectedDoorFinish] = useState<GarageDoorFinish | ''>('');
   const [selectedTorsionSpring, setSelectedTorsionSpring] = useState<TorsionSpringVariant>('45kg-green-left');
   const [selectedDbVariant, setSelectedDbVariant] = useState<string | null>(null);
+  const [selectedGroupedVariants, setSelectedGroupedVariants] = useState<Record<string, string>>({});
   const [showStickyAddToCart, setShowStickyAddToCart] = useState(false);
   const addToCartButtonRef = useRef<HTMLButtonElement>(null);
   const { toast } = useToast();
@@ -342,6 +343,62 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     return () => document.body.classList.remove('sticky-bar-visible');
   }, [showStickyAddToCart, product, selectedDbVariant, dbVariants, selectedVariant, selectedDoorSize, selectedTorsionSpring]);
 
+  // Check if this is an LP Gas cylinder with variant pricing
+  const isLpGasCylinder = product ? LP_GAS_CYLINDER_IDS.includes(product.id) : false;
+  const lpGasPricing = isLpGasCylinder && product ? LP_GAS_PRICING[product.id] : null;
+
+  // Check if this is a Glosteel garage door with size pricing
+  const isGlosteelDoor = product ? GLOSTEEL_DOOR_IDS.includes(product.id) : false;
+  const glosteelPricingHardcoded = isGlosteelDoor && product ? GLOSTEEL_PRICING[product.id] : null;
+
+  // Override Glosteel pricing with DB variant prices when available (admin-editable)
+  const glosteelDbPricing = useMemo(() => {
+    if (!isGlosteelDoor || dbVariants.length === 0) return null;
+    const result: Record<string, number> = {};
+    dbVariants.forEach((v: any) => {
+      const price = parseFloat(v.price as string);
+      if (price > 0) {
+        if (v.name?.includes('2450')) result['2450mm'] = price;
+        if (v.name?.includes('2550')) result['2550mm'] = price;
+      }
+    });
+    return Object.keys(result).length === 2 ? result as { '2450mm': number; '2550mm': number } : null;
+  }, [isGlosteelDoor, dbVariants]);
+
+  const glosteelPricing = glosteelDbPricing || glosteelPricingHardcoded;
+
+  // Group DB variants by groupLabel for generic grouped variant display
+  const groupedDbVariants = useMemo(() => {
+    if (dbVariants.length === 0) return null;
+    const hasGroupLabel = dbVariants.some((v: any) => v.groupLabel);
+    if (!hasGroupLabel) return null;
+    const groups: Record<string, typeof dbVariants> = {};
+    const order: string[] = [];
+    dbVariants.forEach((v: any) => {
+      const label = v.groupLabel || 'Options';
+      if (!groups[label]) { groups[label] = []; order.push(label); }
+      groups[label].push(v);
+    });
+    return order.map(label => ({ label, variants: groups[label] }));
+  }, [dbVariants]);
+
+  // For generic grouped products: price is driven by the first group that has price > 0
+  const isTorsionSpringProduct = product ? product.id === TORSION_SPRING_PRODUCT_ID : false;
+  const groupedSelectedPrice = useMemo(() => {
+    if (!groupedDbVariants || isGlosteelDoor || isLpGasCylinder || isTorsionSpringProduct) return null;
+    for (const group of groupedDbVariants) {
+      const selectedId = selectedGroupedVariants[group.label];
+      if (selectedId) {
+        const v = group.variants.find((x: any) => x.id === selectedId);
+        if (v && parseFloat(v.price as string) > 0) return parseFloat(v.price as string);
+      }
+    }
+    return null;
+  }, [groupedDbVariants, selectedGroupedVariants, isGlosteelDoor, isLpGasCylinder, isTorsionSpringProduct]);
+
+  // Whether this product uses generic grouped DB variant rendering (not Glosteel/LP Gas/Torsion Spring)
+  const hasGenericGroupedVariants = !isGlosteelDoor && !isLpGasCylinder && !isTorsionSpringProduct && !!groupedDbVariants;
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -413,14 +470,6 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     );
   }
 
-  // Check if this is an LP Gas cylinder with variant pricing
-  const isLpGasCylinder = LP_GAS_CYLINDER_IDS.includes(product.id);
-  const lpGasPricing = isLpGasCylinder ? LP_GAS_PRICING[product.id] : null;
-  
-  // Check if this is a Glosteel garage door with size pricing
-  const isGlosteelDoor = GLOSTEEL_DOOR_IDS.includes(product.id);
-  const glosteelPricing = isGlosteelDoor ? GLOSTEEL_PRICING[product.id] : null;
-  
   // Check if this is a torsion spring with variant pricing
   const isTorsionSpring = product.id === TORSION_SPRING_PRODUCT_ID;
   const torsionSpringInfo = isTorsionSpring ? TORSION_SPRING_VARIANTS[selectedTorsionSpring] : null;
@@ -434,6 +483,9 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     if (glosteelPricing) {
       return glosteelPricing[selectedDoorSize].toFixed(2);
     }
+    if (groupedSelectedPrice !== null) {
+      return groupedSelectedPrice.toFixed(2);
+    }
     if (selectedDbVariantData) {
       return parseFloat(selectedDbVariantData.price as string).toFixed(2);
     }
@@ -444,7 +496,17 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   };
   
   const displayPrice = getDisplayPrice();
-  const priceValue = lpGasPricing ? lpGasPricing[selectedVariant] : (glosteelPricing ? glosteelPricing[selectedDoorSize] : (selectedDbVariantData ? parseFloat(selectedDbVariantData.price as string) : (torsionSpringInfo ? torsionSpringInfo.price : parseFloat(product.price))));
+  const priceValue = lpGasPricing
+    ? lpGasPricing[selectedVariant]
+    : glosteelPricing
+    ? glosteelPricing[selectedDoorSize]
+    : groupedSelectedPrice !== null
+    ? groupedSelectedPrice
+    : selectedDbVariantData
+    ? parseFloat(selectedDbVariantData.price as string)
+    : torsionSpringInfo
+    ? torsionSpringInfo.price
+    : parseFloat(product.price);
   const isDiscontinued = (product as any).discontinued === true || priceValue === 0;
   const variantStock = selectedDbVariantData != null ? selectedDbVariantData.stock : null;
   const effectiveStock = variantStock != null ? variantStock : product.stock;
@@ -901,7 +963,48 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
               </div>
             )}
 
-            {dbVariants.length > 0 && !isTorsionSpring && (
+            {/* Generic grouped DB variant selectors (e.g. Door Size, Finish, Colour) */}
+            {hasGenericGroupedVariants && groupedDbVariants && groupedDbVariants.map((group) => {
+              const allSamePrice = group.variants.every((v: any) => parseFloat(v.price as string) === parseFloat(group.variants[0].price as string));
+              const showPrices = !allSamePrice || parseFloat(group.variants[0].price as string) > 0;
+              return (
+                <div className="mb-6" key={group.label}>
+                  <h3 className="text-sm font-medium mb-3">Select {group.label}:</h3>
+                  <RadioGroup
+                    value={selectedGroupedVariants[group.label] || ""}
+                    onValueChange={(val) => setSelectedGroupedVariants(prev => ({ ...prev, [group.label]: val }))}
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                  >
+                    {group.variants.map((v: any) => (
+                      <div className="relative" key={v.id}>
+                        <RadioGroupItem value={v.id} id={`grouped-${v.id}`} className="peer sr-only" data-testid={`radio-grouped-${v.id}`} />
+                        <Label
+                          htmlFor={`grouped-${v.id}`}
+                          className="flex flex-col gap-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
+                        >
+                          {v.image && (
+                            <img src={fixImageUrl(v.image)} alt={v.name} className="w-12 h-12 object-cover rounded mb-1" />
+                          )}
+                          <span className="font-semibold">{v.name}</span>
+                          {v.description && (
+                            <span className="text-sm text-muted-foreground">{v.description}</span>
+                          )}
+                          {showPrices && parseFloat(v.price as string) > 0 && (
+                            <span className="text-lg font-bold text-primary whitespace-nowrap">
+                              R&nbsp;{parseFloat(v.price as string).toFixed(2)}
+                            </span>
+                          )}
+                          {v.stock <= 0 && <span className="text-xs text-destructive">Out of stock</span>}
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+              );
+            })}
+
+            {/* Simple DB variant grid (no groupLabel — ungrouped options) */}
+            {dbVariants.length > 0 && !isTorsionSpring && !hasGenericGroupedVariants && !isGlosteelDoor && (
               <div className="mb-6">
                 <h3 className="text-sm font-medium mb-3">Select Option:</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -996,7 +1099,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 ref={addToCartButtonRef}
                 size="lg"
                 className="flex-1 font-semibold tracking-wide gap-2"
-                disabled={isOutOfStock || (isGlosteelDoor && selectedDoorFinish === '')}
+                disabled={isOutOfStock || (isGlosteelDoor && selectedDoorFinish === '') || (hasGenericGroupedVariants && groupedDbVariants !== null && groupedDbVariants.some(g => !selectedGroupedVariants[g.label]))}
                 onClick={() => {
                   if (isLpGasCylinder && lpGasPricing) {
                     onAddToCart(product, quantity, selectedVariant, displayPrice);
@@ -1004,6 +1107,12 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                     if (!selectedDoorFinish) return;
                     const doorVariant = `${selectedDoorSize}-${selectedDoorFinish}` as GarageDoorVariant;
                     onAddToCart(product, quantity, doorVariant, displayPrice);
+                  } else if (hasGenericGroupedVariants && groupedDbVariants) {
+                    const variantLabel = groupedDbVariants.map(g => {
+                      const v = g.variants.find((x: any) => x.id === selectedGroupedVariants[g.label]);
+                      return v?.name || '';
+                    }).filter(Boolean).join(' · ') as any;
+                    onAddToCart(product, quantity, variantLabel, displayPrice);
                   } else if (selectedDbVariantData) {
                     onAddToCart(product, quantity, selectedDbVariantData.name as any, displayPrice);
                   } else if (isTorsionSpring && torsionSpringInfo) {
@@ -1488,7 +1597,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                 <Button
                   size="lg"
                   className="shrink-0 gap-1.5 px-5"
-                  disabled={isGlosteelDoor && selectedDoorFinish === ''}
+                  disabled={(isGlosteelDoor && selectedDoorFinish === '') || (hasGenericGroupedVariants && groupedDbVariants !== null && groupedDbVariants.some(g => !selectedGroupedVariants[g.label]))}
                   onClick={() => {
                     if (isLpGasCylinder && lpGasPricing) {
                       onAddToCart(product, quantity, selectedVariant, displayPrice);
@@ -1496,6 +1605,12 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
                       if (!selectedDoorFinish) return;
                       const doorVariant = `${selectedDoorSize}-${selectedDoorFinish}` as GarageDoorVariant;
                       onAddToCart(product, quantity, doorVariant, displayPrice);
+                    } else if (hasGenericGroupedVariants && groupedDbVariants) {
+                      const variantLabel = groupedDbVariants.map(g => {
+                        const v = g.variants.find((x: any) => x.id === selectedGroupedVariants[g.label]);
+                        return v?.name || '';
+                      }).filter(Boolean).join(' · ') as any;
+                      onAddToCart(product, quantity, variantLabel, displayPrice);
                     } else if (selectedDbVariantData) {
                       onAddToCart(product, quantity, selectedDbVariantData.name as any, displayPrice);
                     } else if (isTorsionSpring && torsionSpringInfo) {

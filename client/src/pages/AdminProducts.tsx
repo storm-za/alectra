@@ -69,6 +69,8 @@ export default function AdminProducts() {
   const [newVariantSku, setNewVariantSku] = useState("");
   const [newVariantStock, setNewVariantStock] = useState("0");
   const [newVariantImage, setNewVariantImage] = useState("");
+  const [newVariantGroupLabel, setNewVariantGroupLabel] = useState("");
+  const [newVariantDescription, setNewVariantDescription] = useState("");
   const [showAddVariantForm, setShowAddVariantForm] = useState(false);
   const [editingVariant, setEditingVariant] = useState<ProductVariant | null>(null);
   const [selectedVariantForImage, setSelectedVariantForImage] = useState<string>("");
@@ -275,8 +277,8 @@ export default function AdminProducts() {
   });
 
   const createVariantMutation = useMutation({
-    mutationFn: async ({ productId, name, price, sku, stock, image, sortOrder }: { productId: string; name: string; price: string; sku: string; stock: number; image?: string; sortOrder: number }) => {
-      const response = await apiRequest('POST', `/api/admin/products/${productId}/variants`, { name, price: parseFloat(price), sku: sku || null, stock, image: image || null, sortOrder });
+    mutationFn: async ({ productId, name, price, sku, stock, image, sortOrder, groupLabel, description }: { productId: string; name: string; price: string; sku: string; stock: number; image?: string; sortOrder: number; groupLabel?: string; description?: string }) => {
+      const response = await apiRequest('POST', `/api/admin/products/${productId}/variants`, { name, price: parseFloat(price), sku: sku || null, stock, image: image || null, sortOrder, groupLabel: groupLabel || null, description: description || null });
       return response.json();
     },
     onSuccess: (newVariant) => {
@@ -286,6 +288,8 @@ export default function AdminProducts() {
       setNewVariantSku("");
       setNewVariantStock("0");
       setNewVariantImage("");
+      setNewVariantGroupLabel("");
+      setNewVariantDescription("");
       setShowAddVariantForm(false);
       setSuccessMessage("Variant created successfully!");
       setTimeout(() => setSuccessMessage(""), 2000);
@@ -293,8 +297,8 @@ export default function AdminProducts() {
   });
 
   const updateVariantMutation = useMutation({
-    mutationFn: async ({ id, name, price, sku, stock, image }: { id: string; name: string; price: string; sku: string; stock: number; image?: string }) => {
-      const response = await apiRequest('PUT', `/api/admin/variants/${id}`, { name, price: parseFloat(price), sku: sku || null, stock, ...(image !== undefined ? { image } : {}) });
+    mutationFn: async ({ id, name, price, sku, stock, image, groupLabel, description }: { id: string; name: string; price: string; sku: string; stock: number; image?: string; groupLabel?: string; description?: string }) => {
+      const response = await apiRequest('PUT', `/api/admin/variants/${id}`, { name, price: parseFloat(price), sku: sku || null, stock, ...(image !== undefined ? { image } : {}), groupLabel: groupLabel || null, description: description || null });
       return response.json();
     },
     onSuccess: (updatedVariant) => {
@@ -371,6 +375,8 @@ export default function AdminProducts() {
     setNewVariantPrice("");
     setNewVariantSku("");
     setNewVariantStock("0");
+    setNewVariantGroupLabel("");
+    setNewVariantDescription("");
     setEditingVariant(null);
     
     // Fetch existing FBT products
@@ -1374,9 +1380,9 @@ export default function AdminProducts() {
                       {variants.length > 0 && (
                         <div className="border rounded-lg overflow-hidden">
                           {/* Table header */}
-                          <div className="grid grid-cols-[48px_1fr_100px_110px_80px_32px_80px] gap-2 px-3 py-2 bg-muted/50 border-b text-xs font-medium text-muted-foreground">
+                          <div className="grid grid-cols-[48px_1fr_100px_100px_80px_32px_80px] gap-2 px-3 py-2 bg-muted/50 border-b text-xs font-medium text-muted-foreground">
                             <span>Image</span>
-                            <span>Name</span>
+                            <span>Name / Group</span>
                             <span>Price</span>
                             <span>SKU</span>
                             <span>Stock</span>
@@ -1388,7 +1394,7 @@ export default function AdminProducts() {
                             <div key={variant.id} data-testid={`variant-item-${variant.id}`}>
                               {/* Row view */}
                               {editingVariant?.id !== variant.id && (
-                                <div className="grid grid-cols-[48px_1fr_100px_110px_80px_32px_80px] gap-2 px-3 py-2 items-center border-b last:border-b-0 hover:bg-muted/20 transition-colors">
+                                <div className="grid grid-cols-[48px_1fr_100px_100px_80px_32px_80px] gap-2 px-3 py-2 items-center border-b last:border-b-0 hover:bg-muted/20 transition-colors">
                                   <div className="w-10 h-10 rounded border overflow-hidden bg-muted flex-shrink-0">
                                     {variant.image ? (
                                       <img
@@ -1403,7 +1409,15 @@ export default function AdminProducts() {
                                       </div>
                                     )}
                                   </div>
-                                  <span className="text-sm font-medium truncate">{variant.name}</span>
+                                  <div className="min-w-0">
+                                    <span className="text-sm font-medium truncate block">{variant.name}</span>
+                                    {(variant as any).groupLabel && (
+                                      <span className="text-xs text-muted-foreground truncate block">{(variant as any).groupLabel}</span>
+                                    )}
+                                    {(variant as any).description && (
+                                      <span className="text-xs text-muted-foreground/70 truncate block italic">{(variant as any).description}</span>
+                                    )}
+                                  </div>
                                   <span className="text-sm whitespace-nowrap">R&nbsp;{parseFloat(variant.price as string).toFixed(2)}</span>
                                   <span className="text-xs text-muted-foreground truncate">{variant.sku || "—"}</span>
                                   <span className="text-sm">{variant.stock}</span>
@@ -1463,11 +1477,12 @@ export default function AdminProducts() {
 
                                   <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1">
-                                      <Label className="text-xs">Name</Label>
+                                      <Label className="text-xs">Group Label (optional)</Label>
                                       <Input
-                                        value={editingVariant.name}
-                                        onChange={(e) => setEditingVariant({ ...editingVariant, name: e.target.value })}
-                                        data-testid={`input-edit-variant-name-${variant.id}`}
+                                        value={(editingVariant as any).groupLabel || ""}
+                                        onChange={(e) => setEditingVariant({ ...editingVariant, groupLabel: e.target.value } as any)}
+                                        placeholder="e.g., Door Size, Finish, Colour"
+                                        data-testid={`input-edit-variant-group-label-${variant.id}`}
                                       />
                                     </div>
                                     <div className="space-y-1">
@@ -1478,6 +1493,23 @@ export default function AdminProducts() {
                                         value={editingVariant.price}
                                         onChange={(e) => setEditingVariant({ ...editingVariant, price: e.target.value })}
                                         data-testid={`input-edit-variant-price-${variant.id}`}
+                                      />
+                                    </div>
+                                    <div className="space-y-1">
+                                      <Label className="text-xs">Name</Label>
+                                      <Input
+                                        value={editingVariant.name}
+                                        onChange={(e) => setEditingVariant({ ...editingVariant, name: e.target.value })}
+                                        data-testid={`input-edit-variant-name-${variant.id}`}
+                                      />
+                                    </div>
+                                    <div className="space-y-1">
+                                      <Label className="text-xs">Short Description (optional)</Label>
+                                      <Input
+                                        value={(editingVariant as any).description || ""}
+                                        onChange={(e) => setEditingVariant({ ...editingVariant, description: e.target.value } as any)}
+                                        placeholder="e.g., Standard single garage door size"
+                                        data-testid={`input-edit-variant-description-${variant.id}`}
                                       />
                                     </div>
                                     <div className="space-y-1">
@@ -1516,6 +1548,8 @@ export default function AdminProducts() {
                                           sku: editingVariant.sku || "",
                                           stock: editingVariant.stock,
                                           image: editingVariant.image || "",
+                                          groupLabel: (editingVariant as any).groupLabel || "",
+                                          description: (editingVariant as any).description || "",
                                         });
                                       }}
                                       disabled={updateVariantMutation.isPending}
@@ -1558,7 +1592,7 @@ export default function AdminProducts() {
                             <Button
                               size="icon"
                               variant="ghost"
-                              onClick={() => { setShowAddVariantForm(false); setNewVariantName(""); setNewVariantPrice(""); setNewVariantSku(""); setNewVariantStock("0"); setNewVariantImage(""); }}
+                              onClick={() => { setShowAddVariantForm(false); setNewVariantName(""); setNewVariantPrice(""); setNewVariantSku(""); setNewVariantStock("0"); setNewVariantImage(""); setNewVariantGroupLabel(""); setNewVariantDescription(""); }}
                             >
                               <X className="h-4 w-4" />
                             </Button>
@@ -1566,12 +1600,12 @@ export default function AdminProducts() {
 
                           <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1">
-                              <Label className="text-xs">Name *</Label>
+                              <Label className="text-xs">Group Label (optional)</Label>
                               <Input
-                                value={newVariantName}
-                                onChange={(e) => setNewVariantName(e.target.value)}
-                                placeholder="e.g., 9kg, Large, Blue"
-                                data-testid="input-variant-name"
+                                value={newVariantGroupLabel}
+                                onChange={(e) => setNewVariantGroupLabel(e.target.value)}
+                                placeholder="e.g., Door Size, Finish, Colour"
+                                data-testid="input-variant-group-label"
                               />
                             </div>
                             <div className="space-y-1">
@@ -1583,6 +1617,24 @@ export default function AdminProducts() {
                                 onChange={(e) => setNewVariantPrice(e.target.value)}
                                 placeholder="0.00"
                                 data-testid="input-variant-price"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs">Name *</Label>
+                              <Input
+                                value={newVariantName}
+                                onChange={(e) => setNewVariantName(e.target.value)}
+                                placeholder="e.g., 2450mm Width, Smooth, 9kg"
+                                data-testid="input-variant-name"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs">Short Description (optional)</Label>
+                              <Input
+                                value={newVariantDescription}
+                                onChange={(e) => setNewVariantDescription(e.target.value)}
+                                placeholder="e.g., Standard single garage door size"
+                                data-testid="input-variant-description"
                               />
                             </div>
                             <div className="space-y-1">
@@ -1626,6 +1678,8 @@ export default function AdminProducts() {
                                     stock: parseInt(newVariantStock) || 0,
                                     image: newVariantImage,
                                     sortOrder: variants.length + 1,
+                                    groupLabel: newVariantGroupLabel || undefined,
+                                    description: newVariantDescription || undefined,
                                   });
                                 }
                               }}
@@ -1641,7 +1695,7 @@ export default function AdminProducts() {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => { setShowAddVariantForm(false); setNewVariantName(""); setNewVariantPrice(""); setNewVariantSku(""); setNewVariantStock("0"); setNewVariantImage(""); }}
+                              onClick={() => { setShowAddVariantForm(false); setNewVariantName(""); setNewVariantPrice(""); setNewVariantSku(""); setNewVariantStock("0"); setNewVariantImage(""); setNewVariantGroupLabel(""); setNewVariantDescription(""); }}
                             >
                               Cancel
                             </Button>

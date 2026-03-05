@@ -54,6 +54,8 @@ export const productVariants = pgTable("product_variants", {
   stock: integer("stock").notNull().default(0),
   sortOrder: integer("sort_order").notNull().default(0),
   image: text("image"),
+  groupLabel: text("group_label"),
+  description: text("description"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
