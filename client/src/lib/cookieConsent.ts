@@ -6,17 +6,17 @@ export function loadAnalytics() {
   if (w.__analyticsLoaded) return;
   w.__analyticsLoaded = true;
 
+  // The gtag script is already in index.html with consent defaulting to 'denied'.
+  // Grant consent now that the user has accepted cookies.
   w.dataLayer = w.dataLayer || [];
-  function gtag(...args: unknown[]) { w.dataLayer.push(args); }
-  w.gtag = gtag;
-  gtag("js", new Date());
-  gtag("config", "G-YPPXFSYW3P");
+  if (typeof w.gtag === "function") {
+    w.gtag("consent", "update", {
+      analytics_storage: "granted",
+      ad_storage: "granted",
+    });
+  }
 
-  const gaScript = document.createElement("script");
-  gaScript.src = "https://www.googletagmanager.com/gtag/js?id=G-YPPXFSYW3P";
-  gaScript.async = true;
-  document.head.appendChild(gaScript);
-
+  // Also load the Google Tag Manager container
   setTimeout(() => {
     (function (w: any, d: any, s: any, l: any, i: any) {
       w[l] = w[l] || [];
