@@ -10,10 +10,10 @@ export function loadAnalytics() {
   function gtag(...args: unknown[]) { w.dataLayer.push(args); }
   w.gtag = gtag;
   gtag("js", new Date());
-  gtag("config", "GT-T5P8RL35");
+  gtag("config", "G-YPPXFSYW3P");
 
   const gaScript = document.createElement("script");
-  gaScript.src = "https://www.googletagmanager.com/gtag/js?id=GT-T5P8RL35";
+  gaScript.src = "https://www.googletagmanager.com/gtag/js?id=G-YPPXFSYW3P";
   gaScript.async = true;
   document.head.appendChild(gaScript);
 
