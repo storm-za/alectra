@@ -100,15 +100,43 @@ export default function OrderSuccess({ onClearCart }: OrderSuccessProps) {
     }
   }, [provider, paymentData, onClearCart]);
 
-  // Track Google Ads conversion when payment is successful
+  // Track purchase value in Google Analytics 4 + Google Ads when payment is confirmed
   useEffect(() => {
-    if (paymentData?.status === "success" && displayAmount > 0 && window.gtag) {
-      window.gtag('event', 'conversion', {
-        'send_to': 'AW-16880658158/WiiqCKOTia4aEO7NqfE-',
-        'value': displayAmount,
-        'currency': 'ZAR',
-        'transaction_id': orderId || reference || ''
+    if (paymentData?.status !== "success" || displayAmount <= 0) return;
+
+    const transactionId = orderId || reference || '';
+
+    const fireEvents = () => {
+      if (!window.gtag) return false;
+
+      // GA4 purchase event — shows revenue in Google Analytics
+      window.gtag('event', 'purchase', {
+        transaction_id: transactionId,
+        value: displayAmount,
+        currency: 'ZAR',
+        items: [],
       });
+
+      // Google Ads conversion — passes value to the existing conversion action
+      window.gtag('event', 'conversion', {
+        send_to: 'AW-16880658158/WiiqCKOTia4aEO7NqfE-',
+        value: displayAmount,
+        currency: 'ZAR',
+        transaction_id: transactionId,
+      });
+
+      return true;
+    };
+
+    // Fire immediately if gtag is already available, otherwise retry for up to 8 seconds
+    if (!fireEvents()) {
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        if (fireEvents() || attempts >= 40) {
+          clearInterval(interval);
+        }
+      }, 200);
     }
   }, [paymentData, displayAmount, orderId, reference]);
 
