@@ -134,6 +134,20 @@ function buildProductJsonLd(product: Product, reviewData?: { average: number; co
   return JSON.stringify(data);
 }
 
+function buildSeoTitle(name: string, brand: string): string {
+  const full = `${name} - ${brand} | Alectra Solutions`;
+  if (full.length <= 60) return full;
+  const mid = `${name} | ${brand} - Alectra`;
+  if (mid.length <= 60) return mid;
+  const short = `${name} | Alectra Solutions`;
+  if (short.length <= 60) return short;
+  const maxNameLen = 43;
+  const truncName = name.length > maxNameLen
+    ? name.substring(0, name.lastIndexOf(" ", maxNameLen)).trimEnd() + "…"
+    : name;
+  return `${truncName} | Alectra Solutions`;
+}
+
 export async function renderProductSSR(slug: string, templateHtml: string): Promise<string | null> {
   try {
     const product = await storage.getProductBySlug(slug);
@@ -149,8 +163,19 @@ export async function renderProductSSR(slug: string, templateHtml: string): Prom
       }
     } catch {}
 
+    // Fetch category for breadcrumb schema
+    let categoryName = "Products";
+    let categorySlug = "all";
+    try {
+      if (product.categoryId) {
+        const categories = await storage.getAllCategories();
+        const cat = categories.find(c => c.id === product.categoryId);
+        if (cat) { categoryName = cat.name; categorySlug = cat.slug; }
+      }
+    } catch {}
+
     const cleanDesc = stripHtml(product.description);
-    const title = `${product.name} - ${product.brand || "Security Products"} | Alectra Solutions`;
+    const title = buildSeoTitle(product.name, product.brand || "Security Products");
     const description = cleanDesc.length > 155 ? cleanDesc.substring(0, 152) + "..." : cleanDesc;
     const imageUrl = getImageUrl(product.imageUrl);
     const canonical = `${BASE_URL}/products/${slug}`;
@@ -180,7 +205,17 @@ export async function renderProductSSR(slug: string, templateHtml: string): Prom
     html = html.replace(/<meta name="twitter:image" content="[^"]*">/, `<meta name="twitter:image" content="${imageUrl}">`);
 
     const productJsonLd = buildProductJsonLd(product, reviewData);
-    html = html.replace("</head>", `<script type="application/ld+json">${productJsonLd}</script>\n  </head>`);
+    const breadcrumbJsonLd = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": BASE_URL },
+        { "@type": "ListItem", "position": 2, "name": categoryName, "item": `${BASE_URL}/collections/${categorySlug}` },
+        { "@type": "ListItem", "position": 3, "name": product.name, "item": canonical },
+      ],
+    });
+    html = html.replace("</head>",
+      `<script type="application/ld+json">${productJsonLd}</script>\n  <script type="application/ld+json">${breadcrumbJsonLd}</script>\n  </head>`);
 
     const ssrProductContent = buildProductHtml(product);
     const ssrDataScript = `<script>window.__SSR_PRODUCT__=${JSON.stringify(product).replace(/</g, "\\u003c")};window.__SSR_REVIEW_DATA__=${JSON.stringify(reviewData || null)};</script>`;

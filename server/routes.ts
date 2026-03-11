@@ -1877,9 +1877,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Skip discontinued products from sitemap
         if (product.discontinued) continue;
         
+        const isOutOfStock = product.stock === 0;
+        const changefreq = isOutOfStock ? 'monthly' : 'weekly';
+        const priority = isOutOfStock ? '0.3' : '0.8';
+        const lastmod = (product as any).updatedAt
+          ? new Date((product as any).updatedAt).toISOString().split('T')[0]
+          : currentDate;
+        
         sitemap += '  <url>\n';
         sitemap += `    <loc>${baseUrl}/products/${product.slug}</loc>\n`;
-        sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+        sitemap += `    <lastmod>${lastmod}</lastmod>\n`;
+        sitemap += `    <changefreq>${changefreq}</changefreq>\n`;
+        sitemap += `    <priority>${priority}</priority>\n`;
         
         // Add product image for Google Image Search
         if (product.imageUrl) {
@@ -1919,6 +1928,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       sitemap += '  <url>\n';
       sitemap += `    <loc>${baseUrl}/collections/all</loc>\n`;
       sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+      sitemap += '    <changefreq>weekly</changefreq>\n';
+      sitemap += '    <priority>1.0</priority>\n';
       sitemap += '  </url>\n';
       
       // Individual category/collection pages
@@ -1926,6 +1937,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sitemap += '  <url>\n';
         sitemap += `    <loc>${baseUrl}/collections/${category.slug}</loc>\n`;
         sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+        sitemap += '    <changefreq>weekly</changefreq>\n';
+        sitemap += '    <priority>0.9</priority>\n';
         sitemap += '  </url>\n';
       }
       
@@ -1962,10 +1975,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
       sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
       
+      const pageConfig: Record<string, { changefreq: string; priority: string }> = {
+        '/': { changefreq: 'daily', priority: '1.0' },
+        '/about': { changefreq: 'monthly', priority: '0.6' },
+        '/contact': { changefreq: 'monthly', priority: '0.6' },
+        '/stores': { changefreq: 'monthly', priority: '0.6' },
+        '/faq': { changefreq: 'monthly', priority: '0.7' },
+        '/shipping': { changefreq: 'monthly', priority: '0.5' },
+        '/returns': { changefreq: 'monthly', priority: '0.5' },
+        '/privacy': { changefreq: 'yearly', priority: '0.3' },
+        '/trade-signup': { changefreq: 'monthly', priority: '0.7' },
+        '/quote': { changefreq: 'monthly', priority: '0.7' },
+        '/blogs': { changefreq: 'weekly', priority: '0.8' },
+      };
+
       for (const page of staticPages) {
+        const cfg = pageConfig[page] || { changefreq: 'monthly', priority: '0.5' };
         sitemap += '  <url>\n';
         sitemap += `    <loc>${baseUrl}${page}</loc>\n`;
         sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+        sitemap += `    <changefreq>${cfg.changefreq}</changefreq>\n`;
+        sitemap += `    <priority>${cfg.priority}</priority>\n`;
         sitemap += '  </url>\n';
       }
       
@@ -2003,6 +2033,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sitemap += '  <url>\n';
         sitemap += `    <loc>${baseUrl}${blogPath}</loc>\n`;
         sitemap += `    <lastmod>${postDate}</lastmod>\n`;
+        sitemap += '    <changefreq>monthly</changefreq>\n';
+        sitemap += '    <priority>0.6</priority>\n';
         sitemap += '  </url>\n';
       }
       

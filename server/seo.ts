@@ -30,6 +30,74 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 }
 
+function buildSeoTitle(name: string, brand: string): string {
+  const full = `${name} - ${brand} | Alectra Solutions`;
+  if (full.length <= 60) return full;
+  const mid = `${name} | ${brand} - Alectra`;
+  if (mid.length <= 60) return mid;
+  const short = `${name} | Alectra Solutions`;
+  if (short.length <= 60) return short;
+  const maxNameLen = 43;
+  const truncName = name.length > maxNameLen
+    ? name.substring(0, name.lastIndexOf(" ", maxNameLen)).trimEnd() + "\u2026"
+    : name;
+  return `${truncName} | Alectra Solutions`;
+}
+
+const CATEGORY_FAQS: Record<string, Array<{ question: string; answer: string }>> = {
+  "gate-motors": [
+    { question: "What is the best gate motor for a large sliding gate?", answer: "The Centurion D10 Smart supports gates up to 1000kg and is ideal for large or heavy sliding gates. For lighter gates under 500kg, the Centurion D5 Evo is the most popular choice in South Africa." },
+    { question: "How long does a gate motor battery last during load shedding?", answer: "A 7Ah battery provides approximately 50–80 gate cycles per charge. An 18Ah battery gives 150–200 cycles. We recommend upgrading to an 18Ah battery if load shedding exceeds 4 hours daily." },
+    { question: "Can I add a backup battery to my existing gate motor?", answer: "Yes. Most Centurion, ET Nice, and Gemini gate motors support an external 12V sealed lead-acid battery. Our battery backup kits are compatible with all major brands." },
+    { question: "What is the difference between a sliding and swing gate motor?", answer: "A sliding gate motor drives a gate that moves horizontally along a track. A swing gate motor drives gates that open like a door. The choice depends on your property layout and available space." },
+  ],
+  "electric-fencing": [
+    { question: "What size energizer do I need for my electric fence?", answer: "A general rule is 1 Joule of output energy per 100 metres of fence line. For a typical residential perimeter of 200m, a 2 Joule energizer like the Nemtek Druid 2J is recommended." },
+    { question: "Is an electric fence legal in South Africa?", answer: "Yes, electric fences are legal in South Africa when installed according to SANS 10222-3 regulations. They must be fitted with a warning sign every 10 metres and must not deliver more than 5 Joules of output energy." },
+    { question: "How high should an electric fence be above my wall?", answer: "The fence should extend at least 0.5m above the top of an existing wall. Most residential installations have 6–8 strands of wire at 80–120mm spacing above a 1.8m brick wall." },
+    { question: "Can I install an electric fence myself?", answer: "A basic DIY installation is possible for the wire and insulators, but the energizer must be installed and certified by a registered electrician in compliance with South African law." },
+  ],
+  "cctv-cameras": [
+    { question: "How many CCTV cameras do I need for a typical home?", answer: "Most homes require 4–8 cameras for full coverage: one per entry/exit point, driveway, backyard, and perimeter. A 4-camera 2MP Hikvision kit covers most single residential properties." },
+    { question: "Can I view my CCTV cameras remotely on my smartphone?", answer: "Yes. Hikvision cameras connect to the Hik-Connect app and HiLook cameras to the Hik-Central Mobile app. Both allow live viewing, playback, and motion alerts from anywhere in the world." },
+    { question: "What resolution should I choose for security cameras?", answer: "2MP (1080p) is sufficient for general surveillance. Choose 4MP for licence plate recognition at driveways. 8MP (4K) is recommended for wide outdoor areas or where zooming in on footage is required." },
+    { question: "How much storage do I need for CCTV recordings?", answer: "A 4-camera 2MP system recording continuously requires approximately 500GB–1TB per month. A 1TB hard drive with motion-triggered recording typically stores 30–45 days of footage for a 4-camera system." },
+  ],
+  "batteries": [
+    { question: "What size battery do I need for my gate motor?", answer: "A 7Ah (7 amp-hour) battery is the standard size for most residential gate motors. If you experience load shedding for more than 4 hours a day, upgrade to an 18Ah battery for 2–3x more cycles per charge." },
+    { question: "How long does a gate motor battery last before it needs replacing?", answer: "A sealed lead-acid battery typically lasts 2–3 years under normal use. Signs it needs replacing include the gate moving slowly, fewer cycles per charge, or the motor low-battery indicator activating." },
+    { question: "Can I use a car battery for my gate motor?", answer: "No. Car batteries are not designed for the repeated discharge-recharge cycles that gate motors require. Use a sealed lead-acid (SLA), gel, or lithium battery specifically designed for gate motor and alarm system use." },
+    { question: "Are your batteries compatible with Centurion gate motors?", answer: "Yes. All 12V sealed lead-acid, gel, and lithium batteries we stock are compatible with Centurion, ET Nice, Gemini, and all other major gate motor brands." },
+  ],
+  "garage-motors": [
+    { question: "What type of garage door motor do I need for a sectional door?", answer: "Sectional doors require a ceiling-mounted linear rail motor. The ET Nice Moovo M4 and Centurion SDC are popular choices rated for doors up to 150kg." },
+    { question: "Will my garage door motor still work during load shedding?", answer: "Yes, most modern garage motors include a built-in battery backup. Units like the ET Nice Moovo M4 have a built-in rechargeable battery that provides 50–100 cycles during a power outage." },
+    { question: "How heavy a door can a garage door motor handle?", answer: "Most residential garage motors are rated for doors up to 150kg. Measure your door and confirm with the motor's rated capacity before purchasing." },
+    { question: "Can I operate my garage door motor with a remote?", answer: "Yes. All garage motors include a remote handset. Extra remotes can be purchased and programmed for family members. Smart motors also support smartphone app control." },
+  ],
+  "garage-door-parts": [
+    { question: "How do I know which torsion spring to buy for my garage door?", answer: "You need to measure three dimensions: the spring's length, wire diameter, and inside diameter. Also note whether it is a left-wound or right-wound spring. Bring these measurements or send us a photo for assistance." },
+    { question: "How long do garage door torsion springs last?", answer: "Standard torsion springs are rated for 10,000–15,000 cycles, which equates to approximately 7–14 years of daily residential use. High-cycle springs rated at 25,000–50,000 cycles are also available." },
+    { question: "Can I replace garage door rollers and hinges myself?", answer: "Roller and hinge replacement is generally DIY-friendly. Torsion spring replacement, however, is dangerous due to the high tension stored in the spring and should be done by a professional." },
+  ],
+  "intercoms": [
+    { question: "What is the difference between a video and audio intercom?", answer: "An audio intercom lets you speak to a visitor at your gate. A video intercom also shows you a live camera image of the visitor. Video intercoms are recommended for security-conscious homeowners." },
+    { question: "Can an intercom trigger my gate motor to open?", answer: "Yes. Most wired and wireless intercoms can be connected to a gate motor's trigger input, allowing you to open the gate from inside your home by pressing a button on the indoor unit." },
+    { question: "Do wireless intercoms need a power supply?", answer: "Wireless outdoor units are typically battery-powered. The indoor unit plugs into a standard wall socket. Wired systems require a 12V DC power supply for both units." },
+  ],
+  "remotes": [
+    { question: "How do I program a new remote for my Centurion gate motor?", answer: "Press the LEARN button on your motor's control board until the LED flashes, then press the button on your new remote twice. The LED will flash to confirm successful pairing." },
+    { question: "What frequency do Centurion gate motor remotes use?", answer: "Centurion remotes operate on 433MHz with rolling code technology for security. Rolling code means the signal changes with each button press, preventing code-grabbing attacks." },
+    { question: "Can I get a duplicate remote for any gate motor brand?", answer: "Yes. We stock compatible replacement remotes for Centurion, ET Nice, Digidoor, Gemini, and most other brands. Universal remotes are also available for older systems." },
+  ],
+  "lp-gas-exchange": [
+    { question: "What LP Gas cylinder sizes do you deliver?", answer: "We deliver 9kg and 19kg LP Gas cylinders in Pretoria. The 9kg cylinder is ideal for household cooking and braais; the 19kg is for gas heaters, large appliances, or high-use households." },
+    { question: "How does the cylinder exchange service work?", answer: "You swap your empty cylinder for a full one. You only pay for the gas, not a new cylinder, making exchange more affordable than buying a new bottle. Order online and we deliver to your door." },
+    { question: "How long does a 9kg gas cylinder last?", answer: "For a household using gas for cooking only, a 9kg cylinder typically lasts 4–6 weeks. A gas heater uses significantly more gas and may require a 19kg cylinder for equivalent duration." },
+    { question: "What is the delivery fee and area?", answer: "We charge a flat R50 delivery fee within the Pretoria delivery area. Orders placed before 12:00 qualify for same-day delivery, Monday to Saturday." },
+  ],
+};
+
 export async function getMetaForPath(path: string): Promise<SEOMeta> {
   const cleanPath = path.split('?')[0];
   
@@ -41,7 +109,7 @@ export async function getMetaForPath(path: string): Promise<SEOMeta> {
       const product = await storage.getProductBySlug(slug);
       if (product) {
         const cleanDesc = stripHtml(product.description);
-        const title = `${product.name} - ${product.brand} | ${SITE_NAME}`;
+        const title = buildSeoTitle(product.name, product.brand || "Security Products");
         const description = truncateDescription(cleanDesc);
         const imageUrl = product.imageUrl.startsWith('http') 
           ? product.imageUrl 
@@ -96,8 +164,26 @@ export async function getMetaForPath(path: string): Promise<SEOMeta> {
     const slug = categoryMatch[1];
     
     if (slug === 'all') {
-      const title = `All Security & Automation Products | ${SITE_NAME}`;
-      const description = "Browse our complete range of security and automation products. Gate motors, CCTV systems, electric fencing, intercoms, remotes, batteries, and more.";
+      const title = `Security & Automation Products South Africa | ${SITE_NAME}`;
+      const description = "Browse 280+ security and automation products. Gate motors, CCTV systems, electric fencing, intercoms, remotes, batteries, garage motors. Free delivery over R2,500.";
+      let structuredData: string | undefined;
+      try {
+        const allProducts = await storage.getAllProducts();
+        structuredData = JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "Security & Automation Products",
+          "description": description,
+          "url": `${BASE_URL}/collections/all`,
+          "numberOfItems": allProducts.length,
+          "itemListElement": allProducts.filter(p => !p.discontinued).slice(0, 100).map((p, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "url": `${BASE_URL}/products/${p.slug}`,
+            "name": p.name,
+          })),
+        });
+      } catch {}
       return {
         title,
         description,
@@ -109,14 +195,15 @@ export async function getMetaForPath(path: string): Promise<SEOMeta> {
         ogType: "website",
         twitterTitle: title,
         twitterDescription: description,
-        twitterImage: DEFAULT_IMAGE
+        twitterImage: DEFAULT_IMAGE,
+        structuredData,
       };
     }
 
     try {
       const category = await storage.getCategoryBySlug(slug);
       if (category) {
-        const title = `${category.name} - Security Products | ${SITE_NAME}`;
+        const title = truncateDescription(`Shop ${category.name} | ${SITE_NAME}`, 60);
         const description = truncateDescription(category.description || `Shop our range of ${category.name.toLowerCase()} products. Quality security and automation solutions from trusted South African brands.`);
         const imageUrl = category.imageUrl?.startsWith('http') 
           ? category.imageUrl 
@@ -124,9 +211,8 @@ export async function getMetaForPath(path: string): Promise<SEOMeta> {
             ? `${BASE_URL}/${category.imageUrl}`
             : DEFAULT_IMAGE;
 
-        // ItemList schema helps Google discover all products in this category
         const products = await storage.getProductsByCategorySlug(slug);
-        const structuredData = JSON.stringify({
+        const itemListSchema = {
           "@context": "https://schema.org",
           "@type": "ItemList",
           "name": `${category.name} Products`,
@@ -139,7 +225,29 @@ export async function getMetaForPath(path: string): Promise<SEOMeta> {
             "url": `${BASE_URL}/products/${p.slug}`,
             "name": p.name,
           })),
-        });
+        };
+
+        const categoryFaqs = CATEGORY_FAQS[slug];
+        let structuredData: string;
+        if (categoryFaqs && categoryFaqs.length > 0) {
+          const { "@context": _ctx, ...itemListBody } = itemListSchema as any;
+          structuredData = JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              itemListBody,
+              {
+                "@type": "FAQPage",
+                "mainEntity": categoryFaqs.map(faq => ({
+                  "@type": "Question",
+                  "name": faq.question,
+                  "acceptedAnswer": { "@type": "Answer", "text": faq.answer },
+                })),
+              },
+            ],
+          });
+        } else {
+          structuredData = JSON.stringify(itemListSchema);
+        }
 
         return {
           title,
