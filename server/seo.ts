@@ -47,6 +47,7 @@ export async function getMetaForPath(path: string): Promise<SEOMeta> {
           ? product.imageUrl 
           : `${BASE_URL}/${product.imageUrl}`;
         
+        const priceValidUntil = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
         const structuredData = JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Product",
@@ -54,13 +55,18 @@ export async function getMetaForPath(path: string): Promise<SEOMeta> {
           "description": cleanDesc.substring(0, 500),
           "brand": { "@type": "Brand", "name": product.brand },
           "image": imageUrl,
+          "sku": product.sku || product.id,
+          "mpn": product.sku || product.id,
           "url": `${BASE_URL}/products/${slug}`,
           "offers": {
             "@type": "Offer",
-            "price": product.price,
+            "price": parseFloat(product.price).toFixed(2),
             "priceCurrency": "ZAR",
+            "priceValidUntil": priceValidUntil,
+            "itemCondition": "https://schema.org/NewCondition",
             "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-            "seller": { "@type": "Organization", "name": SITE_NAME }
+            "url": `${BASE_URL}/products/${slug}`,
+            "seller": { "@type": "Organization", "name": SITE_NAME, "url": BASE_URL }
           }
         });
 
@@ -118,6 +124,23 @@ export async function getMetaForPath(path: string): Promise<SEOMeta> {
             ? `${BASE_URL}/${category.imageUrl}`
             : DEFAULT_IMAGE;
 
+        // ItemList schema helps Google discover all products in this category
+        const products = await storage.getProductsByCategorySlug(slug);
+        const structuredData = JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": `${category.name} Products`,
+          "description": description,
+          "url": `${BASE_URL}/collections/${slug}`,
+          "numberOfItems": products.length,
+          "itemListElement": products.slice(0, 100).map((p, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "url": `${BASE_URL}/products/${p.slug}`,
+            "name": p.name,
+          })),
+        });
+
         return {
           title,
           description,
@@ -129,7 +152,8 @@ export async function getMetaForPath(path: string): Promise<SEOMeta> {
           ogType: "website",
           twitterTitle: title,
           twitterDescription: description,
-          twitterImage: imageUrl
+          twitterImage: imageUrl,
+          structuredData,
         };
       }
     } catch (e) {
@@ -241,12 +265,41 @@ export async function getMetaForPath(path: string): Promise<SEOMeta> {
     };
   }
 
+  // Homepage — WebSite + SearchAction schema for sitelinks search box
+  if (cleanPath === '/') {
+    const title = `${SITE_NAME} - Security & Automation Products South Africa`;
+    const structuredData = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": SITE_NAME,
+      "url": BASE_URL,
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": `${BASE_URL}/collections/all?search={search_term_string}`
+        },
+        "query-input": "required name=search_term_string"
+      }
+    });
+    return {
+      title,
+      description: DEFAULT_DESCRIPTION,
+      canonical: BASE_URL,
+      ogTitle: title,
+      ogDescription: DEFAULT_DESCRIPTION,
+      ogUrl: BASE_URL,
+      ogImage: DEFAULT_IMAGE,
+      ogType: "website",
+      twitterTitle: title,
+      twitterDescription: DEFAULT_DESCRIPTION,
+      twitterImage: DEFAULT_IMAGE,
+      structuredData,
+    };
+  }
+
   // Static pages
   const staticPages: Record<string, { title: string; description: string }> = {
-    '/': {
-      title: `${SITE_NAME} - Security & Automation Products South Africa`,
-      description: DEFAULT_DESCRIPTION
-    },
     '/contact': {
       title: `Contact Us | ${SITE_NAME}`,
       description: "Get in touch with Alectra Solutions for gate motors, electric fencing, CCTV systems, and security products. Based in Pretoria, delivering nationwide."

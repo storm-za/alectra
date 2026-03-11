@@ -93,22 +93,33 @@ function buildProductHtml(product: Product): string {
 
 function buildProductJsonLd(product: Product, reviewData?: { average: number; count: number }): string {
   const imageUrl = getImageUrl(product.imageUrl);
+  const additionalImages = (product.images || []).slice(0, 9).map((img: string) => getImageUrl(img));
+  const allImages = [imageUrl, ...additionalImages.filter((img: string) => img !== imageUrl)];
+  const priceValidUntil = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+
   const data: any = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
     description: stripHtml(product.description).substring(0, 500),
-    image: imageUrl,
+    image: allImages.length === 1 ? allImages[0] : allImages,
     sku: product.sku || product.id,
+    mpn: product.sku || product.id,
     brand: { "@type": "Brand", name: product.brand || "Alectra Solutions" },
     url: `${BASE_URL}/products/${product.slug}`,
     offers: {
       "@type": "Offer",
-      price: product.price,
+      price: parseFloat(product.price).toFixed(2),
       priceCurrency: "ZAR",
+      priceValidUntil,
+      itemCondition: "https://schema.org/NewCondition",
       availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      seller: { "@type": "Organization", name: "Alectra Solutions" },
       url: `${BASE_URL}/products/${product.slug}`,
+      seller: {
+        "@type": "Organization",
+        name: "Alectra Solutions",
+        url: BASE_URL,
+      },
     },
   };
 
