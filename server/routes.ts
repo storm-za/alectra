@@ -2102,7 +2102,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Additional recommended attributes
         feed += `      <g:mpn>${escapeXml(product.sku)}</g:mpn>\n`;
         feed += `      <g:product_type>${escapeXml(categoryName)}</g:product_type>\n`;
-        feed += `      <g:google_product_category>Hardware > Security Systems &amp; Automation</g:google_product_category>\n`;
+
+        // Map category names to Google Product Taxonomy paths
+        const googleCategoryMap: Record<string, string> = {
+          'CCTV Systems':         'Cameras & Optics > Cameras > Security Cameras',
+          'Gate Motors':          'Hardware > Security Systems & Automation',
+          'Electric Fencing':     'Hardware > Security Systems & Automation',
+          'Garage Motors':        'Hardware > Garage Door Hardware & Parts',
+          'Garage Doors & Parts': 'Hardware > Garage Door Hardware & Parts',
+          'Batteries':            'Electronics > Electronics Accessories > Power > Batteries',
+          'Remotes':              'Electronics > Remote Controls',
+          'Intercoms':            'Electronics > Communications > Intercom Systems',
+          'LP Gas':               'Hardware',
+        };
+        const googleCategory = googleCategoryMap[categoryName] || 'Hardware > Security Systems & Automation';
+        feed += `      <g:google_product_category>${escapeXml(googleCategory)}</g:google_product_category>\n`;
         
         // Additional images (up to 10 additional)
         if (product.images && product.images.length > 0) {
