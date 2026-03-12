@@ -66,44 +66,6 @@ jobs:
         run: npx vite build --outDir ../dist/public
         working-directory: client
 
-      - name: Initialize Android project
-        run: npx tauri android init
-        env:
-          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/25.2.9519653
-
-      - name: Copy launcher icons
-        run: |
-          for density in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
-            target_dir="src-tauri/gen/android/app/src/main/res/${density}"
-            mkdir -p "$target_dir"
-            cp "src-tauri/android-res/${density}/ic_launcher.png" "$target_dir/"
-            cp "src-tauri/android-res/${density}/ic_launcher_round.png" "$target_dir/"
-            cp "src-tauri/android-res/${density}/ic_launcher_foreground.png" "$target_dir/"
-          done
-
-      - name: Copy adaptive icon resources
-        run: |
-          # Create values directory for adaptive icon definition
-          mkdir -p src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26
-          cat > src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml << 'XML'
-          <?xml version="1.0" encoding="utf-8"?>
-          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-              <background android:drawable="@color/ic_launcher_background"/>
-              <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
-          </adaptive-icon>
-          XML
-          cp src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml \
-             src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
-
-          # Add the background colour resource
-          mkdir -p src-tauri/gen/android/app/src/main/res/values
-          cat >> src-tauri/gen/android/app/src/main/res/values/colors.xml << 'XML'
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <color name="ic_launcher_background">#FF9800</color>
-          </resources>
-          XML
-
       - name: Build Android AAB
         run: npx tauri android build --aab
         env:
