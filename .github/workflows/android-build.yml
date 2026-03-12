@@ -61,9 +61,6 @@ jobs:
       - name: Install Tauri CLI
         run: npm install --no-save @tauri-apps/cli@2.0.4
 
-      - name: Create dist directory (no frontend build needed — app wraps live URL)
-        run: mkdir -p dist/public
-
       - name: Remove any stale generated Android project
         run: rm -rf src-tauri/gen/android
 

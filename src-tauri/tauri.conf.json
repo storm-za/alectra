@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "identifier": "co.za.alectra.app",
   "build": {
-    "frontendDist": "../dist/public",
+    "frontendDist": "https://alectra.co.za",
     "devUrl": "https://alectra.co.za"
   },
   "app": {
@@ -27,6 +27,9 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "android": {
+      "minSdkVersion": 24
+    }
   }
 }
