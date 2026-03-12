@@ -164,9 +164,20 @@ jobs:
           XML
           cp src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml \
              src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
-          mkdir -p src-tauri/gen/android/app/src/main/res/values
-          printf '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#FF9800</color>\n</resources>\n' \
-            > src-tauri/gen/android/app/src/main/res/values/ic_launcher_background.xml
+          # Patch the color into colors.xml which tauri android init already creates.
+          # Do NOT create a separate ic_launcher_background.xml — that causes a duplicate
+          # resource conflict with colors.xml at the mergeUniversalReleaseResources step.
+          COLORS="src-tauri/gen/android/app/src/main/res/values/colors.xml"
+          if [ -f "$COLORS" ]; then
+            sed -i 's|<color name="ic_launcher_background">[^<]*</color>|<color name="ic_launcher_background">#FF9800</color>|' "$COLORS"
+            echo "Patched ic_launcher_background color in colors.xml"
+            cat "$COLORS"
+          else
+            mkdir -p src-tauri/gen/android/app/src/main/res/values
+            printf '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#FF9800</color>\n</resources>\n' \
+              > "$COLORS"
+            echo "Created colors.xml (was missing)"
+          fi
 
       - name: Patch AndroidManifest (allowBackup=false)
         run: |
