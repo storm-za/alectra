@@ -210,7 +210,7 @@ jobs:
       - name: Build Android AAB
         id: build_aab
         continue-on-error: true
-        run: npx tauri android build --aab
+        run: npx tauri android build --aab 2>&1 | tee /tmp/tauri-build.log; exit ${PIPESTATUS[0]}
         env:
           NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/25.2.9519653
 
@@ -218,20 +218,19 @@ jobs:
         if: always()
         run: |
           echo "=== Build outcome: ${{ steps.build_aab.outcome }} ==="
+          LOG=/tmp/tauri-build.log
+          if [ -f "$LOG" ]; then
+            echo ""; echo "=== Kotlin/Java compiler errors (lines starting with e: or error:) ==="
+            grep -n "^e:\|^error:\|error:" "$LOG" | head -80 || echo "(no e:/error: lines found)"
+            echo ""; echo "=== Last 150 lines of build log ==="
+            tail -150 "$LOG"
+            echo ""; echo "=== Full build log uploaded as artifact ==="
+          fi
+          # Problems report
           REPORT="src-tauri/gen/android/build/reports/problems/problems-report.html"
           if [ -f "$REPORT" ]; then
-            echo ""; echo "=== Problems report (HTML stripped) ==="
-            sed 's/<[^>]*>//g' "$REPORT" | grep -v '^[[:space:]]*$' | head -200
-          fi
-          # Print any Kotlin compilation error files
-          find src-tauri/gen/android -name "*.txt" -path "*/compile*" 2>/dev/null | while read f; do
-            echo ""; echo "--- $f ---"; cat "$f"
-          done
-          # Print last 300 lines of gradle daemon log (contains real Kotlin errors)
-          DAEMON_LOG=$(find "$HOME/.gradle/daemon" -name "*.log" 2>/dev/null | sort -t/ -k1 | tail -1)
-          if [ -n "$DAEMON_LOG" ]; then
-            echo ""; echo "=== Gradle daemon log (last 300 lines) ==="
-            tail -300 "$DAEMON_LOG"
+            echo ""; echo "=== Problems report ==="
+            sed 's/<[^>]*>//g' "$REPORT" | grep -v '^[[:space:]]*$' | head -100
           fi
 
       - name: Upload build diagnostics
@@ -240,6 +239,7 @@ jobs:
         with:
           name: android-build-diagnostics
           path: |
+            /tmp/tauri-build.log
             src-tauri/gen/android/build/reports/
             src-tauri/gen/android/app/build/reports/
           retention-days: 3
@@ -248,7 +248,7 @@ jobs:
       - name: Fail if build failed
         if: steps.build_aab.outcome == 'failure'
         run: |
-          echo "Build failed. Check the 'Collect build diagnostics' step and the uploaded artifact for the real Kotlin compiler error."
+          echo "Build failed — see 'Collect build diagnostics' above or download the artifact for the full log."
           exit 1
 
       - name: Find AAB file
