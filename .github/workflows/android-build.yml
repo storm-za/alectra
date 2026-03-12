@@ -56,8 +56,8 @@ jobs:
       - name: Install Tauri CLI
         run: npm install --no-save @tauri-apps/cli@latest
 
-      - name: Build frontend
-        run: npx vite build
+      - name: Create dist directory
+        run: mkdir -p dist/public
 
       - name: Build Android AAB
         run: npx tauri android build --aab

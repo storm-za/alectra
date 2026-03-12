@@ -5,10 +5,15 @@
   "identifier": "co.za.alectra.app",
   "build": {
     "frontendDist": "../dist/public",
-    "devUrl": "http://localhost:5000"
+    "devUrl": "https://alectra.co.za"
   },
   "app": {
-    "windows": [],
+    "windows": [
+      {
+        "title": "Alectra Solutions",
+        "url": "https://alectra.co.za"
+      }
+    ],
     "security": {
       "csp": null
     }
