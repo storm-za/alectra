@@ -1,0 +1,87 @@
+How the Android AAB Build Works
+The Core Idea
+The app is not a full native Android app. It's a Tauri v2 WebView wrapper — Tauri generates a native Android shell that just opens your live website URL inside a full-screen browser. All the real app logic stays on your web server.
+
+1. tauri.conf.json — The Key Config
+{
+  "build": {
+    "frontendDist": "https://yoursite.com/path",
+    "devUrl":       "https://yoursite.com/path"
+  },
+  "bundle": {
+    "android": { "minSdkVersion": 24 }
+  }
+}
+frontendDist and devUrl point to your live deployed website, not a local build. This is what makes it simple — there's no frontend bundling involved, Tauri just wraps the URL.
+minSdkVersion: 24 = Android 7.0+, covers almost all modern devices.
+2. The GitHub Actions Workflow — Android Job
+The workflow triggers on any v* tag push (e.g. git tag v1.0.0 && git push --tags).
+
+The Android job does these steps in order:
+
+A. Install the environment
+- Java 17 (temurin)
+- Android SDK (android-actions/setup-android@v3)
+- NDK 27.0.12077973 + build-tools 34 + platforms android-34
+- Rust with 4 Android targets: aarch64, armv7, x86_64, i686
+- Tauri CLI via npm
+- cargo-ndk
+B. Generate the Android project
+rm -rf src-tauri/gen/android   # wipe any old generated project
+npx tauri android init          # generates the native Android Gradle project
+Critical: You must delete the old gen/android folder first, otherwise init fails or uses stale config.
+
+C. Inject custom icons ← This was the tricky bug we fixed
+for density in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
+  cp src-tauri/icons/android/mipmap-${density}/ic_launcher.png \
+     src-tauri/gen/android/app/src/main/res/mipmap-${density}/ic_launcher.png
+  # same for ic_launcher_round.png and ic_launcher_foreground.png
+done
+Why this is needed: tauri android init overwrites your custom icons with Tauri defaults every single time. You must re-inject your icons after init but before the build.
+
+Your icons live in src-tauri/icons/android/mipmap-{mdpi,hdpi,xhdpi,xxhdpi,xxxhdpi}/ — three PNGs per density folder.
+
+D. Build the AAB
+npx tauri android build
+This produces an unsigned .aab somewhere inside src-tauri/gen/android/app/build/outputs/bundle/.
+
+E. Sign the AAB with jarsigner
+echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > release.jks
+jarsigner \
+  -sigalg SHA256withRSA \
+  -digestalg SHA-256 \
+  -keystore release.jks \
+  -storepass "$ANDROID_KEYSTORE_PASSWORD" \
+  -keypass  "$ANDROID_KEY_PASSWORD" \
+  "$AAB" "$ANDROID_KEY_ALIAS"
+The keystore was created once with keytool, then base64-encoded and stored as a GitHub secret (ANDROID_KEYSTORE_BASE64). The same keystore must be used for every future update — Google Play ties your app identity to it permanently.
+
+F. Upload to GitHub Release
+gh release upload "$TAG" "StormPOS_${VERSION}.aab" --clobber
+The AAB is attached to the GitHub Release for that tag. You then download it and manually upload to Play Console.
+
+3. GitHub Secrets Required
+Secret	What it is
+ANDROID_KEYSTORE_BASE64	Your .jks file, base64 encoded (base64 release.jks)
+ANDROID_KEY_ALIAS	The alias you chose when creating the keystore
+ANDROID_KEYSTORE_PASSWORD	Store password
+ANDROID_KEY_PASSWORD	Key password (often same as store password)
+GITHUB_TOKEN	Auto-provided by GitHub Actions — no setup needed
+4. The src-tauri/capabilities/ Files
+Two capability files are needed:
+
+default.json (desktop/Windows):
+
+{ "identifier": "default", "platforms": ["windows"] }
+mobile.json (Android):
+
+{ "identifier": "mobile", "platforms": ["android"] }
+Without a mobile.json that includes the android platform, the Tauri CLI refuses to build for Android.
+
+Summary for Your Other Project
+Set up tauri.conf.json with your live URL as frontendDist
+Create the icon PNGs in src-tauri/icons/android/mipmap-*/
+Create src-tauri/capabilities/mobile.json
+Generate your keystore, base64-encode it, add all 4 secrets to GitHub
+Copy the Android job from .github/workflows/release.yml above
+Push a v* tag — the AAB appears on the GitHub Release page
