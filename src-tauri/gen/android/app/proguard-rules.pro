@@ -1,2 +1,0 @@
--keep class co.za.alectra.app.** { *; }
--keep class co.za.alectra.app.generated.** { *; }

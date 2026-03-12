@@ -59,6 +59,43 @@ jobs:
       - name: Create dist directory
         run: mkdir -p dist/public
 
+      - name: Initialise Android project
+        run: npx tauri android init
+        env:
+          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/25.2.9519653
+
+      - name: Copy launcher icons
+        run: |
+          for density in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+            dest="src-tauri/gen/android/app/src/main/res/${density}"
+            mkdir -p "$dest"
+            cp "src-tauri/android-res/${density}/ic_launcher.png" "$dest/"
+            cp "src-tauri/android-res/${density}/ic_launcher_round.png" "$dest/"
+            cp "src-tauri/android-res/${density}/ic_launcher_foreground.png" "$dest/"
+          done
+
+      - name: Add adaptive icon resources
+        run: |
+          mkdir -p src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26
+          cat > src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml << 'XML'
+          <?xml version="1.0" encoding="utf-8"?>
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@color/ic_launcher_background"/>
+              <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+          </adaptive-icon>
+          XML
+          cp src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml \
+             src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+          mkdir -p src-tauri/gen/android/app/src/main/res/values
+          printf '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#FF9800</color>\n</resources>\n' \
+            > src-tauri/gen/android/app/src/main/res/values/ic_launcher_background.xml
+
+      - name: Patch AndroidManifest (allowBackup=false)
+        run: |
+          MANIFEST="src-tauri/gen/android/app/src/main/AndroidManifest.xml"
+          sed -i 's/android:allowBackup="true"/android:allowBackup="false"/' "$MANIFEST"
+          sed -i 's/android:allowBackup="[^"]*"/android:allowBackup="false"/' "$MANIFEST"
+
       - name: Build Android AAB
         run: npx tauri android build --aab
         env:
