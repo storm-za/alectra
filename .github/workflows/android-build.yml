@@ -141,12 +141,11 @@ jobs:
           rm -f "$D/app/src/main/res/values/ic_launcher_background.xml"
           echo "Removed ic_launcher_background.xml (duplicate of colors.xml entry)"
 
-          # ── 10. Fix JVM target mismatch (Kotlin vs Java) ─────────────────
-          # kotlin.jvm.target.validation.mode=WARNING is sufficient — it downgrades
-          # the mismatch from a fatal error to a warning so the build continues.
-          # Do NOT inject compileOptions{} — it breaks the Kotlin DSL and causes
-          # a source compilation error on the next task.
-          printf '\nkotlin.jvm.target.validation.mode=WARNING\n' >> "$D/gradle.properties"
+          # ── 10. Fix JVM target mismatch + enable INFO logging ────────────
+          # validation.mode=WARNING: downgrades jvmTarget mismatch to non-fatal.
+          # logging.level=info: makes Gradle include Kotlin worker output (the actual
+          # compiler error lines) in the main log instead of just "See log for more details".
+          printf '\nkotlin.jvm.target.validation.mode=WARNING\norg.gradle.logging.level=info\n' >> "$D/gradle.properties"
 
           # ── 11. Print all generated Kotlin/Java source files ─────────────
           echo ""; echo "=== Generated source files ==="
@@ -220,8 +219,8 @@ jobs:
           echo "=== Build outcome: ${{ steps.build_aab.outcome }} ==="
           LOG=/tmp/tauri-build.log
           if [ -f "$LOG" ]; then
-            echo ""; echo "=== Kotlin/Java compiler errors (lines starting with e: or error:) ==="
-            grep -n "^e:\|^error:\|error:" "$LOG" | head -80 || echo "(no e:/error: lines found)"
+            echo ""; echo "=== Kotlin/Java compiler errors ==="
+            grep -n "^e:\| e: \|^error:\|Unresolved reference\|error: Unresolved\|None of the following\|Overload resolution ambiguity\|No value passed\|Type mismatch" "$LOG" | head -100 || echo "(no Kotlin error lines found — check full artifact log)"
             echo ""; echo "=== Last 150 lines of build log ==="
             tail -150 "$LOG"
             echo ""; echo "=== Full build log uploaded as artifact ==="
