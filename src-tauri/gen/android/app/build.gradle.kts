@@ -20,8 +20,8 @@ android {
         applicationId = "co.za.alectra.app"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
+        versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0.0")
     }
     buildTypes {
         getByName("debug") {
