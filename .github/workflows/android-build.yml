@@ -56,6 +56,9 @@ jobs:
       - name: Install Tauri CLI
         run: npm install --no-save @tauri-apps/cli@latest
 
+      - name: Add tauri script for Gradle integration
+        run: npm pkg set scripts.tauri="tauri"
+
       - name: Create dist directory
         run: mkdir -p dist/public
 
