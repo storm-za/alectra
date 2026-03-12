@@ -5,13 +5,13 @@ on:
     branches: [main]
   workflow_dispatch:
 
-env:
-  TAURI_SIGNING_PRIVATE_KEY: ''
-
 jobs:
   build-android:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+
+    env:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
     steps:
       - name: Checkout repository
@@ -72,14 +72,21 @@ jobs:
           echo "aab_path=$AAB_PATH" >> $GITHUB_OUTPUT
           echo "Found AAB at: $AAB_PATH"
 
+      - name: Check keystore availability
+        id: keystore_check
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "available=true" >> $GITHUB_OUTPUT
+          else
+            echo "available=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Decode keystore
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        if: steps.keystore_check.outputs.available == 'true'
         run: echo "$KEYSTORE_BASE64" | base64 -d > /tmp/release.keystore
 
       - name: Sign AAB
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        if: steps.keystore_check.outputs.available == 'true'
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -94,15 +101,15 @@ jobs:
             "$KEY_ALIAS"
 
       - name: Upload signed AAB
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        if: steps.keystore_check.outputs.available == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: alectra-android-aab
           path: /tmp/alectra-signed.aab
           retention-days: 30
 
-      - name: Upload unsigned AAB (when no keystore configured)
-        if: ${{ secrets.KEYSTORE_BASE64 == '' }}
+      - name: Upload unsigned AAB
+        if: steps.keystore_check.outputs.available == 'false'
         uses: actions/upload-artifact@v4
         with:
           name: alectra-android-aab-unsigned
