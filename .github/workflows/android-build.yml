@@ -3,12 +3,6 @@ name: Build Android AAB
 on:
   push:
     branches: [main]
-    paths:
-      - 'src-tauri/**'
-      - 'client/**'
-      - 'shared/**'
-      - 'package.json'
-      - '.github/workflows/android-build.yml'
   workflow_dispatch:
 
 env:
