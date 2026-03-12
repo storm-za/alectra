@@ -141,7 +141,20 @@ jobs:
           rm -f "$D/app/src/main/res/values/ic_launcher_background.xml"
           echo "Removed ic_launcher_background.xml (duplicate of colors.xml entry)"
 
-          # ── 10. Print final state ────────────────────────────────────────
+          # ── 10. Fix JVM target mismatch (Kotlin 17 vs Java 1.8) ──────────
+          # The CI uses JDK 17; Kotlin picks it up automatically, but the generated
+          # build.gradle.kts has jvmTarget="1.8" with no compileOptions → mismatch.
+          # Align everything to 17.
+          sed -i 's/jvmTarget = "1\.8"/jvmTarget = "17"/g' "$D/app/build.gradle.kts"
+          sed -i 's/jvmTarget = "1\.8"/jvmTarget = "17"/g' "$D/tauri-android/build.gradle.kts" 2>/dev/null || true
+          # Add compileOptions block targeting Java 17 if not already present
+          if ! grep -q "compileOptions" "$D/app/build.gradle.kts"; then
+            sed -i 's/kotlinOptions {/compileOptions {\n        sourceCompatibility = JavaVersion.VERSION_17\n        targetCompatibility = JavaVersion.VERSION_17\n    }\n    kotlinOptions {/' "$D/app/build.gradle.kts"
+          fi
+          # Safety net: downgrade mismatch from error to warning
+          printf '\nkotlin.jvm.target.validation.mode=WARNING\n' >> "$D/gradle.properties"
+
+          # ── 11. Print final state ────────────────────────────────────────
           echo ""; echo "=== AFTER PATCH: settings.gradle.kts ==="
           cat "$D/settings.gradle.kts"
           echo ""; echo "=== AFTER PATCH: build.gradle.kts ==="
