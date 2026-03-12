@@ -57,8 +57,7 @@ jobs:
         run: npm install --no-save @tauri-apps/cli@latest
 
       - name: Build frontend
-        run: npx vite build --outDir ../dist/public
-        working-directory: client
+        run: npx vite build
 
       - name: Build Android AAB
         run: npx tauri android build --aab
