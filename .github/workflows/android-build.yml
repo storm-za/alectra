@@ -134,7 +134,14 @@ jobs:
           sed -i '/^\s*targets\s*=/d' "$APP"
           sed -i '/^\s*arches\s*=/d'  "$APP"
 
-          # ── 9. Print final state ─────────────────────────────────────────
+          # ── 9. Remove ic_launcher_background.xml that tauri android init generates ─
+          # tauri android init creates BOTH ic_launcher_background.xml AND defines the
+          # same color in colors.xml — Android's resource merger fails on the duplicate.
+          # Delete the standalone file; colors.xml is the canonical location.
+          rm -f "$D/app/src/main/res/values/ic_launcher_background.xml"
+          echo "Removed ic_launcher_background.xml (duplicate of colors.xml entry)"
+
+          # ── 10. Print final state ────────────────────────────────────────
           echo ""; echo "=== AFTER PATCH: settings.gradle.kts ==="
           cat "$D/settings.gradle.kts"
           echo ""; echo "=== AFTER PATCH: build.gradle.kts ==="
