@@ -141,20 +141,22 @@ jobs:
           rm -f "$D/app/src/main/res/values/ic_launcher_background.xml"
           echo "Removed ic_launcher_background.xml (duplicate of colors.xml entry)"
 
-          # ── 10. Fix JVM target mismatch (Kotlin 17 vs Java 1.8) ──────────
-          # The CI uses JDK 17; Kotlin picks it up automatically, but the generated
-          # build.gradle.kts has jvmTarget="1.8" with no compileOptions → mismatch.
-          # Align everything to 17.
-          sed -i 's/jvmTarget = "1\.8"/jvmTarget = "17"/g' "$D/app/build.gradle.kts"
-          sed -i 's/jvmTarget = "1\.8"/jvmTarget = "17"/g' "$D/tauri-android/build.gradle.kts" 2>/dev/null || true
-          # Add compileOptions block targeting Java 17 if not already present
-          if ! grep -q "compileOptions" "$D/app/build.gradle.kts"; then
-            sed -i 's/kotlinOptions {/compileOptions {\n        sourceCompatibility = JavaVersion.VERSION_17\n        targetCompatibility = JavaVersion.VERSION_17\n    }\n    kotlinOptions {/' "$D/app/build.gradle.kts"
-          fi
-          # Safety net: downgrade mismatch from error to warning
+          # ── 10. Fix JVM target mismatch (Kotlin vs Java) ─────────────────
+          # kotlin.jvm.target.validation.mode=WARNING is sufficient — it downgrades
+          # the mismatch from a fatal error to a warning so the build continues.
+          # Do NOT inject compileOptions{} — it breaks the Kotlin DSL and causes
+          # a source compilation error on the next task.
           printf '\nkotlin.jvm.target.validation.mode=WARNING\n' >> "$D/gradle.properties"
 
-          # ── 11. Print final state ────────────────────────────────────────
+          # ── 11. Print all generated Kotlin/Java source files ─────────────
+          echo ""; echo "=== Generated source files ==="
+          find "$D" -name "*.kt" -o -name "*.java" | sort | while read f; do
+            echo ""; echo "--- $f ---"; cat "$f"
+          done
+          echo ""; echo "=== app/build.gradle.kts (final) ==="
+          cat "$D/app/build.gradle.kts"
+
+          # ── 12. Print final state ────────────────────────────────────────
           echo ""; echo "=== AFTER PATCH: settings.gradle.kts ==="
           cat "$D/settings.gradle.kts"
           echo ""; echo "=== AFTER PATCH: build.gradle.kts ==="
@@ -206,9 +208,48 @@ jobs:
           sed -i 's/android:allowBackup="[^"]*"/android:allowBackup="false"/' "$MANIFEST"
 
       - name: Build Android AAB
+        id: build_aab
+        continue-on-error: true
         run: npx tauri android build --aab
         env:
           NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/25.2.9519653
+
+      - name: Collect build diagnostics
+        if: always()
+        run: |
+          echo "=== Build outcome: ${{ steps.build_aab.outcome }} ==="
+          REPORT="src-tauri/gen/android/build/reports/problems/problems-report.html"
+          if [ -f "$REPORT" ]; then
+            echo ""; echo "=== Problems report (HTML stripped) ==="
+            sed 's/<[^>]*>//g' "$REPORT" | grep -v '^[[:space:]]*$' | head -200
+          fi
+          # Print any Kotlin compilation error files
+          find src-tauri/gen/android -name "*.txt" -path "*/compile*" 2>/dev/null | while read f; do
+            echo ""; echo "--- $f ---"; cat "$f"
+          done
+          # Print last 300 lines of gradle daemon log (contains real Kotlin errors)
+          DAEMON_LOG=$(find "$HOME/.gradle/daemon" -name "*.log" 2>/dev/null | sort -t/ -k1 | tail -1)
+          if [ -n "$DAEMON_LOG" ]; then
+            echo ""; echo "=== Gradle daemon log (last 300 lines) ==="
+            tail -300 "$DAEMON_LOG"
+          fi
+
+      - name: Upload build diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-build-diagnostics
+          path: |
+            src-tauri/gen/android/build/reports/
+            src-tauri/gen/android/app/build/reports/
+          retention-days: 3
+          if-no-files-found: ignore
+
+      - name: Fail if build failed
+        if: steps.build_aab.outcome == 'failure'
+        run: |
+          echo "Build failed. Check the 'Collect build diagnostics' step and the uploaded artifact for the real Kotlin compiler error."
+          exit 1
 
       - name: Find AAB file
         id: find_aab
