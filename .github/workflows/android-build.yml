@@ -67,19 +67,85 @@ jobs:
         env:
           NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/25.2.9519653
 
-      - name: Patch Gradle wrapper to required version
+      - name: Patch generated Android project
         run: |
-          sed -i 's|gradle-[0-9]*\.[0-9]*\.*[0-9]*-bin.zip|gradle-8.13-bin.zip|g' \
-            src-tauri/gen/android/gradle/wrapper/gradle-wrapper.properties
-          cat src-tauri/gen/android/gradle/wrapper/gradle-wrapper.properties
+          D="src-tauri/gen/android"
 
-      - name: Patch build.gradle.kts (remove rust extension properties incompatible with Kotlin DSL)
-        run: |
-          GRADLE_FILE="src-tauri/gen/android/app/build.gradle.kts"
-          sed -i '/^\s*targets\s*=/d' "$GRADLE_FILE"
-          sed -i '/^\s*arches\s*=/d' "$GRADLE_FILE"
-          echo "=== rust {} block after patch ==="
-          grep -A5 "rust {" "$GRADLE_FILE" || true
+          # ── 1. Dump generated files for diagnostics ──────────────────────
+          for f in \
+            settings.gradle.kts \
+            build.gradle.kts \
+            app/build.gradle.kts \
+            buildSrc/build.gradle.kts \
+            tauri-android/build.gradle.kts \
+            gradle/wrapper/gradle-wrapper.properties; do
+            echo ""; echo "=== $f ==="; cat "$D/$f" 2>/dev/null || echo "(missing)"
+          done
+
+          # ── 2. Gradle wrapper → 8.13 (required by AGP 8.5.x) ────────────
+          sed -i 's|gradle-[0-9]*\.[0-9]*\.*[0-9]*-bin.zip|gradle-8.13-bin.zip|g' \
+            "$D/gradle/wrapper/gradle-wrapper.properties"
+
+          # ── 3. Repository mode: switch FAIL_ON_PROJECT_REPOS → PREFER_PROJECT ──
+          # Detached configurations in the Tauri Gradle plugin bypass settings-level
+          # repos; PREFER_PROJECT allows project-level repos to fill the gap.
+          sed -i 's/RepositoriesMode\.FAIL_ON_PROJECT_REPOS/RepositoriesMode.PREFER_PROJECT/g' \
+            "$D/settings.gradle.kts" 2>/dev/null || true
+
+          # ── 4. Ensure settings.gradle.kts has google() + mavenCentral() ─
+          python3 << 'PYEOF'
+import re, sys
+path = 'src-tauri/gen/android/settings.gradle.kts'
+try:
+    c = open(path).read()
+    # If dependencyResolutionManagement exists but repos block is missing/empty
+    drm = 'dependencyResolutionManagement'
+    if drm in c:
+        after = c[c.index(drm):]
+        block = after[:after.index('}')+1]
+        if 'google()' not in block:
+            c = c.replace(drm + ' {', drm + ' {\n    repositories {\n        google()\n        mavenCentral()\n    }')
+    else:
+        c += '\ndependencyResolutionManagement {\n    repositories {\n        google()\n        mavenCentral()\n    }\n}\n'
+    open(path, 'w').write(c)
+    print('settings.gradle.kts patched')
+except Exception as e:
+    print('settings patch skipped:', e)
+PYEOF
+
+          # ── 5. Root build.gradle.kts → allprojects repos (covers detached configs) ──
+          ROOT="$D/build.gradle.kts"
+          if ! grep -q "allprojects" "$ROOT"; then
+            printf '\nallprojects {\n    repositories {\n        google()\n        mavenCentral()\n    }\n}\n' >> "$ROOT"
+            echo "Patched root build.gradle.kts"
+          fi
+
+          # ── 6. buildSrc needs its own repos (separate Gradle build) ──────
+          BUILDSRC="$D/buildSrc/build.gradle.kts"
+          if [ -f "$BUILDSRC" ] && ! grep -q "mavenCentral" "$BUILDSRC"; then
+            printf '\nrepositories {\n    google()\n    mavenCentral()\n    gradlePluginPortal()\n}\n' >> "$BUILDSRC"
+            echo "Patched buildSrc/build.gradle.kts"
+          fi
+
+          # ── 7. tauri-android subproject: same treatment ───────────────────
+          TAURI_ANDROID="$D/tauri-android/build.gradle.kts"
+          if [ -f "$TAURI_ANDROID" ] && ! grep -q "repositories" "$TAURI_ANDROID"; then
+            printf '\nrepositories {\n    google()\n    mavenCentral()\n}\n' >> "$TAURI_ANDROID"
+            echo "Patched tauri-android/build.gradle.kts"
+          fi
+
+          # ── 8. Remove rust{} extension props incompatible with Kotlin DSL ─
+          APP="$D/app/build.gradle.kts"
+          sed -i '/^\s*targets\s*=/d' "$APP"
+          sed -i '/^\s*arches\s*=/d'  "$APP"
+
+          # ── 9. Print final state ─────────────────────────────────────────
+          echo ""; echo "=== AFTER PATCH: settings.gradle.kts ==="
+          cat "$D/settings.gradle.kts"
+          echo ""; echo "=== AFTER PATCH: build.gradle.kts ==="
+          cat "$D/build.gradle.kts"
+          echo ""; echo "=== AFTER PATCH: buildSrc/build.gradle.kts ==="
+          cat "$D/buildSrc/build.gradle.kts" 2>/dev/null || echo "(missing)"
 
       - name: Copy launcher icons
         run: |
