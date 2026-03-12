@@ -93,25 +93,20 @@ jobs:
             "$D/settings.gradle.kts" 2>/dev/null || true
 
           # ── 4. Ensure settings.gradle.kts has google() + mavenCentral() ─
-          python3 << 'PYEOF'
-import re, sys
-path = 'src-tauri/gen/android/settings.gradle.kts'
-try:
-    c = open(path).read()
-    # If dependencyResolutionManagement exists but repos block is missing/empty
-    drm = 'dependencyResolutionManagement'
-    if drm in c:
-        after = c[c.index(drm):]
-        block = after[:after.index('}')+1]
-        if 'google()' not in block:
-            c = c.replace(drm + ' {', drm + ' {\n    repositories {\n        google()\n        mavenCentral()\n    }')
-    else:
-        c += '\ndependencyResolutionManagement {\n    repositories {\n        google()\n        mavenCentral()\n    }\n}\n'
-    open(path, 'w').write(c)
-    print('settings.gradle.kts patched')
-except Exception as e:
-    print('settings patch skipped:', e)
-PYEOF
+          SETTINGS="$D/settings.gradle.kts"
+          if [ -f "$SETTINGS" ]; then
+            if grep -q "dependencyResolutionManagement" "$SETTINGS"; then
+              if ! grep -q "google()" "$SETTINGS"; then
+                sed -i 's/dependencyResolutionManagement {/dependencyResolutionManagement {\n    repositories {\n        google()\n        mavenCentral()\n    }/' "$SETTINGS"
+                echo "Added repos to existing dependencyResolutionManagement"
+              else
+                echo "dependencyResolutionManagement already has google()"
+              fi
+            else
+              printf '\ndependencyResolutionManagement {\n    repositories {\n        google()\n        mavenCentral()\n    }\n}\n' >> "$SETTINGS"
+              echo "Added dependencyResolutionManagement block"
+            fi
+          fi
 
           # ── 5. Root build.gradle.kts → allprojects repos (covers detached configs) ──
           ROOT="$D/build.gradle.kts"
