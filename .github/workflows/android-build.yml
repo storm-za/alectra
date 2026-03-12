@@ -1,0 +1,154 @@
+name: Build Android AAB
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src-tauri/**'
+      - 'client/**'
+      - 'shared/**'
+      - 'package.json'
+      - '.github/workflows/android-build.yml'
+  workflow_dispatch:
+
+env:
+  TAURI_SIGNING_PRIVATE_KEY: ''
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android NDK
+        run: sdkmanager --install "ndk;25.2.9519653"
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            src-tauri/target
+          key: rust-android-${{ hashFiles('src-tauri/Cargo.lock') }}
+          restore-keys: rust-android-
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Install Tauri CLI
+        run: npm install --no-save @tauri-apps/cli@latest
+
+      - name: Build frontend
+        run: npx vite build --outDir ../dist/public
+        working-directory: client
+
+      - name: Initialize Android project
+        run: npx tauri android init
+        env:
+          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/25.2.9519653
+
+      - name: Copy launcher icons
+        run: |
+          for density in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+            target_dir="src-tauri/gen/android/app/src/main/res/${density}"
+            mkdir -p "$target_dir"
+            cp "src-tauri/android-res/${density}/ic_launcher.png" "$target_dir/"
+            cp "src-tauri/android-res/${density}/ic_launcher_round.png" "$target_dir/"
+            cp "src-tauri/android-res/${density}/ic_launcher_foreground.png" "$target_dir/"
+          done
+
+      - name: Copy adaptive icon resources
+        run: |
+          # Create values directory for adaptive icon definition
+          mkdir -p src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26
+          cat > src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml << 'XML'
+          <?xml version="1.0" encoding="utf-8"?>
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@color/ic_launcher_background"/>
+              <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+          </adaptive-icon>
+          XML
+          cp src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml \
+             src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+
+          # Add the background colour resource
+          mkdir -p src-tauri/gen/android/app/src/main/res/values
+          cat >> src-tauri/gen/android/app/src/main/res/values/colors.xml << 'XML'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <color name="ic_launcher_background">#FF9800</color>
+          </resources>
+          XML
+
+      - name: Build Android AAB
+        run: npx tauri android build --aab
+        env:
+          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/25.2.9519653
+
+      - name: Find AAB file
+        id: find_aab
+        run: |
+          AAB_PATH=$(find src-tauri/gen/android -name "*.aab" -type f | head -1)
+          echo "aab_path=$AAB_PATH" >> $GITHUB_OUTPUT
+          echo "Found AAB at: $AAB_PATH"
+
+      - name: Decode keystore
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: echo "$KEYSTORE_BASE64" | base64 -d > /tmp/release.keystore
+
+      - name: Sign AAB
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          jarsigner -verbose \
+            -keystore /tmp/release.keystore \
+            -storepass "$KEYSTORE_PASSWORD" \
+            -keypass "$KEY_PASSWORD" \
+            -signedjar /tmp/alectra-signed.aab \
+            "${{ steps.find_aab.outputs.aab_path }}" \
+            "$KEY_ALIAS"
+
+      - name: Upload signed AAB
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: alectra-android-aab
+          path: /tmp/alectra-signed.aab
+          retention-days: 30
+
+      - name: Upload unsigned AAB (when no keystore configured)
+        if: ${{ secrets.KEYSTORE_BASE64 == '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: alectra-android-aab-unsigned
+          path: ${{ steps.find_aab.outputs.aab_path }}
+          retention-days: 30

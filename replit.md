@@ -109,3 +109,17 @@ Preferred communication style: Simple, everyday language.
 
 ### Third-Party Brands
 - Centurion, ET Nice, Digidoor, Gemini, DTS, Hansa, Nemtek, IDS, Sentry, Hilook, Hikvision.
+
+### Android App (Tauri v2)
+- **Architecture**: WebView wrapper loading `https://alectra.co.za` via Tauri v2.
+- **Bundle ID**: `co.za.alectra.app`
+- **Build**: GitHub Actions workflow (`.github/workflows/android-build.yml`) produces a signed AAB on push to `main`.
+- **Icons**: Generated from `client/public/favicon.png` into `src-tauri/icons/` (desktop) and `src-tauri/android-res/` (Android mipmap densities + adaptive foreground).
+- **Config**: `src-tauri/tauri.conf.json` for Tauri settings, `src-tauri/Cargo.toml` for Rust dependencies.
+- **Signing**: Requires 4 GitHub Secrets: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
+- **Documentation**: `PLAY_STORE.md` covers keystore generation, secret setup, and Play Store submission.
+
+### PWA Support
+- **Manifest**: `client/public/manifest.json` with 192px and 512px icons.
+- **Theme**: `#FF9800` (orange), standalone display mode.
+- **Apple**: `apple-touch-icon` linked in `client/index.html`.
