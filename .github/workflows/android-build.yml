@@ -144,11 +144,7 @@ jobs:
           echo "Removed ic_launcher_background.xml (duplicate of colors.xml entry)"
 
           # ── 10. gradle.properties tweaks ─────────────────────────────────
-          # validation.mode=WARNING: JVM target mismatch → non-fatal.
-          # execution.strategy=in-process: Kotlin compiles in the Gradle process,
-          #   so compiler errors appear directly in the build log (not a separate daemon).
-          # logging.level=info: includes task output in the log.
-          printf '\nkotlin.jvm.target.validation.mode=WARNING\nkotlin.compiler.execution.strategy=in-process\norg.gradle.logging.level=info\n' >> "$D/gradle.properties"
+          printf '\nkotlin.jvm.target.validation.mode=WARNING\nkotlin.compiler.execution.strategy=in-process\norg.gradle.logging.level=info\norg.gradle.logging.stacktrace=all\n' >> "$D/gradle.properties"
 
           # ── 11. Print all generated Kotlin/Java source files ─────────────
           echo ""; echo "=== Generated source files ==="
@@ -222,11 +218,15 @@ jobs:
           echo "=== Build outcome: ${{ steps.build_aab.outcome }} ==="
           LOG=/tmp/tauri-build.log
           if [ -f "$LOG" ]; then
-            echo ""; echo "=== Kotlin/Java compiler errors ==="
-            grep -n "^e:\| e: \|^error:\|Unresolved reference\|error: Unresolved\|None of the following\|Overload resolution ambiguity\|No value passed\|Type mismatch" "$LOG" | head -100 || echo "(no Kotlin error lines found — check full artifact log)"
-            echo ""; echo "=== Last 150 lines of build log ==="
-            tail -150 "$LOG"
-            echo ""; echo "=== Full build log uploaded as artifact ==="
+            echo ""; echo "=== Last 80 lines of build log (context) ==="
+            tail -80 "$LOG"
+            echo ""
+            echo "════════════════════════════════════════════"
+            echo "=== KOTLIN / COMPILER ERROR LINES (grep) ==="
+            echo "════════════════════════════════════════════"
+            grep -n "^e:\| e: \|error:\|Unresolved\|None of the following\|Type mismatch\|No value passed\|Exception\|at org.jetbrains" "$LOG" | head -200 \
+              || echo "(no matching error lines — errors may be in daemon log or artifact)"
+            echo "=== Full build log uploaded as artifact ==="
           fi
           # Problems report
           REPORT="src-tauri/gen/android/build/reports/problems/problems-report.html"
@@ -234,6 +234,23 @@ jobs:
             echo ""; echo "=== Problems report ==="
             sed 's/<[^>]*>//g' "$REPORT" | grep -v '^[[:space:]]*$' | head -100
           fi
+
+      - name: Find Kotlin daemon / worker logs
+        if: always()
+        run: |
+          echo "=== Searching for Kotlin daemon / worker error logs ==="
+          # Kotlin stores compilation errors in daemon session logs
+          find ~/.gradle/kotlin -name "*.log" -newer /tmp/tauri-build.log 2>/dev/null | head -5 | while read f; do
+            echo "--- $f ---"; grep -i "error\|exception\|^e:" "$f" | head -50
+          done || echo "(no Kotlin daemon logs found)"
+          # Also look in the build worker output dir
+          find /home/runner -name "*.log" -newer /tmp/tauri-build.log 2>/dev/null | grep -i "kotlin\|worker" | head -5 | while read f; do
+            echo "--- $f ---"; tail -30 "$f"
+          done || true
+          # gradle build scan / report files
+          find src-tauri/gen/android -name "*.log" 2>/dev/null | head -10 | while read f; do
+            echo "--- $f ---"; cat "$f"
+          done || true
 
       - name: Upload build diagnostics
         if: always()
@@ -244,6 +261,7 @@ jobs:
             /tmp/tauri-build.log
             src-tauri/gen/android/build/reports/
             src-tauri/gen/android/app/build/reports/
+            /home/runner/.gradle/kotlin/
           retention-days: 3
           if-no-files-found: ignore
 
