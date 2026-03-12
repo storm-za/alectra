@@ -54,7 +54,7 @@ jobs:
         run: npm ci
 
       - name: Install Tauri CLI
-        run: npm install --no-save @tauri-apps/cli@latest
+        run: npm install --no-save @tauri-apps/cli@2.0.4
 
       - name: Add tauri script for Gradle integration
         run: npm pkg set scripts.tauri="tauri"
@@ -72,6 +72,14 @@ jobs:
           sed -i 's|gradle-[0-9]*\.[0-9]*\.*[0-9]*-bin.zip|gradle-8.13-bin.zip|g' \
             src-tauri/gen/android/gradle/wrapper/gradle-wrapper.properties
           cat src-tauri/gen/android/gradle/wrapper/gradle-wrapper.properties
+
+      - name: Patch build.gradle.kts (remove rust extension properties incompatible with Kotlin DSL)
+        run: |
+          GRADLE_FILE="src-tauri/gen/android/app/build.gradle.kts"
+          sed -i '/^\s*targets\s*=/d' "$GRADLE_FILE"
+          sed -i '/^\s*arches\s*=/d' "$GRADLE_FILE"
+          echo "=== rust {} block after patch ==="
+          grep -A5 "rust {" "$GRADLE_FILE" || true
 
       - name: Copy launcher icons
         run: |
