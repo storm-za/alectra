@@ -148,15 +148,27 @@ jobs:
           echo "aab_path=$AAB" >> $GITHUB_OUTPUT
           echo "AAB: $AAB"
 
+      - name: Check for keystore secret
+        id: check_keystore
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "has_keystore=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_keystore=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_BASE64 }}
+
       - name: Sign AAB
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        if: steps.check_keystore.outputs.has_keystore == 'true'
         id: sign_aab
         env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > /tmp/release.jks
+          echo "$KEYSTORE_B64" | base64 -d > /tmp/release.jks
           VERSION=$(node -p "require('./package.json').version")
           jarsigner \
             -sigalg SHA256withRSA \
@@ -170,7 +182,7 @@ jobs:
           echo "signed_aab=/tmp/alectra-v${VERSION}-signed.aab" >> $GITHUB_OUTPUT
 
       - name: Upload signed AAB
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        if: steps.check_keystore.outputs.has_keystore == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: alectra-android-aab-signed
@@ -178,7 +190,7 @@ jobs:
           retention-days: 30
 
       - name: Upload unsigned AAB (no keystore yet)
-        if: ${{ secrets.KEYSTORE_BASE64 == '' }}
+        if: steps.check_keystore.outputs.has_keystore == 'false'
         uses: actions/upload-artifact@v4
         with:
           name: alectra-android-aab-unsigned
