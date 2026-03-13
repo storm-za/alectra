@@ -9,6 +9,8 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -185,3 +187,22 @@ jobs:
           name: alectra-android-aab-unsigned
           path: ${{ steps.find_aab.outputs.aab_path }}
           retention-days: 30
+
+      - name: Get app version
+        id: version
+        run: |
+          VER=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          echo "value=$VER" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.value }}-build.${{ github.run_number }}
+          name: Alectra v${{ steps.version.outputs.value }} (build ${{ github.run_number }})
+          draft: false
+          prerelease: ${{ steps.check_keystore.outputs.has_keystore == 'false' }}
+          files: |
+            ${{ steps.check_keystore.outputs.has_keystore == 'true' && steps.sign_aab.outputs.signed_aab || steps.find_aab.outputs.aab_path }}
+          body: |
+            Android AAB — ${{ steps.check_keystore.outputs.has_keystore == 'true' && 'signed release build' || 'unsigned (add KEYSTORE_BASE64 secret to sign)' }}
+            Built from commit ${{ github.sha }}
