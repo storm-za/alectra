@@ -70,6 +70,7 @@
     "google-auth-library": "^10.5.0",
     "input-otp": "^1.4.2",
     "leaflet": "^1.9.4",
+    "libsodium-wrappers": "^0.8.2",
     "lucide-react": "^0.453.0",
     "marked": "^17.0.1",
     "memorystore": "^1.6.7",
