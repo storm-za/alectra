@@ -43,10 +43,10 @@ Add these 4 secrets:
 
 | Secret Name | Value |
 |-------------|-------|
-| `ANDROID_KEYSTORE_BASE64` | Base64-encoded keystore file (see below) |
-| `ANDROID_KEYSTORE_PASSWORD` | The `storepass` you used above |
-| `ANDROID_KEY_ALIAS` | `alectra` (or whatever alias you chose) |
-| `ANDROID_KEY_PASSWORD` | The `keypass` you used above |
+| `KEYSTORE_BASE64` | Base64-encoded keystore file (see below) |
+| `KEYSTORE_PASSWORD` | The `storepass` you used above |
+| `KEY_ALIAS` | The alias you chose |
+| `KEY_PASSWORD` | The `keypass` you used above |
 
 To encode the keystore as base64:
 
