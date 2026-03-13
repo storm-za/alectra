@@ -1,4 +1,7 @@
 {
   "identifier": "mobile",
-  "platforms": ["android"]
+  "description": "Permissions for Android mobile build",
+  "platforms": ["android"],
+  "windows": ["main"],
+  "permissions": []
 }
