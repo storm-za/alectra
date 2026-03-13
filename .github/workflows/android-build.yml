@@ -69,27 +69,16 @@ jobs:
 
       - name: Inject adaptive icon XML + brand colour
         run: |
-          mkdir -p src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26
-          cat > src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml << 'XML'
-          <?xml version="1.0" encoding="utf-8"?>
-          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-              <background android:drawable="@color/ic_launcher_background"/>
-              <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
-          </adaptive-icon>
-          XML
-          cp src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml \
-             src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+          ANYDPI="src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26"
+          mkdir -p "$ANYDPI"
+          printf '<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n    <background android:drawable="@color/ic_launcher_background"/>\n    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>\n</adaptive-icon>\n' > "$ANYDPI/ic_launcher.xml"
+          cp "$ANYDPI/ic_launcher.xml" "$ANYDPI/ic_launcher_round.xml"
 
-          COLORS="src-tauri/gen/android/app/src/main/res/values/colors.xml"
-          if [ -f "$COLORS" ]; then
-            sed -i 's|<color name="ic_launcher_background">[^<]*</color>|<color name="ic_launcher_background">#FF9800</color>|' "$COLORS"
-            echo "Patched brand colour in colors.xml"
-          else
-            mkdir -p "$(dirname "$COLORS")"
-            printf '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#FF9800</color>\n</resources>\n' > "$COLORS"
-            echo "Created colors.xml"
-          fi
-          rm -f "src-tauri/gen/android/app/src/main/res/values/ic_launcher_background.xml"
+          VALUES="src-tauri/gen/android/app/src/main/res/values"
+          mkdir -p "$VALUES"
+          printf '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#FF9800</color>\n</resources>\n' > "$VALUES/colors.xml"
+          rm -f "$VALUES/ic_launcher_background.xml"
+          echo "Adaptive icons and colors.xml written."
 
       - name: Patch AndroidManifest (allowBackup=false)
         run: |
