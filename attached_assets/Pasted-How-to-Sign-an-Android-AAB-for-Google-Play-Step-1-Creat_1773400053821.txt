@@ -1,0 +1,62 @@
+How to Sign an Android AAB for Google Play
+Step 1 — Create the Keystore (done once, ever)
+Run this on any machine with Java installed:
+
+keytool -genkey -v \
+  -keystore release.jks \
+  -alias your-alias-name \
+  -keyalg RSA \
+  -keysize 2048 \
+  -validity 10000
+It will ask for a store password, key password, and some identity info (name, org, country). Fill them in and remember every value — you can never change this keystore once your app is on the Play Store.
+
+Step 2 — Convert the Keystore to Base64
+base64 release.jks
+# on macOS: base64 -i release.jks
+Copy the entire output string. This goes into a GitHub Secret called ANDROID_KEYSTORE_BASE64.
+
+Step 3 — Add These 4 GitHub Secrets
+Go to your GitHub repo → Settings → Secrets and variables → Actions → New repository secret:
+
+Secret name	Value
+ANDROID_KEYSTORE_BASE64	The base64 string from Step 2
+ANDROID_KEY_ALIAS	The alias you chose (e.g. your-alias-name)
+ANDROID_KEYSTORE_PASSWORD	The store password you set
+ANDROID_KEY_PASSWORD	The key password (often same as store password)
+Step 4 — The Signing Step in GitHub Actions
+After the npx tauri android build step produces the unsigned AAB, add this:
+
+- name: Sign AAB
+  env:
+    ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+    ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+    ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+    ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+  run: |
+    # Decode the keystore from base64 back into a .jks file
+    echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > release.jks
+    # Find the AAB that Tauri produced
+    AAB=$(find src-tauri/gen/android/app/build/outputs/bundle -name "*.aab" | head -1)
+    echo "Found AAB: $AAB"
+    # Sign it with jarsigner (comes with Java, already on ubuntu-latest runners)
+    jarsigner -verbose \
+      -sigalg SHA256withRSA \
+      -digestalg SHA-256 \
+      -keystore release.jks \
+      -storepass "$ANDROID_KEYSTORE_PASSWORD" \
+      -keypass "$ANDROID_KEY_PASSWORD" \
+      "$AAB" "$ANDROID_KEY_ALIAS"
+    # Give it a clean name and save path for the next step
+    TAG="${{ github.ref_name }}"
+    VERSION="${TAG#v}"
+    cp "$AAB" "MyApp_${VERSION}.aab"
+    echo "SIGNED_AAB=MyApp_${VERSION}.aab" >> $GITHUB_ENV
+    # Clean up — never leave the keystore file on disk
+    rm -f release.jks
+Step 5 — Upload to GitHub Release
+- name: Upload AAB to GitHub Release
+  env:
+    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  run: |
+    TAG="${{ github.ref_name }}"
+    gh release upload "$TAG" "$SIGNED_AAB" --clobber
