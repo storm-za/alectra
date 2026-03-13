@@ -43,10 +43,10 @@ Add these 4 secrets:
 
 | Secret Name | Value |
 |-------------|-------|
-| `KEYSTORE_BASE64` | Base64-encoded keystore file (see below) |
-| `KEYSTORE_PASSWORD` | The `storepass` you used above |
-| `KEY_ALIAS` | `alectra` (or whatever alias you chose) |
-| `KEY_PASSWORD` | The `keypass` you used above |
+| `ANDROID_KEYSTORE_BASE64` | Base64-encoded keystore file (see below) |
+| `ANDROID_KEYSTORE_PASSWORD` | The `storepass` you used above |
+| `ANDROID_KEY_ALIAS` | `alectra` (or whatever alias you chose) |
+| `ANDROID_KEY_PASSWORD` | The `keypass` you used above |
 
 To encode the keystore as base64:
 
@@ -55,7 +55,7 @@ base64 -i alectra-release.keystore | pbcopy   # macOS (copies to clipboard)
 base64 alectra-release.keystore               # Linux (prints to terminal)
 ```
 
-Paste the full base64 string as the value of `KEYSTORE_BASE64`.
+Paste the full base64 string as the value of `ANDROID_KEYSTORE_BASE64`.
 
 ### 3. Trigger a Build
 
@@ -67,12 +67,12 @@ The workflow runs automatically on push to `main`. You can also trigger it manua
 
 ### 4. Download the AAB
 
-After the workflow completes (takes ~10-15 minutes):
+After the workflow completes (~13 minutes):
 
-1. Go to the completed workflow run
-2. Scroll to "Artifacts" at the bottom
-3. Download `alectra-android-aab`
-4. The `.aab` file inside is your signed app bundle
+1. Go to **https://github.com/storm-za/alectra/releases**
+2. The latest release is tagged `v1.0.0-build.N` — download the `.aab` file attached to it
+3. If no keystore secrets are set yet, the release is marked *pre-release* (unsigned — for testing only)
+4. Once the 4 `ANDROID_*` secrets are added, every build produces a signed release build
 
 ### 5. Upload to Google Play Console
 
